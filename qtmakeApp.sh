@@ -146,7 +146,8 @@ $QMAKE -set MYPLATFORM $MYPLATFORM
 
 # set global parameters for app
 MYCONFFILE="$APP_DIR/DuySorter.conf"
-MYSVN_TMP=`svn info | awk 'BEGIN{FS=": "} $1=="Revision" || $1=="版本" {print $2}'`
+#MYSVN_TMP=`svn info | awk 'BEGIN{FS=": "} $1=="Revision" || $1=="版本" {print $2}'`
+MYSVN_TMP=35
 
 MYCONF=`cat <<EOF
 ${MYCONFFILE}
