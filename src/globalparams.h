@@ -506,7 +506,8 @@ enum {
 #define CNF_PARAMS_FILE_STATUS      APP_PATH "/userdata/cnf/cnf.params_status"           // 参数状态文件
 #define CNF_PARAMS_FILE_STATUS_B    APP_PATH "/userdata/cnf/cnf.params_status_2"         // 参数文件状态备份
 
-#define CNF_MY                  APP_PATH "/DuySorter.conf"           // 全局配置文件
+#define CNF_MY                  APP_PATH "/DuySorter.conf"                    // 全局配置文件
+#define CNF_LOG_CFG             APP_PATH "/userdata/log/log.properties"       // 日志配置文件
 
 #ifdef Q_OS_WIN32
 #define LANG_DIR                "../../DuySorter_rk3566/app/i18n/"   // 语言文件目录 *.qm

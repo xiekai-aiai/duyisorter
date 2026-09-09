@@ -13,7 +13,7 @@
 #include <QSettings>
 #include <QProgressBar>
 #include <QMovie>
-//#include "aes.h"
+#include "unilog.h"
 
 /*!
  * \brief 根据语言获取字体
@@ -193,20 +193,12 @@ int createCodeTable(){
 
 int main(int argc, char *argv[])
 {
-#ifdef Q_OS_UNIX
-    QSettings setting(CNF_MY, QSettings::NativeFormat);
-    printf("\n\nstart run %s_%s_R%s\t\n\n",
-            setting.value("Version/MYAPP_NAME", "6SXZ-300F_XS").toString().toLocal8Bit().constData(),
-            setting.value("Version/MYAPP_VERSION", "V2.00PRE").toString().toLocal8Bit().constData(),
-            setting.value("Version/MYAPP_SVN", "1864").toString().toLocal8Bit().constData());
-    fflush(stdout);
-#endif
-
     myApplication a(argc, argv);
 
-//    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-//    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-//    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    // 初始化日志库
+    LOG_INIT(CNF_LOG_CFG);
+
+    LOG_INFO_STM("=========================Start Sorter=========================");
 
     struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_OPERATOR;
 
@@ -216,58 +208,18 @@ int main(int argc, char *argv[])
     label->setWindowOpacity(1);
     QMovie* movie=new QMovie(":/res/png/Loading.gif");
 
-    label->setMovie(movie);//Label添加动图
-    movie->start();//启动动图
-    label->setScaledContents(true);//自适应
+    label->setMovie(movie);                  //Label添加动图
+    movie->start();                          //启动动图
+    label->setScaledContents(true);          //自适应
     label->show();
-//    // 创建一个进度条
-//   QProgressBar *progressBar = new QProgressBar();
-//   QString s1 = "QProgressBar {\
-//       border: 2px solid grey;\
-//       border-radius: 5px;\
-//       text-align: center;\
-//       color:#260000;\
-//   }";
-
-//   QString s2 = "QProgressBar::chunk {\
-//       background-color: #05B8CC;\
-//       width: 20px;\
-//       margin: 0.5px;\
-//   }";
 
 
-   //#ifdef Q_OS_UNIX
-       //! 设置开机图片
-//       setLogo(label);
-   //#endif
+    //! 读取配置文件
+    myFlow.initAll();
 
-//   progressBar->setStyleSheet(s1+s2);
-//   progressBar->setGeometry(0, LCD_HEIGHT-80, LCD_WIDTH, 80);
-////   progressBar->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏
-//   progressBar->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
-//   progressBar->setRange(0, 100); // 设置进度条范围
-//   progressBar->setValue(0); // 设置初始进度值
-//   progressBar->setFormat(QString("System Loading ....")+QString(" %p%"));
-//   progressBar->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-////   progressBar->setTextVisible(false);
+    //! 设置字体
+    a.setFont(getFont());
 
-   //! 读取配置文件
-   myFlow.initAll();
-
-   //! 设置字体
-   a.setFont(getFont());
-
-
-//   for (int i = 0; i <= 100; i=i+10) {
-//       if(i==10){
-//            label->show();
-//            progressBar->show();
-//       }
-//       progressBar->setValue(i); // 更新进度
-//       QCoreApplication::processEvents(); // 确保界面更新
-//       // 模拟耗时操作
-//        myFlow.msleep(400);
-//   }
 
     MainWidget w;
     createSysTable();
@@ -276,7 +228,7 @@ int main(int argc, char *argv[])
     createModeParaInfoTable();
     createParaInfoTable();
 
-// 设置定时器，在一段时间后关闭启动画面并显示主窗口
+    // 设置定时器，在一段时间后关闭启动画面并显示主窗口
     QTimer::singleShot(2000, [&]() {
         // 停止动图播放
         movie->stop();
@@ -287,14 +239,6 @@ int main(int argc, char *argv[])
         // 显示主窗口
         w.show();
     });
-
-//    w.show();
-
-    // 进度条达到100%时，移除开机图
-//    label->hide();
-//    progressBar->hide();
-
-//    label->hide();
 
     return a.exec();
 }
