@@ -28,25 +28,27 @@ unix {
     contains(QT_ARCH, x86_64)|contains(QMAKE_TARGET.arch, x86_64) {
         message("qmake: target arch = x86_64 (host/VM debug)")
         # OpenCV 4.5.5（随项目分发）：上位机 x86_64 调试
-        INCLUDEPATH += $$PWD/src/3rdparty/opencv/lib_linux/include/opencv4
-        LIBS += -L$$PWD/src/3rdparty/opencv/lib_linux/lib \
+        INCLUDEPATH += $$PWD/src/3rdparty/opencv/x86/include/opencv4 \
+		               $$PWD/src/3rdparty/openssl/x86/include/ 
+        LIBS += -L$$PWD/src/3rdparty/opencv/x86/lib \
+		        -L$$PWD/src/3rdparty/openssl/x86/lib \
                 -lopencv_core \
                 -lopencv_imgproc \
-                -lopencv_imgcodecs
-        # 运行 DuySorter 时让动态链接器能找到项目内的 opencv 库
-        QMAKE_RPATHDIR += $$PWD/src/3rdparty/opencv/lib_linux/lib
-        # OpenSSL：x86_64 静态库
-        OPENSSL_LIB_DIR = $$PWD/src/3rdparty/openssl/lib_linux
+                -lopencv_imgcodecs \
+				-lcrypto \
+				-lssl
     } else {
         message("qmake: target arch = aarch64 (rk3566 production)")
         # OpenCV 4.5.5（随项目分发）：rk3566 aarch64 生产
         INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4
+		               $$PWD/src/3rdparty/openssl/arm/include/ 
         LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib \
+		        -L$$PWD/src/3rdparty/openssl/arm/lib \
                 -lopencv_core \
                 -lopencv_imgproc \
-                -lopencv_imgcodecs
-        # OpenSSL：aarch64 静态库
-        OPENSSL_LIB_DIR = $$PWD/src/3rdparty/openssl/lib_linux/arm
+                -lopencv_imgcodecs \
+				-lcrypto \
+				-lssl
     }
 }
 
@@ -60,7 +62,6 @@ HEADERS += $$PWD/src/*.h \
            $$PWD/src/3rdparty/log4qt/spi/*.h \
            $$PWD/src/3rdparty/log4qt/varia/*.h \
            $$PWD/src/3rdparty/qjson/*.h \
-           $$PWD/src/3rdparty/openssl/*.h \
 #自定义控件库
            $$PWD/src/common/libdccrypt/dccrypt.h \
            $$PWD/src/common/*.h \
@@ -141,9 +142,6 @@ unix{
                        $$PWD/src/3rdparty/libusb/*.c \
                        $$PWD/src/common/myusb/*.cpp \
                        $$PWD/src/common/myeeprom/*.c
-
-            LIBS += $$OPENSSL_LIB_DIR/libcrypto.a \
-                    $$OPENSSL_LIB_DIR/libssl.a 
 
             DEFINES += LCD_WIDTH=1024 \
                        LCD_HEIGHT=768 \

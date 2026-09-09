@@ -5,8 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include <assert.h>
-#include <3rdparty/openssl/aes.h>
-#include <3rdparty/openssl/evp.h>
+#include <openssl/aes.h>
+#include <openssl/evp.h>
 
 using namespace std;
 
