@@ -57,10 +57,6 @@ HEADERS += $$PWD/src/*.h \
 #第三方库
            $$PWD/src/3rdparty/qextserialport/*.h \
            $$PWD/src/3rdparty/libqrencode/*.h \
-           $$PWD/src/3rdparty/log4qt/*.h \
-           $$PWD/src/3rdparty/log4qt/helpers/*.h \
-           $$PWD/src/3rdparty/log4qt/spi/*.h \
-           $$PWD/src/3rdparty/log4qt/varia/*.h \
            $$PWD/src/3rdparty/qjson/*.h \
 #自定义控件库
            $$PWD/src/common/libdccrypt/dccrypt.h \
@@ -92,10 +88,6 @@ SOURCES += $$PWD/src/*.cpp \
 #第三方库
            $$PWD/src/3rdparty/qextserialport/qextserialport.cpp \
            $$PWD/src/3rdparty/libqrencode/*.c \
-           $$PWD/src/3rdparty/log4qt/*.cpp \
-           $$PWD/src/3rdparty/log4qt/helpers/*.cpp \
-           $$PWD/src/3rdparty/log4qt/spi/*.cpp \
-           $$PWD/src/3rdparty/log4qt/varia/*.cpp \
            $$PWD/src/3rdparty/qjson/*.cpp \
 #自定义控件库
            $$PWD/src/common/*.cpp \
