@@ -30,7 +30,6 @@
 #include "common/mycustomcheckbox.h"
 #include "common/myinputmethod.h"
 #include "aicommunicate.h"
-#include "mylogger.h"
 #include "globalflow.h"
 #include "mymessagebox.h"
 

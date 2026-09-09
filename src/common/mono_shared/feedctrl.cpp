@@ -6,25 +6,27 @@
  * \date        2015.01.14
  */
 #include "feedctrl.h"
+#include "unilog.h"
 
-FeedCtrl::FeedCtrl(QWidget *parent) :
+FeedCtrl::FeedCtrl(QWidget* parent) :
     QWidget(parent)
 {
     /* 料位监控线程 */
     m_thread = new FeederControlThread();
-	if (struCnfg.nFeederCtrlEn == 1) {
-    	m_thread->start();
-	}
-    
-	createPage();
+    if (struCnfg.nFeederCtrlEn == 1)
+    {
+        m_thread->start();
+    }
+
+    createPage();
     connectSigAndSlt();
 }
 
 /* 创建料位监控页面 */
 void FeedCtrl::createPage()
 {
-    QVBoxLayout *mainLay = new QVBoxLayout(this);
-    QHBoxLayout *upHlay = new QHBoxLayout();
+    QVBoxLayout* mainLay = new QVBoxLayout(this);
+    QHBoxLayout* upHlay = new QHBoxLayout();
 
     /* 实例化互斥框 */
     m_mutex = new myMutex(Qt::Horizontal);
@@ -33,7 +35,7 @@ void FeedCtrl::createPage()
     QString str1 = QString("%1 2").arg(myLan.single);
     strList << myLan.disable << myLan.single << myLan.complex << str1;
     m_mutex->setLabelText(strList);
-    m_mutex->setFixedHeight(BTN_HEIGHT*2);
+    m_mutex->setFixedHeight(BTN_HEIGHT * 2);
 
     // 一键放料
     m_oneKeyFeedBtn = new myPushButton(myLan.one_key_feed, QIcon(), true, true, this);
@@ -44,55 +46,63 @@ void FeedCtrl::createPage()
     upHlay->addWidget(m_oneKeyFeedBtn);
 
     /* 实例化料位信息显示部分控件 */
-    QGroupBox *group = new QGroupBox();
-    QGridLayout *groupLay = new QGridLayout(group);
+    QGroupBox* group = new QGroupBox();
+    QGridLayout* groupLay = new QGridLayout(group);
     groupLay->setVerticalSpacing(0);
 
-    QHBoxLayout *btnLay[FEED_CTRL_COL_NUM];
-    for (int i = 0; i < FEED_CTRL_COL_NUM; i++) {
+    QHBoxLayout* btnLay[FEED_CTRL_COL_NUM];
+    for (int i = 0; i < FEED_CTRL_COL_NUM; i++)
+    {
         m_selCbx[i] = new myCustomCheckBox("", false);
-        m_selCbx[i]->setFixedSize(BTN_WIDTH, BTN_HEIGHT+10);
+        m_selCbx[i]->setFixedSize(BTN_WIDTH, BTN_HEIGHT + 10);
         btnLay[i] = new QHBoxLayout;
         btnLay[i]->addWidget(m_selCbx[i]);
         btnLay[i]->setContentsMargins(20, 5, 20, 5);
-        groupLay->addLayout(btnLay[i], 0, i+1);
+        groupLay->addLayout(btnLay[i], 0, i + 1);
     }
 
     QStringList strlevel;
     strlevel << myLan.upper << myLan.mid << myLan.lower;
-    for (int i = 0; i < FEED_CTRL_ROW_NUM; i++) {
-        m_rowLabel[i] = new myLabel(myLan.feeder_level+QString(" %1").arg(strlevel.at(i)));
+    for (int i = 0; i < FEED_CTRL_ROW_NUM; i++)
+    {
+        m_rowLabel[i] = new myLabel(myLan.feeder_level + QString(" %1").arg(strlevel.at(i)));
         m_rowLabel[i]->setAlignment(Qt::AlignCenter);
-        groupLay->addWidget(m_rowLabel[i], i+1, 0);
+        groupLay->addWidget(m_rowLabel[i], i + 1, 0);
     }
 
     QFont font;
     font.setPixelSize(40);
-    for (int i = 0; i < FEED_CTRL_COL_NUM; i++) {
-        for (int j = 0; j < FEED_CTRL_ROW_NUM; j++) {
+    for (int i = 0; i < FEED_CTRL_COL_NUM; i++)
+    {
+        for (int j = 0; j < FEED_CTRL_ROW_NUM; j++)
+        {
             m_lineEdit[i][j] = new myLineEdit("");
             m_lineEdit[i][j]->setEnabled(false);
             m_lineEdit[i][j]->setFixedWidth(BTN_WIDTH);
-            if (LCD_WIDTH == 1024) {
-                m_lineEdit[i][j]->setFixedHeight(BTN_HEIGHT+20);
-            } else {
+            if (LCD_WIDTH == 1024)
+            {
+                m_lineEdit[i][j]->setFixedHeight(BTN_HEIGHT + 20);
+            }
+            else
+            {
                 m_lineEdit[i][j]->setFixedHeight(BTN_HEIGHT);
             }
             m_lineEdit[i][j]->setAlignment(Qt::AlignCenter);
             m_lineEdit[i][j]->setFont(font);
-            groupLay->addWidget(m_lineEdit[i][j], j+1, i+1, 1, 1, Qt::AlignHCenter);
+            groupLay->addWidget(m_lineEdit[i][j], j + 1, i + 1, 1, 1, Qt::AlignHCenter);
         }
     }
-    QHBoxLayout *downLay = new QHBoxLayout();
-    downLay->setContentsMargins(40,0,0,0);
-    for (int i = 0; i < 3; i++) {
+    QHBoxLayout* downLay = new QHBoxLayout();
+    downLay->setContentsMargins(40, 0, 0, 0);
+    for (int i = 0; i < 3; i++)
+    {
         m_colorLet[i] = new myLineEdit();
         m_colorLbl[i] = new myLabel();
         m_colorLet[i]->setEnabled(false);
-        m_colorLet[i]->setFixedSize(ICON_WIDTH,ICON_HEIGHT);
-        m_colorLbl[i]->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-        downLay->addWidget(m_colorLet[i],i*2,Qt::AlignRight);
-        downLay->addWidget(m_colorLbl[i],i*2+1,Qt::AlignRight);
+        m_colorLet[i]->setFixedSize(ICON_WIDTH, ICON_HEIGHT);
+        m_colorLbl[i]->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+        downLay->addWidget(m_colorLet[i], i * 2, Qt::AlignRight);
+        downLay->addWidget(m_colorLbl[i], i * 2 + 1, Qt::AlignRight);
     }
     m_colorLet[0]->setStyleSheet(g_style3);
     m_colorLet[1]->setStyleSheet(g_style1);
@@ -100,13 +110,16 @@ void FeedCtrl::createPage()
     m_colorLbl[0]->setText(myLan.disable);
     m_colorLbl[1]->setText(myLan.no_material);
     m_colorLbl[2]->setText(myLan.exist_material);
-    groupLay->addLayout(downLay,4,1,1,3);
+    groupLay->addLayout(downLay, 4, 1, 1, 3);
 
     mainLay->addLayout(upHlay);
-    if (LCD_WIDTH == 1024) {
+    if (LCD_WIDTH == 1024)
+    {
         mainLay->setContentsMargins(20, 5, 50, 5);
         mainLay->addSpacing(20);
-    } else {
+    }
+    else
+    {
         mainLay->setContentsMargins(5, 5, 25, 5);
     }
     mainLay->addWidget(group);
@@ -116,14 +129,15 @@ void FeedCtrl::createPage()
 void FeedCtrl::connectSigAndSlt()
 {
     m_sigMap = new QSignalMapper;
-    for (int i = 0; i < FEED_CTRL_COL_NUM; i++) {
+    for (int i = 0; i < FEED_CTRL_COL_NUM; i++)
+    {
         m_sigMap->setMapping(m_selCbx[i], i);
         connect(m_selCbx[i], SIGNAL(pressed()), m_sigMap, SLOT(map()));
     }
     connect(m_sigMap, SIGNAL(mapped(int)), this, SLOT(onSelBtnPressed(int)));
 
     connect(m_mutex, SIGNAL(indexChanged(int)), this, SLOT(onMutexIndexChangedSlt(int)));
-    connect(m_oneKeyFeedBtn,SIGNAL(clicked()),this,SLOT(onOneKeyFeedBtnPressedSlt()));
+    connect(m_oneKeyFeedBtn, SIGNAL(clicked()), this, SLOT(onOneKeyFeedBtnPressedSlt()));
     connect(m_thread, SIGNAL(refreshFeederInfo()), this, SLOT(refreshFeederInfo()));
 }
 
@@ -131,14 +145,22 @@ void FeedCtrl::connectSigAndSlt()
 void FeedCtrl::refreshDisplay()
 {
     /* 刷新单选框 */
-    if (struCnfg.nFeederCtrlEn == 0) {
+    if (struCnfg.nFeederCtrlEn == 0)
+    {
         m_mutex->setCurrentIndex(0);
-    } else {
-        if (struCnfg.nFeederCtrlMode == 0) {
+    }
+    else
+    {
+        if (struCnfg.nFeederCtrlMode == 0)
+        {
             m_mutex->setCurrentIndex(1);
-        } else if (struCnfg.nFeederCtrlMode == 1) {
+        }
+        else if (struCnfg.nFeederCtrlMode == 1)
+        {
             m_mutex->setCurrentIndex(2);
-        } else if (struCnfg.nFeederCtrlMode == 2) {
+        }
+        else if (struCnfg.nFeederCtrlMode == 2)
+        {
             m_mutex->setCurrentIndex(3);
         }
     }
@@ -157,17 +179,21 @@ void FeedCtrl::refreshDisplay()
 /* 刷新料位信息的显示 */
 void FeedCtrl::refreshFeedDiplay()
 {
-    for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++) {
+    for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++)
+    {
         m_selCbx[i]->setCheckBoxName(myString.sTickGroupName[0][i]);
         m_selCbx[i]->show();
-        for (int j = 0; j < FEED_CTRL_ROW_NUM; j++) {
+        for (int j = 0; j < FEED_CTRL_ROW_NUM; j++)
+        {
             m_lineEdit[i][j]->show();
         }
     }
 
-    for (int i = struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i < MAX_GROUP_TICK; i++) {
+    for (int i = struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i < MAX_GROUP_TICK; i++)
+    {
         m_selCbx[i]->hide();
-        for (int j = 0; j < FEED_CTRL_ROW_NUM; j++) {
+        for (int j = 0; j < FEED_CTRL_ROW_NUM; j++)
+        {
             m_lineEdit[i][j]->hide();
         }
     }
@@ -176,33 +202,50 @@ void FeedCtrl::refreshFeedDiplay()
 /* 刷新料位状态 */
 void FeedCtrl::refreshFeedStatus()
 {
-    if (struCnfg.nFeederCtrlEn == 0) {
-        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++) {
-            for (int j = 0; j < FEED_CTRL_ROW_NUM; j++) {
+    if (struCnfg.nFeederCtrlEn == 0)
+    {
+        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++)
+        {
+            for (int j = 0; j < FEED_CTRL_ROW_NUM; j++)
+            {
                 m_lineEdit[i][j]->setStyleSheet(g_style3);
             }
         }
-    } else if (struCnfg.nFeederCtrlMode == 0
-               || struCnfg.nFeederCtrlMode == 2) {
+    }
+    else if (struCnfg.nFeederCtrlMode == 0
+        || struCnfg.nFeederCtrlMode == 2)
+    {
         //! 单一料位
-        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++) {
+        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++)
+        {
             m_lineEdit[i][0]->setStyleSheet(g_style3);
             m_lineEdit[i][1]->setStyleSheet(g_style3);
-            if (struCnfg.nFeederCtrlTickEn[i] == 1) {
+            if (struCnfg.nFeederCtrlTickEn[i] == 1)
+            {
                 m_lineEdit[i][2]->setStyleSheet("");
-            } else {
+            }
+            else
+            {
                 m_lineEdit[i][2]->setStyleSheet(g_style3);
             }
         }
-    } else if (struCnfg.nFeederCtrlMode == 1) {
+    }
+    else if (struCnfg.nFeederCtrlMode == 1)
+    {
         //! 复合料位
-        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++) {
-            if (struCnfg.nFeederCtrlTickEn[i] == 1) {
-                for (int j = 0; j < FEED_CTRL_ROW_NUM; j++) {
+        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++)
+        {
+            if (struCnfg.nFeederCtrlTickEn[i] == 1)
+            {
+                for (int j = 0; j < FEED_CTRL_ROW_NUM; j++)
+                {
                     m_lineEdit[i][j]->setStyleSheet("");
                 }
-            } else {
-                for (int j = 0; j < FEED_CTRL_ROW_NUM; j++) {
+            }
+            else
+            {
+                for (int j = 0; j < FEED_CTRL_ROW_NUM; j++)
+                {
                     m_lineEdit[i][j]->setStyleSheet(g_style3);
                 }
             }
@@ -215,30 +258,41 @@ void FeedCtrl::refreshFeedStatus()
  */
 void FeedCtrl::refreshSelBtnStatus()
 {
-    for (int i = 0; i < FEED_CTRL_COL_NUM; i++) {
-        if (struCnfg.nFeederCtrlEn == 0) {
+    for (int i = 0; i < FEED_CTRL_COL_NUM; i++)
+    {
+        if (struCnfg.nFeederCtrlEn == 0)
+        {
             m_selCbx[i]->setEnabled(false);
             m_selCbx[i]->setChecked(false);
-        } else {
+        }
+        else
+        {
             m_selCbx[i]->setEnabled(true);
-            if (struCnfg.nFeederCtrlTickEn[i] == 1) {
+            if (struCnfg.nFeederCtrlTickEn[i] == 1)
+            {
                 m_selCbx[i]->setChecked(true);
-            } else {
+            }
+            else
+            {
                 m_selCbx[i]->setChecked(false);
             }
         }
     }
 
     //! 刷新一键放料按钮状态
-    if(struCnfg.nFeederCtrlEn == 0) {
+    if (struCnfg.nFeederCtrlEn == 0)
+    {
         m_oneKeyFeedBtn->setEnabled(false);
         m_oneKeyFeedBtn->setRedColor(DEF);
         struGsh.bStatFeedCtrlEn = 1;
         m_bIsFeed = false;
-    } else if(struGsh.bStatFeed){
+    }
+    else if (struGsh.bStatFeed)
+    {
         m_oneKeyFeedBtn->setEnabled(true);
     }
-    if(struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal == 4){
+    if (struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal == 4)
+    {
         struCnfg.nFeederCtrlTickEn[3] = 0;
         m_selCbx[3]->setEnabled(false);
         m_selCbx[3]->setChecked(false);
@@ -257,22 +311,27 @@ void FeedCtrl::onMutexIndexChangedSlt(int nIndex)
     infoWidget->setLabelText(myLan.msg_applying);
     infoWidget->delayShow();
 
-    switch (nIndex) {
+    switch (nIndex)
+    {
     case 0:
         struCnfg.nFeederCtrlEn = 0;
-        if (m_thread->threadIsRunning()) {
+        if (m_thread->threadIsRunning())
+        {
             m_thread->stop();
             struGsh.nAlarmLevel = ALARM_LEVEL_NULL;
-            for (int i = 0 ; i < MAX_GROUP_TICK; i++) {
+            for (int i = 0; i < MAX_GROUP_TICK; i++)
+            {
                 struGsh.nAlarmLevelGroup[i] = 0;
             }
-			/* 打开所有振动器 */
-			for (int i=0; i<struCnfg.struLevelInfo[0].nUnitLevelTotal/2; i++) {
-            	struCnfp.struGroupCtrl[0].nFeederEnable[i] = 1;
-        	}
-        	myFlow.resetFeeder(0);
-            for (int i=0; i<struCnfg.struLevelInfo[0].nUnitLevelTotal/2; i++) {
-                myLog->info(LOG_FEED,"FeederStatus%d:%d",i,struCnfp.struGroupCtrl[0].nFeederEnable[i]);
+            /* 打开所有振动器 */
+            for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal / 2; i++)
+            {
+                struCnfp.struGroupCtrl[0].nFeederEnable[i] = 1;
+            }
+            myFlow.resetFeeder(0);
+            for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal / 2; i++)
+            {
+                LOG_INFO_STM("idx:" << i << " FeederStatus:" << struCnfp.struGroupCtrl[0].nFeederEnable[i]);
             }
 
             //保证线程完全退出
@@ -284,7 +343,8 @@ void FeedCtrl::onMutexIndexChangedSlt(int nIndex)
         struCnfg.nFeederCtrlEn = 1;
         struCnfg.nFeederCtrlMode = 0;
         m_thread->setCtrlMode(FEEDER_CONTROL_MODE_1);
-        if (!m_thread->threadIsRunning()) {
+        if (!m_thread->threadIsRunning())
+        {
             m_thread->start();
         }
         break;
@@ -293,7 +353,8 @@ void FeedCtrl::onMutexIndexChangedSlt(int nIndex)
         struCnfg.nFeederCtrlEn = 1;
         struCnfg.nFeederCtrlMode = 1;
         m_thread->setCtrlMode(FEEDER_CONTROL_MODE_2);
-        if (!m_thread->threadIsRunning()) {
+        if (!m_thread->threadIsRunning())
+        {
             m_thread->start();
         }
         break;
@@ -302,7 +363,8 @@ void FeedCtrl::onMutexIndexChangedSlt(int nIndex)
         struCnfg.nFeederCtrlEn = 1;
         struCnfg.nFeederCtrlMode = 2;
         m_thread->setCtrlMode(FEEDER_CONTROL_MODE_3);
-        if (!m_thread->threadIsRunning()) {
+        if (!m_thread->threadIsRunning())
+        {
             m_thread->start();
         }
         break;
@@ -321,40 +383,60 @@ void FeedCtrl::onMutexIndexChangedSlt(int nIndex)
 /* 刷新料位信息的显示 */
 void FeedCtrl::refreshFeederInfo()
 {
-    if (struCnfg.nFeederCtrlEn == 0) {
+    if (struCnfg.nFeederCtrlEn == 0)
+    {
         return;
     }
 
-    char *sFeederInfo = m_thread->getFeederInfo();
+    char* sFeederInfo = m_thread->getFeederInfo();
     if (struCnfg.nFeederCtrlMode == 0
-            || struCnfg.nFeederCtrlMode == 2) {
+        || struCnfg.nFeederCtrlMode == 2)
+    {
         /* 单一模式 */
-        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++) {
-            if (struCnfg.nFeederCtrlTickEn[i] == 1) {
-                if (sFeederInfo[3*i] == 1) {
+        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++)
+        {
+            if (struCnfg.nFeederCtrlTickEn[i] == 1)
+            {
+                if (sFeederInfo[3 * i] == 1)
+                {
                     m_lineEdit[i][2]->setStyleSheet(g_style1);
-                } else {
+                }
+                else
+                {
                     m_lineEdit[i][2]->setStyleSheet(g_styleBlue);
                 }
             }
         }
-    } else if (struCnfg.nFeederCtrlMode == 1) {
+    }
+    else if (struCnfg.nFeederCtrlMode == 1)
+    {
         /* 复合模式 */
-        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++) {
-            if (struCnfg.nFeederCtrlTickEn[i] == 1) {
-                if (sFeederInfo[3*i] == 0) {
+        for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nTickGroupTotal; i++)
+        {
+            if (struCnfg.nFeederCtrlTickEn[i] == 1)
+            {
+                if (sFeederInfo[3 * i] == 0)
+                {
                     m_lineEdit[i][0]->setStyleSheet(g_styleBlue);
-                } else {
+                }
+                else
+                {
                     m_lineEdit[i][0]->setStyleSheet(g_style1);
                 }
-                if (sFeederInfo[3*i+1] == 0) {
+                if (sFeederInfo[3 * i + 1] == 0)
+                {
                     m_lineEdit[i][1]->setStyleSheet(g_styleBlue);
-                } else {
+                }
+                else
+                {
                     m_lineEdit[i][1]->setStyleSheet(g_style1);
                 }
-                if (sFeederInfo[3*i+2] == 0) {
+                if (sFeederInfo[3 * i + 2] == 0)
+                {
                     m_lineEdit[i][2]->setStyleSheet(g_styleBlue);
-                } else {
+                }
+                else
+                {
                     m_lineEdit[i][2]->setStyleSheet(g_style1);
                 }
             }
@@ -368,10 +450,13 @@ void FeedCtrl::refreshFeederInfo()
  */
 void FeedCtrl::onSelBtnPressed(int nIndex)
 {
-    if (struCnfg.nFeederCtrlTickEn[nIndex] == 0) {
+    if (struCnfg.nFeederCtrlTickEn[nIndex] == 0)
+    {
         struCnfg.nFeederCtrlTickEn[nIndex] = 1;
         m_selCbx[nIndex]->setChecked(true);
-    } else {
+    }
+    else
+    {
         struCnfg.nFeederCtrlTickEn[nIndex] = 0;
         m_selCbx[nIndex]->setChecked(false);
 
@@ -391,15 +476,19 @@ void FeedCtrl::onOneKeyFeedBtnPressedSlt()
 {
     m_bIsFeed = !m_bIsFeed;
 
-    if (m_bIsFeed){
+    if (m_bIsFeed)
+    {
         m_oneKeyFeedBtn->setRedColor(GREEN);
         struGsh.bStatFeedCtrlEn = 0;
 
-        for (int i = 0; i < ((struCnfg.struLevelInfo[0].nViewTotal == 1)?struCnfg.struLevelInfo[0].nUnitLevelTotal/2:struCnfg.struLevelInfo[0].nUnitLevelTotal/4)/2; i++) {
-                    struCnfp.struGroupCtrl[0].nFeederEnable[i] = 1;
+        for (int i = 0; i < ((struCnfg.struLevelInfo[0].nViewTotal == 1) ? struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 : struCnfg.struLevelInfo[0].nUnitLevelTotal / 4) / 2; i++)
+        {
+            struCnfp.struGroupCtrl[0].nFeederEnable[i] = 1;
         }
         myFlow.resetFeeder(0);
-    }else {
+    }
+    else
+    {
         m_oneKeyFeedBtn->setRedColor(DEF);
         struGsh.bStatFeedCtrlEn = 1;
     }
@@ -421,7 +510,8 @@ void FeedCtrl::hideOneKeyFeedSlt()
  */
 void FeedCtrl::showOneKeyFeedSlt()
 {
-    if(struCnfg.nFeederCtrlEn == 1) {
+    if (struCnfg.nFeederCtrlEn == 1)
+    {
         m_oneKeyFeedBtn->setEnabled(true);
         m_oneKeyFeedBtn->setRedColor(DEF);
         struGsh.bStatFeedCtrlEn = 1;

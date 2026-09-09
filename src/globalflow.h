@@ -23,7 +23,6 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include "globalparams.h"
-#include "mylogger.h"
 #include "sys/types.h"
 #include "sys/stat.h"
 #include "unistd.h"
@@ -36,7 +35,8 @@
 #include "common/myusb/myusb.h"
 #endif
 
-struct MODEL_PARA_INFO {
+struct MODEL_PARA_INFO
+{
     QString id;        // id
     int levelTotal;
     int unit;
@@ -62,7 +62,7 @@ public:
     qint64 getSystemTurnOnTime();                   //! 获取系统应用启动时间
     int getProductLineNo();                         //! 获取当前运行程序对应的产品线类别，0：杂粮，1：大米，2：茶叶，-1：未知
     bool mountUdisk();                              //! 重新挂载U盘，失败返回false,成功返回true
-    long getFileSize(char *sFileName);              //! 获取参数文件大小
+    long getFileSize(char* sFileName);              //! 获取参数文件大小
 
     void onOff();                                   //! 开关下料
     void onOffMono(void);                           //! 黑白机型的开关下料
@@ -111,7 +111,7 @@ public:
 
 
     void getDefaultPara();
-    QString incrementLastOctet(const QString & ip);
+    QString incrementLastOctet(const QString& ip);
 
     /** 参数保存/获取 */
     void getSetting();
@@ -132,14 +132,14 @@ public:
     void getServerSetting();
     void saveServerSetting();
 
-    bool getEngineerSetting(const QString & fileName);
-    bool saveEngineerSetting(const QString & fileName);
-    bool getGlobalSetting(const QString & fileName);
-    bool saveGlobalSetting(const QString & fileName);
-    bool getCameraSetting(const QString & fileName);
-    bool saveCameraSetting(const QString & fileName);
-    bool getProfileSetting(const QString & fileName);
-    bool saveProfileSetting(const QString & fileName);
+    bool getEngineerSetting(const QString& fileName);
+    bool saveEngineerSetting(const QString& fileName);
+    bool getGlobalSetting(const QString& fileName);
+    bool saveGlobalSetting(const QString& fileName);
+    bool getCameraSetting(const QString& fileName);
+    bool saveCameraSetting(const QString& fileName);
+    bool getProfileSetting(const QString& fileName);
+    bool saveProfileSetting(const QString& fileName);
 
     void getGroupIdentify();            //! 初始化识别组模块参数
     void getGroupTick();                //! 初始化剔除组模块参数
@@ -185,15 +185,15 @@ public:
     void resetFrontRearRelation();                          // 重置前后视算法关系
     void resetReverseSort();                                // 重置正选/反选功能
     int  getIdentifyGroupID(int nUnit, int spliceType);     // 根据相机地址及分割类型获取识别组ID
-    void getUnitsForBkg(QList<int> &qlUnits, int nUnit);    // 根据相机地址获取该相机所在背景组的所有相机地址
+    void getUnitsForBkg(QList<int>& qlUnits, int nUnit);    // 根据相机地址获取该相机所在背景组的所有相机地址
     int  getIdentifyGroupAddr(int nLevelId, int nGroupId, int nUnitIndex);   // 获取识别组发送模块地址
     int  getBackgroundGroupID(int nUnit);                   // 根据相机地址获取所在背景组号
     int  getIntelSeq(int mod);                              // 获取智能组合物料序号 
     void resetIntelSeq();                                   // 重置智能组合物料序号
 
-	int getUniformRandom(double min, double max);
-	int getRandomLevel(int curLevel, int curUnit);
-	int getRandomUnit(int curLevel, int curUnit);
+    int getUniformRandom(double min, double max);
+    int getRandomLevel(int curLevel, int curUnit);
+    int getRandomUnit(int curLevel, int curUnit);
 
     /** 剔除相关函数 */
     bool checkIntelArithParams(int nLevel, int nIdeGroup, int nArith);      // 检查智能算法参数
@@ -219,7 +219,7 @@ public:
     void materialResetGreyRsvPer(int nLevelId, int nGroupId, int nUnit, int nArithSeq); //! 重置灰度及色差算法的保留比例参数
     void materialResetIntelRsvPer(int nLevelId, int nGroupId, int nUnit);   //! 重置多分类智能的保留比例参数
 
-    void materialAiModelParaCopy(int nLevelId, int nGroupId,int nOldLevelId, int nOldGroupId);
+    void materialAiModelParaCopy(int nLevelId, int nGroupId, int nOldLevelId, int nOldGroupId);
     void materialAiModelParaSet(int nLevelId, int nGroupId);
 
     /** 控制板相关函数 */
@@ -243,7 +243,7 @@ public:
     void initWhiteNegSortRSC(void);     // 初始化RSC机型乳白粒反选参数
     void initYellowWhiteSortRSC(void);  // 初始化RSC机型黄白同选参数
     void initYellowTransSortRSC(void);  // 初始化RSC机型黄透同选参数
-    void initAIParamsRSC(int nGroup, int *pVal);        // 初始化RSC机型智能参数
+    void initAIParamsRSC(int nGroup, int* pVal);        // 初始化RSC机型智能参数
 
     /** 其他通用 */
     QList<int> getLanguageList();
@@ -257,7 +257,7 @@ public:
     void getSlaveList(void);            //! 获取从设备列表
 
 signals:
-   void backlightOnSig();   // 关背光后，点亮背光需要输入密码
+    void backlightOnSig();   // 关背光后，点亮背光需要输入密码
 
 private:
     qint64 turnOnTime;      // 开机时刻

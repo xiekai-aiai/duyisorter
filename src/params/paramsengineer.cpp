@@ -1,4 +1,5 @@
 #include "globalflow.h"
+#include "unilog.h"
 
 /* 获取预置方案名称 */
 void GlobalFlow::getPrefixedName()
@@ -37,7 +38,8 @@ void GlobalFlow::getPrefixedName()
     memcpy(struCnfe.struParentPrefixedProfile[4].struSonProfile[6].sProfileName, "nanguaziren", sizeof("nanguaziren"));
 
     /* 预制方案父节点和子节点名称，只有中英文*/
-    if(struCnfg.nLang == LANG_CHS || struCnfg.nLang == LANG_CHT) {
+    if (struCnfg.nLang == LANG_CHS || struCnfg.nLang == LANG_CHT)
+    {
         memcpy(struCnfe.struParentPrefixedProfile[0].sMaterialName, "通用类", sizeof("通用类"));
         memcpy(struCnfe.struParentPrefixedProfile[0].struSonProfile[0].sMaterialName, "通用", sizeof("通用"));
 
@@ -76,7 +78,8 @@ void GlobalFlow::getPrefixedName()
         memcpy(struCnfe.struParentPrefixedProfile[4].struSonProfile[5].sMaterialName, "茭瓜子仁", sizeof("茭瓜子仁"));
         memcpy(struCnfe.struParentPrefixedProfile[4].struSonProfile[6].sMaterialName, "南瓜子仁", sizeof("南瓜子仁"));
     }
-    else {
+    else
+    {
         memcpy(struCnfe.struParentPrefixedProfile[0].sMaterialName, "General", sizeof("General"));
         memcpy(struCnfe.struParentPrefixedProfile[0].struSonProfile[0].sMaterialName, "General", sizeof("General"));
 
@@ -120,43 +123,47 @@ void GlobalFlow::getPrefixedName()
 /* 获取工程模式下算法使能设置 */
 void GlobalFlow::getArithmeticMachineEnable()
 {
-    for (int i = 0; i < ARITHMETIC_TOTAL; i++) {
+    for (int i = 0; i < ARITHMETIC_TOTAL; i++)
+    {
         struCnfe.nArithmeticSeq[i] = 0;
     }
 
     // 通用机型算法列表
-    struCnfe.nArithmeticSeq[ARITH_GREY_A]       = 1;
-    struCnfe.nArithmeticSeq[ARITH_GREY_B]       = 1;
-    struCnfe.nArithmeticSeq[ARITH_DISCOLOR_A]   = 1;
-    struCnfe.nArithmeticSeq[ARITH_DISCOLOR_B]   = 1;
-    struCnfe.nArithmeticSeq[ARITH_CROSS]        = 1;
-    struCnfe.nArithmeticSeq[ARITH_SHAPE]        = 1;
-    struCnfe.nArithmeticSeq[ARITH_SCALE]        = 1;
+    struCnfe.nArithmeticSeq[ARITH_GREY_A] = 1;
+    struCnfe.nArithmeticSeq[ARITH_GREY_B] = 1;
+    struCnfe.nArithmeticSeq[ARITH_DISCOLOR_A] = 1;
+    struCnfe.nArithmeticSeq[ARITH_DISCOLOR_B] = 1;
+    struCnfe.nArithmeticSeq[ARITH_CROSS] = 1;
+    struCnfe.nArithmeticSeq[ARITH_SHAPE] = 1;
+    struCnfe.nArithmeticSeq[ARITH_SCALE] = 1;
     struCnfe.nArithmeticSeq[ARITH_SHAPE_LENGTH] = 1;
-    struCnfe.nArithmeticSeq[ARITH_BUD_1]        = 1;
-    struCnfe.nArithmeticSeq[ARITH_BUD_2]        = 1;
-    struCnfe.nArithmeticSeq[ARITH_INTEL_A]      = 1;
-    struCnfe.nArithmeticSeq[ARITH_INTEL_B]      = 1;
-    struCnfe.nArithmeticSeq[ARITH_INTEL_C]      = 1;
-    struCnfe.nArithmeticSeq[ARITH_INTEL_D]      = 1;
-    struCnfe.nArithmeticSeq[ARITH_SCALE_B]      = 1;
-    struCnfe.nArithmeticSeq[ARITH_PISTACHIO]    = 1;
+    struCnfe.nArithmeticSeq[ARITH_BUD_1] = 1;
+    struCnfe.nArithmeticSeq[ARITH_BUD_2] = 1;
+    struCnfe.nArithmeticSeq[ARITH_INTEL_A] = 1;
+    struCnfe.nArithmeticSeq[ARITH_INTEL_B] = 1;
+    struCnfe.nArithmeticSeq[ARITH_INTEL_C] = 1;
+    struCnfe.nArithmeticSeq[ARITH_INTEL_D] = 1;
+    struCnfe.nArithmeticSeq[ARITH_SCALE_B] = 1;
+    struCnfe.nArithmeticSeq[ARITH_PISTACHIO] = 1;
 }
 
 /*!
  * \brief 重置算法列表
  */
-/*!
- * \brief 重置算法使能
- */
-/* 获取工程模式中默认工程文件保存的参数  */
+ /*!
+  * \brief 重置算法使能
+  */
+  /* 获取工程模式中默认工程文件保存的参数  */
 void GlobalFlow::getEngineerDefault()
 {
     //! 判断CG机型
-    if (struCnfe.nMachine == MACHINE_CG) {
+    if (struCnfe.nMachine == MACHINE_CG)
+    {
         struCnfe.nMachine = MACHINE_CF;
         struCnfe.nEnableCGMachine = 1;
-    } else {
+    }
+    else
+    {
         struCnfe.nEnableCGMachine = 0;
     }
     struCnfe.nEnableHGQMachine = 0;
@@ -183,19 +190,21 @@ void GlobalFlow::getEngineerDefault()
     struCnfe.struParentPrefixedProfile[3].nSonProfileCount = 5;     // 花生类 预制方案数量
     struCnfe.struParentPrefixedProfile[4].nSonProfileCount = 7;     // 籽仁类 预制方案数量
 
-    for (int i = 0; i < struCnfe.nParentPrefixedProfileTotal; i++) {
+    for (int i = 0; i < struCnfe.nParentPrefixedProfileTotal; i++)
+    {
         struCnfe.struParentPrefixedProfile[i].nIsAble = 1;
-        for (int j = 0; j < struCnfe.struParentPrefixedProfile[i].nSonProfileCount; j++) {
+        for (int j = 0; j < struCnfe.struParentPrefixedProfile[i].nSonProfileCount; j++)
+        {
             struCnfe.struParentPrefixedProfile[i].struSonProfile[j].nIsAble = 1;
         }
     }
 }
 
 /* 从工程配置文件获取工程模式参数 */
-bool GlobalFlow::getEngineerSetting(const QString & fileName)
+bool GlobalFlow::getEngineerSetting(const QString& fileName)
 {
-    int sizeTmp   = 0;          //配置文件中参数的长度,该变量主要用于memcpy
-    const char *strTmp  = NULL;       //配置文件中参数的字符串,该变量主要用于memcpy
+    int sizeTmp = 0;          //配置文件中参数的长度,该变量主要用于memcpy
+    const char* strTmp = NULL;       //配置文件中参数的字符串,该变量主要用于memcpy
 
     /* construct setting file */
     QSettings setting(fileName, QSettings::IniFormat);
@@ -209,11 +218,13 @@ bool GlobalFlow::getEngineerSetting(const QString & fileName)
     /* arithmetic total */
     struCnfe.nArithmeticTotal = ARITHMETIC_TOTAL;   //默认算法总数不需要从文件中获取
 
-    for (int i = 0; i < ARITHMETIC_TOTAL; i++) {
+    for (int i = 0; i < ARITHMETIC_TOTAL; i++)
+    {
         struCnfe.nArithmeticSeq[i] = setting.value(QString("%1-%2-%3").arg(0).arg(3).arg(i), struCnfe.nArithmeticSeq[i]).toInt();
     }
     /* language list */
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 64; i++)
+    {
         struCnfe.nLangList[i] = setting.value(QString("%1-%2-%3").arg(0).arg(4).arg(i), struCnfe.nLangList[i]).toInt();
     }
 
@@ -221,36 +232,41 @@ bool GlobalFlow::getEngineerSetting(const QString & fileName)
     struCnfe.nParentPrefixedProfileTotal = setting.value(QString("%1-%2").arg(0).arg(5), struCnfe.nParentPrefixedProfileTotal).toInt();
 
     /* parent profile */
-    for (int i = 0; i < MAX_PARENT_PREFIXED_PROFILE_COUNT; i++) {
+    for (int i = 0; i < MAX_PARENT_PREFIXED_PROFILE_COUNT; i++)
+    {
         struCnfe.struParentPrefixedProfile[i].nIsAble = setting.value(QString("%1-%2-%3-%4").arg(0).arg(6).arg(i).arg(0), struCnfe.struParentPrefixedProfile[i].nIsAble).toInt();
         struCnfe.struParentPrefixedProfile[i].nSonProfileCount = setting.value(QString("%1-%2-%3-%4").arg(0).arg(6).arg(i).arg(1), struCnfe.struParentPrefixedProfile[i].nSonProfileCount).toInt();
         strTmp = setting.value(QString("%1-%2-%3-%4").arg(0).arg(6).arg(i).arg(2), struCnfe.struParentPrefixedProfile[i].sMaterialName).toString().toLocal8Bit().constData();
         sizeTmp = strlen(strTmp);
-        if (sizeTmp > sizeof(struCnfe.struParentPrefixedProfile[i].sMaterialName)-1) {
-            sizeTmp = sizeof(struCnfe.struParentPrefixedProfile[i].sMaterialName)-1;    //以'\0'结尾
+        if (sizeTmp > sizeof(struCnfe.struParentPrefixedProfile[i].sMaterialName) - 1)
+        {
+            sizeTmp = sizeof(struCnfe.struParentPrefixedProfile[i].sMaterialName) - 1;    //以'\0'结尾
         }
-        memcpy(struCnfe.struParentPrefixedProfile[i].sMaterialName,strTmp,sizeTmp);
+        memcpy(struCnfe.struParentPrefixedProfile[i].sMaterialName, strTmp, sizeTmp);
 
         /* son profile */
-        for (int j = 0; j < MAX_SON_PREFIXED_PROFILE_COUNT; j++) {
+        for (int j = 0; j < MAX_SON_PREFIXED_PROFILE_COUNT; j++)
+        {
             struCnfe.struParentPrefixedProfile[i].struSonProfile[j].nIsAble = setting.value(QString("%1-%2-%3-%4-%5-%6").arg(0).arg(6).arg(i).arg(3).arg(j).arg(0),
-                                                                                            struCnfe.struParentPrefixedProfile[i].struSonProfile[j].nIsAble).toInt();
+                struCnfe.struParentPrefixedProfile[i].struSonProfile[j].nIsAble).toInt();
             //sMaterialName
             strTmp = setting.value(QString("%1-%2-%3-%4-%5-%6").arg(0).arg(6).arg(i).arg(3).arg(j).arg(1), struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName).toString().toLocal8Bit().constData();
             sizeTmp = strlen(strTmp);
-            if (sizeTmp > sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName)-1) {
-                sizeTmp = sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName)-1;    //以'\0'结尾
+            if (sizeTmp > sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName) - 1)
+            {
+                sizeTmp = sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName) - 1;    //以'\0'结尾
             }
-            memcpy(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName,strTmp,sizeTmp);
+            memcpy(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName, strTmp, sizeTmp);
             //sMaterialName
 
             //sProfileName
             strTmp = setting.value(QString("%1-%2-%3-%4-%5-%6").arg(0).arg(6).arg(i).arg(3).arg(j).arg(2), struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName).toString().toLocal8Bit().constData();
             sizeTmp = strlen(strTmp);
-            if (sizeTmp > sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName)-1) {
-                sizeTmp = sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName)-1;    //以'\0'结尾
+            if (sizeTmp > sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName) - 1)
+            {
+                sizeTmp = sizeof(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName) - 1;    //以'\0'结尾
             }
-            memcpy(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName,strTmp,sizeTmp);
+            memcpy(struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName, strTmp, sizeTmp);
             //sProfileName
         }
     }
@@ -259,19 +275,20 @@ bool GlobalFlow::getEngineerSetting(const QString & fileName)
     //sTitle
     strTmp = setting.value(QString("%1-%2").arg(0).arg(7), struCnfe.sTitle).toString().toLocal8Bit().constData();
     sizeTmp = strlen(strTmp);
-    if (sizeTmp > sizeof(struCnfe.sTitle)-1) {
-        sizeTmp = sizeof(struCnfe.sTitle)-1;
+    if (sizeTmp > sizeof(struCnfe.sTitle) - 1)
+    {
+        sizeTmp = sizeof(struCnfe.sTitle) - 1;
     }
-    memcpy(struCnfe.sTitle,strTmp,sizeTmp);
+    memcpy(struCnfe.sTitle, strTmp, sizeTmp);
     //sTitle
 
-    struCnfe.nEnableBeanMachine  = setting.value(QString("%1-%2").arg(0).arg(8), struCnfe.nEnableBeanMachine).toInt();
-    struCnfe.nEnableMaizeDoubleView  = setting.value(QString("%1-%2").arg(0).arg(9), struCnfe.nEnableMaizeDoubleView).toInt();
-    struCnfe.nDerivedDevType  = setting.value(QString("%1-%2").arg(0).arg(10), struCnfe.nDerivedDevType).toInt();
-    struCnfe.nEnableCGMachine  = setting.value(QString("%1-%2").arg(0).arg(11), struCnfe.nEnableCGMachine).toInt();
-    struCnfe.nEnableHGQMachine  = setting.value(QString("%1-%2").arg(0).arg(12), struCnfe.nEnableHGQMachine).toInt();
+    struCnfe.nEnableBeanMachine = setting.value(QString("%1-%2").arg(0).arg(8), struCnfe.nEnableBeanMachine).toInt();
+    struCnfe.nEnableMaizeDoubleView = setting.value(QString("%1-%2").arg(0).arg(9), struCnfe.nEnableMaizeDoubleView).toInt();
+    struCnfe.nDerivedDevType = setting.value(QString("%1-%2").arg(0).arg(10), struCnfe.nDerivedDevType).toInt();
+    struCnfe.nEnableCGMachine = setting.value(QString("%1-%2").arg(0).arg(11), struCnfe.nEnableCGMachine).toInt();
+    struCnfe.nEnableHGQMachine = setting.value(QString("%1-%2").arg(0).arg(12), struCnfe.nEnableHGQMachine).toInt();
 
-     /* return value */
+    /* return value */
     if (setting.status() == QSettings::NoError)
         return true;
     else
@@ -279,7 +296,7 @@ bool GlobalFlow::getEngineerSetting(const QString & fileName)
 }
 
 /* 保存工程模式参数至配置文件 */
-bool GlobalFlow::saveEngineerSetting(const QString & fileName)
+bool GlobalFlow::saveEngineerSetting(const QString& fileName)
 {
     /* construct setting file */
     QSettings setting(fileName, QSettings::IniFormat);
@@ -292,19 +309,23 @@ bool GlobalFlow::saveEngineerSetting(const QString & fileName)
 
     /* arithmetic total */
     setting.setValue(QString("%1-%2").arg(0).arg(2), struCnfe.nArithmeticTotal);
-    if (struCnfe.nArithmeticTotal != _t_struCnfe.nArithmeticTotal) {
-        myLog->info(LOG_ARITH,"arith total: %d",struCnfe.nArithmeticTotal);
+    if (struCnfe.nArithmeticTotal != _t_struCnfe.nArithmeticTotal)
+    {
+        LOG_INFO_STM("arith total:" << struCnfe.nArithmeticTotal);
     }
 
     /* arithmetic sequence */
-    for (int i = 0; i < ARITHMETIC_TOTAL; i++) {
+    for (int i = 0; i < ARITHMETIC_TOTAL; i++)
+    {
         setting.setValue(QString("%1-%2-%3").arg(0).arg(3).arg(i), struCnfe.nArithmeticSeq[i]);
-        if (struCnfe.nArithmeticSeq[i] != _t_struCnfe.nArithmeticSeq[i]) {
-        myLog->info(LOG_ARITH,"arith list(%d,%d)",i,struCnfe.nArithmeticSeq[i]);
+        if (struCnfe.nArithmeticSeq[i] != _t_struCnfe.nArithmeticSeq[i])
+        {
+            LOG_INFO_STM("idx:" << i << "arith seq:" << struCnfe.nArithmeticSeq[i]);
         }
     }
     /* language list */
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 64; i++)
+    {
         setting.setValue(QString("%1-%2-%3").arg(0).arg(4).arg(i), struCnfe.nLangList[i]);
     }
 
@@ -312,12 +333,14 @@ bool GlobalFlow::saveEngineerSetting(const QString & fileName)
     setting.setValue(QString("%1-%2").arg(0).arg(5), struCnfe.nParentPrefixedProfileTotal);
 
     /* parent prefixed profile */
-    for (int i = 0; i < MAX_PARENT_PREFIXED_PROFILE_COUNT; i++) {
+    for (int i = 0; i < MAX_PARENT_PREFIXED_PROFILE_COUNT; i++)
+    {
         setting.setValue(QString("%1-%2-%3-%4").arg(0).arg(6).arg(i).arg(0), struCnfe.struParentPrefixedProfile[i].nIsAble);
         setting.setValue(QString("%1-%2-%3-%4").arg(0).arg(6).arg(i).arg(1), struCnfe.struParentPrefixedProfile[i].nSonProfileCount);
         setting.setValue(QString("%1-%2-%3-%4").arg(0).arg(6).arg(i).arg(2), struCnfe.struParentPrefixedProfile[i].sMaterialName);
         /* son prefixed profile */
-        for (int j = 0; j < MAX_SON_PREFIXED_PROFILE_COUNT; j++) {
+        for (int j = 0; j < MAX_SON_PREFIXED_PROFILE_COUNT; j++)
+        {
             setting.setValue(QString("%1-%2-%3-%4-%5-%6").arg(0).arg(6).arg(i).arg(3).arg(j).arg(0), struCnfe.struParentPrefixedProfile[i].struSonProfile[j].nIsAble);
             setting.setValue(QString("%1-%2-%3-%4-%5-%6").arg(0).arg(6).arg(i).arg(3).arg(j).arg(1), struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sMaterialName);
             setting.setValue(QString("%1-%2-%3-%4-%5-%6").arg(0).arg(6).arg(i).arg(3).arg(j).arg(2), struCnfe.struParentPrefixedProfile[i].struSonProfile[j].sProfileName);
@@ -343,7 +366,8 @@ bool GlobalFlow::saveEngineerSetting(const QString & fileName)
     setting.setValue(QString("%1-%2").arg(0).arg(12), struCnfe.nEnableHGQMachine);
 
     /* return value */
-    if (setting.status() == QSettings::NoError) {
+    if (setting.status() == QSettings::NoError)
+    {
         return true;
     }
     return false;
@@ -371,14 +395,18 @@ void GlobalFlow::getEngineer()
     getEngineerDefault();
 
     //! MC系列只存在英文且不可切换
-    if (struGsh.bIsMC) {
+    if (struGsh.bIsMC)
+    {
         struCnfe.nLangList[1] = LANG_ENG;
     }
 
     memcpy(&_t_struCnfe, &struCnfe, sizeof(struCnfEngineer));
-    if (struCnfs.value != ENGINEER_FILE_ERROR) {
-        if (QFileInfo(CNF_ENGINEER).exists() && QFileInfo(CNF_ENGINEER).size() > 0) {
-            if (!getEngineerSetting(CNF_ENGINEER)) {
+    if (struCnfs.value != ENGINEER_FILE_ERROR)
+    {
+        if (QFileInfo(CNF_ENGINEER).exists() && QFileInfo(CNF_ENGINEER).size() > 0)
+        {
+            if (!getEngineerSetting(CNF_ENGINEER))
+            {
                 qDebug("getEngineer(): can not get engineer parameters, using default");
                 return;
             }
@@ -386,9 +414,13 @@ void GlobalFlow::getEngineer()
             file.copy(CNF_ENGINEER, CNF_ENGINEER_B);
         }
         memcpy(&_t_struCnfe, &struCnfe, sizeof(struCnfEngineer));
-    } else {
-        if (QFileInfo(CNF_ENGINEER_B).exists() && QFileInfo(CNF_ENGINEER_B).size() > 0) {
-            if (!getEngineerSetting(CNF_ENGINEER_B)) {
+    }
+    else
+    {
+        if (QFileInfo(CNF_ENGINEER_B).exists() && QFileInfo(CNF_ENGINEER_B).size() > 0)
+        {
+            if (!getEngineerSetting(CNF_ENGINEER_B))
+            {
                 qDebug("getEngineer(): can not get engineer parameters, using default");
                 return;
             }
@@ -410,18 +442,22 @@ bool GlobalFlow::saveEngineer()
     QFile file;
 
     saveParamsFileStaus(ENGINEER_FILE_ERROR);
-    for (i = 0; i < 3; i++) {
-        if (saveEngineerSetting(CNF_ENGINEER)) {
+    for (i = 0; i < 3; i++)
+    {
+        if (saveEngineerSetting(CNF_ENGINEER))
+        {
             saveParamsFileStaus(ALL_PARAMS_FILE_OK);
             break;
         }
     }
 
-    if (i == 3) {
+    if (i == 3)
+    {
         return false;
     }
 
-    if (QFileInfo(CNF_ENGINEER).exists() && QFileInfo(CNF_ENGINEER).size() > 0) {
+    if (QFileInfo(CNF_ENGINEER).exists() && QFileInfo(CNF_ENGINEER).size() > 0)
+    {
         file.remove(CNF_ENGINEER_B);
         file.copy(CNF_ENGINEER, CNF_ENGINEER_B);
     }

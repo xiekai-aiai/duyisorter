@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QImage>
 #include <QPixmap>
 #include <QListWidgetItem>
@@ -23,24 +24,27 @@ ImageScanner::ImageScanner(const QString& dirPath, QObject* parent)
 void ImageScanner::startScan()
 {
     QDir dir(m_dirPath);
-    if (!dir.exists()) {
+    if (!dir.exists())
+    {
         emit scanFinished(QStringList());
         return;
     }
 
     // 支持的图片格式（不区分大小写）
-    QStringList imageFormats = {"png", "jpg", "jpeg", "bmp", "gif", "tiff", "webp", "svg"};
+    QStringList imageFormats = { "png", "jpg", "jpeg", "bmp", "gif", "tiff", "webp", "svg" };
     QStringList imagePaths;
 
     // 递归扫描所有子文件夹
     QDirIterator it(dir.path(), QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
-    while (it.hasNext()) {
+    while (it.hasNext())
+    {
         if (m_aborted) break;  // 检查是否需要终止
 
         QString filePath = it.next();
         QFileInfo fileInfo(filePath);
         // 检查文件后缀是否为支持的图片格式
-        if (imageFormats.contains(fileInfo.suffix().toLower())) {
+        if (imageFormats.contains(fileInfo.suffix().toLower()))
+        {
             imagePaths << filePath;
             emit progressUpdated(imagePaths.size());  // 发送进度更新
         }
@@ -55,7 +59,7 @@ void ImageScanner::abort()
 }
 
 // ImageFolderImporter 实现
-ImageFolderImporter::ImageFolderImporter(QWidget *parent)
+ImageFolderImporter::ImageFolderImporter(QWidget* parent)
     : QWidget(parent), m_scanner(nullptr)
 {
     // 初始化UI组件
@@ -69,7 +73,7 @@ ImageFolderImporter::ImageFolderImporter(QWidget *parent)
     m_refreshBtn = new QPushButton("刷新列表", this);
     m_clearBtn = new QPushButton("清空列表", this);
     m_statusLabel = new QLabel("就绪", this);
-    m_currentDir  = QString("%1").arg(LOCAL_IMG_PATH);
+    m_currentDir = QString("%1").arg(LOCAL_IMG_PATH);
 
     // 布局管理
     QHBoxLayout* btnLayout = new QHBoxLayout();
@@ -98,8 +102,10 @@ ImageFolderImporter::ImageFolderImporter(QWidget *parent)
 ImageFolderImporter::~ImageFolderImporter()
 {
     // 清理线程资源
-    if (m_scanThread->isRunning()) {
-        if (m_scanner) {
+    if (m_scanThread->isRunning())
+    {
+        if (m_scanner)
+        {
             m_scanner->abort();  // 终止扫描
         }
         m_scanThread->quit();
@@ -112,13 +118,14 @@ void ImageFolderImporter::selectFolder()
 {
     // 打开文件夹选择对话框
     QString dirPath = QFileDialog::getExistingDirectory(
-        this, 
-        "选择图片文件夹", 
+        this,
+        "选择图片文件夹",
         QDir::homePath(),
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
     );
 
-    if (!dirPath.isEmpty()) {
+    if (!dirPath.isEmpty())
+    {
         m_currentDir = dirPath;  // 保存当前选择的文件夹
         scanImagesInFolder(dirPath);  // 扫描该文件夹
     }
@@ -126,7 +133,8 @@ void ImageFolderImporter::selectFolder()
 
 void ImageFolderImporter::refreshList()
 {
-    if (m_currentDir.isEmpty()) {
+    if (m_currentDir.isEmpty())
+    {
         QMessageBox::information(this, "提示", "请先选择一个文件夹");
         return;
     }
@@ -142,8 +150,10 @@ void ImageFolderImporter::clearList()
 void ImageFolderImporter::scanImagesInFolder(const QString& dirPath)
 {
     // 停止当前正在进行的扫描
-    if (m_scanThread->isRunning()) {
-        if (m_scanner) {
+    if (m_scanThread->isRunning())
+    {
+        if (m_scanner)
+        {
             m_scanner->abort();
         }
         m_scanThread->quit();
@@ -164,7 +174,7 @@ void ImageFolderImporter::scanImagesInFolder(const QString& dirPath)
     connect(m_scanThread, &QThread::started, m_scanner, &ImageScanner::startScan);
     connect(m_scanner, &ImageScanner::progressUpdated, [&](int count) {
         progress.setLabelText(QString("已找到 %1 张图片...").arg(count));
-    });
+        });
     connect(m_scanner, &ImageScanner::scanFinished, this, &ImageFolderImporter::onScanFinished);
     connect(m_scanner, &ImageScanner::scanFinished, m_scanner, &ImageScanner::deleteLater);
     connect(m_scanner, &ImageScanner::scanFinished, m_scanThread, &QThread::quit);
@@ -181,7 +191,8 @@ void ImageFolderImporter::scanImagesInFolder(const QString& dirPath)
 
 void ImageFolderImporter::onScanFinished(const QStringList& imagePaths)
 {
-    if (imagePaths.isEmpty()) {
+    if (imagePaths.isEmpty())
+    {
         m_statusLabel->setText("未找到任何图片文件");
         QMessageBox::information(this, "提示", "所选文件夹中未找到支持的图片文件");
         return;
@@ -191,20 +202,22 @@ void ImageFolderImporter::onScanFinished(const QStringList& imagePaths)
     m_listWidget->clear();
 
     // 添加图片到列表
-    foreach (const QString& filePath, imagePaths) {
+    foreach(const QString & filePath, imagePaths)
+    {
         QListWidgetItem* item = new QListWidgetItem();
-        
+
         // 显示相对路径（相对于当前文件夹）
         QFileInfo fileInfo(filePath);
         QString relativePath = QDir(m_currentDir).relativeFilePath(filePath);
         item->setText(relativePath);
-        
+
         // 存储完整路径（用于后续处理）
         item->setData(Qt::UserRole, filePath);
-        
+
         // 生成并显示缩略图
         QImage image(filePath);
-        if (!image.isNull()) {
+        if (!image.isNull())
+        {
             QPixmap pixmap = QPixmap::fromImage(
                 image.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation)
             );

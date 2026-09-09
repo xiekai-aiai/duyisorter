@@ -8,20 +8,21 @@
  */
 #include "manageschemepage.h"
 #include "dirent.h"
+#include "unilog.h"
 
-ManageSchemePage::ManageSchemePage(QWidget *parent) :
+ManageSchemePage::ManageSchemePage(QWidget* parent) :
     QWidget(parent)
 {
     /* create scheme list widget */
-    m_listWidget = new myListWidget(QSize(ICON_WID, ICON_HEI),this);
+    m_listWidget = new myListWidget(QSize(ICON_WID, ICON_HEI), this);
     m_listWidget->setFixedWidth(800);
-    setFixedSize(LCD_WIDTH-10, LCD_HEIGHT-135);
+    setFixedSize(LCD_WIDTH - 10, LCD_HEIGHT - 135);
 
-//    QString strStyle = "QListWidget::item::selected{ color:#4f7d8b; background:#edf2f3;}";
-//    m_listWidget->setStyleSheet(strStyle);
-    /* create button */
-    m_newSchemeBtn    = new myPushButton(QString(myLan.new_scheme), QIcon(""));
-    m_copySchemeBtn   = new myPushButton(QString(myLan.copy_scheme), QIcon(""));
+    //    QString strStyle = "QListWidget::item::selected{ color:#4f7d8b; background:#edf2f3;}";
+    //    m_listWidget->setStyleSheet(strStyle);
+        /* create button */
+    m_newSchemeBtn = new myPushButton(QString(myLan.new_scheme), QIcon(""));
+    m_copySchemeBtn = new myPushButton(QString(myLan.copy_scheme), QIcon(""));
     m_deleteSchemeBtn = new myPushButton(QString(myLan.delte_scheme), QIcon(""));
     m_renameSchemeBtn = new myPushButton(QString(myLan.rename_scheme), QIcon(""));
     m_importSchemeBtn = new myPushButton(QString(myLan.recover_scheme), QIcon(""));
@@ -29,18 +30,18 @@ ManageSchemePage::ManageSchemePage(QWidget *parent) :
     m_changeModeBtn = new myPushButton(myLan.scheme_change_mode, QIcon(""));
     m_copyMajorBtn = new myPushButton(myLan.scheme_copy_major, QIcon(""));
 
-    m_okBtn           =  new myPushButton(myLan.apply, QIcon(""));
-    m_cancelBtn       =  new myPushButton(myLan.back, QIcon(""));
+    m_okBtn = new myPushButton(myLan.apply, QIcon(""));
+    m_cancelBtn = new myPushButton(myLan.back, QIcon(""));
 
 
-//    QPalette palette1;
-//    QPixmap pixmap1(":/res/png/materialButton.png");
-//    pixmap1 = pixmap1.scaled(843,648, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    //    QPalette palette1;
+    //    QPixmap pixmap1(":/res/png/materialButton.png");
+    //    pixmap1 = pixmap1.scaled(843,648, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-//    palette1.setBrush(backgroundRole(),QBrush(pixmap1));
+    //    palette1.setBrush(backgroundRole(),QBrush(pixmap1));
 
-    QString strStyle  = QString("QPushButton {border-image: url(:/res/png/materialButton.png);}"
-                                "QToolTip {border-image: url(:/res/png/materialButton.png);}");
+    QString strStyle = QString("QPushButton {border-image: url(:/res/png/materialButton.png);}"
+        "QToolTip {border-image: url(:/res/png/materialButton.png);}");
 
     m_newSchemeBtn->setStyleSheet(strStyle);
     m_copySchemeBtn->setStyleSheet(strStyle);
@@ -55,20 +56,20 @@ ManageSchemePage::ManageSchemePage(QWidget *parent) :
     updateListWidget();
 
     /* the restriction on the size of button was used for layout */
-    m_newSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_copySchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_deleteSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_renameSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_importSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_exportSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_changeModeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_copyMajorBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_okBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
-    m_cancelBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT+10));
+    m_newSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_copySchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_deleteSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_renameSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_importSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_exportSchemeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_changeModeBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_copyMajorBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_okBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
+    m_cancelBtn->setMaximumSize(QSize(DEFAULT_BTN_WIDTH, BTN_HEIGHT + 10));
 
     /* page layout */
     /* sub layout */
-    m_schemePageVBLayout  = new QVBoxLayout();
+    m_schemePageVBLayout = new QVBoxLayout();
     m_schemePageVBLayout->addWidget(m_okBtn);
 
     m_schemePageVBLayout->addWidget(m_newSchemeBtn);
@@ -81,33 +82,33 @@ ManageSchemePage::ManageSchemePage(QWidget *parent) :
     m_schemePageHBLayout = new QHBoxLayout();
     m_schemePageHBLayout->addWidget(m_cancelBtn);
     m_cancelBtn->setHidden(true);
-    m_horizontalSpacer    = new QSpacerItem(10, BTN_HEIGHT, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_horizontalSpacer = new QSpacerItem(10, BTN_HEIGHT, QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_schemePageHBLayout->addItem(m_horizontalSpacer);
     m_schemePageHBLayout->addWidget(m_okBtn);
 
     /* main layout */
     m_schemePageGridLayout = new QGridLayout(this);
-    m_schemePageGridLayout->addWidget(m_listWidget,0,0,1,6);
-    m_schemePageGridLayout->addLayout(m_schemePageVBLayout,0,6,1,1,Qt::AlignCenter);
-//    m_schemePageGridLayout->addLayout(m_schemePageHBLayout,2,0,1,2);
+    m_schemePageGridLayout->addWidget(m_listWidget, 0, 0, 1, 6);
+    m_schemePageGridLayout->addLayout(m_schemePageVBLayout, 0, 6, 1, 1, Qt::AlignCenter);
+    //    m_schemePageGridLayout->addLayout(m_schemePageHBLayout,2,0,1,2);
 
-    /* slots */
-    connect(m_cancelBtn       ,   SIGNAL(pressed()), this, SLOT(onCancelBtnClickedSlt()));
-    connect(m_okBtn           ,   SIGNAL(pressed()), this, SLOT(onOkBtnClickedSlt()));
-    connect(m_newSchemeBtn    ,   SIGNAL(pressed()), this, SLOT(onNewSchemeBtnClickedSlt()));
-    connect(m_copySchemeBtn   ,   SIGNAL(pressed()), this, SLOT(onCopySchemeBtnClickedSlt()));
-    connect(m_deleteSchemeBtn ,   SIGNAL(pressed()), this, SLOT(onDeleteSchemeBtnClickedSlt()));
-    connect(m_renameSchemeBtn ,   SIGNAL(pressed()), this, SLOT(onRenameSchemeBtnClickedSlt()));
-    connect(m_importSchemeBtn ,   SIGNAL(pressed()), this, SLOT(onImportSchemeBtnClickedSlt()));
-    connect(m_exportSchemeBtn ,   SIGNAL(pressed()), this, SLOT(onExportSchemeBtnClickedSlt()));
+        /* slots */
+    connect(m_cancelBtn, SIGNAL(pressed()), this, SLOT(onCancelBtnClickedSlt()));
+    connect(m_okBtn, SIGNAL(pressed()), this, SLOT(onOkBtnClickedSlt()));
+    connect(m_newSchemeBtn, SIGNAL(pressed()), this, SLOT(onNewSchemeBtnClickedSlt()));
+    connect(m_copySchemeBtn, SIGNAL(pressed()), this, SLOT(onCopySchemeBtnClickedSlt()));
+    connect(m_deleteSchemeBtn, SIGNAL(pressed()), this, SLOT(onDeleteSchemeBtnClickedSlt()));
+    connect(m_renameSchemeBtn, SIGNAL(pressed()), this, SLOT(onRenameSchemeBtnClickedSlt()));
+    connect(m_importSchemeBtn, SIGNAL(pressed()), this, SLOT(onImportSchemeBtnClickedSlt()));
+    connect(m_exportSchemeBtn, SIGNAL(pressed()), this, SLOT(onExportSchemeBtnClickedSlt()));
     connect(m_changeModeBtn, SIGNAL(pressed()), this, SLOT(onChangeModeBtnPressed()));
     connect(m_copyMajorBtn, SIGNAL(pressed()), this, SLOT(onCopyMajorBtnPressed()));
 
     QPalette palette;
     QPixmap pixmap(":/res/png/schemeBack.png");
-    pixmap = pixmap.scaled(1000,660, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    pixmap = pixmap.scaled(1000, 660, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    palette.setBrush(backgroundRole(),QBrush(pixmap));
+    palette.setBrush(backgroundRole(), QBrush(pixmap));
     this->setPalette(palette);
     this->setAutoFillBackground(true);
     m_listWidget->setStyleSheet("background-color:transparent");
@@ -125,7 +126,8 @@ void ManageSchemePage::resetProfileMode()
 /* 根据权限刷新方案管理页面按钮状态*/
 void ManageSchemePage::refreshBtnStauts()
 {
-    if (struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_OPERATOR) {
+    if (struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_OPERATOR)
+    {
         m_newSchemeBtn->setEnabled(false);
         m_copySchemeBtn->setEnabled(false);
         m_deleteSchemeBtn->setEnabled(false);
@@ -140,7 +142,9 @@ void ManageSchemePage::refreshBtnStauts()
         m_renameSchemeBtn->setHidden(true);
         m_importSchemeBtn->setHidden(true);
         m_exportSchemeBtn->setHidden(true);
-    } else {
+    }
+    else
+    {
         m_newSchemeBtn->setEnabled(true);
         m_copySchemeBtn->setEnabled(true);
         m_deleteSchemeBtn->setEnabled(true);
@@ -167,21 +171,25 @@ void ManageSchemePage::updateListWidget()
     m_listWidget->clear();
 
     /* scheme list widget adds items */
-    for(int i = 0; i < struCnfg.nProfileTotal; i++){
+    for (int i = 0; i < struCnfg.nProfileTotal; i++)
+    {
         QString srcFilename = QString("%1/userdata/cnf/%2%3").arg(APP_PATH).arg(struCnfg.struProfileIndex[i].sProfileName).arg(".bak");
         QFileInfo fi(srcFilename);
         QString time = fi.lastModified().toString("yyyy-MM-dd hh:mm");
-        QByteArray ctime = time .toLatin1();
-        if (QFile(srcFilename).exists()) {
-        } else {
-            strScheme.sprintf("%d %s (%s%s)",i+1,struCnfg.struProfileIndex[i].sMaterialName,"bak@",ctime.data());
-            strScheme.sprintf("%d %s",i+1,struCnfg.struProfileIndex[i].sMaterialName);
+        QByteArray ctime = time.toLatin1();
+        if (QFile(srcFilename).exists())
+        {
+        }
+        else
+        {
+            strScheme.sprintf("%d %s (%s%s)", i + 1, struCnfg.struProfileIndex[i].sMaterialName, "bak@", ctime.data());
+            strScheme.sprintf("%d %s", i + 1, struCnfg.struProfileIndex[i].sMaterialName);
         }
 
-        myListWidgetItem *schemeListItem = new myListWidgetItem(strScheme, QIcon(), QSize(760,80));
+        myListWidgetItem* schemeListItem = new myListWidgetItem(strScheme, QIcon(), QSize(760, 80));
         schemeListItem->setTextAlignment(Qt::AlignCenter);
         QPixmap pixmap(":/res/png/material.png");
-        pixmap = pixmap.scaled(QSize(797,80),Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        pixmap = pixmap.scaled(QSize(797, 80), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         schemeListItem->setBackground(QBrush(pixmap));
 
         m_listWidget->addItem(schemeListItem);
@@ -213,7 +221,8 @@ void ManageSchemePage::onOkBtnClickedSlt()
     myMessageBox msgBox(MSG_QUES, myLan.cfm_select_current_scheme);
     int ret = msgBox.exec();
 
-    if(ret == QDialog::Accepted){
+    if (ret == QDialog::Accepted)
+    {
         infoWidget->setLabelText(myLan.msg_applying);
         infoWidget->delayShow();
 
@@ -225,17 +234,17 @@ void ManageSchemePage::onOkBtnClickedSlt()
 
         struCnfg.nProfile = m_listWidget->currentRow();
         myFlow.getProfile();
-        myLog->info(LOG_PROFILE,"select a profile: %s (in file: %s)",
-                struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName,
-                struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName);
+
+        LOG_INFO_STM("select a profile:" << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName)
+            << " (in file: " << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName) << ")");
 
         //! 检查启动模式
         myFlow.checkAndResetFPGAMode(nIntMode, nColorMode);
 
         myFlow.initSendAllParams();
-	    infoWidget->hide();
-	    emit goToHomePageSig();
-   }
+        infoWidget->hide();
+        emit goToHomePageSig();
+    }
 }
 
 /*!
@@ -249,7 +258,8 @@ void ManageSchemePage::onNewSchemeBtnClickedSlt()
     int ret = msgBox.exec();
 
     //! 判断方案数量限制条件
-    if (struCnfg.nProfileTotal >= MAX_PROFILE) {
+    if (struCnfg.nProfileTotal >= MAX_PROFILE)
+    {
         ret = QDialog::Rejected;
         infoWidget->setLabelText("Reject!");
         infoWidget->delayShow();
@@ -257,7 +267,8 @@ void ManageSchemePage::onNewSchemeBtnClickedSlt()
         infoWidget->hide();
     }
 
-    if (ret == QDialog::Accepted){
+    if (ret == QDialog::Accepted)
+    {
         emit goToNewSchemePageSig();
     }
 }
@@ -272,7 +283,8 @@ void ManageSchemePage::onCopySchemeBtnClickedSlt()
     int ret = msgBox.exec();
 
     //! 新建方案有数量限制
-    if (struCnfg.nProfileTotal >= MAX_PROFILE) {
+    if (struCnfg.nProfileTotal >= MAX_PROFILE)
+    {
         ret = QDialog::Rejected;
         infoWidget->setLabelText("Reject!");
         infoWidget->delayShow();
@@ -280,11 +292,13 @@ void ManageSchemePage::onCopySchemeBtnClickedSlt()
         infoWidget->hide();
     }
 
-    if (ret == QDialog::Accepted) {
-        if (m_listWidget->currentItem()) {
+    if (ret == QDialog::Accepted)
+    {
+        if (m_listWidget->currentItem())
+        {
             memcpy(struCnfg.struProfileIndex[struCnfg.nProfileTotal].sMaterialName,
-                   struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName,
-                   sizeof(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName));
+                struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName,
+                sizeof(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName));
 
             infoWidget->setLabelText(myLan.msg_applying);
             infoWidget->delayShow();
@@ -314,12 +328,13 @@ void ManageSchemePage::onCopySchemeBtnClickedSlt()
             struCnfg.nProfile = struCnfg.nProfileTotal;
             QDateTime time = QDateTime::currentDateTime();
             QString tmpTime = time.toString("yyyyMMddhhmmss");
-            const char *strName = tmpTime.toLatin1();
+            const char* strName = tmpTime.toLatin1();
             memset(struCnfg.struProfileIndex[struCnfg.nProfileTotal].sProfileName, 0,
-                    sizeof(struCnfg.struProfileIndex[struCnfg.nProfileTotal].sProfileName));
+                sizeof(struCnfg.struProfileIndex[struCnfg.nProfileTotal].sProfileName));
             memcpy(struCnfg.struProfileIndex[struCnfg.nProfileTotal].sProfileName, strName, strlen(strName));
             QString desFileName = QString(struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName);
-            if (!QFile::copy(dir+oriFileName,  dir+desFileName)) {
+            if (!QFile::copy(dir + oriFileName, dir + desFileName))
+            {
                 qDebug("ERROR : Copy profile error!");
             }
 
@@ -327,9 +342,10 @@ void ManageSchemePage::onCopySchemeBtnClickedSlt()
             QFile::copy(oriFile, desFile);
             struCnfg.nProfileTotal++;
             myFlow.saveGlobal();
-            myLog->info(LOG_PROFILE,"Copy a new profile: %s (in file: %s)",
-                        struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName,
-                        struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName);
+
+            LOG_INFO_STM("Copy a new profile:" << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName)
+                << " (in file: " << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName) << ")");
+
             infoWidget->hide();
             updateListWidget();
         }
@@ -346,59 +362,66 @@ void ManageSchemePage::onDeleteSchemeBtnClickedSlt()
     myMessageBox msgBox(MSG_QUES, myLan.cfm_scheme_delete);
     int ret = msgBox.exec();
 
-    if (ret == QDialog::Accepted) {
-      if (m_listWidget->currentItem()) {
-          if (m_listWidget->count() > 1) {
-              /* delete scheme file */
-              char str[256];
-              if (strlen(struCnfg.struProfileIndex[m_listWidget->currentRow()].sProfileName) > 0) {
-                  sprintf(str,"rm -rf userdata/cnf/%s*",struCnfg.struProfileIndex[m_listWidget->currentRow()].sProfileName);
-                  system(str);
-              }
+    if (ret == QDialog::Accepted)
+    {
+        if (m_listWidget->currentItem())
+        {
+            if (m_listWidget->count() > 1)
+            {
+                /* delete scheme file */
+                char str[256];
+                if (strlen(struCnfg.struProfileIndex[m_listWidget->currentRow()].sProfileName) > 0)
+                {
+                    sprintf(str, "rm -rf userdata/cnf/%s*", struCnfg.struProfileIndex[m_listWidget->currentRow()].sProfileName);
+                    system(str);
+                }
 
-              /* update scheme m_listWidget status*/
-              for (int i = m_listWidget->currentRow(); i < m_listWidget->count()-1; i++) {
-                  memcpy(struCnfg.struProfileIndex[i].sMaterialName,
-                         struCnfg.struProfileIndex[i+1].sMaterialName,
-                         sizeof(struCnfg.struProfileIndex[i+1].sMaterialName));
-                  memcpy(struCnfg.struProfileIndex[i].sProfileName,
-                         struCnfg.struProfileIndex[i+1].sProfileName,
-                         sizeof(struCnfg.struProfileIndex[i+1].sProfileName));
-              }
+                /* update scheme m_listWidget status*/
+                for (int i = m_listWidget->currentRow(); i < m_listWidget->count() - 1; i++)
+                {
+                    memcpy(struCnfg.struProfileIndex[i].sMaterialName,
+                        struCnfg.struProfileIndex[i + 1].sMaterialName,
+                        sizeof(struCnfg.struProfileIndex[i + 1].sMaterialName));
+                    memcpy(struCnfg.struProfileIndex[i].sProfileName,
+                        struCnfg.struProfileIndex[i + 1].sProfileName,
+                        sizeof(struCnfg.struProfileIndex[i + 1].sProfileName));
+                }
 
-              //! RS及RS-C需重置方案模式
-              resetProfileMode();
+                //! RS及RS-C需重置方案模式
+                resetProfileMode();
 
-              //! 记录上一方案的启动模式
-              int nIntMode = struCnfp.nInterfaceBoardMode;
-              int nColorMode = struCnfp.nColorBoardMode;
+                //! 记录上一方案的启动模式
+                int nIntMode = struCnfp.nInterfaceBoardMode;
+                int nColorMode = struCnfp.nColorBoardMode;
 
-              /* set current scheme */
-              struCnfg.nProfile = 0;
-              struCnfg.nProfileTotal--;
-              myFlow.saveGlobal();
+                /* set current scheme */
+                struCnfg.nProfile = 0;
+                struCnfg.nProfileTotal--;
+                myFlow.saveGlobal();
 
-              infoWidget->setLabelText(myLan.msg_applying);
-              infoWidget->delayShow();
-              myFlow.getProfile();
+                infoWidget->setLabelText(myLan.msg_applying);
+                infoWidget->delayShow();
+                myFlow.getProfile();
 
-              //! 检查启动模式
-              myFlow.checkAndResetFPGAMode(nIntMode, nColorMode);
+                //! 检查启动模式
+                myFlow.checkAndResetFPGAMode(nIntMode, nColorMode);
 
-              myFlow.initSendAllParams();
+                myFlow.initSendAllParams();
 
-              myLog->info(LOG_PROFILE,"Delete a profile, current profile: %s (in file: %s)",
-                          struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName,
-                          struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName);
-              infoWidget->hide();
-              updateListWidget();
-          } else {
-              infoWidget->setLabelText(myLan.msg_delete_forbidden);
-              infoWidget->delayShow();
-              myFlow.sleep(3);
-              infoWidget->hide();
-          }
-       }
+                LOG_INFO_STM("Delete a profile, current profile:" << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName)
+                    << " (in file: " << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName) << ")");
+
+                infoWidget->hide();
+                updateListWidget();
+            }
+            else
+            {
+                infoWidget->setLabelText(myLan.msg_delete_forbidden);
+                infoWidget->delayShow();
+                myFlow.sleep(3);
+                infoWidget->hide();
+            }
+        }
     }
 }
 
@@ -412,22 +435,25 @@ void ManageSchemePage::onRenameSchemeBtnClickedSlt()
     myMessageBox msgBox(MSG_QUES, myLan.cfm_scheme_rename);
     int ret = msgBox.exec();
 
-    if (ret == QDialog::Accepted){
-        if (m_listWidget->currentItem()) {
+    if (ret == QDialog::Accepted)
+    {
+        if (m_listWidget->currentItem())
+        {
             QString strInput = QString("%1").arg(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName);
             myInputMethod inputPanel(myLan.msg_name_input, strInput);
             ret = inputPanel.exec();
-            if (ret == QDialog::Accepted) {
-                const char *strName = inputPanel.getText().toLatin1();
+            if (ret == QDialog::Accepted)
+            {
+                const char* strName = inputPanel.getText().toLatin1();
 
                 memset(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName, 0,
-                       sizeof(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName));
+                    sizeof(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName));
                 memcpy(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName,
-                        strName, sizeof(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName));
+                    strName, sizeof(struCnfg.struProfileIndex[m_listWidget->currentRow()].sMaterialName));
                 updateListWidget();
-                myLog->info(LOG_PROFILE,"Rename a profile, and new profile name: %s (in file: %s)",
-                            struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName,
-                            struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName);
+
+                LOG_INFO_STM("Rename a profile and new profile name:" << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName)
+                    << " (in file: " << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName) << ")");
             }
         }
     }
@@ -448,11 +474,13 @@ void ManageSchemePage::onImportSchemeBtnClickedSlt()
 
     QDir dir("/proc/scsi/usb-storage");
 
-    if (!dir.exists()) {    // 未检测到USB设备
+    if (!dir.exists())
+    {    // 未检测到USB设备
         myMessageBox msgBox(MSG_QUES, myLan.cfm_restore_from_local);
         int ret = msgBox.exec();
 
-        if (ret == QDialog::Accepted){
+        if (ret == QDialog::Accepted)
+        {
             infoWidget->setLabelText(myLan.msg_applying);
             infoWidget->delayShow();
             sprintf(sConfFile, "userdata/cnf/%s", struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName);
@@ -471,11 +499,15 @@ void ManageSchemePage::onImportSchemeBtnClickedSlt()
             myFlow.initSendAllParams();
             infoWidget->hide();
         }
-    } else {
+    }
+    else
+    {
         myMessageBox msgBox(MSG_QUES, myLan.cfm_restore_from_usb);
         int ret = msgBox.exec();
-        if (ret == QDialog::Accepted) {
-            if (!myFlow.mountUdisk()) {
+        if (ret == QDialog::Accepted)
+        {
+            if (!myFlow.mountUdisk())
+            {
                 infoWidget->setLabelText(myLan.msg_insert_udisk);
                 infoWidget->delayShow();
                 myFlow.sleep(1);
@@ -484,7 +516,8 @@ void ManageSchemePage::onImportSchemeBtnClickedSlt()
             }
 
             QDir paramsDir("/udisk/cnf/");
-            if (paramsDir.exists()) {
+            if (paramsDir.exists())
+            {
                 infoWidget->setLabelText(myLan.msg_applying);
                 infoWidget->delayShow();
 
@@ -495,19 +528,21 @@ void ManageSchemePage::onImportSchemeBtnClickedSlt()
                 system("sync");
                 myFlow.sleep(1);
                 char cmd[64];
-                sprintf(cmd,"umount /udisk");
+                sprintf(cmd, "umount /udisk");
                 system(cmd);
                 myFlow.sleep(1);
 
                 myFlow.initAll();
-                
-				//! 检查启动模式
+
+                //! 检查启动模式
                 myFlow.checkAndResetFPGAMode(nIntMode, nColorMode);
-                
-				myFlow.initSendAllParams();
+
+                myFlow.initSendAllParams();
                 updateListWidget();
                 infoWidget->hide();
-            } else {
+            }
+            else
+            {
                 infoWidget->setLabelText(myLan.msg_restore_from_usb_error);
                 infoWidget->delayShow();
                 myFlow.sleep(1);
@@ -528,11 +563,13 @@ void ManageSchemePage::onExportSchemeBtnClickedSlt()
 
     QDir dir("/proc/scsi/usb-storage");
 
-    if(!dir.exists()){      // 未检测到USB设备
+    if (!dir.exists())
+    {      // 未检测到USB设备
         myMessageBox msgBox(MSG_QUES, myLan.cfm_backup_to_local);
         int ret = msgBox.exec();
 
-        if (ret == QDialog::Accepted){
+        if (ret == QDialog::Accepted)
+        {
             infoWidget->setLabelText(myLan.msg_applying);
             infoWidget->delayShow();
             myFlow.saveProfile();
@@ -548,13 +585,17 @@ void ManageSchemePage::onExportSchemeBtnClickedSlt()
             system("sync");
             myFlow.sleep(1);
             infoWidget->hide();
-       }
-   } else {
+        }
+    }
+    else
+    {
         myMessageBox msgBox(MSG_QUES, myLan.cfm_backup_to_usb);
         int ret = msgBox.exec();
 
-        if (ret == QDialog::Accepted){
-            if (!myFlow.mountUdisk()) {
+        if (ret == QDialog::Accepted)
+        {
+            if (!myFlow.mountUdisk())
+            {
                 infoWidget->setLabelText(myLan.msg_insert_udisk);
                 infoWidget->delayShow();
                 myFlow.sleep(1);
@@ -573,13 +614,13 @@ void ManageSchemePage::onExportSchemeBtnClickedSlt()
             system("sync");
             myFlow.sleep(1);
             char cmd[64];
-            sprintf(cmd,"umount /udisk");
+            sprintf(cmd, "umount /udisk");
             system(cmd);
             myFlow.sleep(1);
             infoWidget->hide();
         }
     }
-	updateListWidget();
+    updateListWidget();
 }
 
 /* 响应更改模式按钮按下事件 */

@@ -5,10 +5,10 @@
 #include <QUdpSocket>
 #include <QThread>
 #include <QtNetwork>
-#include <mylogger.h>
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include "globalparams.h"
 #ifdef Q_OS_UNIX
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -55,7 +55,8 @@
 #define CMD_AI_IMG_VID_UPLOAD        0x000f
 
 
-struct AI_Data_Protocol_D {
+struct AI_Data_Protocol_D
+{
     int nCommandAddress;     // 命令编码
     int nCommandLength;      // 命令长度
     QByteArray nCommandData; // 命令数据
@@ -123,38 +124,38 @@ const quint8 cmd_ai_img_data_tail_4 = 0xff;
  * \brief 主界面类
  */
 class AiCommunicate
-{    
+{
 public:
     AiCommunicate();
     virtual ~AiCommunicate();
 
-    int  getProtocolData(QByteArray array, AI_Data_Protocol_D *data = 0);
+    int  getProtocolData(QByteArray array, AI_Data_Protocol_D* data = 0);
     void printDatagram(const QByteArray array);
 
-    int writeDatagram(AI_Data_Protocol_D data,char sAiIntAddr, QHostAddress address, quint16 port);
+    int writeDatagram(AI_Data_Protocol_D data, char sAiIntAddr, QHostAddress address, quint16 port);
     int writeDatagram(quint16 cmd, char sAiIntAddr, quint16 arglength, QByteArray args, QHostAddress address, quint16 port);
 
     void processDatagram(QByteArray array, QHostAddress peerAddress, quint16 peerPort);
-//    QList<QString>  getDefaultPara();
-//    QString incrementLastOctet(const QString & ip);
-    int readUdpDatagrams(AI_Data_Protocol_D *data, int len);
-    int readUdpImgDatagrams(AI_Data_Protocol_D *data, int len);
+    //    QList<QString>  getDefaultPara();
+    //    QString incrementLastOctet(const QString & ip);
+    int readUdpDatagrams(AI_Data_Protocol_D* data, int len);
+    int readUdpImgDatagrams(AI_Data_Protocol_D* data, int len);
     int getSockfd();
     int clear_udp_buffer(int sockfd);
 private:
-    QUdpSocket *ai_udpSocket;
-//    QUdpSocket *ai_udpSocket2;
+    QUdpSocket* ai_udpSocket;
+    //    QUdpSocket *ai_udpSocket2;
 
     bool canSend;
     QString getLocalIP(QAbstractSocket::NetworkLayerProtocol protocol = QAbstractSocket::IPv4Protocol);
     bool    isLocalIP(QHostAddress address, QAbstractSocket::NetworkLayerProtocol protocol = QAbstractSocket::IPv4Protocol);
-    unsigned int crcCheck(char *sData, int nLen);    // CRC check
+    unsigned int crcCheck(char* sData, int nLen);    // CRC check
 
-//    int aiDeviceNum;
-//    QList<QHostAddress>     addressList;
-//    QList<QString>         ftpIpAddressList;
-//    QHostAddress     address;
-//    QString          ftpIpAddress;
+    //    int aiDeviceNum;
+    //    QList<QHostAddress>     addressList;
+    //    QList<QString>         ftpIpAddressList;
+    //    QHostAddress     address;
+    //    QString          ftpIpAddress;
 
 #ifdef Q_OS_UNIX
     int sockfd;

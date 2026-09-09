@@ -6,25 +6,28 @@
  * \date        2015.01.14
  */
 #include "mainwidget.h"
+#include "unilog.h"
 
-myApplication::myApplication(int &argc, char **argv):
-    QApplication(argc,argv)
+myApplication::myApplication(int& argc, char** argv) :
+    QApplication(argc, argv)
 {
 }
 
-bool myApplication::qwsEventFilter(QObject *w, QEvent *event)
+bool myApplication::qwsEventFilter(QObject* w, QEvent* event)
 {
     //do something
     struGsh.nBacklightCounter = 0;
-    if(struGsh.nBacklightStat == 0) {
+    if (struGsh.nBacklightStat == 0)
+    {
         myFlow.setTsBackLight(1);
-        if(struCnfg.nEnableBacklightPassword == 1) {        // 使能屏保解锁时，密码框才有效
+        if (struCnfg.nEnableBacklightPassword == 1)
+        {        // 使能屏保解锁时，密码框才有效
             myFlow.sendTsBackLightOn();
         }
-    	return true;
+        return true;
     }
 #if defined (Q_OS_LINUX)
-    return QApplication::eventFilter(w,event);
+    return QApplication::eventFilter(w, event);
 #endif
     return true;
 }
@@ -32,7 +35,7 @@ bool myApplication::qwsEventFilter(QObject *w, QEvent *event)
 /***
  *   主控件
  */
-MainWidget::MainWidget(QWidget *parent)
+MainWidget::MainWidget(QWidget* parent)
     : QWidget(parent)
 {
     QString text = "";
@@ -43,9 +46,9 @@ MainWidget::MainWidget(QWidget *parent)
     // 标题栏默认不显示
     setAutoFillBackground(true);
     setWindowFlags(Qt::FramelessWindowHint);
-//    setAttribute(Qt::WA_TranslucentBackground,true);
+    //    setAttribute(Qt::WA_TranslucentBackground,true);
 
-    //! 初始化图标
+        //! 初始化图标
     myIcon.init();
 
     /* 更新系统时间线程 */
@@ -109,8 +112,8 @@ MainWidget::MainWidget(QWidget *parent)
 
     //获取系统当前时间
     QDateTime time = QDateTime::currentDateTime();
-    statInfoBtn = new myPushButton(time.toString("hh:mm:ss"),QIcon(""),
-                                     true, false, this);
+    statInfoBtn = new myPushButton(time.toString("hh:mm:ss"), QIcon(""),
+        true, false, this);
     statInfoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     statInfoBtn->setIconSize(QSize(ICON_WID, ICON_WID));
     statInfoBtn->setIcon(QIcon(":/res/png/time.png"));
@@ -158,11 +161,11 @@ MainWidget::MainWidget(QWidget *parent)
     systemHaltBtn->setAutoRaise(true);
 
 
-//    saveParamBtn = new myPushButton(myLan.save_parameterNew, QIcon(""),
-//                                      true,false,this);
-//    saveParamBtn->setFont(config->getFont(FONT_SIZE_16));
-//    QString strStyle4 = QString("QPushButton {border-image: url(:/res/png/savePara.png);}");
-//    saveParamBtn->setStyleSheet(strStyle4);
+    //    saveParamBtn = new myPushButton(myLan.save_parameterNew, QIcon(""),
+    //                                      true,false,this);
+    //    saveParamBtn->setFont(config->getFont(FONT_SIZE_16));
+    //    QString strStyle4 = QString("QPushButton {border-image: url(:/res/png/savePara.png);}");
+    //    saveParamBtn->setStyleSheet(strStyle4);
 
     saveParamBtn = new QToolButton(this);
     saveParamBtn->setText(myLan.save_parameterNew);
@@ -173,12 +176,12 @@ MainWidget::MainWidget(QWidget *parent)
     saveParamBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     saveParamBtn->setAutoRaise(true);
 
-//    feedSwitchBtn = new myPushButton(myLan.working_stop, QIcon(""),
-//                                      true,false,this);
-//    feedSwitchBtn->setFont(config->getFont(FONT_SIZE_16));
-//    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);"
-//                                "text-align:center}");
-//    feedSwitchBtn->setStyleSheet(strStyle5);
+    //    feedSwitchBtn = new myPushButton(myLan.working_stop, QIcon(""),
+    //                                      true,false,this);
+    //    feedSwitchBtn->setFont(config->getFont(FONT_SIZE_16));
+    //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);"
+    //                                "text-align:center}");
+    //    feedSwitchBtn->setStyleSheet(strStyle5);
 
     feedSwitchBtn = new QToolButton(this);
     feedSwitchBtn->setText(myLan.working_stop);
@@ -197,17 +200,17 @@ MainWidget::MainWidget(QWidget *parent)
 //                                       true, false, this);
 //    machineInfoBtn->setHidden(true);
     // 供料开关
-    text = myLan.feed+" "+myLan.off;
-//    feedSwitchBtn = new myPushButton(QString(myLan.working_stop),QIcon(""),
-//                                      true, false, this);
-    // 皮带开关
-    text = myLan.belt+" "+myLan.off;
-//    beltSwitchBtn = new myPushButton(text, myIcon.Sorter_Feeder, true, true, this);
-//    beltSwitchBtn->hide();
+    text = myLan.feed + " " + myLan.off;
+    //    feedSwitchBtn = new myPushButton(QString(myLan.working_stop),QIcon(""),
+    //                                      true, false, this);
+        // 皮带开关
+    text = myLan.belt + " " + myLan.off;
+    //    beltSwitchBtn = new myPushButton(text, myIcon.Sorter_Feeder, true, true, this);
+    //    beltSwitchBtn->hide();
 
-    // 一键放料
-//    m_oneKeyFeedBtn = new myPushButton(myLan.one_key_feed, QIcon(), true, true, this);
-//    m_oneKeyFeedBtn->hide();
+        // 一键放料
+    //    m_oneKeyFeedBtn = new myPushButton(myLan.one_key_feed, QIcon(), true, true, this);
+    //    m_oneKeyFeedBtn->hide();
     m_bIsFeed = false;
 
     // 方案参数保存
@@ -222,10 +225,10 @@ MainWidget::MainWidget(QWidget *parent)
 
     // 主堆栈页面
     stackedWidget = new QStackedWidget(this);
-    stackedWidget->setFixedWidth(LCD_WIDTH-10);
-    stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT-20);
+    stackedWidget->setFixedWidth(LCD_WIDTH - 10);
+    stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - 20);
 
-	// 通信检测页面
+    // 通信检测页面
     pageComm = new communication(this);
     stackedWidget->addWidget(pageComm);
 
@@ -347,7 +350,7 @@ MainWidget::MainWidget(QWidget *parent)
     stackedWidget->addWidget(pageAutoSigWid);
 
     //! 视频图像页面
-    pageVideo =  new MyVideo(this);
+    pageVideo = new MyVideo(this);
     stackedWidget->addWidget(pageVideo);
 
     //! 实时产量页面
@@ -369,80 +372,80 @@ MainWidget::MainWidget(QWidget *parent)
     mainGridLayout = new QGridLayout(this);
     mainGridLayout->setContentsMargins(5, 10, 10, 10);
     mainGridLayout->setHorizontalSpacing(20);
-    mainGridLayout->setRowMinimumHeight(0 ,LCD_TITLE_HEIGHT-10);
-//    mainGridLayout->setRowMinimumHeight(4 ,LCD_TITLE_HEIGHT-10);
+    mainGridLayout->setRowMinimumHeight(0, LCD_TITLE_HEIGHT - 10);
+    //    mainGridLayout->setRowMinimumHeight(4 ,LCD_TITLE_HEIGHT-10);
 
-    /* 尺寸限制 */
+        /* 尺寸限制 */
     titleLabel->setMaximumHeight(BTN_HEIGHT);
     titleLabel->setMaximumWidth(BTN_WIDTH);
-//    backToHomeBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
-    feedSwitchBtn->setFixedSize(BTN_WIDTH+40, BTN_HEIGHT+10);
-    systemHaltBtn->setFixedSize(BTN_WIDTH+30, BTN_HEIGHT+10);
-    saveParamBtn->setFixedSize(BTN_WIDTH+30, BTN_HEIGHT+10);
-    videoBtn->setFixedSize(BTN_WIDTH+30, BTN_HEIGHT+10);
+    //    backToHomeBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    feedSwitchBtn->setFixedSize(BTN_WIDTH + 40, BTN_HEIGHT + 10);
+    systemHaltBtn->setFixedSize(BTN_WIDTH + 30, BTN_HEIGHT + 10);
+    saveParamBtn->setFixedSize(BTN_WIDTH + 30, BTN_HEIGHT + 10);
+    videoBtn->setFixedSize(BTN_WIDTH + 30, BTN_HEIGHT + 10);
 
-//    setPurviewBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
-    statInfoBtn->setFixedSize(BTN_WIDTH+20, BTN_HEIGHT+10);
-//    m_oneKeyFeedBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
-//    machineInfoBtn->setFixedSize(BTN_WIDTH+15,BTN_HEIGHT);
+    //    setPurviewBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    statInfoBtn->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT + 10);
+    //    m_oneKeyFeedBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    //    machineInfoBtn->setFixedSize(BTN_WIDTH+15,BTN_HEIGHT);
 
 
     mainGridLayout->setVerticalSpacing(0);
 
-//    leftBackGbx  = new myGroupBox(QString(""), this);
-//    leftBackGbx->setStyleSheet("QGroupBox {background-image: url(:/res/png/leftBack.png);}");
-//    leftBackGbx->setStyleSheet("QGroupBox {border: 0;}");
+    //    leftBackGbx  = new myGroupBox(QString(""), this);
+    //    leftBackGbx->setStyleSheet("QGroupBox {background-image: url(:/res/png/leftBack.png);}");
+    //    leftBackGbx->setStyleSheet("QGroupBox {border: 0;}");
 
-//    QHBoxLayout *upHboxLayout = new QHBoxLayout(leftBackGbx);
-  //    upHboxLayout->addWidget(titleLabel);
-  //    upHboxLayout->addWidget(machineInfoBtn);
-  //    upHboxLayout->addSpacing(50);
-  //    upHboxLayout->addWidget(feedSwitchBtn);
+    //    QHBoxLayout *upHboxLayout = new QHBoxLayout(leftBackGbx);
+      //    upHboxLayout->addWidget(titleLabel);
+      //    upHboxLayout->addWidget(machineInfoBtn);
+      //    upHboxLayout->addSpacing(50);
+      //    upHboxLayout->addWidget(feedSwitchBtn);
 
 
 
-//      leftBackGbx->setFixedSize(490,50);
-//      upHboxLayout->setContentsMargins(20, 2, 40, 2);
-//      upHboxLayout->addWidget(oprModeBtn);
-//      upHboxLayout->addStretch(1);
-//      upHboxLayout->addWidget(mainOprBtn);
-//      upHboxLayout->addStretch(1);
-//      upHboxLayout->addWidget(videoBtn);
+    //      leftBackGbx->setFixedSize(490,50);
+    //      upHboxLayout->setContentsMargins(20, 2, 40, 2);
+    //      upHboxLayout->addWidget(oprModeBtn);
+    //      upHboxLayout->addStretch(1);
+    //      upHboxLayout->addWidget(mainOprBtn);
+    //      upHboxLayout->addStretch(1);
+    //      upHboxLayout->addWidget(videoBtn);
 
-//    oprModeBtn->setHidden(true);
-//    mainOprBtn->setHidden(true);
-//    videoBtn->setHidden(true);
+    //    oprModeBtn->setHidden(true);
+    //    mainOprBtn->setHidden(true);
+    //    videoBtn->setHidden(true);
 
-//    downHboxLayout->addStretch(1);
-//    downHboxLayout->addWidget(saveParamBtn);
-//    downHboxLayout->addStretch(1);
-//    downHboxLayout->addWidget(feedSwitchBtn);
-////    downHboxLayout->addStretch(1);
-////    downHboxLayout->addWidget(videoBtn);
-//    downHboxLayout->addStretch(1);
-//    downHboxLayout->addWidget(statInfoBtn,1,Qt::AlignRight);
+    //    downHboxLayout->addStretch(1);
+    //    downHboxLayout->addWidget(saveParamBtn);
+    //    downHboxLayout->addStretch(1);
+    //    downHboxLayout->addWidget(feedSwitchBtn);
+    ////    downHboxLayout->addStretch(1);
+    ////    downHboxLayout->addWidget(videoBtn);
+    //    downHboxLayout->addStretch(1);
+    //    downHboxLayout->addWidget(statInfoBtn,1,Qt::AlignRight);
 
-    mainGridLayout->addWidget(titleLabel, 0 ,0, 1, 1);
+    mainGridLayout->addWidget(titleLabel, 0, 0, 1, 1);
 
-    mainGridLayout->addWidget(videoBtn, 0 ,1, 1, 1);
+    mainGridLayout->addWidget(videoBtn, 0, 1, 1, 1);
 
-//      mainGridLayout->addWidget(leftBackGbx, 0, 0, 2, 3, Qt::AlignLeft);
-//      mainGridLayout->setSpacing(10);
-      mainGridLayout->addWidget(systemHaltBtn, 0, 2, 1, 1, Qt::AlignRight);
-//      mainGridLayout->setSpacing(2);
-      mainGridLayout->addWidget(saveParamBtn, 0, 3, 1, 1, Qt::AlignRight);
-//      mainGridLayout->setSpacing(2);
-      mainGridLayout->addWidget(feedSwitchBtn, 0, 4, 1, 1, Qt::AlignRight);
-//      mainGridLayout->setSpacing(2);
-      mainGridLayout->addWidget(statInfoBtn, 0, 6, 1, 1, Qt::AlignLeft);
+    //      mainGridLayout->addWidget(leftBackGbx, 0, 0, 2, 3, Qt::AlignLeft);
+    //      mainGridLayout->setSpacing(10);
+    mainGridLayout->addWidget(systemHaltBtn, 0, 2, 1, 1, Qt::AlignRight);
+    //      mainGridLayout->setSpacing(2);
+    mainGridLayout->addWidget(saveParamBtn, 0, 3, 1, 1, Qt::AlignRight);
+    //      mainGridLayout->setSpacing(2);
+    mainGridLayout->addWidget(feedSwitchBtn, 0, 4, 1, 1, Qt::AlignRight);
+    //      mainGridLayout->setSpacing(2);
+    mainGridLayout->addWidget(statInfoBtn, 0, 6, 1, 1, Qt::AlignLeft);
 
-      mainGridLayout->addWidget(lineTitle, 1, 0, 1, 7);
-  //    mainGridLayout->addWidget(pageHome, 2, 0, 1, 2);
-      mainGridLayout->addWidget(stackedWidget, 2, 0, 7, 7, Qt::AlignBottom);
-  //    mainGridLayout->addWidget(lineStatus, 3, 0, 1, 2, Qt::AlignBottom);
-  //    mainGridLayout->addLayout(downHboxLayout, 4, 0, 1, 2, Qt::AlignBottom);
+    mainGridLayout->addWidget(lineTitle, 1, 0, 1, 7);
+    //    mainGridLayout->addWidget(pageHome, 2, 0, 1, 2);
+    mainGridLayout->addWidget(stackedWidget, 2, 0, 7, 7, Qt::AlignBottom);
+    //    mainGridLayout->addWidget(lineStatus, 3, 0, 1, 2, Qt::AlignBottom);
+    //    mainGridLayout->addLayout(downHboxLayout, 4, 0, 1, 2, Qt::AlignBottom);
 
-    // 警示框
+      // 警示框
     infoWidget = new myInfoWidget(this);
     infoWidget->raise();
     infoWidget->hide();
@@ -453,32 +456,32 @@ MainWidget::MainWidget(QWidget *parent)
     aiInfoWidget->hide();
 
     //信息提示框
-    infoList = new myInfoListWidget("",this);
+    infoList = new myInfoListWidget("", this);
     infoList->raise();
     infoList->hide();
 
     // 槽函数
     /*开始通信自检（自动运行）*/
-    connect(this        , SIGNAL(goToComPageSig())      , pageComm  , SLOT(startComSlt()));
+    connect(this, SIGNAL(goToComPageSig()), pageComm, SLOT(startComSlt()));
     /*自动进入通信列表页面*/
-    connect(pageComm , SIGNAL(goToCommListPageSig()) , this      , SLOT(goToCommListPageSlt()));
+    connect(pageComm, SIGNAL(goToCommListPageSig()), this, SLOT(goToCommListPageSlt()));
     /*更新通信列表*/
-    connect(pageComm ,    SIGNAL(updateCommunicationSig()), pageCommList, SLOT(updateCommunicationResultSlt()));
+    connect(pageComm, SIGNAL(updateCommunicationSig()), pageCommList, SLOT(updateCommunicationResultSlt()));
     /*自动进入系统初始化页面*/
-    connect(pageComm    , SIGNAL(goToInitPageSig()) , this      , SLOT(goToInitPageSlt()));
+    connect(pageComm, SIGNAL(goToInitPageSig()), this, SLOT(goToInitPageSlt()));
     /*重新自检*/
-    connect(pageCommList, SIGNAL(goToCommPageSig())     , this      , SLOT(goToCommPageSlt()));
+    connect(pageCommList, SIGNAL(goToCommPageSig()), this, SLOT(goToCommPageSlt()));
 
     /*进入系统初始化页面（发送参数）*/
-    connect(pageCommList, SIGNAL(goToInitPageSig())     , this      , SLOT(goToInitPageSlt()));
+    connect(pageCommList, SIGNAL(goToInitPageSig()), this, SLOT(goToInitPageSlt()));
     /*自动发送参数*/
-    connect(this        , SIGNAL(goToInitPageSig())     , pageInit  , SLOT(startInitSlt()));
+    connect(this, SIGNAL(goToInitPageSig()), pageInit, SLOT(startInitSlt()));
     /*初始化完成后，进入预热界面*/
-    connect(pageInit    , SIGNAL(goToPreheatPageSig())  , this      , SLOT(GoToHomePageSlt()));
+    connect(pageInit, SIGNAL(goToPreheatPageSig()), this, SLOT(GoToHomePageSlt()));
     /*自动预热开始*/
-    connect(this        , SIGNAL(goToPreheatPageSig())  , pagePreheat, SLOT(startPreheatSlt()));
+    connect(this, SIGNAL(goToPreheatPageSig()), pagePreheat, SLOT(startPreheatSlt()));
     /*进入主界面*/
-    connect(pagePreheat , SIGNAL(goToHomePageSig())     , this       , SLOT(GoToHomePageSlt()));
+    connect(pagePreheat, SIGNAL(goToHomePageSig()), this, SLOT(GoToHomePageSlt()));
 
     /*进入机器和工程师信息显示界面*/
 //    connect(machineInfoBtn, SIGNAL(pressed()), this, SLOT(state_machine_engineer_info()));
@@ -491,41 +494,41 @@ MainWidget::MainWidget(QWidget *parent)
 //    connect(m_oneKeyFeedBtn, SIGNAL(pressed()), this, SLOT(onOneKeyFeedBtnPressed()));
 
     /*关闭系统*/
-    connect(systemHaltBtn        ,SIGNAL(pressed())             , this, SLOT(onSystemHaltBtnClickedSlt()));
+    connect(systemHaltBtn, SIGNAL(pressed()), this, SLOT(onSystemHaltBtnClickedSlt()));
     /*保存参数*/
-    connect(saveParamBtn         ,SIGNAL(pressed())             , this, SLOT(onSaveParamBtnClickedSlt()));
+    connect(saveParamBtn, SIGNAL(pressed()), this, SLOT(onSaveParamBtnClickedSlt()));
     /*权限设置*/
 //    connect(setPurviewBtn        ,SIGNAL(pressed())             , this, SLOT(onSetPurviewBtnClickedSlt()));
 //    /*视频采集*/
-    connect(videoBtn             ,SIGNAL(pressed())             ,this,  SLOT(onVideoBtnClickedSlt()));
+    connect(videoBtn, SIGNAL(pressed()), this, SLOT(onVideoBtnClickedSlt()));
     /*系统信息*/
-    connect(statInfoBtn          ,SIGNAL(pressed())             , this, SLOT(onStatInfoBtnClickedSlt()));
-    connect(updateStatus         ,SIGNAL(sWipeStart(int))       , this, SLOT(onStartWipeSlt(int)));
-    connect(updateStatus         ,SIGNAL(sUpdateSystemTime())   , this, SLOT(TimeOutSlt()));
+    connect(statInfoBtn, SIGNAL(pressed()), this, SLOT(onStatInfoBtnClickedSlt()));
+    connect(updateStatus, SIGNAL(sWipeStart(int)), this, SLOT(onStartWipeSlt(int)));
+    connect(updateStatus, SIGNAL(sUpdateSystemTime()), this, SLOT(TimeOutSlt()));
     /*方案管理页面返回主界面*/
-    connect(pageManageScheme     ,SIGNAL(goToHomePageSig())     , this, SLOT(GoToHomePageSlt()));
+    connect(pageManageScheme, SIGNAL(goToHomePageSig()), this, SLOT(GoToHomePageSlt()));
     /*工程模式页面返回主界面*/
-    connect(pageEngineer         ,SIGNAL(goToHomePageSig())     , this, SLOT(GoToHomePageSlt()));
+    connect(pageEngineer, SIGNAL(goToHomePageSig()), this, SLOT(GoToHomePageSlt()));
 
     /*料位监控界面一键放料按钮状态*/
-    connect(pageSens         ,SIGNAL(goToSensBiasPageSig()), this, SLOT(onGoToSensBiasPageSlt()));
-    connect(pageSens         ,SIGNAL(goToHomePageSig())     , this, SLOT(GoToHomePageSlt()));
+    connect(pageSens, SIGNAL(goToSensBiasPageSig()), this, SLOT(onGoToSensBiasPageSlt()));
+    connect(pageSens, SIGNAL(goToHomePageSig()), this, SLOT(GoToHomePageSlt()));
 
     /*工程设置页面返回主界面*/
-    connect(pageFactory          ,SIGNAL(goToHomePage())        , this, SLOT(GoToHomePageSlt()));
-    connect(pageFactory          ,SIGNAL(hideTitleBtns())       , this, SLOT(onHideTitleBtnsSlt()));
-    connect(this                 ,SIGNAL(factoryToFirstSig())   , pageFactory     , SLOT(gotoFirstPageSlt()));
-//        connect(this                 ,SIGNAL(factoryUpdateSig())   ,  pageFactory     , SLOT(factoryUpdateSlt()));
+    connect(pageFactory, SIGNAL(goToHomePage()), this, SLOT(GoToHomePageSlt()));
+    connect(pageFactory, SIGNAL(hideTitleBtns()), this, SLOT(onHideTitleBtnsSlt()));
+    connect(this, SIGNAL(factoryToFirstSig()), pageFactory, SLOT(gotoFirstPageSlt()));
+    //        connect(this                 ,SIGNAL(factoryUpdateSig())   ,  pageFactory     , SLOT(factoryUpdateSlt()));
 
-    /*方案参数页面返回主界面*/
-    connect(pageSchemeParams     ,SIGNAL(goToHomePage())        , this, SLOT(GoToHomePageSlt()));
-    connect(this                 ,SIGNAL(schParToFirstSig())    , pageSchemeParams, SLOT(refreshSchemeParams()));
-    connect(this                 ,SIGNAL(shutdownCurveBg())    , pageSchemeParams, SLOT(shutdownCurveBackGround()));
+        /*方案参数页面返回主界面*/
+    connect(pageSchemeParams, SIGNAL(goToHomePage()), this, SLOT(GoToHomePageSlt()));
+    connect(this, SIGNAL(schParToFirstSig()), pageSchemeParams, SLOT(refreshSchemeParams()));
+    connect(this, SIGNAL(shutdownCurveBg()), pageSchemeParams, SLOT(shutdownCurveBackGround()));
 
     /*智能算法页面返回主界面*/
-    connect(pageAI               ,SIGNAL(goToHomePage())        , this, SLOT(GoToHomePageSlt()));
-    connect(this                 ,SIGNAL(AIToFirsteSig())       , pageAI          , SLOT(gotoFirstPageSlt()));
-    connect(pageSchemeParams,SIGNAL(goToAIMainWidgetSig(int)), this, SLOT(onAIComputeBtnClickedSlt(int)));
+    connect(pageAI, SIGNAL(goToHomePage()), this, SLOT(GoToHomePageSlt()));
+    connect(this, SIGNAL(AIToFirsteSig()), pageAI, SLOT(gotoFirstPageSlt()));
+    connect(pageSchemeParams, SIGNAL(goToAIMainWidgetSig(int)), this, SLOT(onAIComputeBtnClickedSlt(int)));
     connect(pageAI, SIGNAL(goToIdentifyPagesig()), this, SLOT(onSchemeParamBtnClickedSlt1()));
 
     connect(pageManageNewScheme, SIGNAL(goToManageSchemeSig()), this, SLOT(onManageSchemeBtnClickedSlt1()));
@@ -540,21 +543,21 @@ MainWidget::MainWidget(QWidget *parent)
     connect(pageThroughput, SIGNAL(backToHomePageSig()), this, SLOT(GoToHomePageSlt()));
 
     /* 进入新建方案页面 */
-    connect(pageManageScheme,     SIGNAL(goToNewSchemePageSig()), this, SLOT(GoToManageNewSchemePageSlt()));
+    connect(pageManageScheme, SIGNAL(goToNewSchemePageSig()), this, SLOT(GoToManageNewSchemePageSlt()));
 
     /* 系统状态页面返回主界面 */
-    connect(pageStatusInfo,       SIGNAL(goToHomePageSig())     , this, SLOT(GoToHomePageSlt()));
-//    connect(backToHomeBtn,        SIGNAL(pressed())             , this, SLOT(onBackToHomeBtnClicked()));
-    connect(this,                 SIGNAL(statusToFirstSig())    , pageStatusInfo  , SLOT(gotoFirstPageSlt()));
-    connect(this,                 SIGNAL(sManageEngineerSig())  , pageEngineer    , SLOT(gotoFirstPageSlt()));
-    connect(stackedWidget,        SIGNAL(currentChanged(int)),  this, SLOT(onStackedWidgetIndexChangedSlt(int)));
-    connect(&myFlow,              SIGNAL(backlightOnSig()), this, SLOT(onBackgroundLightOnSlt()));
+    connect(pageStatusInfo, SIGNAL(goToHomePageSig()), this, SLOT(GoToHomePageSlt()));
+    //    connect(backToHomeBtn,        SIGNAL(pressed())             , this, SLOT(onBackToHomeBtnClicked()));
+    connect(this, SIGNAL(statusToFirstSig()), pageStatusInfo, SLOT(gotoFirstPageSlt()));
+    connect(this, SIGNAL(sManageEngineerSig()), pageEngineer, SLOT(gotoFirstPageSlt()));
+    connect(stackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onStackedWidgetIndexChangedSlt(int)));
+    connect(&myFlow, SIGNAL(backlightOnSig()), this, SLOT(onBackgroundLightOnSlt()));
     connect(getStatus, SIGNAL(closeFeederSig(int)), this, SLOT(onCloseFeederSlt(int)));
     connect(getStatus, SIGNAL(openFeederSig(int)), this, SLOT(onOpenFeederSlt(int)));
     connect(getStatus, SIGNAL(showPressureAlarmMsgSig(bool)), this, SLOT(showPressureAlarmMsgSlt(bool)));
-    connect(pageAutoSigWid       ,SIGNAL(goToHomePage()), this, SLOT(GoToHomePageSlt()));
-    connect(pageUnsupervisedAIWidget ,SIGNAL(goToHomePage()), this, SLOT(GoToHomePageSlt()));
-    connect(pageConsistenceWidget,SIGNAL(goToSetSensPageSig()),this,SLOT(onGoToSetSensPageSlot()));
+    connect(pageAutoSigWid, SIGNAL(goToHomePage()), this, SLOT(GoToHomePageSlt()));
+    connect(pageUnsupervisedAIWidget, SIGNAL(goToHomePage()), this, SLOT(GoToHomePageSlt()));
+    connect(pageConsistenceWidget, SIGNAL(goToSetSensPageSig()), this, SLOT(onGoToSetSensPageSlot()));
     connect(myDevMonitor, SIGNAL(closeFeederSig(int)), this, SLOT(onCloseFeederSlt(int)));
     connect(myDevMonitor, SIGNAL(openFeederSig(int)), this, SLOT(onOpenFeederSlt(int)));
     connect(myDevMonitor, SIGNAL(startWipeSig(int)), this, SLOT(onStartWipeSlt(int)));
@@ -562,7 +565,8 @@ MainWidget::MainWidget(QWidget *parent)
     connect(this, SIGNAL(closeFeederSig(int)), this, SLOT(onCloseFeederSlt(int)));
 
     /** RSC及RDC机型供料器分次或独立 */
-    if (struCnfe.nEnableCGMachine == 1) {
+    if (struCnfe.nEnableCGMachine == 1)
+    {
         connect(pageSetFeedRS, SIGNAL(goToHomePageSig()), this, SLOT(GoToHomePageSlt()));
     }
 
@@ -574,7 +578,7 @@ MainWidget::MainWidget(QWidget *parent)
     QPixmap pixmap(":/res/png/back.png");
     pixmap = pixmap.scaled(this->size());
 
-    palette.setBrush(backgroundRole(),QBrush(pixmap));
+    palette.setBrush(backgroundRole(), QBrush(pixmap));
     this->setPalette(palette);
 }
 
@@ -584,18 +588,20 @@ MainWidget::~MainWidget()
 
 #if ENABLE_CAPTURE_SCREEN == 1
 /* 屏幕截图 */
-void MainWidget::keyPressEvent(QKeyEvent *event)
+void MainWidget::keyPressEvent(QKeyEvent* event)
 {
     QPixmap originalPixmap;
 
-    if(event->key() == Qt::Key_F1) {
-        originalPixmap = QPixmap::grabWindow(this->winId(),0, 0, LCD_WIDTH, LCD_HEIGHT);
+    if (event->key() == Qt::Key_F1)
+    {
+        originalPixmap = QPixmap::grabWindow(this->winId(), 0, 0, LCD_WIDTH, LCD_HEIGHT);
         QString format = "png";
 
         QString fileName;
         fileName = QString("%1.png").arg(struGsh.nCounter);
 
-        if (!fileName.isEmpty()) {
+        if (!fileName.isEmpty())
+        {
             originalPixmap.save(fileName, format.toLatin1());
         }
     }
@@ -606,23 +612,29 @@ void MainWidget::keyPressEvent(QKeyEvent *event)
 void MainWidget::onBackgroundLightOnSlt()
 {
     int ret;
-    myInputPanel inputDlg(passwdType,0,0,0);
+    myInputPanel inputDlg(passwdType, 0, 0, 0);
 
 UPDATE:
-    ret  = inputDlg.exec();
-    if (ret == QDialog::Accepted) {
+    ret = inputDlg.exec();
+    if (ret == QDialog::Accepted)
+    {
         QString str = inputDlg.getText();
 
-        if (str == QString().fromLocal8Bit(struCnfg.sBacklightPassword)) {
+        if (str == QString().fromLocal8Bit(struCnfg.sBacklightPassword))
+        {
             return;
-        } else {
+        }
+        else
+        {
             infoWidget->setLabelText(myLan.msg_password_error);
             infoWidget->delayShow();
             myFlow.sleep(3);
             infoWidget->hide();
             goto UPDATE;
         }
-    } else {
+    }
+    else
+    {
         goto UPDATE;
     }
 }
@@ -632,13 +644,14 @@ void MainWidget::onBackToHomeBtnClicked()
 {
     myFlow.updateOnoff(1);  //退出主界面时发送校准开始命令
 
-    switch(stackedWidget->currentIndex()){
-//    case SM_SET_FACTORY:
-//        emit factoryToFirstSig();
-//        break;
-//    case SM_SCHEME_PARAM_PAGE:
-//        emit schParToFirstSig();
-//        break;
+    switch (stackedWidget->currentIndex())
+    {
+        //    case SM_SET_FACTORY:
+        //        emit factoryToFirstSig();
+        //        break;
+        //    case SM_SCHEME_PARAM_PAGE:
+        //        emit schParToFirstSig();
+        //        break;
     case SM_AI_PAGE:
     case SM_UNSUPERVISED_AI:
         emit AIToFirsteSig();
@@ -654,7 +667,8 @@ void MainWidget::onBackToHomeBtnClicked()
     stopBtn->setEnabled(false);
     layerBtn->setEnabled(true);
 
-    if (threadStart->isRunning()) {
+    if (threadStart->isRunning())
+    {
         threadStart->stop();
         threadStart->wait();
     }
@@ -667,7 +681,7 @@ void MainWidget::onBackToHomeBtnClicked()
  */
 void MainWidget::goToCommPageSlt()
 {
-    this->stackedWidget->setCurrentIndex(SM_COMM_PAGE);   
+    this->stackedWidget->setCurrentIndex(SM_COMM_PAGE);
     myFlow.sleep(2);
     emit goToComPageSig();
 }
@@ -706,24 +720,28 @@ void MainWidget::goToPreheatPageSlt()
 void MainWidget::onStartWipeSlt(int trigger)
 {
     //! 主屏模式忽略网络同步清灰控制请求，仅支持手动、定时清灰触发请求
-    if (struCnfg.nRunMode == MODE_RUN_MASTER && trigger == TRIGGER_SYNC) {
+    if (struCnfg.nRunMode == MODE_RUN_MASTER && trigger == TRIGGER_SYNC)
+    {
         return;
     }
 
     //! 从屏模式处理网络同步清灰控制请求，忽略手动、定时清灰触发请求
-    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger != TRIGGER_SYNC) {
+    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger != TRIGGER_SYNC)
+    {
         return;
     }
 
     //! 主屏模式广播网络同步清灰指令
-    if (struCnfg.nRunMode == MODE_RUN_MASTER) {
+    if (struCnfg.nRunMode == MODE_RUN_MASTER)
+    {
         QByteArray args;
         args.append((quint8)struCnfp.struGroupCtrl[ONE_LEVEL].nWipeDelay);
         myDevMonitor->writeDatagram(CMD_SCREEN_WIPE_CONTROL, args, strNetInfo.groupAddress, strNetInfo.selfNetControlPort);
     }
 
     //! 从屏模式延迟特定时间开始清灰
-    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger == TRIGGER_SYNC) {
+    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger == TRIGGER_SYNC)
+    {
         myFlow.sleep(struCnfp.struGroupCtrl[ONE_LEVEL].nWipeDelay);
     }
 
@@ -734,7 +752,8 @@ void MainWidget::onStartWipeSlt(int trigger)
     infoWidget->hide();
 
     //! 触发大数据上传
-    if (struGsh.bStatisticFinished) {
+    if (struGsh.bStatisticFinished)
+    {
         struGsh.bStatisticFinished = !struGsh.bStatisticFinished;
         emit statisticFinished();
     }
@@ -751,19 +770,19 @@ void MainWidget::onStartWipeSlt(int trigger)
 void MainWidget::CreateHomeTeaWidget()
 {
     int leftMargin = 40;
-    int upMargin   = 20;
+    int upMargin = 20;
 
     // 选择方案
-    myGroupBox *schemeGroup = new myGroupBox(myLan.scheme_select, pageHomeTea);
-    schemeBtn = new myPushButton(myLan.scheme_select,myIcon.Sorter, pageHomeTea);
+    myGroupBox* schemeGroup = new myGroupBox(myLan.scheme_select, pageHomeTea);
+    schemeBtn = new myPushButton(myLan.scheme_select, myIcon.Sorter, pageHomeTea);
 
     // 设置供料
-    myGroupBox *feederGroup = new myGroupBox(myLan.feeder_set, pageHomeTea);
+    myGroupBox* feederGroup = new myGroupBox(myLan.feeder_set, pageHomeTea);
     feederValue = new MyValueBar();
     feederValue->setRange(0, 100);
 
     // 设置灵敏度
-    myGroupBox *sensGroup = new myGroupBox(myLan.sensitivity_set, pageHomeTea);
+    myGroupBox* sensGroup = new myGroupBox(myLan.sensitivity_set, pageHomeTea);
     sensLabel = new myLabel(myLan.sensitivity, pageHomeTea);
     sensValue = new myLineEdit("0", pageHomeTea);
 
@@ -778,24 +797,24 @@ void MainWidget::CreateHomeTeaWidget()
     sensValue->setMinimumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     percentValue->setMinimumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
-    QHBoxLayout *schemeLayout = new QHBoxLayout(schemeGroup);
+    QHBoxLayout* schemeLayout = new QHBoxLayout(schemeGroup);
     schemeLayout->addWidget(schemeBtn);
 
-    QHBoxLayout *feederLayout = new QHBoxLayout(feederGroup);
+    QHBoxLayout* feederLayout = new QHBoxLayout(feederGroup);
     feederLayout->addWidget(feederValue);
 
-    QFormLayout *sensLayout = new QFormLayout;
+    QFormLayout* sensLayout = new QFormLayout;
     sensLayout->addRow(sensLabel, sensValue);
-    QFormLayout *percentLayout = new QFormLayout;
+    QFormLayout* percentLayout = new QFormLayout;
     percentLayout->addRow(percentLabel, percentValue);
 
-    QHBoxLayout *valueLayout =  new QHBoxLayout(sensGroup);
+    QHBoxLayout* valueLayout = new QHBoxLayout(sensGroup);
     valueLayout->addLayout(sensLayout);
     valueLayout->addLayout(percentLayout);
     valueLayout->setContentsMargins(11, 20, 11, 0);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(pageHomeTea);
-    mainLayout->setContentsMargins(leftMargin,upMargin,leftMargin,upMargin);
+    QVBoxLayout* mainLayout = new QVBoxLayout(pageHomeTea);
+    mainLayout->setContentsMargins(leftMargin, upMargin, leftMargin, upMargin);
     mainLayout->addWidget(schemeGroup);
     mainLayout->addWidget(feederGroup);
     mainLayout->addWidget(sensGroup);
@@ -811,10 +830,12 @@ int MainWidget::getPrefixedProfileIndex(QString strProfile)
 {
     QString strPrefix;
 
-    for (int i = 0; i < struCnfe.nParentPrefixedProfileTotal; i++) {
+    for (int i = 0; i < struCnfe.nParentPrefixedProfileTotal; i++)
+    {
         if (struCnfe.struParentPrefixedProfile[i].nIsAble == 0)
             continue;
-        for (int j = 0; j < struCnfe.struParentPrefixedProfile[i].nSonProfileCount; j++) {
+        for (int j = 0; j < struCnfe.struParentPrefixedProfile[i].nSonProfileCount; j++)
+        {
             if (struCnfe.struParentPrefixedProfile[i].struSonProfile[j].nIsAble == 0)
                 continue;
 
@@ -839,26 +860,31 @@ void MainWidget::updateHomeTeaPage()
     // 供料量
     feederValue->setValue(struCnfp.struGroupCtrl[0].nFeeder[0]);
 
-    for (int i = 0; i < struCnfe.nArithmeticTotal; i++) {
+    for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
+    {
         if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i] == 0)
             continue;
 
-        switch (i) {
+        switch (i)
+        {
         case ARITH_GREY_A:
         case ARITH_GREY_B:
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nMode == 0) {
-                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMin*0.1;
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nMode == 0)
+            {
+                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMin * 0.1;
                 sensLabel->setText(myLan.grain_sensitivity);
                 percentLabel->setText(myLan.grain_size);
-            } else {
-                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMax*0.1;
+            }
+            else
+            {
+                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMax * 0.1;
                 sensLabel->setText(myLan.slice_sensitivity);
                 percentLabel->setText(myLan.slice_size);
             }
             text.sprintf("%d", sens);
             sensValue->setText(text);
 
-            text.sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nPercent);
+            text.sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nPercent);
             percentValue->setText(text);
             sensLabel->show();
             sensValue->show();
@@ -867,19 +893,22 @@ void MainWidget::updateHomeTeaPage()
             break;
         case ARITH_DISCOLOR_A:
         case ARITH_DISCOLOR_B:
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nMode == 0) {
-                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMin*0.01;
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nMode == 0)
+            {
+                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMin * 0.01;
                 sensLabel->setText(myLan.grain_sensitivity);
                 percentLabel->setText(myLan.grain_size);
-            } else {
-                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMax*0.01;
+            }
+            else
+            {
+                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMax * 0.01;
                 sensLabel->setText(myLan.slice_sensitivity);
                 percentLabel->setText(myLan.slice_size);
             }
             text.sprintf("%d", sens);
             sensValue->setText(text);
 
-            text.sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nPercent);
+            text.sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nPercent);
             percentValue->setText(text);
             sensLabel->show();
             sensValue->show();
@@ -890,9 +919,9 @@ void MainWidget::updateHomeTeaPage()
             break;
         case ARITH_SHAPE:
             if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nMode == 0)
-                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMax*0.1;
+                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMax * 0.1;
             else
-                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMin*0.1;
+                sens = struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMin * 0.1;
             text.sprintf("%d", sens);
             sensLabel->setText(myLan.sensitivity);
             sensValue->setText(text);
@@ -923,7 +952,7 @@ void MainWidget::updateHomeTeaPage()
         case ARITH_INTEL_B:
         case ARITH_INTEL_C:
         case ARITH_INTEL_D:
-            text.sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][0].struIntel[i-ARITH_INTEL_A].nPercent);
+            text.sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][0].struIntel[i - ARITH_INTEL_A].nPercent);
             percentLabel->setText(myLan.pole_size);
             percentValue->setText(text);
 
@@ -945,7 +974,7 @@ void MainWidget::setFeederValueSlt()
 
     struCnfp.struGroupCtrl[0].nFeeder[0] = feeder;
     myFlow.resetFeeder(0);
-    myLog->info(LOG_FEED,"Feeder%d:%d",0,struCnfp.struGroupCtrl[0].nFeeder[0]);
+    LOG_INFO_STM("Feeder 0:" << struCnfp.struGroupCtrl[0].nFeeder[0]);
 }
 
 /**
@@ -957,62 +986,66 @@ void MainWidget::setSensValueSlt()
     sens = sensValue->text().toDouble();
 
     myInputPanel inputDlg(floatType, 0, 100, sens);
-    if (inputDlg.exec() == QDialog::Accepted) {
+    if (inputDlg.exec() == QDialog::Accepted)
+    {
         sens = inputDlg.getValue();
-        for (int i = 0; i < struCnfe.nArithmeticTotal; i++) {
-            if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i] == 0) {
+        for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
+        {
+            if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i] == 0)
+            {
                 continue;
             }
 
-            switch (i) {
+            switch (i)
+            {
             case ARITH_GREY_A:
             case ARITH_GREY_B:
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nMode == 0)
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMin = sens*10+0.5;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nMode == 0)
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMin = sens * 10 + 0.5;
                 else
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMax = sens*10+0.5;
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMax = sens * 10 + 0.5;
                 break;
             case ARITH_DISCOLOR_A:
             case ARITH_DISCOLOR_B:
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nMode == 0)
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMin = sens*100+0.5;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nMode == 0)
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMin = sens * 100 + 0.5;
                 else
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nSensMax = sens*100+0.5;
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nSensMax = sens * 100 + 0.5;
                 break;
             case ARITH_CROSS:
-                struCnfp.struGroupIdentify[struGsh.nLevel][0].struCross.nSens = sens*10+0.5;
+                struCnfp.struGroupIdentify[struGsh.nLevel][0].struCross.nSens = sens * 10 + 0.5;
                 break;
             case ARITH_SHAPE:
                 if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nMode == 0)
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMax = sens*10+0.5;
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMax = sens * 10 + 0.5;
                 else
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMin = sens*10+0.5;
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struShape.nAreaMin = sens * 10 + 0.5;
                 break;
             case ARITH_SCALE:
                 struCnfp.struGroupIdentify[struGsh.nLevel][0].struScale[0].nValue = sens;
                 break;
             case ARITH_BUD_1:
             case ARITH_BUD_2:
-                struCnfp.struGroupIdentify[struGsh.nLevel][0].struBud[i-ARITH_BUD_1].nArea = sens;
+                struCnfp.struGroupIdentify[struGsh.nLevel][0].struBud[i - ARITH_BUD_1].nArea = sens;
                 break;
             case ARITH_PEANUT_A:
             case ARITH_PEANUT_B:
             case ARITH_PEANUT_C:
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i-ARITH_PEANUT_A].nMode == 0)
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i-ARITH_PEANUT_A].nSensMin = sens*10+0.5;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i - ARITH_PEANUT_A].nMode == 0)
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i - ARITH_PEANUT_A].nSensMin = sens * 10 + 0.5;
                 else
-                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i-ARITH_PEANUT_A].nSensMax = sens*10+0.5;
+                    struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i - ARITH_PEANUT_A].nSensMax = sens * 10 + 0.5;
                 break;
             case ARITH_INTEL_A:
             case ARITH_INTEL_B:
             case ARITH_INTEL_C:
             case ARITH_INTEL_D:
-                struCnfp.struGroupIdentify[struGsh.nLevel][0].struIntel[i-ARITH_INTEL_A].nSens = sens;
+                struCnfp.struGroupIdentify[struGsh.nLevel][0].struIntel[i - ARITH_INTEL_A].nSens = sens;
                 break;
             }
 
             // 下发参数
-            myFlow.materialCopyAssemble(struGsh.nLevel      , 0, 0, i, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, 0, 0, i, 0);
             myFlow.materialResetGroupAssemble(struGsh.nLevel, 0, 0, i, 0);
         }
         sensValue->setText(QString("%1").arg(sens));
@@ -1030,19 +1063,23 @@ void MainWidget::setPercentValueSlt()
 
     myInputPanel inputDlg(intType, 0, 128, per);
 
-    if (inputDlg.exec() == QDialog::Accepted) {
+    if (inputDlg.exec() == QDialog::Accepted)
+    {
         per = inputDlg.getValue();
-        for (int i = 0; i < struCnfe.nArithmeticTotal; i++) {
-            if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i] == 0) {
+        for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
+        {
+            if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i] == 0)
+            {
                 continue;
             }
 
-            switch (i) {
+            switch (i)
+            {
             case ARITH_GREY_A:
             case ARITH_GREY_B:
             case ARITH_DISCOLOR_A:
             case ARITH_DISCOLOR_B:
-                struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i-ARITH_GREY_A].nPercent = per;
+                struCnfp.struGroupIdentify[struGsh.nLevel][0].struGreyColor[i - ARITH_GREY_A].nPercent = per;
                 break;
             case ARITH_CROSS:
                 struCnfp.struGroupIdentify[struGsh.nLevel][0].struCross.nPercent = per;
@@ -1052,23 +1089,23 @@ void MainWidget::setPercentValueSlt()
                 break;
             case ARITH_BUD_1:
             case ARITH_BUD_2:
-                struCnfp.struGroupIdentify[struGsh.nLevel][0].struBud[i-ARITH_BUD_1].nPercent = per;
+                struCnfp.struGroupIdentify[struGsh.nLevel][0].struBud[i - ARITH_BUD_1].nPercent = per;
                 break;
             case ARITH_PEANUT_A:
             case ARITH_PEANUT_B:
             case ARITH_PEANUT_C:
-                struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i-ARITH_PEANUT_A].nPercent = per;
+                struCnfp.struGroupIdentify[struGsh.nLevel][0].struPeanutAbcd[i - ARITH_PEANUT_A].nPercent = per;
                 break;
             case ARITH_INTEL_A:
             case ARITH_INTEL_B:
             case ARITH_INTEL_C:
             case ARITH_INTEL_D:
-                struCnfp.struGroupIdentify[struGsh.nLevel][0].struIntel[i-ARITH_INTEL_A].nPercent = per;
+                struCnfp.struGroupIdentify[struGsh.nLevel][0].struIntel[i - ARITH_INTEL_A].nPercent = per;
                 break;
             }
 
             // 下发参数
-            myFlow.materialCopyAssemble(struGsh.nLevel      , 0, 0, i, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, 0, 0, i, 0);
             myFlow.materialResetGroupAssemble(struGsh.nLevel, 0, 0, i, 0);
         }
         percentValue->setText(QString("%1").arg(per));
@@ -1081,7 +1118,7 @@ void MainWidget::setPercentValueSlt()
 void MainWidget::CreateHomeWidget()
 {
     int leftMargin = 5;
-    int upMargin   = 5;
+    int upMargin = 5;
 
     // 状态列表
 //    operateListWidget = new myListWidget();
@@ -1091,57 +1128,60 @@ void MainWidget::CreateHomeWidget()
 //    operateListWidget->setFixedWidth(BTN_WIDTH);
 
     QString strStyle = QString("QPushButton {border-image: url(:/res/png/backSelect.png);text-align:center;}"
-                               "QToolTip {border-image: url(:/res/png/backSelect.png);}"
-//                               "QPushButton:hover {border-image: url(:/res/png/selectPress.png);}"
-                               "QPushButton:pressed {border-image: url(:/res/png/selectPress.png);}");
+        "QToolTip {border-image: url(:/res/png/backSelect.png);}"
+        //                               "QPushButton:hover {border-image: url(:/res/png/selectPress.png);}"
+        "QPushButton:pressed {border-image: url(:/res/png/selectPress.png);}");
 
 
-//    QString strStyle  = QString("QPushButton {border-image: url(:/res/png/backSelect.png);}"
-//                                "QToolTip {border-image: url(:/res/png/backSelect.png);}");
-    for(int i = 0; i < 7; i++) {
-        operateButton[i] = new myPushButton(QString(""),QIcon(),pageHome);
-        operateButton[i]->setFixedSize(BTN_WIDTH-15,BTN_HEIGHT+10);
+    //    QString strStyle  = QString("QPushButton {border-image: url(:/res/png/backSelect.png);}"
+    //                                "QToolTip {border-image: url(:/res/png/backSelect.png);}");
+    for (int i = 0; i < 7; i++)
+    {
+        operateButton[i] = new myPushButton(QString(""), QIcon(), pageHome);
+        operateButton[i]->setFixedSize(BTN_WIDTH - 15, BTN_HEIGHT + 10);
         operateButton[i]->setStyleSheet(strStyle);
-//        operateButton[i]->setIconSize(QSize(ICON_WID, ICON_HEI+30));
+        //        operateButton[i]->setIconSize(QSize(ICON_WID, ICON_HEI+30));
 
 
-//        operateListWidget->addItem(operateButton[i]);
+        //        operateListWidget->addItem(operateButton[i]);
     }
 
-//    operateButton[0]->setText(QString("方案选择"));
+    //    operateButton[0]->setText(QString("方案选择"));
     operateButton[0]->setText(QString(myLan.schemeNew_select));
-//    operateButton[1]->setText(QString("感度调节"));
+    //    operateButton[1]->setText(QString("感度调节"));
     operateButton[1]->setText(QString(myLan.set_sens));
     operateButton[2]->setText(QString(myLan.feeder_speed));
     operateButton[3]->setText(QString(myLan.test_ejector));
     operateButton[4]->setText(QString(myLan.set_wiper));
-//    operateButton[4]->setText(QString("清扫"));
+    //    operateButton[4]->setText(QString("清扫"));
     operateButton[5]->setText(QString(myLan.set_function));
-//    operateButton[6]->setText(QString("系统参数"));
+    //    operateButton[6]->setText(QString("系统参数"));
     operateButton[6]->setText(QString(myLan.operation_level));
 
     operateButton[5]->setEnabled(false);
 
 
-//    operateButton[0]->setIcon(QIcon(":/res/png/materialSelect.png"));
-//    operateButton[1]->setIcon(QIcon(":/res/png/sensSelect.png"));
-//    operateButton[2]->setIcon(QIcon(":/res/png/feederSelect.png"));
-//    operateButton[3]->setIcon(QIcon(":/res/png/ejectorSelect.png"));
-//    operateButton[4]->setIcon(QIcon(":/res/png/wiperSelect.png"));
-//    operateButton[5]->setIcon(QIcon(":/res/png/funcSelect.png"));
-//    operateButton[6]->setIcon(QIcon(":/res/png/operSelect.png"));
+    //    operateButton[0]->setIcon(QIcon(":/res/png/materialSelect.png"));
+    //    operateButton[1]->setIcon(QIcon(":/res/png/sensSelect.png"));
+    //    operateButton[2]->setIcon(QIcon(":/res/png/feederSelect.png"));
+    //    operateButton[3]->setIcon(QIcon(":/res/png/ejectorSelect.png"));
+    //    operateButton[4]->setIcon(QIcon(":/res/png/wiperSelect.png"));
+    //    operateButton[5]->setIcon(QIcon(":/res/png/funcSelect.png"));
+    //    operateButton[6]->setIcon(QIcon(":/res/png/operSelect.png"));
 
 
-    if(struCnfg.nLang == LANG_TURKEY){
-       for(int i = 0; i < 7; i++) {
-           operateButton[i]->setButtonFont(config->getFont(FONT_SIZE_16));
-       }
+    if (struCnfg.nLang == LANG_TURKEY)
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            operateButton[i]->setButtonFont(config->getFont(FONT_SIZE_16));
+        }
     }
 
 
-    homePageStackedWidget =  new QStackedWidget(pageHome);
-    homePageStackedWidget->setMaximumWidth(LCD_WIDTH-10);
-    homePageStackedWidget->setFixedHeight(LCD_HEIGHT-110);
+    homePageStackedWidget = new QStackedWidget(pageHome);
+    homePageStackedWidget->setMaximumWidth(LCD_WIDTH - 10);
+    homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 110);
     homePageStackedWidget->setContentsMargins(leftMargin, 0, leftMargin, 0);
     // 样本选择页面
     pageManageScheme = new ManageSchemePage(pageHome);
@@ -1155,7 +1195,7 @@ void MainWidget::CreateHomeWidget()
     pageSetFeedRS = new setFeedPage(pageHome);
     homePageStackedWidget->addWidget(pageSetFeedRS);
 
-     // 设置喷阀检测页面
+    // 设置喷阀检测页面
     pageTestEject = new QWidget();
     homePageStackedWidget->addWidget(pageTestEject);
     CreateTestEjectWidget();
@@ -1178,12 +1218,12 @@ void MainWidget::CreateHomeWidget()
     pageFactory = new factorySet();
     homePageStackedWidget->addWidget(pageFactory);
 
-    pageAiSet =  new AisMainWidget();
+    pageAiSet = new AisMainWidget();
     homePageStackedWidget->addWidget(pageAiSet);
 
     // 选择方案
     QString text;
-    text.sprintf("%d-%s", struCnfg.nProfile+1, struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName);
+    text.sprintf("%d-%s", struCnfg.nProfile + 1, struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName);
     QString selectSchemeText = QString("%1 : %2").arg(myLan.scheme_select).arg(text);
     selectSchemeBtn = new myPushButton(selectSchemeText, myIcon.Path_Favorite);
 
@@ -1213,7 +1253,7 @@ void MainWidget::CreateHomeWidget()
     // 相机信号
     cameraSignalBtn = new myPushButton(myLan.camera_signal, myIcon.Chart_Line);
 
-//    throughputBtn = new myPushButton("实时产量",myIcon.Sorter_FeederTest);
+    //    throughputBtn = new myPushButton("实时产量",myIcon.Sorter_FeederTest);
 
     selectSchemeBtn->setMaximumHeight(90);
     autoSetBtn->setMaximumHeight(90);
@@ -1225,10 +1265,10 @@ void MainWidget::CreateHomeWidget()
     schemeParamBtn->setMaximumHeight(90);
     enteryFactoryBtn->setMaximumHeight(90);
 
-//    operatorGbx  = new myGroupBox(QString(""), pageHome);
-//    engineerGbx  = new myGroupBox(myLan.engineer, pageHome);
+    //    operatorGbx  = new myGroupBox(QString(""), pageHome);
+    //    engineerGbx  = new myGroupBox(myLan.engineer, pageHome);
 
-    // 页面布局
+        // 页面布局
     operatorLayout = new QHBoxLayout();
     operatorLayout->setSpacing(5);
     operatorLayout->setContentsMargins(5, 0, 5, 0);
@@ -1243,15 +1283,15 @@ void MainWidget::CreateHomeWidget()
 
 
 
-//    engineerLayout = new QGridLayout(engineerGbx);
-//    engineerLayout->setSpacing(10);
-//    engineerLayout->setContentsMargins(11,11,11,11);
+    //    engineerLayout = new QGridLayout(engineerGbx);
+    //    engineerLayout->setSpacing(10);
+    //    engineerLayout->setContentsMargins(11,11,11,11);
 
-//    homeLayout = new QGridLayout(pageHome);
-//    homeLayout->setSpacing(20);
-//    homeLayout->setContentsMargins(leftMargin, upMargin, leftMargin, upMargin);
+    //    homeLayout = new QGridLayout(pageHome);
+    //    homeLayout->setSpacing(20);
+    //    homeLayout->setContentsMargins(leftMargin, upMargin, leftMargin, upMargin);
 
-    operatePageHBLayout  = new QVBoxLayout(pageHome);
+    operatePageHBLayout = new QVBoxLayout(pageHome);
     operatePageHBLayout->setContentsMargins(5, 0, 5, 0);
 
 
@@ -1260,62 +1300,62 @@ void MainWidget::CreateHomeWidget()
     operatePageHBLayout->addStretch();
     operatePageHBLayout->addLayout(operatorLayout);
 
-//    if (struCnfe.nProduct == OPT_PRODUCT_ANCOO_RSC) {
-//        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 1);
-//        operatorLayout->addWidget(autoSetBtn, 0, 1, 1, 1);
-//        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
-//        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
-//        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
-//        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
+    //    if (struCnfe.nProduct == OPT_PRODUCT_ANCOO_RSC) {
+    //        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 1);
+    //        operatorLayout->addWidget(autoSetBtn, 0, 1, 1, 1);
+    //        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
+    //        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
+    //        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
+    //        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
 
-//        engineerLayout->addWidget(schemeParamBtn, 0, 0, 1, 1);
-//        engineerLayout->addWidget(enteryFactoryBtn, 0, 1, 1, 1);
+    //        engineerLayout->addWidget(schemeParamBtn, 0, 0, 1, 1);
+    //        engineerLayout->addWidget(enteryFactoryBtn, 0, 1, 1, 1);
 
-//        homeLayout->addWidget(operatorGbx, 0, 0, 4, 1);
-//        homeLayout->addWidget(engineerGbx, 5, 0, 2, 1);
-//    } else if (struCnfe.nProduct == OPT_PRODUCT_ANCOO_RS) {
-//        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 1);
-//        operatorLayout->addWidget(autoSetBtn, 0, 1, 1, 1);
-//        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
-//        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
-//        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
-//        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
+    //        homeLayout->addWidget(operatorGbx, 0, 0, 4, 1);
+    //        homeLayout->addWidget(engineerGbx, 5, 0, 2, 1);
+    //    } else if (struCnfe.nProduct == OPT_PRODUCT_ANCOO_RS) {
+    //        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 1);
+    //        operatorLayout->addWidget(autoSetBtn, 0, 1, 1, 1);
+    //        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
+    //        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
+    //        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
+    //        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
 
-//        engineerLayout->addWidget(cameraSignalBtn, 0, 0, 1, 1);
-//        engineerLayout->addWidget(schemeParamBtn, 0, 1, 1, 1);
-//        engineerLayout->addWidget(enteryFactoryBtn, 1, 1, 1, 1);
+    //        engineerLayout->addWidget(cameraSignalBtn, 0, 0, 1, 1);
+    //        engineerLayout->addWidget(schemeParamBtn, 0, 1, 1, 1);
+    //        engineerLayout->addWidget(enteryFactoryBtn, 1, 1, 1, 1);
 
-//        homeLayout->addWidget(operatorGbx, 0, 0, 3, 1);
-//        homeLayout->addWidget(engineerGbx, 4, 0, 2, 1);
-//    } else if (struCnfe.nEnableCGMachine) {
-//        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 2);
-//        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
-//        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
-//        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
-//        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
+    //        homeLayout->addWidget(operatorGbx, 0, 0, 3, 1);
+    //        homeLayout->addWidget(engineerGbx, 4, 0, 2, 1);
+    //    } else if (struCnfe.nEnableCGMachine) {
+    //        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 2);
+    //        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
+    //        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
+    //        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
+    //        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
 
-//        engineerLayout->addWidget(schemeParamBtn, 0, 0, 1, 1);
-//        engineerLayout->addWidget(enteryFactoryBtn, 0, 1, 1, 1);
+    //        engineerLayout->addWidget(schemeParamBtn, 0, 0, 1, 1);
+    //        engineerLayout->addWidget(enteryFactoryBtn, 0, 1, 1, 1);
 
-//        homeLayout->addWidget(operatorGbx, 0, 0, 4, 1);
-//        homeLayout->addWidget(engineerGbx, 5, 0, 2, 1);
-//    } else {
-//        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 2);
-//        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
-//        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
-//        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
-//        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
+    //        homeLayout->addWidget(operatorGbx, 0, 0, 4, 1);
+    //        homeLayout->addWidget(engineerGbx, 5, 0, 2, 1);
+    //    } else {
+    //        operatorLayout->addWidget(selectSchemeBtn, 0, 0, 1, 2);
+    //        operatorLayout->addWidget(setFeedBtn, 1, 0, 1, 1);
+    //        operatorLayout->addWidget(setSensBtn, 1, 1, 1, 1);
+    //        operatorLayout->addWidget(setWipeBtn, 2, 0, 1, 1);
+    //        operatorLayout->addWidget(testEjectBtn, 2, 1, 1, 1);
 
-//        engineerLayout->addWidget(schemeParamBtn, 0, 0, 1, 1);
-//        engineerLayout->addWidget(enteryFactoryBtn, 0, 1, 1, 1);
+    //        engineerLayout->addWidget(schemeParamBtn, 0, 0, 1, 1);
+    //        engineerLayout->addWidget(enteryFactoryBtn, 0, 1, 1, 1);
 
-//        homeLayout->addWidget(operatorGbx, 0, 0, 4, 1);
-//        homeLayout->addWidget(engineerGbx, 5, 0, 2, 1);
-//    }
+    //        homeLayout->addWidget(operatorGbx, 0, 0, 4, 1);
+    //        homeLayout->addWidget(engineerGbx, 5, 0, 2, 1);
+    //    }
 
 
 
-    /* 槽函数 */
+        /* 槽函数 */
     connect(operateButton[0], SIGNAL(pressed()), this, SLOT(onManageSchemeBtnClickedSlt()));
     connect(operateButton[1], SIGNAL(pressed()), this, SLOT(onSetSensBtnClickedSlt()));
     connect(operateButton[2], SIGNAL(pressed()), this, SLOT(onSetFeedBtnClickedSlt()));
@@ -1326,11 +1366,11 @@ void MainWidget::CreateHomeWidget()
 
     connect(operateButton[6], SIGNAL(pressed()), this, SLOT(onOprTypeBtnClickedSlt()));
 
-    connect(homePageStackedWidget,        SIGNAL(currentChanged(int)),  this, SLOT(onHomePageStackedWidgetIndexChangedSlt(int)));
+    connect(homePageStackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onHomePageStackedWidgetIndexChangedSlt(int)));
 
-    connect(pageFactory          ,SIGNAL(goToHomePage())        , this, SLOT(GoToOprTypePageSlt()));
-    connect(pageAiSet          ,SIGNAL(backToHomePageSig())        , this, SLOT(GoToOprTypePageSlt()));
-    connect(this                 ,SIGNAL(factoryUpdateSig())   ,  pageFactory     , SLOT(factoryUpdateSlt()));
+    connect(pageFactory, SIGNAL(goToHomePage()), this, SLOT(GoToOprTypePageSlt()));
+    connect(pageAiSet, SIGNAL(backToHomePageSig()), this, SLOT(GoToOprTypePageSlt()));
+    connect(this, SIGNAL(factoryUpdateSig()), pageFactory, SLOT(factoryUpdateSlt()));
 
     connect(manageSchemeBtn, SIGNAL(pressed()), this, SLOT(onManageSchemeBtnClickedSlt()));
     connect(enteryFactoryBtn, SIGNAL(pressed()), this, SLOT(onEnterFactoryBtnClickedSlt()));
@@ -1343,10 +1383,14 @@ void MainWidget::CreateHomeWidget()
 /**
  * Description :  返回操作级别界面
  */
-void MainWidget::GoToOprTypePageSlt(){
-    if (struGsh.nAuthenticationLevel != AUTHENTICATION_LEVEL_OPERATOR) {
+void MainWidget::GoToOprTypePageSlt()
+{
+    if (struGsh.nAuthenticationLevel != AUTHENTICATION_LEVEL_OPERATOR)
+    {
         this->homePageStackedWidget->setCurrentIndex(HOME_OPRLVL_PAGE_INDEX);
-    }else{
+    }
+    else
+    {
         this->homePageStackedWidget->setCurrentIndex(HOME_SCHEME_PAGE_INDEX);
     }
 }
@@ -1356,14 +1400,18 @@ void MainWidget::GoToOprTypePageSlt(){
  */
 void MainWidget::onOprTypeBtnClickedSlt()
 {
-    myInputPanel inputDlg(passwdType,0,0,0);
-    if(struGsh.nAuthenticationLevel !=0){
+    myInputPanel inputDlg(passwdType, 0, 0, 0);
+    if (struGsh.nAuthenticationLevel != 0)
+    {
         customOprButton->show();
         highSetOprButton->show();
-        if(struCnfg.aiEnable == 1){
+        if (struCnfg.aiEnable == 1)
+        {
             aiSetBtn->show();
             aiModelSetBtn->show();
-        }else{
+        }
+        else
+        {
             aiSetBtn->hide();
             aiModelSetBtn->hide();
         }
@@ -1371,25 +1419,32 @@ void MainWidget::onOprTypeBtnClickedSlt()
         return;
     }
 
-    int ret  = inputDlg.exec();
-    if (ret == QDialog::Accepted){
+    int ret = inputDlg.exec();
+    if (ret == QDialog::Accepted)
+    {
         QString str = inputDlg.getText();
-//        if (str == "0429" || str == "0421") {
-        if (str == "249945" ) {
+        //        if (str == "0429" || str == "0421") {
+        if (str == "249945")
+        {
             struGsh.tempPwd = str;
             operateButton[5]->setEnabled(true);
             customOprButton->show();
             highSetOprButton->show();
-            if(struCnfg.aiEnable == 1){
+            if (struCnfg.aiEnable == 1)
+            {
                 aiSetBtn->show();
                 aiModelSetBtn->show();
-            }else{
+            }
+            else
+            {
                 aiSetBtn->hide();
                 aiModelSetBtn->hide();
             }
             struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_ENGINEER;
             homePageStackedWidget->setCurrentIndex(HOME_OPRLVL_PAGE_INDEX);
-        } else {
+        }
+        else
+        {
             infoWidget->setLabelText(myLan.msg_password_error);
             infoWidget->delayShow();
             myFlow.sleep(3);
@@ -1397,122 +1452,135 @@ void MainWidget::onOprTypeBtnClickedSlt()
         }
     }
 
-//    if(struCnfg.aiEnable == 1){
-//        aiSetBtn->show();
-//    }else{
-//        aiSetBtn->hide();
-//    }
+    //    if(struCnfg.aiEnable == 1){
+    //        aiSetBtn->show();
+    //    }else{
+    //        aiSetBtn->hide();
+    //    }
 }
 
-void MainWidget::CreatePageOprTypeWidget(){
-    customOprButton = new myPushButton(QString(myLan.customer_model),QIcon(),pageOprType);
-    highSetOprButton = new myPushButton(QString(myLan.sys_set),QIcon(),pageOprType);
+void MainWidget::CreatePageOprTypeWidget()
+{
+    customOprButton = new myPushButton(QString(myLan.customer_model), QIcon(), pageOprType);
+    highSetOprButton = new myPushButton(QString(myLan.sys_set), QIcon(), pageOprType);
     // Ai设置
-    aiSetBtn = new myPushButton("AI"+myLan.set, QIcon(""),
-                                      true,true,this);
-    aiSetBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
+    aiSetBtn = new myPushButton("AI" + myLan.set, QIcon(""),
+        true, true, this);
+    aiSetBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
 
-    throughputBtn = new myPushButton("实时产量",QIcon(),pageOprType);
-//    videoBtn = new myPushButton(myLan.sorter_manager, QIcon(),pageOprType);
-    aiModelSetBtn = new myPushButton("Ai模型", QIcon(),pageOprType);
+    throughputBtn = new myPushButton("实时产量", QIcon(), pageOprType);
+    //    videoBtn = new myPushButton(myLan.sorter_manager, QIcon(),pageOprType);
+    aiModelSetBtn = new myPushButton("Ai模型", QIcon(), pageOprType);
 
-//    videoBtn->hide();
+    //    videoBtn->hide();
     throughputBtn->hide();
 
-    customOprButton->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-    highSetOprButton->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-    throughputBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-//    videoBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-    aiModelSetBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
+    customOprButton->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    highSetOprButton->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    throughputBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    //    videoBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
+    aiModelSetBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
 
     customOprButton->hide();
     highSetOprButton->hide();
-    if(struCnfg.nLang == LANG_TURKEY){
+    if (struCnfg.nLang == LANG_TURKEY)
+    {
         customOprButton->setButtonFont(config->getFont(FONT_SIZE_16));
         highSetOprButton->setButtonFont(config->getFont(FONT_SIZE_16));
     }
 
-    QHBoxLayout *operaLay = new QHBoxLayout();
+    QHBoxLayout* operaLay = new QHBoxLayout();
     operaLay->addWidget(customOprButton, Qt::AlignLeft);
-//    operaLay->addSpacing(50);
+    //    operaLay->addSpacing(50);
     operaLay->addWidget(highSetOprButton, Qt::AlignLeft);
 
-    QHBoxLayout *plusLay = new QHBoxLayout();
+    QHBoxLayout* plusLay = new QHBoxLayout();
     plusLay->addWidget(throughputBtn, Qt::AlignLeft);
     plusLay->addWidget(aiModelSetBtn, Qt::AlignLeft);
     plusLay->addWidget(aiSetBtn, Qt::AlignLeft);
 
 
-    QGridLayout *mainLay = new QGridLayout(pageOprType);
+    QGridLayout* mainLay = new QGridLayout(pageOprType);
     mainLay->addLayout(operaLay, 0, 0, 1, 3);
     mainLay->addLayout(plusLay, 1, 0, 1, 3);
 
     connect(customOprButton, SIGNAL(pressed()), this, SLOT(onCustomOprBtnClickedSlt()));
     connect(highSetOprButton, SIGNAL(pressed()), this, SLOT(onHighSetOprBtnClickedSlt()));
     connect(throughputBtn, SIGNAL(pressed()), this, SLOT(onThroughputBtnClickedSlt()));
-//    connect(videoBtn, SIGNAL(pressed()), this, SLOT(onVideoBtnClickedSlt()));
+    //    connect(videoBtn, SIGNAL(pressed()), this, SLOT(onVideoBtnClickedSlt()));
     connect(aiModelSetBtn, SIGNAL(pressed()), this, SLOT(onAiModelSetBtnClickedSlt()));
     connect(aiSetBtn, SIGNAL(pressed()), this, SLOT(onAiSetBtnClickedSlt()));
 
 
 }
 
-void MainWidget::onHighSetOprBtnClickedSlt(){
-//    operateButton[5]->setEnabled(false);
-//    customOprButton->hide();
-//    highSetOprButton->hide();
-//    struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_OPERATOR;
-   myInputPanel inputDlg(passwdType,0,0,0);
+void MainWidget::onHighSetOprBtnClickedSlt()
+{
+    //    operateButton[5]->setEnabled(false);
+    //    customOprButton->hide();
+    //    highSetOprButton->hide();
+    //    struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_OPERATOR;
+    myInputPanel inputDlg(passwdType, 0, 0, 0);
 
-   int ret  = inputDlg.exec();
-   if (ret == QDialog::Accepted){
-       QString str = inputDlg.getText();
-       if(struGsh.tempPwd == "249945"){
-           if (str == "242582") {
-               struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_ENGINEER;
-               homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
-           } else if(str == "19243589") {
-               struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_FACTORY;
-               homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
-           }else {
-               infoWidget->setLabelText(myLan.msg_password_error);
-               infoWidget->delayShow();
-               myFlow.sleep(3);
-               infoWidget->hide();
-           }
-//       }else if(struGsh.tempPwd == "0421"){
-//           if (str == "110421") {
-//               struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_ENGINEER;
-//               homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
-//           } else if(str == "354311") {
-//               struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_FACTORY;
-//               homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
-//           }else {
-//               infoWidget->setLabelText(myLan.msg_password_error);
-//               infoWidget->delayShow();
-//               myFlow.sleep(3);
-//               infoWidget->hide();
-//           }
-       } else {
-           infoWidget->setLabelText(myLan.msg_password_error);
-           infoWidget->delayShow();
-           myFlow.sleep(3);
-           infoWidget->hide();
-       }
+    int ret = inputDlg.exec();
+    if (ret == QDialog::Accepted)
+    {
+        QString str = inputDlg.getText();
+        if (struGsh.tempPwd == "249945")
+        {
+            if (str == "242582")
+            {
+                struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_ENGINEER;
+                homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
+            }
+            else if (str == "19243589")
+            {
+                struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_FACTORY;
+                homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
+            }
+            else
+            {
+                infoWidget->setLabelText(myLan.msg_password_error);
+                infoWidget->delayShow();
+                myFlow.sleep(3);
+                infoWidget->hide();
+            }
+            //       }else if(struGsh.tempPwd == "0421"){
+            //           if (str == "110421") {
+            //               struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_ENGINEER;
+            //               homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
+            //           } else if(str == "354311") {
+            //               struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_FACTORY;
+            //               homePageStackedWidget->setCurrentIndex(HIGH_SET_OPR_PAGE_INDEX);
+            //           }else {
+            //               infoWidget->setLabelText(myLan.msg_password_error);
+            //               infoWidget->delayShow();
+            //               myFlow.sleep(3);
+            //               infoWidget->hide();
+            //           }
+        }
+        else
+        {
+            infoWidget->setLabelText(myLan.msg_password_error);
+            infoWidget->delayShow();
+            myFlow.sleep(3);
+            infoWidget->hide();
+        }
 
-   }
+    }
 
 
 }
 
-void MainWidget::onCustomOprBtnClickedSlt(){
+void MainWidget::onCustomOprBtnClickedSlt()
+{
     struGsh.nAuthenticationLevel = 0;
     operateButton[5]->setEnabled(false);
     customOprButton->hide();
     highSetOprButton->hide();
     aiSetBtn->hide();
     aiModelSetBtn->hide();
-//    oprModeBtn->setText(myLan.pic_customer);
+    //    oprModeBtn->setText(myLan.pic_customer);
 
     struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_OPERATOR;
 
@@ -1526,7 +1594,8 @@ void MainWidget::onHomePageStackedWidgetIndexChangedSlt(int index)
 
     emit shutdownCurveBg();
 
-    switch (index) {
+    switch (index)
+    {
     case HOME_SCHEME_PAGE_INDEX:
         title = QString(myLan.schemeNew_select);
         break;
@@ -1549,115 +1618,131 @@ void MainWidget::onHomePageStackedWidgetIndexChangedSlt(int index)
         title = QString(myLan.operation_level);
         break;
     case HIGH_SET_OPR_PAGE_INDEX:
-        if(struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_ENGINEER){
-            title = QString(myLan.sys_set+"Ⅰ");
-        } else if(struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_FACTORY){
-            title = QString(myLan.sys_set+"Ⅱ");
-        } else{
-            title = QString(myLan.sys_set+"Ⅰ");
+        if (struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_ENGINEER)
+        {
+            title = QString(myLan.sys_set + "Ⅰ");
+        }
+        else if (struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_FACTORY)
+        {
+            title = QString(myLan.sys_set + "Ⅱ");
+        }
+        else
+        {
+            title = QString(myLan.sys_set + "Ⅰ");
         }
         break;
     default:
         title = QString(myLan.schemeNew_select);
         break;
     }
-//    mainOprBtn->setEnabled(true);
-//    mainOprBtn->setText(title);
-//    mainOprBtn->setRedColor(RED);
-//    QString strStyle2 = QString("QPushButton {border-image: url(:/res/png/selectPress.png);}");
-//    mainOprBtn->setStyleSheet(strStyle2);
-//    mainOprBtn->setHidden(true);
-    if(struGsh.nAuthenticationLevel == 0){
+    //    mainOprBtn->setEnabled(true);
+    //    mainOprBtn->setText(title);
+    //    mainOprBtn->setRedColor(RED);
+    //    QString strStyle2 = QString("QPushButton {border-image: url(:/res/png/selectPress.png);}");
+    //    mainOprBtn->setStyleSheet(strStyle2);
+    //    mainOprBtn->setHidden(true);
+    if (struGsh.nAuthenticationLevel == 0)
+    {
         operateButton[5]->setEnabled(false);
-    }else{
+    }
+    else
+    {
         operateButton[5]->setEnabled(true);
     }
 
-    switch (index) {
+    switch (index)
+    {
     case HIGH_SET_OPR_PAGE_INDEX:
     case HIGH_SET_AI_PAGE_INDEX:
-//        operatorGbx->hide();
-        for(int i = 0; i < 7; i++) {
+        //        operatorGbx->hide();
+        for (int i = 0; i < 7; i++)
+        {
             operateButton[i]->hide();
         }
-        homePageStackedWidget->setFixedWidth(LCD_WIDTH-10);
+        homePageStackedWidget->setFixedWidth(LCD_WIDTH - 10);
         emit factoryUpdateSig();
         break;
     default:
-        homePageStackedWidget->setFixedWidth(LCD_WIDTH-10);
+        homePageStackedWidget->setFixedWidth(LCD_WIDTH - 10);
 
-//        operatorGbx->setHidden(false);
-        for(int i = 0; i < 7; i++) {
+        //        operatorGbx->setHidden(false);
+        for (int i = 0; i < 7; i++)
+        {
             operateButton[i]->show();
         }
         break;
     }
 
-    switch (index) {
+    switch (index)
+    {
     case HOME_OPRLVL_PAGE_INDEX:
     case HIGH_SET_OPR_PAGE_INDEX:
-//        oprModeBtn->setText(myLan.engineer);
+        //        oprModeBtn->setText(myLan.engineer);
         break;
     default:
-//        oprModeBtn->setText(myLan.pic_customer);
+        //        oprModeBtn->setText(myLan.pic_customer);
         break;
     }
 
-    switch (index) {
+    switch (index)
+    {
     case HIGH_SET_OPR_PAGE_INDEX:
     case HIGH_SET_AI_PAGE_INDEX:
-        homePageStackedWidget->setFixedHeight(LCD_HEIGHT-60);
-        for(int i = 0; i < 7; i++) {
+        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 60);
+        for (int i = 0; i < 7; i++)
+        {
             operateButton[i]->hide();
         }
         lineStatus->setHidden(true);
         break;
     default:
-        homePageStackedWidget->setFixedHeight(LCD_HEIGHT-110);
-        for(int i = 0; i < 7; i++) {
+        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 110);
+        for (int i = 0; i < 7; i++)
+        {
             operateButton[i]->show();
         }
         lineStatus->setHidden(false);
         break;
     }
 
-//    switch (index) {
-//        case HOME_EJECT_PAGE_INDEX:
-//        case HIGH_SET_OPR_PAGE_INDEX:
-//            feedSwitchBtn->setEnabled(false);
-//            break;
-//        default:
-//            feedSwitchBtn->setEnabled(true);
-//            break;
-//    }
+    //    switch (index) {
+    //        case HOME_EJECT_PAGE_INDEX:
+    //        case HIGH_SET_OPR_PAGE_INDEX:
+    //            feedSwitchBtn->setEnabled(false);
+    //            break;
+    //        default:
+    //            feedSwitchBtn->setEnabled(true);
+    //            break;
+    //    }
 
-    switch (index) {
-        case HIGH_SET_OPR_PAGE_INDEX:
-            videoBtn->setEnabled(false);
-            systemHaltBtn->setEnabled(false);
-            saveParamBtn->setEnabled(false);
-            feedSwitchBtn->setEnabled(false);
-            statInfoBtn->setEnabled(false);
-            videoBtn->setHidden(true);
-            systemHaltBtn->setHidden(true);
-            saveParamBtn->setHidden(true);
-            feedSwitchBtn->setHidden(true);
-            statInfoBtn->setHidden(true);
-            lineTitle->setHidden(true);
-            break;
-        default:
-            videoBtn->setEnabled(true);
-            systemHaltBtn->setEnabled(true);
-            saveParamBtn->setEnabled(true);
-            feedSwitchBtn->setEnabled(true);
-            statInfoBtn->setEnabled(true);
-            videoBtn->setHidden(false);
-            systemHaltBtn->setHidden(false);
-            saveParamBtn->setHidden(false);
-            feedSwitchBtn->setHidden(false);
-            statInfoBtn->setHidden(false);
-            lineTitle->setHidden(false);
-            break;
+    switch (index)
+    {
+    case HIGH_SET_OPR_PAGE_INDEX:
+        videoBtn->setEnabled(false);
+        systemHaltBtn->setEnabled(false);
+        saveParamBtn->setEnabled(false);
+        feedSwitchBtn->setEnabled(false);
+        statInfoBtn->setEnabled(false);
+        videoBtn->setHidden(true);
+        systemHaltBtn->setHidden(true);
+        saveParamBtn->setHidden(true);
+        feedSwitchBtn->setHidden(true);
+        statInfoBtn->setHidden(true);
+        lineTitle->setHidden(true);
+        break;
+    default:
+        videoBtn->setEnabled(true);
+        systemHaltBtn->setEnabled(true);
+        saveParamBtn->setEnabled(true);
+        feedSwitchBtn->setEnabled(true);
+        statInfoBtn->setEnabled(true);
+        videoBtn->setHidden(false);
+        systemHaltBtn->setHidden(false);
+        saveParamBtn->setHidden(false);
+        feedSwitchBtn->setHidden(false);
+        statInfoBtn->setHidden(false);
+        lineTitle->setHidden(false);
+        break;
     }
 
 }
@@ -1667,8 +1752,8 @@ void MainWidget::updateHomePage()
     QString text;
     QString selectSchemeText;
 
-    text = QString("%1-%2").arg(struCnfg.nProfile+1)
-	                   .arg(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName);
+    text = QString("%1-%2").arg(struCnfg.nProfile + 1)
+        .arg(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName);
 
     selectSchemeText = QString("%1 : %2").arg(myLan.scheme_select).arg(text);
     selectSchemeBtn->setText(selectSchemeText);
@@ -1682,18 +1767,22 @@ void MainWidget::onSelectSchemeBtnClickedSlt()
     QString strScheme;
     listWidget->clear();
 
-    for(int i = 0; i < struCnfg.nProfileTotal; i++) {
+    for (int i = 0; i < struCnfg.nProfileTotal; i++)
+    {
         QString srcFilename = QString("%1/userdata/cnf/%2%3").arg(APP_PATH).arg(struCnfg.struProfileIndex[i].sProfileName).arg(".bak");
-        if (QFile(srcFilename).exists()){
+        if (QFile(srcFilename).exists())
+        {
             QFileInfo fi(srcFilename);
             QString time = fi.lastModified().toString("yyyy-MM-dd hh:mm");
-            QByteArray ctime = time .toLatin1();
-            strScheme.sprintf("%d %s (%s%s)",i+1,struCnfg.struProfileIndex[i].sMaterialName,"bak@",ctime.data());
-        } else{
-            strScheme.sprintf("%d %s",i+1,struCnfg.struProfileIndex[i].sMaterialName );
+            QByteArray ctime = time.toLatin1();
+            strScheme.sprintf("%d %s (%s%s)", i + 1, struCnfg.struProfileIndex[i].sMaterialName, "bak@", ctime.data());
         }
-        myListWidgetItem *schemeListItem = new myListWidgetItem(strScheme, QIcon(),
-                                                                QSize(listWidget->width()-20,ICON_HEI*2));
+        else
+        {
+            strScheme.sprintf("%d %s", i + 1, struCnfg.struProfileIndex[i].sMaterialName);
+        }
+        myListWidgetItem* schemeListItem = new myListWidgetItem(strScheme, QIcon(),
+            QSize(listWidget->width() - 20, ICON_HEI * 2));
 
         listWidget->addItem(schemeListItem);
     }
@@ -1711,10 +1800,13 @@ void MainWidget::onSelectSchemeBtnClickedSlt()
 void MainWidget::onSetFeedBtnClickedSlt()
 {
     this->homePageStackedWidget->setCurrentIndex(HOME_FEED_PAGE_INDEX);
-    if(struCnfe.nEnableCGMachine == 1) {
-       pageSetFeedRS->updatePage();
-    } else {
-       updateFeederPage();
+    if (struCnfe.nEnableCGMachine == 1)
+    {
+        pageSetFeedRS->updatePage();
+    }
+    else
+    {
+        updateFeederPage();
     }
 }
 /**
@@ -1749,7 +1841,8 @@ void MainWidget::onSetWipeBtnClickedSlt()
  */
 void MainWidget::onTestEjectBtnClickedSlt()
 {
-    if (struGsh.bStatFeed == 1) {
+    if (struGsh.bStatFeed == 1)
+    {
         infoWidget->setLabelText(myLan.msg_turn_off_first);
         infoWidget->showSecs();
         return;
@@ -1774,7 +1867,7 @@ void MainWidget::onAIComputeBtnClickedSlt(int nIndex)
     //! 刷新页面显示
     pageAI->refreshDisplaySlt();
 
-	stackedWidget->setCurrentIndex(SM_AI_PAGE);
+    stackedWidget->setCurrentIndex(SM_AI_PAGE);
 }
 
 /**
@@ -1782,7 +1875,8 @@ void MainWidget::onAIComputeBtnClickedSlt(int nIndex)
  */
 void MainWidget::onManageSchemeBtnClickedSlt()
 {
-    if (struGsh.bStatFeed == 1) {
+    if (struGsh.bStatFeed == 1)
+    {
         infoWidget->setLabelText(myLan.msg_turn_off_first);
         infoWidget->showSecs();
         return;
@@ -1795,7 +1889,8 @@ void MainWidget::onManageSchemeBtnClickedSlt()
 
 void MainWidget::onManageSchemeBtnClickedSlt1()
 {
-    if (struGsh.bStatFeed == 1) {
+    if (struGsh.bStatFeed == 1)
+    {
         infoWidget->setLabelText(myLan.msg_turn_off_first);
         infoWidget->showSecs();
         return;
@@ -1811,13 +1906,14 @@ void MainWidget::onManageSchemeBtnClickedSlt1()
  */
 void MainWidget::onEnterFactoryBtnClickedSlt()
 {
-    if (struGsh.bStatFeed == 1) {
-		infoWidget->setLabelText(myLan.msg_turn_off_first);
-		infoWidget->showSecs();
-		return;
-	}
+    if (struGsh.bStatFeed == 1)
+    {
+        infoWidget->setLabelText(myLan.msg_turn_off_first);
+        infoWidget->showSecs();
+        return;
+    }
 
-//	this->stackedWidget->setCurrentIndex(SM_SET_FACTORY);
+    //	this->stackedWidget->setCurrentIndex(SM_SET_FACTORY);
 
     emit factoryUpdateSig();
 }
@@ -1827,7 +1923,7 @@ void MainWidget::onEnterFactoryBtnClickedSlt()
  */
 void MainWidget::onSchemeParamBtnClickedSlt()
 {
-//    qDebug()<<"test1"<<endl;
+    //    qDebug()<<"test1"<<endl;
     homePageStackedWidget->setCurrentIndex(HOME_ALGO_PAGE_INDEX);
 
     emit schParToFirstSig();
@@ -1839,7 +1935,7 @@ void MainWidget::onSchemeParamBtnClickedSlt()
 void MainWidget::onSchemeParamBtnClickedSlt1()
 {
     this->stackedWidget->setCurrentIndex(SM_HOME_PAGE);
-//    homePageStackedWidget->setCurrentIndex(HOME_ALGO_PAGE_INDEX);
+    //    homePageStackedWidget->setCurrentIndex(HOME_ALGO_PAGE_INDEX);
 
 
 }
@@ -1849,13 +1945,13 @@ void MainWidget::onSchemeParamBtnClickedSlt1()
  */
 void MainWidget::GoToHomePageSlt()
 {
-//    if (struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_OPERATOR) {
-//        if (struCnfe.nMachine == MACHINE_T1) {
-//            this->stackedWidget->setCurrentIndex(SM_HOME_TEA_PAGE);
-//            updateHomeTeaPage();
-//            return;
-//        }
-//    }
+    //    if (struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_OPERATOR) {
+    //        if (struCnfe.nMachine == MACHINE_T1) {
+    //            this->stackedWidget->setCurrentIndex(SM_HOME_TEA_PAGE);
+    //            updateHomeTeaPage();
+    //            return;
+    //        }
+    //    }
     updateHomePage();
     this->stackedWidget->setCurrentIndex(SM_HOME_PAGE);
 }
@@ -1866,31 +1962,31 @@ void MainWidget::GoToHomePageSlt()
 bool verifyUSB(void)
 {
 #ifdef Q_OS_UNIX
-//    unsigned char usbkey[64] = {};
+    //    unsigned char usbkey[64] = {};
 
-///* verify usb key */
-//    /* prevent re-open */
-//    if (myUsbDev != NULL)
-//        usb.myusbFree();
+    ///* verify usb key */
+    //    /* prevent re-open */
+    //    if (myUsbDev != NULL)
+    //        usb.myusbFree();
 
-//    /* open usb device node */
-//    usb.myusbInit();
-//    if (myUsbDev  == NULL) {
-//        return false;
-//    }
+    //    /* open usb device node */
+    //    usb.myusbInit();
+    //    if (myUsbDev  == NULL) {
+    //        return false;
+    //    }
 
-//    /* read usb buffer */
-//    usb_bulk_read(myUsbDev, USB_EP_IN, (char *)usbkey, 6, 500);
-//    if (usbkey[0] != 0x35 || usbkey[1] != 0xB7 || usbkey[2] != 0xC4
-//            || usbkey[3] != 0x5A || usbkey[4] != 0x99 || usbkey[5] != 0xEF) {
-//        usb.myusbFree();
-//        return false;
-//    }
+    //    /* read usb buffer */
+    //    usb_bulk_read(myUsbDev, USB_EP_IN, (char *)usbkey, 6, 500);
+    //    if (usbkey[0] != 0x35 || usbkey[1] != 0xB7 || usbkey[2] != 0xC4
+    //            || usbkey[3] != 0x5A || usbkey[4] != 0x99 || usbkey[5] != 0xEF) {
+    //        usb.myusbFree();
+    //        return false;
+    //    }
 
-//    usb.myusbFree();
-//    return false;
+    //    usb.myusbFree();
+    //    return false;
 #else
-    return (QDateTime::currentDateTime().toTime_t()%2) ? true : false;
+    return (QDateTime::currentDateTime().toTime_t() % 2) ? true : false;
 #endif
 }
 
@@ -1899,24 +1995,24 @@ bool verifyUSB(void)
  */
 void MainWidget::onStatInfoBtnClickedSlt()
 {
-      emit shutdownCurveBg();
-      emit schParToFirstSig();
-//    if (verifyUSB()) { // 若插入权限卡，则进入工程设置模式页面，否则跳转到系统状态页面
-//        titleStr = titleLabel->text();
-//        this->stackedWidget->setCurrentIndex(SM_ENGINEER_PAGE);
-//    } else {
-        emit statusToFirstSig();        // 让系统状态页面索引为0
-        pageStatusInfo->updateAll();
+    emit shutdownCurveBg();
+    emit schParToFirstSig();
+    //    if (verifyUSB()) { // 若插入权限卡，则进入工程设置模式页面，否则跳转到系统状态页面
+    //        titleStr = titleLabel->text();
+    //        this->stackedWidget->setCurrentIndex(SM_ENGINEER_PAGE);
+    //    } else {
+    emit statusToFirstSig();        // 让系统状态页面索引为0
+    pageStatusInfo->updateAll();
 
-        titleStr = titleLabel->text();
-        this->stackedWidget->setCurrentIndex(SM_STATUS_INFO_PAGE);
-//    }
+    titleStr = titleLabel->text();
+    this->stackedWidget->setCurrentIndex(SM_STATUS_INFO_PAGE);
+    //    }
 }
 
 /* 系统状态返回 */
 void MainWidget::onStatInfoBackBtnClicked()
 {
-//    titleLabel->setText(titleStr);
+    //    titleLabel->setText(titleStr);
     titleLabel->setText("");
 
     updateHomePage();
@@ -1938,15 +2034,17 @@ void MainWidget::onSystemHaltBtnClickedSlt()
         infoWidget->delayShow();
 
         //! 系统关闭前须先关闭供料
-        if(struGsh.bStatFeed == 1) {
+        if (struGsh.bStatFeed == 1)
+        {
             emit closeFeederSig(TRIGGER_MANUAL);
-		}
+        }
 
         bool status1 = myFlow.saveCamera();
         bool status2 = myFlow.saveGlobal();
         bool status3 = myFlow.saveProfile();
 
-        if((!status1) || (!status2) || (!status3)) {
+        if ((!status1) || (!status2) || (!status3))
+        {
             infoWidget->setLabelText(myLan.msg_params_save_error);
             myFlow.sleep(2);
         }
@@ -1963,9 +2061,8 @@ void MainWidget::onSystemHaltBtnClickedSlt()
 
         infoWidget->hide();
         this->close();
-        myLog->info(LOG_POWER,"App off");
-        myLog->info(LOG_POWER,"App has run %d seconds at this time.",struGsh.nCounter);
-        myLog->info(LOG_POWER,"App has run %d seconds total.",struCnfg.nCounter);
+        LOG_INFO_STM("Power: App off, App has run:" << struGsh.nCounter << " seconds at this time, total:"
+            << struCnfg.nCounter << " seconds.");
 
 #ifndef Q_OS_WIN
         myFlow.sleep(1);
@@ -1982,23 +2079,30 @@ void MainWidget::TimeOutSlt()
     QDateTime time = QDateTime::currentDateTime();
     statInfoBtn->setText(time.toString("yyyy-MM-dd\n hh:mm:ss"));
     if ((struCnfg.nAlarmEnable[ALARM_ID_PRESSURE] == 1 && ((struGsh.bAlarmPressure & 0x03) != 0))
-            || (struCnfg.nAlarmEnable[ALARM_ID_BLOWER] == 1 && struGsh.bAlarmBlower == 1)
-            || (struCnfg.nAlarmEnable[ALARM_ID_BELT] == 1 && struGsh.bStatBelt[0] == 1)
-            || (struCnfg.nAlarmEnable[ALARM_ID_BELT] == 1 && struGsh.bStatBelt[1] == 1)
-            || (struCnfg.nAlarmEnable[ALARM_ID_TEMPERATURE] == 1 && (struGsh.nTemperatureMax >= struCnfg.nTemperatureThreshold))
-            || (struGsh.nAlarmLevel != ALARM_LEVEL_NULL)
-            || (struGsh.nCommStat == 1)
-            || (struCnfg.nAlarmEnable[ALARM_ID_SLAVE_COMM] == 1 && struGsh.bAlarmSlaveComm == 1)) {
+        || (struCnfg.nAlarmEnable[ALARM_ID_BLOWER] == 1 && struGsh.bAlarmBlower == 1)
+        || (struCnfg.nAlarmEnable[ALARM_ID_BELT] == 1 && struGsh.bStatBelt[0] == 1)
+        || (struCnfg.nAlarmEnable[ALARM_ID_BELT] == 1 && struGsh.bStatBelt[1] == 1)
+        || (struCnfg.nAlarmEnable[ALARM_ID_TEMPERATURE] == 1 && (struGsh.nTemperatureMax >= struCnfg.nTemperatureThreshold))
+        || (struGsh.nAlarmLevel != ALARM_LEVEL_NULL)
+        || (struGsh.nCommStat == 1)
+        || (struCnfg.nAlarmEnable[ALARM_ID_SLAVE_COMM] == 1 && struGsh.bAlarmSlaveComm == 1))
+    {
         struGsh.bAlarmStatus = 1;
-    } else {
+    }
+    else
+    {
         struGsh.bAlarmStatus = 0;
     }
 
     //! 根据报警状态更新短信模块信息
-    if (struGsh.bIsMC && struCnfg.nCounter%10 == 0) {
-        if (struGsh.bAlarmStatus == 1) {
+    if (struGsh.bIsMC && struCnfg.nCounter % 10 == 0)
+    {
+        if (struGsh.bAlarmStatus == 1)
+        {
             pageStatusInfo->sendAlarmSms();
-        } else {
+        }
+        else
+        {
             pageStatusInfo->updateAlarmStatus();
         }
     }
@@ -2011,20 +2115,26 @@ void MainWidget::TimeOutSlt()
 
 
     //! 根据报警状态更新按钮颜色
-    if (struGsh.bAlarmStatus == 1) {
-        if (struCnfg.nCounter%2 == 0) {
-//            statInfoBtn->setRedColor(RED);
+    if (struGsh.bAlarmStatus == 1)
+    {
+        if (struCnfg.nCounter % 2 == 0)
+        {
+            //            statInfoBtn->setRedColor(RED);
             statInfoBtn->setPalette(patlette2);
 
-        } else {
-//            statInfoBtn->setRedColor(DEF);
+        }
+        else
+        {
+            //            statInfoBtn->setRedColor(DEF);
             statInfoBtn->setPalette(patlette);
 
         }
-    } else {
+    }
+    else
+    {
         statInfoBtn->setPalette(patlette);
 
-//        statInfoBtn->setRedColor(DEF);
+        //        statInfoBtn->setRedColor(DEF);
     }
 }
 
@@ -2032,7 +2142,8 @@ void MainWidget::TimeOutSlt()
 void MainWidget::showPressureAlarmMsgSlt(bool isShow)
 {
     //气压报警提示窗口
-    if(isShow){
+    if (isShow)
+    {
         QString str;
         QStringList pressureInfoList;
 
@@ -2047,9 +2158,11 @@ void MainWidget::showPressureAlarmMsgSlt(bool isShow)
 
         str = QString(myLan.warm);
 
-        infoList->setlistInfoText(pressureInfoList,str);
+        infoList->setlistInfoText(pressureInfoList, str);
         infoList->show();
-    }else{
+    }
+    else
+    {
         infoList->hide();
     }
 }
@@ -2081,7 +2194,8 @@ void MainWidget::onSetPurviewBtnClickedSlt()
     titleStr = titleLabel->text();
     this->stackedWidget->setCurrentIndex(SM_SET_PURVIEW);
 
-    if (threadStart->isRunning()) {
+    if (threadStart->isRunning())
+    {
         startBtn->setEnabled(true);
         stopBtn->setEnabled(false);
         layerBtn->setEnabled(true);
@@ -2106,34 +2220,41 @@ void MainWidget::onFeedSwitchBtnClickedSlt()
     emit shutdownCurveBg();
 
     //! 从屏模式下提示操作无效
-    if (struCnfg.nRunMode == MODE_RUN_SLAVE) {
+    if (struCnfg.nRunMode == MODE_RUN_SLAVE)
+    {
         myMessageBox msgBox(MSG_WARN, myLan.slave);
-        if (msgBox.exec() == QDialog::Rejected) {
+        if (msgBox.exec() == QDialog::Rejected)
+        {
             return;
         }
     }
 
     //! 供料开关请求处理
-    if(struGsh.bStatFeed == MODE_CLOSE) {
+    if (struGsh.bStatFeed == MODE_CLOSE)
+    {
         //! 豆类定制机型处理
-        if (struCnfe.nEnableBeanMachine == 1 && struGsh.isPeaMachineBeanMat == false) {
-	        QString textOff = myLan.feed+" "+myLan.off;
+        if (struCnfe.nEnableBeanMachine == 1 && struGsh.isPeaMachineBeanMat == false)
+        {
+            QString textOff = myLan.feed + " " + myLan.off;
             feedSwitchBtn->setText(myLan.working_stop);
             QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);}");
             feedSwitchBtn->setStyleSheet(strStyle5);
             QPalette patlette;
             patlette.setColor(QPalette::ButtonText, Qt::black);
             feedSwitchBtn->setPalette(patlette);
-//            feedSwitchBtn->setRedColor(DEF);
+            //            feedSwitchBtn->setRedColor(DEF);
             return;
         }
 
         //! 用户确认提示
         myMessageBox msgBox(MSG_QUES, myLan.cfm_turn_on);
-        if (msgBox.exec() == QDialog::Accepted) {
+        if (msgBox.exec() == QDialog::Accepted)
+        {
             emit openFeederSig(TRIGGER_MANUAL);
         }
-    } else {
+    }
+    else
+    {
         emit closeFeederSig(TRIGGER_MANUAL);
     }
 
@@ -2160,14 +2281,16 @@ void MainWidget::onSaveParamBtnClickedSlt()
     myMessageBox msgBox(MSG_QUES, myLan.cfm_save_parameter);
     int ret = msgBox.exec();
 
-    if (ret == QDialog::Accepted) {
+    if (ret == QDialog::Accepted)
+    {
         infoWidget->setLabelText(myLan.msg_saving_params);
         infoWidget->delayShow();
         bool status1 = myFlow.saveCamera();
         bool status2 = myFlow.saveGlobal();
         bool status3 = myFlow.saveProfile();
 
-        if((!status1) || (!status2) || (!status3)) {
+        if ((!status1) || (!status2) || (!status3))
+        {
             infoWidget->setLabelText(myLan.msg_params_save_error);
             myFlow.sleep(2);
         }
@@ -2194,7 +2317,7 @@ void MainWidget::CreateSelectSchemeWidget()
     //页面布局
     schemePageGridLayout = new QGridLayout(pageSelectScheme);
     schemePageGridLayout->setVerticalSpacing(10);
-    schemePageGridLayout->addWidget(listWidget,0, 0, 1, 1);
+    schemePageGridLayout->addWidget(listWidget, 0, 0, 1, 1);
 
     schemePageHBLayout = new QHBoxLayout();
     schemePageHBLayout->addWidget(okSelectSchemeBtn);
@@ -2214,7 +2337,8 @@ void MainWidget::CreateSelectSchemeWidget()
 void MainWidget::onOkSelectSchemeBtnClickedSlt()
 {
     /* if feeding on, feed off it first */
-    if (struGsh.bStatFeed == 1) {
+    if (struGsh.bStatFeed == 1)
+    {
         infoWidget->setLabelText(myLan.msg_turn_off_first);
         infoWidget->showSecs();
         return;
@@ -2223,7 +2347,8 @@ void MainWidget::onOkSelectSchemeBtnClickedSlt()
     myMessageBox msgBox(MSG_QUES, myLan.cfm_select_current_scheme);
     int ret = msgBox.exec();
 
-    if (ret == QDialog::Accepted) {
+    if (ret == QDialog::Accepted)
+    {
         infoWidget->setLabelText(myLan.msg_applying);
         infoWidget->delayShow();
         myFlow.saveProfile();
@@ -2234,9 +2359,9 @@ void MainWidget::onOkSelectSchemeBtnClickedSlt()
 
         struCnfg.nProfile = listWidget->currentRow();
         myFlow.getProfile();
-        myLog->info(LOG_PROFILE,"select a profile: %s (in file: %s)",
-            struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName,
-            struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName);
+
+        LOG_INFO_STM("select a profile:" << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName)
+            << " (in file:" << std::string(struCnfg.struProfileIndex[struCnfg.nProfile].sProfileName) << ")");
 
         //! 检查启动模式
         myFlow.checkAndResetFPGAMode(nIntMode, nColorMode);
@@ -2271,28 +2396,32 @@ void MainWidget::CreateSetFeedWidget()
 
     feederSignalMapper = new QSignalMapper(pageSetFeed);
 
-    for(int i = 0; i < 10; i++) {
-        if ( i % 2 == 0) {
-            strFeed = QString("%1 %2").arg(myLan.feeder).arg(i+1);
-            feedLabel[i]    = new myLabel(strFeed, pageSetFeed);
+    for (int i = 0; i < 10; i++)
+    {
+        if (i % 2 == 0)
+        {
+            strFeed = QString("%1 %2").arg(myLan.feeder).arg(i + 1);
+            feedLabel[i] = new myLabel(strFeed, pageSetFeed);
 
             strFeed = QString("%1").arg(struCnfp.struGroupCtrl[0].nFeeder[i]);
-            feedLbe[i]     = new myLineEdit(strFeed, pageSetFeed);
+            feedLbe[i] = new myLineEdit(strFeed, pageSetFeed);
             feedLbe[i]->setReadOnly(true);
             feedLbe[i]->setMaximumHeight(BTN_HEIGHT - 5);
-        } else {
-            strFeed = QString("%1 %2").arg(myLan.feeder).arg(i+1);
+        }
+        else
+        {
+            strFeed = QString("%1 %2").arg(myLan.feeder).arg(i + 1);
             feedLabel[i] = new myLabel(strFeed, pageSetFeed);
 
             strFeed.sprintf("%d", struCnfp.struGroupCtrl[0].nFeeder[i]);
-            feedLbe[i]     = new myLineEdit(strFeed, pageSetFeed);
+            feedLbe[i] = new myLineEdit(strFeed, pageSetFeed);
             feedLbe[i]->setReadOnly(true);
             feedLbe[i]->setMaximumHeight(BTN_HEIGHT - 5);
         }
 
         /*供料按钮布局*/
         feederHBLayout[i] = new QHBoxLayout();
-        feederHBLayout[i]->setContentsMargins(30,0,30,0);
+        feederHBLayout[i]->setContentsMargins(30, 0, 30, 0);
         feederHBLayout[i]->addWidget(feedLabel[i]);
         feederHBLayout[i]->addWidget(feedLbe[i]);
 
@@ -2302,21 +2431,25 @@ void MainWidget::CreateSetFeedWidget()
     }
 
     cancelSetFeedBtn = new myPushButton(myLan.back, myIcon.Action_Back);
-    cancelSetFeedBtn->setMaximumSize(QSize(BTN_WIDTH,BTN_HEIGHT));
+    cancelSetFeedBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
     feederMonitorBtn = new MyCheckBox(myLan.feeder_control_enable, struCnfg.nFeederCtrlEn, QBoxLayout::LeftToRight);
 
     /* 整个页面布局 */
     feederPageGridLayout = new QGridLayout(pageSetFeed);
-    feederPageGridLayout->setContentsMargins(20,20,20,10);
+    feederPageGridLayout->setContentsMargins(20, 20, 20, 10);
     feederPageGridLayout->setAlignment(Qt::AlignRight);
     feederPageGridLayout->setHorizontalSpacing(50);
     feederPageGridLayout->setVerticalSpacing(20);
-    for (int j = 0;j < 10;j++) {
-        if (j%2 == 0) {
-            feederPageGridLayout->addLayout(feederHBLayout[j], j/2, 0, 1, 1);
-        } else {
-            feederPageGridLayout->addLayout(feederHBLayout[j], j/2, 1, 1, 1);
+    for (int j = 0;j < 10;j++)
+    {
+        if (j % 2 == 0)
+        {
+            feederPageGridLayout->addLayout(feederHBLayout[j], j / 2, 0, 1, 1);
+        }
+        else
+        {
+            feederPageGridLayout->addLayout(feederHBLayout[j], j / 2, 1, 1, 1);
         }
     }
     /* 返回按钮布局 */
@@ -2325,7 +2458,7 @@ void MainWidget::CreateSetFeedWidget()
     feederPageHBLayout->addWidget(feederMonitorBtn);
     feederPageHBLayout->addStretch();
     feederPageHBLayout->addWidget(cancelSetFeedBtn);
-    feederPageGridLayout->addLayout(feederPageHBLayout,5,0,1,2);
+    feederPageGridLayout->addLayout(feederPageHBLayout, 5, 0, 1, 2);
 
     feederMonitorBtn->hide();
 
@@ -2344,15 +2477,18 @@ void MainWidget::CreateSetFeedWidget()
 void MainWidget::updateFeederPage()
 {
     QString strFeed;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         strFeed.sprintf("%d", struCnfp.struGroupCtrl[0].nFeeder[i]);
         feedLbe[i]->setText(strFeed);
         feedLabel[i]->hide();
         feedLbe[i]->hide();
     }
 
-    if(struCnfe.nMachine == MACHINE_CF){
-        for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal/2;i++){
+    if (struCnfe.nMachine == MACHINE_CF)
+    {
+        for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal / 2;i++)
+        {
             feedLabel[i]->show();
             feedLbe[i]->show();
         }
@@ -2368,8 +2504,8 @@ void MainWidget::feederValueChange(int indexOfFeeder)
 {
     double nFeeder[10];
     nFeeder[indexOfFeeder] = feedLbe[indexOfFeeder]->text().toDouble();
-    myInputPanel inputDlg(intType,0,100,nFeeder[indexOfFeeder]);
-    int ret  = inputDlg.exec();
+    myInputPanel inputDlg(intType, 0, 100, nFeeder[indexOfFeeder]);
+    int ret = inputDlg.exec();
     if (ret == QDialog::Accepted)
     {
         nFeeder[indexOfFeeder] = inputDlg.getValue();
@@ -2378,7 +2514,7 @@ void MainWidget::feederValueChange(int indexOfFeeder)
         feedLbe[indexOfFeeder]->setText(str);
 
         myFlow.resetFeeder(0);
-        myLog->info(LOG_FEED,"Feeder%d:%d",indexOfFeeder,struCnfp.struGroupCtrl[0].nFeeder[indexOfFeeder]);
+        LOG_INFO_STM("Feeder" << indexOfFeeder << ":" << struCnfp.struGroupCtrl[0].nFeeder[indexOfFeeder]);
     }
 }
 
@@ -2389,7 +2525,8 @@ void MainWidget::updateFeederValue()
 {
     QString strFeed;
 
-    for(int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         strFeed.sprintf("%d", struCnfp.struGroupCtrl[0].nFeeder[i]);
         feedLbe[i]->setText(strFeed);
     }
@@ -2397,9 +2534,12 @@ void MainWidget::updateFeederValue()
 
 void MainWidget::onFeederMonitorToggled(bool isChecked)
 {
-    if (isChecked) {
+    if (isChecked)
+    {
         struCnfg.nFeederCtrlEn = 1;
-    } else {
+    }
+    else
+    {
         struCnfg.nFeederCtrlEn = 0;
     }
 }
@@ -2419,8 +2559,8 @@ void MainWidget::onCancelSetFeedBtnClickedSlt()
 *************************************************************************************************************/
 void MainWidget::CreateSetWipeWidget()
 {
-/* page init */
-    /* tab widget */
+    /* page init */
+        /* tab widget */
     mainWipeTabWidget = new MyTabBar(pageSetWipe);
     mainWipeTabWidget->addTab(myLan.wipe_set);
     mainWipeTabWidget->addTab(myLan.wipe_wind);
@@ -2444,25 +2584,25 @@ void MainWidget::CreateSetWipeWidget()
     pageWipeMode = new WipeModeWidget();
     wipeStackedWidget->addWidget(pageWipeMode);
 
-    wipeModeBtn  = new myPushButton("",myIcon.Action_Configure, true, true, pageSetWipe);
-    wipeModeBtn->setFixedSize(QSize(SMALL_BTN_WIDTH,BTN_HEIGHT));
+    wipeModeBtn = new myPushButton("", myIcon.Action_Configure, true, true, pageSetWipe);
+    wipeModeBtn->setFixedSize(QSize(SMALL_BTN_WIDTH, BTN_HEIGHT));
     wipeModeBtn->hide();
 
     /* 返回 */
-    cancelSetWipeBtn   = new myPushButton(myLan.back,myIcon.Action_Back, true, true, pageSetWipe);
-    cancelSetWipeBtn->setFixedSize(QSize(BTN_WIDTH,BTN_HEIGHT));
+    cancelSetWipeBtn = new myPushButton(myLan.back, myIcon.Action_Back, true, true, pageSetWipe);
+    cancelSetWipeBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     cancelSetWipeBtn->setHidden(true);
 
-/* page update */
+    /* page update */
     connect(mainWipeTabWidget, SIGNAL(currentChanged(int)), wipeStackedWidget, SLOT(setCurrentIndex(int)));
-    connect(cancelSetWipeBtn  , SIGNAL(pressed())  , this, SLOT(onCancelWipeBtnClickedSlt()));
-    connect(wipeModeBtn,SIGNAL(pressed()),this,SLOT(onWipeModeBtnClickedSlt()));
+    connect(cancelSetWipeBtn, SIGNAL(pressed()), this, SLOT(onCancelWipeBtnClickedSlt()));
+    connect(wipeModeBtn, SIGNAL(pressed()), this, SLOT(onWipeModeBtnClickedSlt()));
 
-/* page layout */
-    QVBoxLayout *mainLayout = new QVBoxLayout(pageSetWipe);
-    QHBoxLayout *downLayout = new QHBoxLayout();
+    /* page layout */
+    QVBoxLayout* mainLayout = new QVBoxLayout(pageSetWipe);
+    QHBoxLayout* downLayout = new QHBoxLayout();
     downLayout->addWidget(wipeModeBtn, 1, Qt::AlignLeft);
-    downLayout->addWidget(cancelSetWipeBtn,1,Qt::AlignRight);
+    downLayout->addWidget(cancelSetWipeBtn, 1, Qt::AlignRight);
 
     mainLayout->setContentsMargins(10, 20, 10, 80);
     mainLayout->addWidget(mainWipeTabWidget);
@@ -2472,11 +2612,13 @@ void MainWidget::CreateSetWipeWidget()
 
 void MainWidget::updateWipePage()
 {
-    for (int i = mainWipeTabWidget->count()-1; i >= 0; i--) {
+    for (int i = mainWipeTabWidget->count() - 1; i >= 0; i--)
+    {
         mainWipeTabWidget->removeTab(i);
     }
 
-    if (struCnfe.nMachine == MACHINE_CF) {
+    if (struCnfe.nMachine == MACHINE_CF)
+    {
         mainWipeTabWidget->insertTab(0, myLan.wipe_set);
     }
     //! 刷新
@@ -2490,10 +2632,13 @@ void MainWidget::updateWipePage()
  */
 void MainWidget::onCancelWipeBtnClickedSlt()
 {
-    if(wipeStackedWidget->currentIndex() == 3) {
+    if (wipeStackedWidget->currentIndex() == 3)
+    {
         updateWipePage();
         wipeModeBtn->show();
-    } else {
+    }
+    else
+    {
         updateHomePage();
         this->stackedWidget->setCurrentIndex(SM_HOME_PAGE);
     }
@@ -2503,8 +2648,9 @@ void MainWidget::onCancelWipeBtnClickedSlt()
  */
 void MainWidget::onWipeModeBtnClickedSlt()
 {
-    for(int i = 0; i < 3; i++) {
-        mainWipeTabWidget->setTabEnabled(i,false);
+    for (int i = 0; i < 3; i++)
+    {
+        mainWipeTabWidget->setTabEnabled(i, false);
     }
 
     wipeModeBtn->hide();
@@ -2521,51 +2667,51 @@ void MainWidget::onWipeModeBtnClickedSlt()
  */
 void MainWidget::CreateSetPurviewWidget()
 {
-    userOperatorBtn  = new myPushButton(myLan.operator_mode,myIcon.System_Unlock,
-                                     true, false, pagePurview);
-    userOperatorBtn->setFixedSize(LCD_WIDTH/3, BTN_HEIGHT);
-    userEngineerBtn  = new myPushButton(myLan.engineer,myIcon.System_Lock,
-                                    true, true, pagePurview);
-    userEngineerBtn->setFixedSize(LCD_WIDTH/3, BTN_HEIGHT);
-    userFactoryBtn   = new myPushButton(myLan.vendor_mode,myIcon.System_Lock,
-                                     true, true, pagePurview);
-    userFactoryBtn->setFixedSize(LCD_WIDTH/3, BTN_HEIGHT);
+    userOperatorBtn = new myPushButton(myLan.operator_mode, myIcon.System_Unlock,
+        true, false, pagePurview);
+    userOperatorBtn->setFixedSize(LCD_WIDTH / 3, BTN_HEIGHT);
+    userEngineerBtn = new myPushButton(myLan.engineer, myIcon.System_Lock,
+        true, true, pagePurview);
+    userEngineerBtn->setFixedSize(LCD_WIDTH / 3, BTN_HEIGHT);
+    userFactoryBtn = new myPushButton(myLan.vendor_mode, myIcon.System_Lock,
+        true, true, pagePurview);
+    userFactoryBtn->setFixedSize(LCD_WIDTH / 3, BTN_HEIGHT);
 
-    cancelSetPurviewBtn    = new myPushButton(myLan.back,myIcon.Action_Back,
-                                              true, true, pagePurview);
+    cancelSetPurviewBtn = new myPushButton(myLan.back, myIcon.Action_Back,
+        true, true, pagePurview);
     cancelSetPurviewBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
 
     //页面布局
     purviewPageGridLayout = new QGridLayout(pagePurview);
-    purviewPageGridLayout->setVerticalSpacing((LCD_CONTENT_HEIGTH-4*BTN_HEIGHT-60)/3);
-    purviewPageGridLayout->setContentsMargins(10,50,10,20);
+    purviewPageGridLayout->setVerticalSpacing((LCD_CONTENT_HEIGTH - 4 * BTN_HEIGHT - 60) / 3);
+    purviewPageGridLayout->setContentsMargins(10, 50, 10, 20);
 
-    purviewPageHBLayout1  = new QHBoxLayout();
-    purviewPageHBLayout1->setContentsMargins(LCD_WIDTH/3,0,LCD_WIDTH/3,0);
+    purviewPageHBLayout1 = new QHBoxLayout();
+    purviewPageHBLayout1->setContentsMargins(LCD_WIDTH / 3, 0, LCD_WIDTH / 3, 0);
     purviewPageHBLayout1->addWidget(userOperatorBtn);
-    purviewPageGridLayout->addLayout(purviewPageHBLayout1,0,0,1,1);
+    purviewPageGridLayout->addLayout(purviewPageHBLayout1, 0, 0, 1, 1);
 
-    purviewPageHBLayout2  = new QHBoxLayout();
-    purviewPageHBLayout2->setContentsMargins(LCD_WIDTH/3,0,LCD_WIDTH/3,0);
+    purviewPageHBLayout2 = new QHBoxLayout();
+    purviewPageHBLayout2->setContentsMargins(LCD_WIDTH / 3, 0, LCD_WIDTH / 3, 0);
     purviewPageHBLayout2->addWidget(userEngineerBtn);
-    purviewPageGridLayout->addLayout(purviewPageHBLayout2,1,0,1,1);
+    purviewPageGridLayout->addLayout(purviewPageHBLayout2, 1, 0, 1, 1);
 
-    purviewPageHBLayout3  = new QHBoxLayout();
-    purviewPageHBLayout3->setContentsMargins(LCD_WIDTH/3,0,LCD_WIDTH/3,0);
+    purviewPageHBLayout3 = new QHBoxLayout();
+    purviewPageHBLayout3->setContentsMargins(LCD_WIDTH / 3, 0, LCD_WIDTH / 3, 0);
     purviewPageHBLayout3->addWidget(userFactoryBtn);
-    purviewPageGridLayout->addLayout(purviewPageHBLayout3,2,0,1,1);
+    purviewPageGridLayout->addLayout(purviewPageHBLayout3, 2, 0, 1, 1);
 
-    purviewPageHBLayout4  = new QHBoxLayout();
-    horizontalSpacer_9    = new QSpacerItem(10, BTN_HEIGHT, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    purviewPageHBLayout4 = new QHBoxLayout();
+    horizontalSpacer_9 = new QSpacerItem(10, BTN_HEIGHT, QSizePolicy::Expanding, QSizePolicy::Fixed);
     purviewPageHBLayout4->addItem(horizontalSpacer_9);
     purviewPageHBLayout4->addWidget(cancelSetPurviewBtn);
-    purviewPageGridLayout->addLayout(purviewPageHBLayout4,3,0,1,3);
+    purviewPageGridLayout->addLayout(purviewPageHBLayout4, 3, 0, 1, 3);
 
     //槽函数
-    connect(userOperatorBtn,SIGNAL(pressed()),this,SLOT(onUserOperatorBtnClickedSlt()));
-    connect(userEngineerBtn,SIGNAL(pressed()),this,SLOT(onUserEngineerBtnClickedSlt()));
-    connect(userFactoryBtn,SIGNAL(pressed()),this,SLOT(onUserFactoryBtnClickedSlt()));
-    connect(cancelSetPurviewBtn,SIGNAL(pressed()),this,SLOT(onCancelSetPurviewBtnClickedSlt()));
+    connect(userOperatorBtn, SIGNAL(pressed()), this, SLOT(onUserOperatorBtnClickedSlt()));
+    connect(userEngineerBtn, SIGNAL(pressed()), this, SLOT(onUserEngineerBtnClickedSlt()));
+    connect(userFactoryBtn, SIGNAL(pressed()), this, SLOT(onUserFactoryBtnClickedSlt()));
+    connect(cancelSetPurviewBtn, SIGNAL(pressed()), this, SLOT(onCancelSetPurviewBtnClickedSlt()));
 }
 
 /**
@@ -2595,12 +2741,13 @@ void MainWidget::onUserOperatorBtnClickedSlt()
  */
 void MainWidget::onUserEngineerBtnClickedSlt()
 {
-    myInputPanel inputDlg(passwdType,0,0,0);
-    int ret  = inputDlg.exec();
+    myInputPanel inputDlg(passwdType, 0, 0, 0);
+    int ret = inputDlg.exec();
     if (ret == QDialog::Accepted)
     {
         QString str = inputDlg.getText();
-        if (str == "20130621") {
+        if (str == "20130621")
+        {
             userEngineerBtn->setIcon(myIcon.System_Unlock);
             userFactoryBtn->setIcon(myIcon.System_Lock);
             userOperatorBtn->setEnabled(true);
@@ -2612,7 +2759,9 @@ void MainWidget::onUserEngineerBtnClickedSlt()
 
             struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_ENGINEER;
             this->stackedWidget->setCurrentIndex(SM_HOME_PAGE);
-        } else {
+        }
+        else
+        {
             infoWidget->setLabelText(myLan.msg_password_error);
             infoWidget->delayShow();
             myFlow.sleep(3);
@@ -2627,8 +2776,8 @@ void MainWidget::onUserEngineerBtnClickedSlt()
  */
 void MainWidget::onUserFactoryBtnClickedSlt()
 {
-    myInputPanel inputDlg(passwdType,0,0,0);
-    int ret  = inputDlg.exec();
+    myInputPanel inputDlg(passwdType, 0, 0, 0);
+    int ret = inputDlg.exec();
     if (ret == QDialog::Accepted)
     {
         QString str = inputDlg.getText();
@@ -2638,7 +2787,8 @@ void MainWidget::onUserFactoryBtnClickedSlt()
 #else
         isNeedKey = 0;
 #endif
-        if (str == "20180701" || isNeedKey) {
+        if (str == "20180701" || isNeedKey)
+        {
             userEngineerBtn->setIcon(myIcon.System_Lock);
             userFactoryBtn->setIcon(myIcon.System_Unlock);
             userOperatorBtn->setEnabled(true);
@@ -2650,7 +2800,9 @@ void MainWidget::onUserFactoryBtnClickedSlt()
 
             struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_FACTORY;
             this->stackedWidget->setCurrentIndex(SM_HOME_PAGE);
-        } else {
+        }
+        else
+        {
             infoWidget->setLabelText(myLan.msg_password_error);
             infoWidget->delayShow();
             myFlow.sleep(3);
@@ -2662,7 +2814,7 @@ void MainWidget::onUserFactoryBtnClickedSlt()
 /* 隐藏标题栏上的按钮 */
 void MainWidget::onHideTitleBtnsSlt()
 {
-//    backToHomeBtn->hide();
+    //    backToHomeBtn->hide();
     feedSwitchBtn->hide();
 }
 
@@ -2681,17 +2833,21 @@ void MainWidget::onOneKeyFeedBtnPressed()
     m_bIsFeed = !m_bIsFeed;
 
     /* 若选择一键放料则关闭自动供料 */
-    if (m_bIsFeed) {
-//        m_oneKeyFeedBtn->setRedColor(GREEN);
+    if (m_bIsFeed)
+    {
+        //        m_oneKeyFeedBtn->setRedColor(GREEN);
         struGsh.bStatFeedCtrlEn = 0;
 
         /* 打开所有振动器 */
-        for (int i = 0; i < ((struCnfg.struLevelInfo[0].nViewTotal == 1)?struCnfg.struLevelInfo[0].nUnitLevelTotal/2:struCnfg.struLevelInfo[0].nUnitLevelTotal/4)/2; i++) {
+        for (int i = 0; i < ((struCnfg.struLevelInfo[0].nViewTotal == 1) ? struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 : struCnfg.struLevelInfo[0].nUnitLevelTotal / 4) / 2; i++)
+        {
             struCnfp.struGroupCtrl[0].nFeederEnable[i] = 1;
         }
         myFlow.resetFeeder(0);
-    } else {
-//        m_oneKeyFeedBtn->setRedColor(DEF);
+    }
+    else
+    {
+        //        m_oneKeyFeedBtn->setRedColor(DEF);
         struGsh.bStatFeedCtrlEn = 1;
     }
 }
@@ -2704,17 +2860,20 @@ void MainWidget::onOneKeyFeedBtnPressed()
 void MainWidget::onCloseFeederSlt(int trigger)
 {
     //! 供料状态判断，避免重复操作
-    if (struGsh.bStatFeed == MODE_CLOSE) {
+    if (struGsh.bStatFeed == MODE_CLOSE)
+    {
         return;
     }
 
     //! 从屏模式仅处理网络同步触发请求，忽略报警、PLC、手动、定时等其他触发方式
-    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger != TRIGGER_SYNC) {
+    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger != TRIGGER_SYNC)
+    {
         return;
     }
 
     //! 主屏模式忽略网络同步触发请求，仅处理手动、定时、报警、PLC等其他触发方式
-    if (struCnfg.nRunMode == MODE_RUN_MASTER && trigger == TRIGGER_SYNC) {
+    if (struCnfg.nRunMode == MODE_RUN_MASTER && trigger == TRIGGER_SYNC)
+    {
         return;
     }
 
@@ -2725,9 +2884,9 @@ void MainWidget::onCloseFeederSlt(int trigger)
     infoWidget->hide();
 
     //! 同步刷新按钮显示
-    QString textOff = myLan.feed+" "+myLan.off;
-//    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);}");
-//    feedSwitchBtn->setStyleSheet(strStyle5);
+    QString textOff = myLan.feed + " " + myLan.off;
+    //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);}");
+    //    feedSwitchBtn->setStyleSheet(strStyle5);
     feedSwitchBtn->setText(myLan.working_stop);
     feedSwitchBtn->setIcon(QIcon(":/res/png/workStart.png"));
 
@@ -2735,18 +2894,20 @@ void MainWidget::onCloseFeederSlt(int trigger)
     patlette.setColor(QPalette::ButtonText, Qt::black);
     feedSwitchBtn->setPalette(patlette);
 
-//    feedSwitchBtn->setRedColor(DEF);
+    //    feedSwitchBtn->setRedColor(DEF);
 
-    //! 隐藏一键放料按钮（米机料位监控）
+        //! 隐藏一键放料按钮（米机料位监控）
     emit hideOneKeyFeedSig();
 
     //! 豆类定制机型处理
-    if (struCnfe.nEnableBeanMachine == 1) {
+    if (struCnfe.nEnableBeanMachine == 1)
+    {
         struGsh.enableJudgeBeanMachine = false;
     }
 
     //! 主屏模式广播同步供料控制请求
-    if (struCnfg.nRunMode == MODE_RUN_MASTER) {
+    if (struCnfg.nRunMode == MODE_RUN_MASTER)
+    {
         QByteArray args;
         args.append(MODE_CLOSE);
         myDevMonitor->writeDatagram(CMD_SCREEN_FEED_CONTROL, args, strNetInfo.groupAddress, strNetInfo.selfNetControlPort);
@@ -2761,7 +2922,8 @@ void MainWidget::onCloseFeederSlt(int trigger)
 void MainWidget::onOpenFeederSlt(int trigger)
 {
     //! 供料状态判断，避免重复操作
-    if (struGsh.bStatFeed == MODE_OPEN) {
+    if (struGsh.bStatFeed == MODE_OPEN)
+    {
         return;
     }
 
@@ -2771,34 +2933,40 @@ void MainWidget::onOpenFeederSlt(int trigger)
         || sm == SM_COMM_LIST_PAGE
         || sm == SM_INIT_PAGE
         || sm == SM_PREHEAT_PAGE
-//        || sm == SM_TEST_EJECT_PAGE
-/*        || sm == SM_SET_FACTORY*/) {
+        //        || sm == SM_TEST_EJECT_PAGE
+        /*        || sm == SM_SET_FACTORY*/)
+    {
         return;
     }
 
     int hsm = homePageStackedWidget->currentIndex();
     if (hsm == HOME_EJECT_PAGE_INDEX
-        || hsm == HIGH_SET_OPR_PAGE_INDEX) {
+        || hsm == HIGH_SET_OPR_PAGE_INDEX)
+    {
         return;
     }
 
     //! 大数据采集同步状态下禁止打开下料
-    if (struGsh.isQueryingCom3) {
+    if (struGsh.isQueryingCom3)
+    {
         return;
     }
 
     //! 从屏模式仅处理网络同步触发请求，忽略手动、定时、报警、PLC等其他触发方式
-    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger != TRIGGER_SYNC) {
+    if (struCnfg.nRunMode == MODE_RUN_SLAVE && trigger != TRIGGER_SYNC)
+    {
         return;
     }
 
     //! 主屏模式忽略网络同步触发请求，仅处理手动、定时、报警、PLC等其他触发方式
-    if (struCnfg.nRunMode == MODE_RUN_MASTER && trigger == TRIGGER_SYNC) {
+    if (struCnfg.nRunMode == MODE_RUN_MASTER && trigger == TRIGGER_SYNC)
+    {
         return;
     }
 
     //! 主屏模式广播同步供料控制请求
-    if (struCnfg.nRunMode == MODE_RUN_MASTER) {
+    if (struCnfg.nRunMode == MODE_RUN_MASTER)
+    {
         QByteArray args;
         args.append(MODE_OPEN);
         myDevMonitor->writeDatagram(CMD_SCREEN_FEED_CONTROL, args, strNetInfo.groupAddress, strNetInfo.selfNetControlPort);
@@ -2811,21 +2979,22 @@ void MainWidget::onOpenFeederSlt(int trigger)
     infoWidget->hide();
 
     //! 同步刷新按钮显示
-    QString textOn = myLan.feed+" "+myLan.on;
+    QString textOn = myLan.feed + " " + myLan.on;
     feedSwitchBtn->setText(myLan.working_start);
-//    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStop.png);}");
-//    feedSwitchBtn->setStyleSheet(strStyle5);
+    //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStop.png);}");
+    //    feedSwitchBtn->setStyleSheet(strStyle5);
     feedSwitchBtn->setIcon(QIcon(":/res/png/workStop.png"));
     QPalette patlette;
     patlette.setColor(QPalette::ButtonText, Qt::red);
     feedSwitchBtn->setPalette(patlette);
-//    feedSwitchBtn->setRedColor(GREEN);
+    //    feedSwitchBtn->setRedColor(GREEN);
 
-    //! RS机型料位监控下显示一键放料按钮
+        //! RS机型料位监控下显示一键放料按钮
     emit showOneKeyFeedSig();
 
     //! 豆类定制机型处理
-    if (struCnfe.nEnableBeanMachine == 1) {
+    if (struCnfe.nEnableBeanMachine == 1)
+    {
         struGsh.enableJudgeBeanMachine = true;
     }
 }
@@ -2834,10 +3003,10 @@ void MainWidget::createNetworkUploader()
 {
 #if 1
     // network uploader 
-    MyUploader *uploader = new MyUploader;
+    MyUploader* uploader = new MyUploader;
 
     // uploader timer
-    QTimer *uploaderTimer = new QTimer;
+    QTimer* uploaderTimer = new QTimer;
     uploaderTimer->setInterval(DEF_TIMEOUT_LOG);
 
     // uploader thread
@@ -2848,7 +3017,7 @@ void MainWidget::createNetworkUploader()
     uploaderTimer->moveToThread(uploaderThread);
 
     // response to log 
-    connect(uploaderTimer, SIGNAL(timeout()),    uploader, SLOT(uploadLog()));
+    connect(uploaderTimer, SIGNAL(timeout()), uploader, SLOT(uploadLog()));
 
     // response to alarm
     connect(getStatus, SIGNAL(alarmReady()), uploader, SLOT(uploadAlarm()));
@@ -2895,7 +3064,8 @@ void MainWidget::createGetEjectTimesThread()
 {
     g_ejectTimesThread = new EjectTimesThread;
 
-    if (struCnfp.isFeederAIEnable == 1 && struCnfp.autoFeedEnablePageFlag == 1) {
+    if (struCnfp.isFeederAIEnable == 1 && struCnfp.autoFeedEnablePageFlag == 1)
+    {
         g_ejectTimesThread->start();
     }
 }
@@ -2904,9 +3074,9 @@ void MainWidget::createGetEjectTimesThread()
  * 创建喷阀自检页面及相关功能
  *
  *******************************************************************************************************/
-/**
- * 创建喷阀自检线程响应函数
- */
+ /**
+  * 创建喷阀自检线程响应函数
+  */
 TestEjectThread::TestEjectThread()
 {
     stopped = false;
@@ -2916,7 +3086,8 @@ void TestEjectThread::run()
 {
     emit ejectorChangeSig();
     stopped = false;
-    while(!stopped){
+    while (!stopped)
+    {
         myFlow.sleep(1);
     }
 }
@@ -2940,11 +3111,12 @@ void MainWidget::CreateTestEjectWidget()
 {
     int margin = 60;
 
-    if(LCD_WIDTH == 640){
+    if (LCD_WIDTH == 640)
+    {
         margin = 20;
     }
 
-    bFlagLoop  = false;
+    bFlagLoop = false;
     nDisplayNum = 1;
     ejectTestInterval = 300;
     ejectTestInterval2 = 100;
@@ -2958,8 +3130,8 @@ void MainWidget::CreateTestEjectWidget()
     minusBtn = new myPushButton("", myIcon.Action_Minus, pageTestEject);
     addBtn = new myPushButton("", myIcon.Action_Plus, pageTestEject);
     ejectorSlider = new mySlider(Qt::Horizontal, 1, 1, nDisplayNum, pageTestEject);
-//    loopCbx = new myCustomCheckBox("单喷阀测试", false,CB_STYLE_APPLY);
-    loopCbx = new myCustomCheckBox(myLan.ejector_keep_loop, false,CB_STYLE_APPLY);
+    //    loopCbx = new myCustomCheckBox("单喷阀测试", false,CB_STYLE_APPLY);
+    loopCbx = new myCustomCheckBox(myLan.ejector_keep_loop, false, CB_STYLE_APPLY);
     layerBtn = new myPushButton(myLan.upper_layer, QIcon(), pageTestEject);
 
     highSpeedCbx = new myCustomCheckBox(myLan.ai_high_speed, false, CB_STYLE_APPLY);
@@ -2968,8 +3140,8 @@ void MainWidget::CreateTestEjectWidget()
     /* 更新滑动条及层数状态 */
     updateEjextorSlider();
 
-    startBtn = new myPushButton(myLan.start,QIcon(""), true, pageTestEject);
-    stopBtn = new myPushButton(myLan.stop ,QIcon(""), false, pageTestEject);
+    startBtn = new myPushButton(myLan.start, QIcon(""), true, pageTestEject);
+    stopBtn = new myPushButton(myLan.stop, QIcon(""), false, pageTestEject);
     cancelTestEjectBtn = new myPushButton(myLan.back, myIcon.Action_Back, pageTestEject);
     cancelTestEjectBtn->hide();
 
@@ -2977,38 +3149,38 @@ void MainWidget::CreateTestEjectWidget()
     minusBtn->setMaximumSize(QSize(SMALL_BTN_WIDTH, BTN_HEIGHT));
     addBtn->setMaximumSize(QSize(SMALL_BTN_WIDTH, BTN_HEIGHT));
     lcdNumber->setFixedSize(100, BTN_HEIGHT);
-    startBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-    stopBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-    layerBtn->setMaximumSize(QSize(BTN_WIDTH,BTN_HEIGHT));
-    cancelTestEjectBtn->setMaximumSize(QSize(BTN_WIDTH,BTN_HEIGHT));
+    startBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    stopBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    layerBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    cancelTestEjectBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
     // 页面布局
-    QVBoxLayout *mainLay = new QVBoxLayout(pageTestEject);
+    QVBoxLayout* mainLay = new QVBoxLayout(pageTestEject);
     ejectPageGridLayout = new QGridLayout;
-    ejectPageGridLayout->setContentsMargins(20,20,20,10);
+    ejectPageGridLayout->setContentsMargins(20, 20, 20, 10);
 
-    ejectPageHBlayout1   = new QHBoxLayout();
-    ejectPageHBlayout1->setContentsMargins(margin,0,margin,0);
-    horizontalSpacer_3 = new QSpacerItem(ICON_WID+60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    ejectPageHBlayout1 = new QHBoxLayout();
+    ejectPageHBlayout1->setContentsMargins(margin, 0, margin, 0);
+    horizontalSpacer_3 = new QSpacerItem(ICON_WID + 60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
     ejectPageHBlayout1->addItem(horizontalSpacer_3);
     ejectPageHBlayout1->addWidget(currentLabel);
     ejectPageHBlayout1->addWidget(lcdNumber);
     horizontalSpacer_4 = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
     ejectPageHBlayout1->addItem(horizontalSpacer_4);
-    ejectPageGridLayout->addLayout(ejectPageHBlayout1,1,0,1,1);
+    ejectPageGridLayout->addLayout(ejectPageHBlayout1, 1, 0, 1, 1);
 
     ejectPageHBlayout2 = new QHBoxLayout();
-    ejectPageHBlayout2->setContentsMargins(margin,0,margin,0);
+    ejectPageHBlayout2->setContentsMargins(margin, 0, margin, 0);
     ejectPageHBlayout2->setSpacing(50);
     ejectPageHBlayout2->addWidget(minusBtn);
     ejectPageHBlayout2->addWidget(ejectorSlider);
     ejectPageHBlayout2->addWidget(addBtn);
-    ejectPageGridLayout->addLayout(ejectPageHBlayout2,2,0,1,1);
+    ejectPageGridLayout->addLayout(ejectPageHBlayout2, 2, 0, 1, 1);
 
     ejectPageHBlayout3 = new QHBoxLayout();
-    ejectPageHBlayout3->setContentsMargins(margin,0,margin,0);
-    horizontalSpacer_5 = new QSpacerItem(ICON_WID+60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    horizontalSpacer_7 = new QSpacerItem(ICON_WID+60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    ejectPageHBlayout3->setContentsMargins(margin, 0, margin, 0);
+    horizontalSpacer_5 = new QSpacerItem(ICON_WID + 60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    horizontalSpacer_7 = new QSpacerItem(ICON_WID + 60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
     horizontalSpacer_8 = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
     ejectPageHBlayout3->addItem(horizontalSpacer_5);
     ejectPageHBlayout3->addWidget(loopCbx);
@@ -3019,27 +3191,27 @@ void MainWidget::CreateTestEjectWidget()
     horizontalSpacer_6 = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
     ejectPageHBlayout3->addItem(horizontalSpacer_6);
     ejectPageHBlayout3->addWidget(layerBtn);
-    ejectPageGridLayout->addLayout(ejectPageHBlayout3,0,0,1,1);
+    ejectPageGridLayout->addLayout(ejectPageHBlayout3, 0, 0, 1, 1);
 
-    ejectPageHBlayout4   = new QHBoxLayout();
-    ejectPageHBlayout4->setContentsMargins(margin,0,margin,0);
-//    horizontalSpacer_7 = new QSpacerItem(ICON_WID+60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
-//    ejectPageHBlayout4->addItem(horizontalSpacer_7);
-//    ejectPageHBlayout4->addWidget(highSpeedCbx);
-//    horizontalSpacer_8 = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-//    ejectPageHBlayout4->addItem(horizontalSpacer_8);
-//    ejectPageHBlayout4->addWidget(lowSpeedCbx);
-//    ejectPageGridLayout->addLayout(ejectPageHBlayout4,3,0,1,1);
+    ejectPageHBlayout4 = new QHBoxLayout();
+    ejectPageHBlayout4->setContentsMargins(margin, 0, margin, 0);
+    //    horizontalSpacer_7 = new QSpacerItem(ICON_WID+60, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    //    ejectPageHBlayout4->addItem(horizontalSpacer_7);
+    //    ejectPageHBlayout4->addWidget(highSpeedCbx);
+    //    horizontalSpacer_8 = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //    ejectPageHBlayout4->addItem(horizontalSpacer_8);
+    //    ejectPageHBlayout4->addWidget(lowSpeedCbx);
+    //    ejectPageGridLayout->addLayout(ejectPageHBlayout4,3,0,1,1);
 
-    ejectPageHBlayout5   = new QHBoxLayout();
-    ejectPageHBlayout5->setContentsMargins(margin,0,margin,0);
+    ejectPageHBlayout5 = new QHBoxLayout();
+    ejectPageHBlayout5->setContentsMargins(margin, 0, margin, 0);
     ejectPageHBlayout5->addWidget(startBtn);
     horizontalSpacer_10 = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
     ejectPageHBlayout5->addItem(horizontalSpacer_10);
     ejectPageHBlayout5->addWidget(stopBtn);
-    ejectPageGridLayout->addLayout(ejectPageHBlayout5,3,0,1,1);
+    ejectPageGridLayout->addLayout(ejectPageHBlayout5, 3, 0, 1, 1);
 
-    ejectPageHBlayout6   = new QHBoxLayout();
+    ejectPageHBlayout6 = new QHBoxLayout();
     ejectPageHBlayout6->addStretch();
     ejectPageHBlayout6->addWidget(cancelTestEjectBtn);
     mainLay->addLayout(ejectPageGridLayout);
@@ -3049,18 +3221,18 @@ void MainWidget::CreateTestEjectWidget()
     updateLayerBtnSlt();
 
     // 槽函数
-    connect(cancelTestEjectBtn  ,SIGNAL(pressed())          ,this,   SLOT(onCancelTestEjectBtnClickedSlt()));
-    connect(ejectorSlider       ,SIGNAL(valueChanged(int))  ,this,   SLOT(ejectPageDisplayLcdNumerSlt()));
-    connect(addBtn              ,SIGNAL(pressed())          ,this,   SLOT(onAddBtnClickedSlt()));
-    connect(minusBtn            ,SIGNAL(pressed())          ,this,   SLOT(onMinusBtnClickedSlt()));
-    connect(loopCbx             ,SIGNAL(pressed())          ,this,   SLOT(onLoopCbxClickedSlt()));
-    connect(highSpeedCbx        ,SIGNAL(pressed())          ,this,   SLOT(onHighSpeedCbxClickedSlt()));
-    connect(lowSpeedCbx         ,SIGNAL(pressed())          ,this,   SLOT(onLowSpeedCbxClickedSlt()));
-    connect(startBtn            ,SIGNAL(pressed())          ,this,   SLOT(onStartStopBtnClickedSlt()));
-    connect(stopBtn             ,SIGNAL(pressed())          ,this,   SLOT(onStartStopBtnClickedSlt()));
-    connect(layerBtn            ,SIGNAL(pressed())          ,this,   SLOT(onLayerBtnClickedSlt()));
-    connect(threadStart         ,SIGNAL(ejectorChangeSig()) ,this,   SLOT(ejectPageThreadStartSlt()));
-    connect(this                ,SIGNAL(ejectTestDonesig())    ,threadStart,   SLOT(ejectTestDoneSlt()));
+    connect(cancelTestEjectBtn, SIGNAL(pressed()), this, SLOT(onCancelTestEjectBtnClickedSlt()));
+    connect(ejectorSlider, SIGNAL(valueChanged(int)), this, SLOT(ejectPageDisplayLcdNumerSlt()));
+    connect(addBtn, SIGNAL(pressed()), this, SLOT(onAddBtnClickedSlt()));
+    connect(minusBtn, SIGNAL(pressed()), this, SLOT(onMinusBtnClickedSlt()));
+    connect(loopCbx, SIGNAL(pressed()), this, SLOT(onLoopCbxClickedSlt()));
+    connect(highSpeedCbx, SIGNAL(pressed()), this, SLOT(onHighSpeedCbxClickedSlt()));
+    connect(lowSpeedCbx, SIGNAL(pressed()), this, SLOT(onLowSpeedCbxClickedSlt()));
+    connect(startBtn, SIGNAL(pressed()), this, SLOT(onStartStopBtnClickedSlt()));
+    connect(stopBtn, SIGNAL(pressed()), this, SLOT(onStartStopBtnClickedSlt()));
+    connect(layerBtn, SIGNAL(pressed()), this, SLOT(onLayerBtnClickedSlt()));
+    connect(threadStart, SIGNAL(ejectorChangeSig()), this, SLOT(ejectPageThreadStartSlt()));
+    connect(this, SIGNAL(ejectTestDonesig()), threadStart, SLOT(ejectTestDoneSlt()));
 
 }
 /**
@@ -3070,13 +3242,15 @@ void MainWidget::CreateTestEjectWidget()
 void MainWidget::updateEjextorSlider()
 {
     layerBtn->setHidden(true);
-    if(struCnfe.nMachine == MACHINE_CF) {
-         nMaxEjector = struCnfg.nEjectorsPerChute*struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal/2;
-         ejectorSlider->setRange(1,nMaxEjector);
-         if(nDisplayNum > struCnfg.nEjectorsPerChute*struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal/2){
-             nDisplayNum = struCnfg.nEjectorsPerChute*struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal/2;
-             ejectorSlider->setValue(nDisplayNum);
-         }
+    if (struCnfe.nMachine == MACHINE_CF)
+    {
+        nMaxEjector = struCnfg.nEjectorsPerChute * struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal / 2;
+        ejectorSlider->setRange(1, nMaxEjector);
+        if (nDisplayNum > struCnfg.nEjectorsPerChute * struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal / 2)
+        {
+            nDisplayNum = struCnfg.nEjectorsPerChute * struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal / 2;
+            ejectorSlider->setValue(nDisplayNum);
+        }
     }
 }
 /**
@@ -3085,22 +3259,26 @@ void MainWidget::updateEjextorSlider()
 void MainWidget::onCancelTestEjectBtnClickedSlt()
 {
     int currentGroup = 0;
-    if (threadStart->isRunning()) {
-    	startBtn->setEnabled(true);
+    if (threadStart->isRunning())
+    {
+        startBtn->setEnabled(true);
         stopBtn->setEnabled(false);
         layerBtn->setEnabled(true);
         threadStart->stop();
         threadStart->wait();
 
-        currentGroup = (nDisplayNum-1)/struCnfg.nEjectorsPerChute;
+        currentGroup = (nDisplayNum - 1) / struCnfg.nEjectorsPerChute;
         /* 前8个通道喷阀由接口板1控制，后2个通道喷阀由接口板2控制 */
-        if(currentGroup < MAX_UNIT_PER_INT/2) {
-            MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel, 0, 0x00, 0, 0,
-                               (nDisplayNum-1)/256, (nDisplayNum-1)%256,3);
-        } else {
-            int nNum = nDisplayNum-1-MAX_UNIT_PER_INT/2*struCnfg.nEjectorsPerChute;
-            MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel+1, 0, 0x00, 0, 0,
-                               nNum/256, nNum%256,3);
+        if (currentGroup < MAX_UNIT_PER_INT / 2)
+        {
+            MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel, 0, 0x00, 0, 0,
+                (nDisplayNum - 1) / 256, (nDisplayNum - 1) % 256, 3);
+        }
+        else
+        {
+            int nNum = nDisplayNum - 1 - MAX_UNIT_PER_INT / 2 * struCnfg.nEjectorsPerChute;
+            MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel + 1, 0, 0x00, 0, 0,
+                nNum / 256, nNum % 256, 3);
         }
     }
 
@@ -3114,7 +3292,7 @@ void MainWidget::onAddBtnClickedSlt()
 {
     nDisplayNum = lcdNumber->value();
 
-    if(nDisplayNum < nMaxEjector)
+    if (nDisplayNum < nMaxEjector)
         nDisplayNum++;
 
     lcdNumber->display(nDisplayNum);
@@ -3127,7 +3305,7 @@ void MainWidget::onMinusBtnClickedSlt()
 {
     nDisplayNum = lcdNumber->value();
 
-    if(nDisplayNum > 1)
+    if (nDisplayNum > 1)
         nDisplayNum--;
 
     lcdNumber->display(nDisplayNum);
@@ -3145,7 +3323,8 @@ void MainWidget::onLoopCbxClickedSlt()
  */
 void MainWidget::onLayerBtnClickedSlt()
 {
-    switch(struCnfe.nMachine) {
+    switch (struCnfe.nMachine)
+    {
     default:
         layerBtn->setHidden(true);
         break;
@@ -3156,7 +3335,8 @@ void MainWidget::onLayerBtnClickedSlt()
  */
 void MainWidget::updateLayerBtnSlt()
 {
-    switch(struCnfe.nMachine) {
+    switch (struCnfe.nMachine)
+    {
     default:
         layerBtn->setHidden(true);
         break;
@@ -3167,15 +3347,18 @@ void MainWidget::updateLayerBtnSlt()
  */
 void MainWidget::onStartStopBtnClickedSlt()
 {
-    if (threadStart->isRunning()) {
+    if (threadStart->isRunning())
+    {
         threadStart->stop();
-    	startBtn->setEnabled(true);
-    	stopBtn->setEnabled(false);
+        startBtn->setEnabled(true);
+        stopBtn->setEnabled(false);
         layerBtn->setEnabled(true);
-    } else {
+    }
+    else
+    {
         threadStart->start();
-    	startBtn->setEnabled(false);
-    	stopBtn->setEnabled(true);
+        startBtn->setEnabled(false);
+        stopBtn->setEnabled(true);
         layerBtn->setEnabled(false);
     }
 }
@@ -3218,135 +3401,153 @@ void MainWidget::ejectPageDisplayLcdNumerSlt()
  */
 void MainWidget::ejectPageThreadStartSlt()
 {
-    if(struCnfg.aiEnable != 1){
-           if (threadStart->isRunning()) {
-               ejectorSlider->setValue(nDisplayNum);
-               lcdNumber->display(nDisplayNum);
-               if (myFlow.getProductLineNo() == 0) {    //杂粮机型拓展
-                   int currentGroup = (nDisplayNum-1)/struCnfg.nEjectorsPerChute;
-                   /* 前12个通道喷阀由接口板1控制，12以后的通道喷阀由接口板2控制 */
-                   if(currentGroup < MAX_UNIT_PER_INT/2) {
-                       MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel, 0, 0x01, 0, 0,
-                                          (nDisplayNum-1)/256, (nDisplayNum-1)%256,3);
-                       myFlow.msleep(ejectTestInterval);
-                       MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel, 0, 0x00, 0, 0,
-                                          (nDisplayNum-1)/256, (nDisplayNum-1)%256,3);
-                       myFlow.msleep(ejectTestInterval2);
-                   } else {
-                       int nNum = nDisplayNum-1-MAX_UNIT_PER_INT/2*struCnfg.nEjectorsPerChute;
-                       MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel+1, 0, 0x01, 0, 0,
-                                          nNum/256, nNum%256,3);
-                       myFlow.msleep(ejectTestInterval);
-                       MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel+1, 0, 0x00, 0, 0,
-                                          nNum/256, nNum%256,3);
-                       myFlow.msleep(ejectTestInterval2);
-                   }
-               } else {
-                   MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel, 0, 0x01, 0, 0,
-                                      (nDisplayNum-1)/256, (nDisplayNum-1)%256,3);
-                   myFlow.msleep(ejectTestInterval);
-                   MySerial.com1Write(CMD_INT_EJTEST,INT, struGsh.nLevel, 0, 0x00, 0, 0,
-                                      (nDisplayNum-1)/256, (nDisplayNum-1)%256,3);
-                   myFlow.msleep(ejectTestInterval2);
-               }
+    if (struCnfg.aiEnable != 1)
+    {
+        if (threadStart->isRunning())
+        {
+            ejectorSlider->setValue(nDisplayNum);
+            lcdNumber->display(nDisplayNum);
+            if (myFlow.getProductLineNo() == 0)
+            {    //杂粮机型拓展
+                int currentGroup = (nDisplayNum - 1) / struCnfg.nEjectorsPerChute;
+                /* 前12个通道喷阀由接口板1控制，12以后的通道喷阀由接口板2控制 */
+                if (currentGroup < MAX_UNIT_PER_INT / 2)
+                {
+                    MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel, 0, 0x01, 0, 0,
+                        (nDisplayNum - 1) / 256, (nDisplayNum - 1) % 256, 3);
+                    myFlow.msleep(ejectTestInterval);
+                    MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel, 0, 0x00, 0, 0,
+                        (nDisplayNum - 1) / 256, (nDisplayNum - 1) % 256, 3);
+                    myFlow.msleep(ejectTestInterval2);
+                }
+                else
+                {
+                    int nNum = nDisplayNum - 1 - MAX_UNIT_PER_INT / 2 * struCnfg.nEjectorsPerChute;
+                    MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel + 1, 0, 0x01, 0, 0,
+                        nNum / 256, nNum % 256, 3);
+                    myFlow.msleep(ejectTestInterval);
+                    MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel + 1, 0, 0x00, 0, 0,
+                        nNum / 256, nNum % 256, 3);
+                    myFlow.msleep(ejectTestInterval2);
+                }
+            }
+            else
+            {
+                MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel, 0, 0x01, 0, 0,
+                    (nDisplayNum - 1) / 256, (nDisplayNum - 1) % 256, 3);
+                myFlow.msleep(ejectTestInterval);
+                MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel, 0, 0x00, 0, 0,
+                    (nDisplayNum - 1) / 256, (nDisplayNum - 1) % 256, 3);
+                myFlow.msleep(ejectTestInterval2);
+            }
 
-               if (!bFlagLoop) {
-                   nDisplayNum++;
-               }
+            if (!bFlagLoop)
+            {
+                nDisplayNum++;
+            }
 
-               if (nDisplayNum > nMaxEjector) {
-                   nDisplayNum = nMaxEjector;
-                   if (!bFlagLoop) {
-                       startBtn->setEnabled(true);
-                       stopBtn->setEnabled(false);
-                       layerBtn->setEnabled(true);
-                       threadStart->stop();
-                       threadStart->wait();
-                       nDisplayNum = 1;
-                       ejectorSlider->setValue(nDisplayNum);
-                       lcdNumber->display(nDisplayNum);
-                   }
-               }
-           }
-       }else{
-           if (threadStart->isRunning()) {
-               ejectorSlider->setValue(nDisplayNum);
-               lcdNumber->display(nDisplayNum);
-               QByteArray args;
-               AI_Data_Protocol_D data;
-               int ejectorIndex = (nDisplayNum-1)/struCnfg.nEjectorsPerChute;
-               args[0] = 0;
-               args[1] = (nDisplayNum-1)%struCnfg.nEjectorsPerChute;
-               args[2] = aiEjectDelayTime/256;
-               args[3] = aiEjectDelayTime%256;
-               MyUpd.writeDatagram(CMD_AI_EJECTOR_FIXED_BGN, ejectorIndex, 4, args, struGsh.addressList.at(ejectorIndex), AI_UDP_SEND_PORT);
-               data.nCommandAddress = CMD_AI_EJECTOR_FIXED_BGN;
-               MyUpd.readUdpDatagrams(&data,13);
-               args.clear();
-   //            myFlow.msleep(100);
-               args[0] = 0;
-               args[1] = (nDisplayNum-1)%struCnfg.nEjectorsPerChute;
-               MyUpd.writeDatagram(CMD_AI_EJECTOR_FIXED_END, ejectorIndex, 2, args,struGsh.addressList.at(ejectorIndex), AI_UDP_SEND_PORT);
-               data.nCommandAddress = CMD_AI_EJECTOR_FIXED_END;
-               MyUpd.readUdpDatagrams(&data,13);
-               myFlow.msleep(aiEjectDelayTime/10);
-               if (!bFlagLoop) {
-                 nDisplayNum++;
-               }
-               if (nDisplayNum > nMaxEjector) {
-                   nDisplayNum = nMaxEjector;
-                   if (!bFlagLoop) {
-                       startBtn->setEnabled(true);
-                       stopBtn->setEnabled(false);
-                       threadStart->stop();
-                       threadStart->wait();
-                       nDisplayNum = 1;
-                       ejectorSlider->setValue(nDisplayNum);
-                       lcdNumber->display(nDisplayNum);
+            if (nDisplayNum > nMaxEjector)
+            {
+                nDisplayNum = nMaxEjector;
+                if (!bFlagLoop)
+                {
+                    startBtn->setEnabled(true);
+                    stopBtn->setEnabled(false);
+                    layerBtn->setEnabled(true);
+                    threadStart->stop();
+                    threadStart->wait();
+                    nDisplayNum = 1;
+                    ejectorSlider->setValue(nDisplayNum);
+                    lcdNumber->display(nDisplayNum);
+                }
+            }
+        }
+    }
+    else
+    {
+        if (threadStart->isRunning())
+        {
+            ejectorSlider->setValue(nDisplayNum);
+            lcdNumber->display(nDisplayNum);
+            QByteArray args;
+            AI_Data_Protocol_D data;
+            int ejectorIndex = (nDisplayNum - 1) / struCnfg.nEjectorsPerChute;
+            args[0] = 0;
+            args[1] = (nDisplayNum - 1) % struCnfg.nEjectorsPerChute;
+            args[2] = aiEjectDelayTime / 256;
+            args[3] = aiEjectDelayTime % 256;
+            MyUpd.writeDatagram(CMD_AI_EJECTOR_FIXED_BGN, ejectorIndex, 4, args, struGsh.addressList.at(ejectorIndex), AI_UDP_SEND_PORT);
+            data.nCommandAddress = CMD_AI_EJECTOR_FIXED_BGN;
+            MyUpd.readUdpDatagrams(&data, 13);
+            args.clear();
+            //            myFlow.msleep(100);
+            args[0] = 0;
+            args[1] = (nDisplayNum - 1) % struCnfg.nEjectorsPerChute;
+            MyUpd.writeDatagram(CMD_AI_EJECTOR_FIXED_END, ejectorIndex, 2, args, struGsh.addressList.at(ejectorIndex), AI_UDP_SEND_PORT);
+            data.nCommandAddress = CMD_AI_EJECTOR_FIXED_END;
+            MyUpd.readUdpDatagrams(&data, 13);
+            myFlow.msleep(aiEjectDelayTime / 10);
+            if (!bFlagLoop)
+            {
+                nDisplayNum++;
+            }
+            if (nDisplayNum > nMaxEjector)
+            {
+                nDisplayNum = nMaxEjector;
+                if (!bFlagLoop)
+                {
+                    startBtn->setEnabled(true);
+                    stopBtn->setEnabled(false);
+                    threadStart->stop();
+                    threadStart->wait();
+                    nDisplayNum = 1;
+                    ejectorSlider->setValue(nDisplayNum);
+                    lcdNumber->display(nDisplayNum);
 
-                   }
-               }
-           }
+                }
+            }
+        }
 
-       }
+    }
 
-       emit ejectTestDonesig();
+    emit ejectTestDonesig();
 }
 
 void MainWidget::onFunctionKeyChangedSlt(int index)
 {
-/* title */
-    /* default hide status */
-//    backToHomeBtn->setHidden(true);
-//    beltSwitchBtn->setHidden(true);
-//    feedSwitchBtn->setHidden(false);
-//    machineInfoBtn->setHidden(true);
+    /* title */
+        /* default hide status */
+    //    backToHomeBtn->setHidden(true);
+    //    beltSwitchBtn->setHidden(true);
+    //    feedSwitchBtn->setHidden(false);
+    //    machineInfoBtn->setHidden(true);
 
-    /* default enable status */
-//    backToHomeBtn->setEnabled(true);
-//    feedSwitchBtn->setEnabled(true);
-//    beltSwitchBtn->setEnabled(true);
-//    machineInfoBtn->setEnabled(true);
+        /* default enable status */
+    //    backToHomeBtn->setEnabled(true);
+    //    feedSwitchBtn->setEnabled(true);
+    //    beltSwitchBtn->setEnabled(true);
+    //    machineInfoBtn->setEnabled(true);
 
-/* statusline */
-    /* default hide status */
-//    lineStatus->setHidden(true);
-//    systemHaltBtn->setHidden(false);
-//    saveParamBtn->setHidden(false);
-//    setPurviewBtn->setHidden(true);
-//    statInfoBtn->setHidden(false);
-//    videoBtn->setHidden(false);
+    /* statusline */
+        /* default hide status */
+    //    lineStatus->setHidden(true);
+    //    systemHaltBtn->setHidden(false);
+    //    saveParamBtn->setHidden(false);
+    //    setPurviewBtn->setHidden(true);
+    //    statInfoBtn->setHidden(false);
+    //    videoBtn->setHidden(false);
 
-    /* default enable status */
-//    systemHaltBtn->setEnabled(false);
-//    saveParamBtn->setEnabled(true);
-//    setPurviewBtn->setEnabled(true);
-//    statInfoBtn->setEnabled(false);
-//    videoBtn->setEnabled(true);
+        /* default enable status */
+    //    systemHaltBtn->setEnabled(false);
+    //    saveParamBtn->setEnabled(true);
+    //    setPurviewBtn->setEnabled(true);
+    //    statInfoBtn->setEnabled(false);
+    //    videoBtn->setEnabled(true);
 
 
 
-    switch (index) {
+    switch (index)
+    {
     case SM_COMM_PAGE:
     case SM_COMM_LIST_PAGE:
     case SM_INIT_PAGE:
@@ -3378,7 +3579,7 @@ void MainWidget::onFunctionKeyChangedSlt(int index)
         lineTitle->setHidden(false);
         break;
     case SM_AI_PAGE:
-//    case SM_SCHEME_PARAM_PAGE:
+        //    case SM_SCHEME_PARAM_PAGE:
     case SM_VIDEO_PAGE:
     case SM_AI_MODEL_SET_PAGE:
     case SM_AUTO_ANALYSIS_PAGE:
@@ -3394,17 +3595,17 @@ void MainWidget::onFunctionKeyChangedSlt(int index)
         statInfoBtn->setHidden(true);
         lineTitle->setHidden(true);
         break;
-//    case SM_SET_FACTORY:
-//        feedSwitchBtn->setHidden(true);
-//        beltSwitchBtn->setHidden(true);
-//        lineStatus->setHidden(true);
-//        systemHaltBtn->setHidden(true);
-//        saveParamBtn->setHidden(true);
-//        setPurviewBtn->setHidden(true);
-//        statInfoBtn->setHidden(true);
-//        machineInfoBtn->setHidden(true);
-//        videoBtn->setHidden(true);
-//        break;
+        //    case SM_SET_FACTORY:
+        //        feedSwitchBtn->setHidden(true);
+        //        beltSwitchBtn->setHidden(true);
+        //        lineStatus->setHidden(true);
+        //        systemHaltBtn->setHidden(true);
+        //        saveParamBtn->setHidden(true);
+        //        setPurviewBtn->setHidden(true);
+        //        statInfoBtn->setHidden(true);
+        //        machineInfoBtn->setHidden(true);
+        //        videoBtn->setHidden(true);
+        //        break;
     case SM_STATUS_INFO_PAGE:
         videoBtn->setEnabled(false);
         systemHaltBtn->setEnabled(false);
@@ -3419,14 +3620,14 @@ void MainWidget::onFunctionKeyChangedSlt(int index)
         lineStatus->setHidden(false);
 
         break;
-//    case SM_TEST_EJECT_PAGE:
-//        feedSwitchBtn->setEnabled(false);
+        //    case SM_TEST_EJECT_PAGE:
+        //        feedSwitchBtn->setEnabled(false);
     default:
         break;
     }
-//    oprModeBtn->setHidden(true);
-//    mainOprBtn->setHidden(true);
-//    videoBtn->setHidden(true);
+    //    oprModeBtn->setHidden(true);
+    //    mainOprBtn->setHidden(true);
+    //    videoBtn->setHidden(true);
 
 }
 
@@ -3434,23 +3635,25 @@ void MainWidget::onFunctionKeyChangedSlt(int index)
 void MainWidget::onStackedWidgetIndexChangedSlt(int index)
 {
     QString title;
-    stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT-LCD_STATUS_HEIGHT-10);
-    switch(index) {
-//    case SM_AI_PAGE:
-////    case SM_SCHEME_PARAM_PAGE:
+    stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - LCD_STATUS_HEIGHT - 10);
+    switch (index)
+    {
+        //    case SM_AI_PAGE:
+        ////    case SM_SCHEME_PARAM_PAGE:
     case SM_VIDEO_PAGE:
-//    case SM_AUTO_ANALYSIS_PAGE:
-        stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT);
+        //    case SM_AUTO_ANALYSIS_PAGE:
+        stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT);
         break;
-//    case SM_SET_FACTORY:
-//        stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT);
-//        break;
+        //    case SM_SET_FACTORY:
+        //        stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT);
+        //        break;
     default:
-        stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT-20);
+        stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - 20);
         break;
     }
 
-    switch(index){
+    switch (index)
+    {
     case SM_COMM_PAGE:
     case SM_COMM_LIST_PAGE:
     case SM_INIT_PAGE:
@@ -3460,27 +3663,29 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
         //! 定制标题
         title = QString().fromLocal8Bit(struCnfe.sTitle);
         //! 默认标题
-        if (title.isEmpty()) {
+        if (title.isEmpty())
+        {
             title = QString("%1").arg(myLan.page_home);
         }
         //! 显示模式
-        if (struCnfg.nRunMode != MODE_RUN_STANDALONE) {
+        if (struCnfg.nRunMode != MODE_RUN_STANDALONE)
+        {
             title = title + QString(" - %1").arg(myFlow.getRunModeName(struCnfg.nRunMode));
         }
         break;
-//    case SM_SET_FEED_PAGE:
-//        title = QString("%1").arg(myLan.feeder_set);
-//        break;
-//    case SM_SET_WIPE_PAGE:
-//        title = QString("%1").arg(myLan.wipe_set);
-//        break;
-//    case SM_TEST_EJECT_PAGE:
-//        title = QString("%1").arg(myLan.eject_test);
-//        break;
+        //    case SM_SET_FEED_PAGE:
+        //        title = QString("%1").arg(myLan.feeder_set);
+        //        break;
+        //    case SM_SET_WIPE_PAGE:
+        //        title = QString("%1").arg(myLan.wipe_set);
+        //        break;
+        //    case SM_TEST_EJECT_PAGE:
+        //        title = QString("%1").arg(myLan.eject_test);
+        //        break;
     case SM_STATUS_INFO_PAGE:
         title = QString("%1").arg(myLan.system_stat);
         break;
-//    case SM_MANAGE_SCHEME_PAGE:
+        //    case SM_MANAGE_SCHEME_PAGE:
     case SM_MANAGE_NEW_SCHEME_PAGE:
     case SM_COPY_MAJOR_PARAMS_PAGE:
         title = QString("%1").arg(myLan.scheme_manage);
@@ -3488,25 +3693,25 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
     case SM_SET_PURVIEW:
         title = QString("%1").arg(myLan.set_purview);
         break;
-//    case SM_SET_FACTORY:
-//        title = QString("%1").arg(myLan.factory_set);
-//        break;
-//    case SM_SCHEME_PARAM_PAGE:
-//        title = QString("%1").arg(myLan.scheme_parameter);
-//        break;
+        //    case SM_SET_FACTORY:
+        //        title = QString("%1").arg(myLan.factory_set);
+        //        break;
+        //    case SM_SCHEME_PARAM_PAGE:
+        //        title = QString("%1").arg(myLan.scheme_parameter);
+        //        break;
     case SM_AI_PAGE:
         title = QString("%1").arg(myLan.scheme_parameter);
         break;
     case SM_ENGINEER_PAGE:
         title = QString("%1").arg(myLan.engineering_mode);
         break;
-//    case SM_SET_SENS_PAGE:
-//        if(struCnfe.nProduct == OPT_PRODUCT_ANCOO_RS) {
-//            title = QString("%1").arg(myLan.select_sensitivity);
-//        } else {
-//            title = QString("%1").arg(myLan.sensitivity_set);
-//        }
-//        break;
+        //    case SM_SET_SENS_PAGE:
+        //        if(struCnfe.nProduct == OPT_PRODUCT_ANCOO_RS) {
+        //            title = QString("%1").arg(myLan.select_sensitivity);
+        //        } else {
+        //            title = QString("%1").arg(myLan.sensitivity_set);
+        //        }
+        //        break;
     case SM_AUTO_PAGE:
         title = QString("%1").arg(myLan.super_brain);
         break;
@@ -3523,10 +3728,10 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
         break;
     }
     titleLabel->setText("");
-//    qDebug()<<"index："<<index<<endl;
+    //    qDebug()<<"index："<<index<<endl;
 
-	
-    /* function key */
+
+        /* function key */
     onFunctionKeyChangedSlt(index);
 }
 
@@ -3537,7 +3742,7 @@ void MainWidget::onAutoSetBtnClickedSlt()
 {
     this->stackedWidget->setCurrentIndex(SM_UNSUPERVISED_AI);
     pageUnsupervisedAIWidget->updateAIMainWidget();
-//    backToHomeBtn->setHidden(true);
+    //    backToHomeBtn->setHidden(true);
 }
 
 /*!
@@ -3552,7 +3757,7 @@ void MainWidget::onVideoBtnClickedSlt()
 void MainWidget::onAiSetBtnClickedSlt()
 {
     pageAiSet->getParaInfo();
-//    pageVideo->getParaInfo();
+    //    pageVideo->getParaInfo();
     homePageStackedWidget->setCurrentIndex(HIGH_SET_AI_PAGE_INDEX);
 }
 
@@ -3562,8 +3767,8 @@ void MainWidget::onAiSetBtnClickedSlt()
  */
 void MainWidget::onThroughputBtnClickedSlt()
 {
-   pageThroughput->updatePage();
-   this->stackedWidget->setCurrentIndex(SM_THROUGHPUT_PAGE);
+    pageThroughput->updatePage();
+    this->stackedWidget->setCurrentIndex(SM_THROUGHPUT_PAGE);
 }
 
 /*!
@@ -3580,32 +3785,35 @@ void MainWidget::onAiModelSetBtnClickedSlt()
  */
 void MainWidget::CreateMotorCtrlWidget()
 {
-    m_motorPageStartCbx = new myCustomCheckBox(myLan.pmt_run,true);
-    m_motorPageBackBtn = new myPushButton(myLan.back,myIcon.Action_Back, pageMotorCtrl);
+    m_motorPageStartCbx = new myCustomCheckBox(myLan.pmt_run, true);
+    m_motorPageBackBtn = new myPushButton(myLan.back, myIcon.Action_Back, pageMotorCtrl);
     m_motorPageStartCbx->setMaximumHeight(BTN_HEIGHT);
-    m_motorPageBackBtn->setMaximumSize(QSize(BTN_WIDTH,BTN_HEIGHT));
+    m_motorPageBackBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
-    if (struCnfg.nPMTRun){
+    if (struCnfg.nPMTRun)
+    {
         m_motorPageStartCbx->setChecked(true);
-    } else {
+    }
+    else
+    {
         m_motorPageStartCbx->setChecked(false);
     }
 
-   QHBoxLayout *upLay       = new QHBoxLayout;
-   QHBoxLayout *downLay     = new QHBoxLayout;
-   QVBoxLayout *mainLay     = new QVBoxLayout(pageMotorCtrl);
+    QHBoxLayout* upLay = new QHBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(pageMotorCtrl);
 
-   upLay->addWidget(m_motorPageStartCbx);
-   upLay->setContentsMargins(this->width()/3,0,this->width()/3,0);
-   downLay->addStretch();
-   downLay->addWidget(m_motorPageBackBtn);
-   mainLay->addStretch();
-   mainLay->addLayout(upLay);
-   mainLay->addStretch();
-   mainLay->addLayout(downLay);
+    upLay->addWidget(m_motorPageStartCbx);
+    upLay->setContentsMargins(this->width() / 3, 0, this->width() / 3, 0);
+    downLay->addStretch();
+    downLay->addWidget(m_motorPageBackBtn);
+    mainLay->addStretch();
+    mainLay->addLayout(upLay);
+    mainLay->addStretch();
+    mainLay->addLayout(downLay);
 
-   connect(m_motorPageStartCbx,SIGNAL(pressed()),this,SLOT(onMotorPageStartCbxSlt()));
-   connect(m_motorPageBackBtn,SIGNAL(pressed()),this,SLOT(onMotorPageBackBtnSlt()));
+    connect(m_motorPageStartCbx, SIGNAL(pressed()), this, SLOT(onMotorPageStartCbxSlt()));
+    connect(m_motorPageBackBtn, SIGNAL(pressed()), this, SLOT(onMotorPageBackBtnSlt()));
 }
 
 /*!
@@ -3613,15 +3821,19 @@ void MainWidget::CreateMotorCtrlWidget()
  */
 void MainWidget::onMotorPageStartCbxSlt()
 {
-    if (m_motorPageStartCbx->getChecked()){
+    if (m_motorPageStartCbx->getChecked())
+    {
         struCnfg.nPMTRun = 1;
     }
-    else {
+    else
+    {
         struCnfg.nPMTRun = 0;
     }
-    for (int i = 0; i < struCnfg.nLevelTotal;i++){
-        for (int j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal;j++){
-             MySerial.com1Write(CMD_UNIT_MOTOR_CTRL,UNIT,i,j,0,0,0,struCnfg.nPMTNum,struCnfg.nPMTRun,3);
+    for (int i = 0; i < struCnfg.nLevelTotal;i++)
+    {
+        for (int j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal;j++)
+        {
+            MySerial.com1Write(CMD_UNIT_MOTOR_CTRL, UNIT, i, j, 0, 0, 0, struCnfg.nPMTNum, struCnfg.nPMTRun, 3);
         }
     }
 }
@@ -3640,11 +3852,13 @@ void MainWidget::onMotorPageBackBtnSlt()
 void MainWidget::machineTestForI()
 {
     /* I机型老化实验 */
-    if (struGsh.nCounter < 180) {   // 3分钟后开始
+    if (struGsh.nCounter < 180)
+    {   // 3分钟后开始
         return;
     }
 
-    if (struGsh.nCounter % 180 != 0) {  // 3分钟做一次
+    if (struGsh.nCounter % 180 != 0)
+    {  // 3分钟做一次
         return;
     }
 
@@ -3652,9 +3866,10 @@ void MainWidget::machineTestForI()
     char infraBuf[1040];
     int ret_color = 0;
     int ret_infra = 0;
-    memset(tmpBuf,0,sizeof(tmpBuf));
-    memset(infraBuf,0,sizeof(infraBuf));
-    for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++) {   //彩色
+    memset(tmpBuf, 0, sizeof(tmpBuf));
+    memset(infraBuf, 0, sizeof(infraBuf));
+    for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+    {   //彩色
         ret_color = 0;
         ret_infra = 0;
 
@@ -3662,16 +3877,19 @@ void MainWidget::machineTestForI()
 
         myFlow.msleep(400);
         MySerial.com1Read(tmpBuf, 3600);
-        if (tmpBuf[0] != 0xAA || tmpBuf[1] != 0xAA || tmpBuf[2] != 0xAA || tmpBuf[3] != 0xAA) {
+        if (tmpBuf[0] != 0xAA || tmpBuf[1] != 0xAA || tmpBuf[2] != 0xAA || tmpBuf[3] != 0xAA)
+        {
             ret_color = 1;
         }
         myFlow.msleep(10);
 
-        if ((i % 2 == 0) && (struGsh.nDevTypeAddrBias != 0)) {   //红外
-            MySerial.com1Write(CMD_UNIT_IMAGE, UNIT, struGsh.nLevel, i+struGsh.nDevTypeAddrBias, 0, 0, 0, 0, 0, 1);
+        if ((i % 2 == 0) && (struGsh.nDevTypeAddrBias != 0))
+        {   //红外
+            MySerial.com1Write(CMD_UNIT_IMAGE, UNIT, struGsh.nLevel, i + struGsh.nDevTypeAddrBias, 0, 0, 0, 0, 0, 1);
             myFlow.msleep(400);
             MySerial.com1Read(infraBuf, 1040);
-            if (infraBuf[0] != 0xAA || infraBuf[1] != 0xAA || infraBuf[2] != 0xAA || infraBuf[3] != 0xAA) {
+            if (infraBuf[0] != 0xAA || infraBuf[1] != 0xAA || infraBuf[2] != 0xAA || infraBuf[3] != 0xAA)
+            {
                 ret_infra = 1;
             }
         }
@@ -3682,54 +3900,70 @@ void MainWidget::machineTestForI()
         int countR = 0;
         int countG = 0;
         int countB = 0;
-        if (ret_color == 1) {
-            tmp.sprintf("%s%s",qPrintable(tmp),"error");
-        } else {
-            for (int j = 10; j < 3600-6; j++) {
-                tmp.sprintf("%s%02x,",qPrintable(tmp),tmpBuf[j]&0xff);
-                if (j%3==1) {
-                    countR += tmpBuf[j]&0xff;
+        if (ret_color == 1)
+        {
+            tmp.sprintf("%s%s", qPrintable(tmp), "error");
+        }
+        else
+        {
+            for (int j = 10; j < 3600 - 6; j++)
+            {
+                tmp.sprintf("%s%02x,", qPrintable(tmp), tmpBuf[j] & 0xff);
+                if (j % 3 == 1)
+                {
+                    countR += tmpBuf[j] & 0xff;
                 }
-                if (j%3==2) {
-                    countG += tmpBuf[j]&0xff;
+                if (j % 3 == 2)
+                {
+                    countG += tmpBuf[j] & 0xff;
                 }
-                if (j%3==0) {
-                    countB += tmpBuf[j]&0xff;
+                if (j % 3 == 0)
+                {
+                    countB += tmpBuf[j] & 0xff;
                 }
             }
         }
 
         QFile file(QString("%1/userdata/%2%3").arg(APP_PATH).arg(i).arg(".txt"));
-        if (!file.open(QIODevice::Append | QIODevice::Text)) {
+        if (!file.open(QIODevice::Append | QIODevice::Text))
+        {
             return;
         }
         QTextStream out(&file);
-        out << QDateTime::currentDateTime().toString("hh:mm:ss") << "  ave(R,G,B)==>(" << countR/1024.0 << "," << countG/1024.0 << "," <<  countB/1024.0 << ")" << "\n" << qPrintable(tmp)  << "\n\n";
+        out << QDateTime::currentDateTime().toString("hh:mm:ss") << "  ave(R,G,B)==>(" << countR / 1024.0 << "," << countG / 1024.0 << "," << countB / 1024.0 << ")" << "\n" << qPrintable(tmp) << "\n\n";
         file.close();
 
         // 红外相机存文件
-        if ((i % 2 == 0) && (struGsh.nDevTypeAddrBias != 0)) {   //红外
+        if ((i % 2 == 0) && (struGsh.nDevTypeAddrBias != 0))
+        {   //红外
             QString tmp1;
-            if (ret_infra == 1) {
-                tmp1.sprintf("%s%s",qPrintable(tmp1),"error");
-            } else {
-                for (int j = 10; j < 1040-6; j++) {
-                    tmp1.sprintf("%s%02x,",qPrintable(tmp1),infraBuf[j]&0xff);
-                    if (j%2==1) {
-                        countR += infraBuf[j]&0xff;
+            if (ret_infra == 1)
+            {
+                tmp1.sprintf("%s%s", qPrintable(tmp1), "error");
+            }
+            else
+            {
+                for (int j = 10; j < 1040 - 6; j++)
+                {
+                    tmp1.sprintf("%s%02x,", qPrintable(tmp1), infraBuf[j] & 0xff);
+                    if (j % 2 == 1)
+                    {
+                        countR += infraBuf[j] & 0xff;
                     }
-                    if (j%2==0) {
-                        countG += infraBuf[j]&0xff;
+                    if (j % 2 == 0)
+                    {
+                        countG += infraBuf[j] & 0xff;
                     }
                 }
             }
 
-            QFile file1(QString("%1/userdata/%2%3").arg(APP_PATH).arg(i+struGsh.nDevTypeAddrBias).arg(".txt"));
-            if (!file1.open(QIODevice::Append | QIODevice::Text)) {
+            QFile file1(QString("%1/userdata/%2%3").arg(APP_PATH).arg(i + struGsh.nDevTypeAddrBias).arg(".txt"));
+            if (!file1.open(QIODevice::Append | QIODevice::Text))
+            {
                 return;
             }
             QTextStream out1(&file1);
-            out1 << QDateTime::currentDateTime().toString("hh:mm:ss") << "  ave(R,G)==>(" << countR/512.0 << "," << countG/512.0  << ")" << "\n" << qPrintable(tmp1)  << "\n\n";
+            out1 << QDateTime::currentDateTime().toString("hh:mm:ss") << "  ave(R,G)==>(" << countR / 512.0 << "," << countG / 512.0 << ")" << "\n" << qPrintable(tmp1) << "\n\n";
             file1.close();
         }
     }

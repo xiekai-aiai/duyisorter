@@ -47,10 +47,11 @@ class MyGlobalString;
 /* 语言配置相关 */
 
 #define MAX_LANG    64
-/*!  
+/*!
  * \brief 语言列表
  */
-enum {
+enum
+{
     LANG_CHS = 1,   // 简体中文
     LANG_ENG,       // 英文
     LANG_RUS,       // 俄文
@@ -80,22 +81,25 @@ enum {
 /*!
  * \brief 机型列表
  */
-enum {
-    MACHINE_CF  = 1,    // 杂粮CF系列    (通道式，单层双视) — CG 机型硬件基础
-    MACHINE_CG  = 15     // 杂粮CG系列    (通道式，单层双视）
+enum
+{
+    MACHINE_CF = 1,    // 杂粮CF系列    (通道式，单层双视) — CG 机型硬件基础
+    MACHINE_CG = 15     // 杂粮CG系列    (通道式，单层双视）
 };
 
 /*!
  * \brief 定制机型列表（仅保留通用机型）
  */
-enum {
-    OPT_PRODUCT_ANCOO_GENERAL    = 1     // 品牌：安科，通用机型
+enum
+{
+    OPT_PRODUCT_ANCOO_GENERAL = 1     // 品牌：安科，通用机型
 };
 
 /*!
   *\brief 屏运行模式设定列表
   */
-enum {
+enum
+{
     MODE_RUN_STANDALONE,    // 独立运行模式
     MODE_RUN_MASTER,        // 主屏运行模式
     MODE_RUN_SLAVE          // 从屏运行模式
@@ -126,7 +130,8 @@ enum {
 /*!
  * \brief 识别组名称索引
  */
-enum {
+enum
+{
     FIRST_FRONT,        // 一次前视
     FIRST_REAR,         // 一次后视
     SECOND_FRONT,       // 二次前视
@@ -151,17 +156,19 @@ enum {
     SECOND_UP_REAR_ML       // 二次上后
 };
 
-enum {
-    UP_UNIT	    = 10,	// 上视 (未使用，废弃)
-    DOWN_UNIT   = 11,	// 下视 (未使用，废弃)
-    FRONT_UNIT  = 30,	// 前视
-    REAR_UNIT   = 31	// 后视
+enum
+{
+    UP_UNIT = 10,	// 上视 (未使用，废弃)
+    DOWN_UNIT = 11,	// 下视 (未使用，废弃)
+    FRONT_UNIT = 30,	// 前视
+    REAR_UNIT = 31	// 后视
 };
 
 /*!
  * \brief 玉米双视 T3/LD4 识别组索引（原来在 maizeflow.h，数据结构保留）
  */
-enum {
+enum
+{
     FIRST_DOWN_FRONT = 32,  // 一次前下
     FIRST_UP_FRONT,         // 一次前上
     FIRST_DOWN_REAR,        // 一次后下
@@ -185,7 +192,8 @@ enum {
 /*!
  *\brief 背景组索引号
  */
-enum {
+enum
+{
     FRONT_DOWN_BKG = 1,	// 前下视(未使用，废弃)
     REAR_DOWN_BKG,		// 后下视(未使用，废弃)
     FRONT_UP_BKG,		// 前上视(未使用，废弃)
@@ -195,7 +203,8 @@ enum {
 /*!
  * \brief 剔除组索引号
  */
-enum {
+enum
+{
     FIRST_UNIT,         // 一次
     SECOND_UNIT,        // 二次
     THIRD_UNIT,         // 三次
@@ -227,7 +236,8 @@ enum {
 /*!
  *\brief 机型视角类型列表
  */
-enum {
+enum
+{
     SINGLE_VIEW = 1,		// 单视
     DOUBLE_VIEW = 2,		// 双视
     TRIPLE_VIEW = 3,		// 三视
@@ -252,7 +262,8 @@ enum {
 /*!
  * \brief 方案参数文件状态索引
  */
-enum {
+enum
+{
     ENGINEER_FILE_STATUS,	// 工程参数文件
     GLOBAL_FILE_STATUS,		// 全局参数文件
     CAMERA_FILE_STATUS,		// 相机参数文件
@@ -276,7 +287,8 @@ enum {
 /*!
  * \brief 物料算法列表
  */
-enum {
+enum
+{
     ARITH_GREY_A,           //0 灰度杂质 A
     ARITH_GREY_B,           //1 灰度杂质 B
     ARITH_DISCOLOR_A,       //2 色差杂质 A
@@ -312,7 +324,8 @@ enum {
 /*!
  * \brief 参数设置模式
  */
-enum {
+enum
+{
     PARAMS_ALL_SEPARATE = 1,    // 全部独立
     PARAMS_ALL_SAME,            // 全部相同
     PARAMS_FRONT_REAR_SAME,     // 前后视相同
@@ -322,7 +335,8 @@ enum {
 /*!
  * \brief 操作权限设定
  */
-enum {
+enum
+{
     AUTHENTICATION_LEVEL_OPERATOR,	    // 操作人员模式
     AUTHENTICATION_LEVEL_ENGINEER,	    // 工程人员模式
     AUTHENTICATION_LEVEL_FACTORY	    // 厂家人员模式
@@ -336,7 +350,8 @@ enum {
 /*!
  * \brief 报警列表
  */
-enum {
+enum
+{
     ALARM_ID_PRESSURE,      // 气压报警
     ALARM_ID_BLOWER,        // 风机报警
     ALARM_ID_LAMP,          // 灯报警
@@ -356,7 +371,8 @@ enum {
 /*!
  * \brief 传感器类型
  */
-enum {
+enum
+{
     SENSOR_K = 1,       // K系传感器
     SENSOR_T_2566,      // 2566传感器
     SENSOR_T_2564,      // 2564传感器
@@ -382,7 +398,8 @@ enum {
 /*!
  * \enum 枚举RS机型色选模式
  */
-enum {
+enum
+{
     RS_DARK_SORT = 0,                   // 深色专选
     RS_DIFF_POSITIVE_SORT,              // 异色粒正选
     RS_DIFF_NEGATIVE_SORT,              // 异色粒反选
@@ -401,7 +418,8 @@ const int RS_SORT_MODE_TYPE = 10;
 /*!
  * \enum 枚举RSC机型色选模式
  */
-enum {
+enum
+{
     RSC_DIFF_POSITIVE_SORT = 0,         // 异色粒正选
     RSC_DIFF_NEGATIVE_SORT,             // 异色粒反选
     RSC_WHITE_POSITIVE_SORT,            // 乳白色正选
@@ -415,7 +433,8 @@ enum {
 const int RSC_SORT_MODE_TYPE = 7;
 
 /* 定义料位监控报警类别 */
-enum {
+enum
+{
     ALARM_LEVEL_NULL = 0,       // 料位无报警
     ALARM_LEVEL_EMPTY,          // 料位空报警
     ALARM_LEVEL_FULL,           // 料位满报警
@@ -423,9 +442,10 @@ enum {
 };
 
 /*!
- * \brief 识别组索引号 
+ * \brief 识别组索引号
  */
-enum {
+enum
+{
     SM_FIRST_FRONT = 0,         // 一次前视
     SM_FIRST_REAR,              // 一次后视
     SM_SECOND_FRONT,            // 二次前视
@@ -437,7 +457,8 @@ enum {
 /*!
  * \brief 枚举识别结果算法类型
  */
-enum {
+enum
+{
     IDE_RESULT_GREY_A = 0,      //! 灰度A识别结果
     IDE_RESULT_GREY_B,          //! 灰度B识别结果
     IDE_RESULT_DISCOLOR_A,      //! 色差A识别结果
@@ -450,7 +471,8 @@ enum {
 /*!
  * \brief 枚举灯控界面前后视灯的类型
  */
-enum {
+enum
+{
     FRONT_LAMP_1 = 0,
     FRONT_LAMP_2,
     FRONT_LAMP_3_BACKGROUD,     //! 后视背景板对应灯
@@ -466,9 +488,10 @@ enum {
 };
 
 /*!
- * \brief 参数文件保存状态 
+ * \brief 参数文件保存状态
  */
-enum {
+enum
+{
     ALL_PARAMS_FILE_OK = 0,     //! 默认所有文件都保存正确
     ENGINEER_FILE_ERROR = 1,    //! 工程参数文件保存错误
     GLOBAL_FILE_ERROR = 2,      //! 全局参数文件保存错误
@@ -479,13 +502,14 @@ enum {
 /*!
  * \brief 背景颜色
  */
-enum {
+enum
+{
     COLOR_OPT_BLACK = 0,    /*!< 黑背景 */
-    COLOR_OPT_R     = 1,    /*!< 红背景 */
-    COLOR_OPT_G     = 2,    /*!< 绿背景 */
-    COLOR_OPT_B     = 4,    /*!< 蓝背景 */
+    COLOR_OPT_R = 1,    /*!< 红背景 */
+    COLOR_OPT_G = 2,    /*!< 绿背景 */
+    COLOR_OPT_B = 4,    /*!< 蓝背景 */
     COLOR_OPT_WHITE = 7,    /*!< 白背景 */
-    COLOR_OPT_AUTO  = 3     /*!< 彩色米机自动背景,借黄背景参数 */
+    COLOR_OPT_AUTO = 3     /*!< 彩色米机自动背景,借黄背景参数 */
 };
 
 /*************************************************************************************
@@ -493,8 +517,8 @@ enum {
  *      以下是需要保存到文件中各个全局参数的结构体定义
  *
  ************************************************************************************/
-/* ---------------------------------------------------- */
-/* 参数保存文件名称 */
+ /* ---------------------------------------------------- */
+ /* 参数保存文件名称 */
 #define CNF_ENGINEER            APP_PATH "/userdata/cnf/cnf.engineer"         // 工程模式参数文件
 #define CNF_ENGINEER_B          APP_PATH "/userdata/cnf/cnf.engineer_2"       // 工程模式参数文件备份
 #define CNF_GLOBAL              APP_PATH "/userdata/cnf/cnf.global"           // 全局参数文件
@@ -507,7 +531,7 @@ enum {
 #define CNF_PARAMS_FILE_STATUS_B    APP_PATH "/userdata/cnf/cnf.params_status_2"         // 参数文件状态备份
 
 #define CNF_MY                  APP_PATH "/DuySorter.conf"                    // 全局配置文件
-#define CNF_LOG_CFG             APP_PATH "/userdata/log/log.properties"       // 日志配置文件
+#define CNF_LOG_CFG             APP_PATH "/log.properties"                    // 日志配置文件
 
 #ifdef Q_OS_WIN32
 #define LANG_DIR                "../../DuySorter_rk3566/app/i18n/"   // 语言文件目录 *.qm
@@ -527,10 +551,11 @@ enum {
  *                          物料算法参数相关结构体
  *
  * *********************************************************************************/
-/*!
- * \brief 保留参数
- */
-typedef struct stru_adv {
+ /*!
+  * \brief 保留参数
+  */
+typedef struct stru_adv
+{
     int nDiscolor1;         // 色差颜色 0-: r/(r+g), 1-: r/(r+b), 2-: g/(g+b)
     int nSensMin1;          // 色差灵敏度下限
     int nSensMax1;          // 色差灵敏度上现
@@ -543,9 +568,10 @@ typedef struct stru_adv {
 }stu_reserved;
 
 /*!
- * \brief 灰度杂质A、B，色差杂质A、B 
+ * \brief 灰度杂质A、B，色差杂质A、B
  */
-typedef struct stru_discolor {
+typedef struct stru_discolor
+{
     char sName[MAX_NAME];         // 杂质名称
     int nRow;                // 行数, 面积 = 行数*列数
     int nColumn;             // 列数, 列数 = 行数*2
@@ -561,9 +587,10 @@ typedef struct stru_discolor {
 }stu_grey_color;
 
 /*!
- * \brief 智能算法 
+ * \brief 智能算法
  */
-typedef struct stru_intelligent {
+typedef struct stru_intelligent
+{
     char sName[MAX_NAME];        // 杂质名称
     int nRow;               // 行数,大蒜的大尺寸
     int nColumn;            // 列数,大蒜的大尺寸
@@ -577,7 +604,7 @@ typedef struct stru_intelligent {
     int nSens;              // 微调系数
     int nSensRatio;         // 比例算法的灵敏度
     int nIntelType;         // 当前智能的算法类别，0：普通，1：比例智能
-	int nRatioMode;			// 比例算法模式
+    int nRatioMode;			// 比例算法模式
     int nWholeEdge;         // 仅西瓜子算法时有用， 1：边缘， 0： 整体
     int nCons[2];           // 常数
     int nQuo1[2];           // 系数1
@@ -601,7 +628,8 @@ typedef struct stru_intelligent {
 /*!
  * \brief 智能物料设置
  */
-typedef struct stru_intelligent_material {
+typedef struct stru_intelligent_material
+{
     int use;                // 物料使能： 1 使能, 0: 不使能
     int good_bad;           // 物料好坏： 0: 坏, 1: 好 2: 不用
     char name[MAX_NAME];         // 物料名称
@@ -610,7 +638,8 @@ typedef struct stru_intelligent_material {
 /*!
  * \brief 花生选芽参数
  */
-typedef struct stru_bud {
+typedef struct stru_bud
+{
     char sName[MAX_NAME];   // 杂质名称
     int nRow;               // 行数
     int nColumn;            // 列数
@@ -620,9 +649,10 @@ typedef struct stru_bud {
 }stu_bd;
 
 /*!
- * \brief 差分算法 
+ * \brief 差分算法
  */
-typedef struct stru_cross {
+typedef struct stru_cross
+{
     char sName[MAX_NAME];        // 杂质名称
     int nRow;               // 行数
     int nColumn;            // 列数
@@ -631,10 +661,11 @@ typedef struct stru_cross {
     int nColor;             // 色差
 }stu_cs;
 
-/*! 
+/*!
  * \brief 形状算法
  */
-typedef struct stru_shape {
+typedef struct stru_shape
+{
     char sName[MAX_NAME];        // 杂质名称
     int nAreaMin;           // 灵敏度下限
     int nAreaMax;           // 灵敏度上限
@@ -647,10 +678,11 @@ typedef struct stru_shape {
     int nLengthLimit;       // 参数下限(长短算法)
 }stu_sp;
 
-/*! 
+/*!
  * \brief 大小算法
- */ 
-typedef struct stru_scale {
+ */
+typedef struct stru_scale
+{
     char sName[MAX_NAME];        // 杂质名称
     int nMode;              // 大小模式切换, 0: 选小, 1: 选大
     int nValue;             // 灵敏度
@@ -660,8 +692,9 @@ typedef struct stru_scale {
 
 /*!
  * \brief 茶叶选杆算法
- */ 
-typedef struct stru_pole {
+ */
+typedef struct stru_pole
+{
     char sName[MAX_NAME];   // 细杆杂质名称
     int nArea;              // 细杆形选保留面积
     int nPercent;           // 细杆形选病斑
@@ -670,7 +703,7 @@ typedef struct stru_pole {
     int nMode;              // 正反选切换: 0-选杆，1-选芽
 
     stu_reserved struReserved;  // 保留参数（暂时废弃不用）
-    
+
     char sPoleName[MAX_NAME];   // 粗杆杂质名称
     int nPoleArea;              // 粗杆形选保留面积
     int nPolePercent;           // 粗杆形选病斑
@@ -679,17 +712,19 @@ typedef struct stru_pole {
 }stu_pole;
 
 /*!
- * \brief 茶叶选片算法 
+ * \brief 茶叶选片算法
  */
-typedef struct stru_slice {
+typedef struct stru_slice
+{
     char sName[MAX_NAME];   // 杂质名称
     int nArea;              // 叶片面积
 }stu_slice;
 
-/*! 
- * \brief 茶叶选芽算法 
+/*!
+ * \brief 茶叶选芽算法
  */
-typedef struct stru_leaf {
+typedef struct stru_leaf
+{
     char sName[MAX_NAME];	// 杂质名称
     int nArea;			// 保留面积
     int nPercent;		// 病斑
@@ -701,7 +736,8 @@ typedef struct stru_leaf {
 /*!
  * \brief 保留算法
  */
-typedef struct stru_general_reserved {
+typedef struct stru_general_reserved
+{
     char sName[MAX_NAME];	// 杂质名称
     int nThreshold_s;		// s阈值
     int nRow;               // 圈数
@@ -711,7 +747,8 @@ typedef struct stru_general_reserved {
 /*!
  * \brief 玉米算法参数（纯数据结构，算法实现已移除）
  */
-typedef struct stru_maize {
+typedef struct stru_maize
+{
     char sName[MAX_NAME];        // 杂质名称
     int nRow;                    // 行数
     int nColumn;                 // 列数
@@ -735,7 +772,8 @@ typedef struct stru_maize {
 /*!
  * \brief  花生机型A、B、C、D类杂质
  */
-typedef struct stru_peanut_abcd{
+typedef struct stru_peanut_abcd
+{
     char sName[MAX_NAME];        // 杂质名称
     int nRow;               // 行数, 面积 = 行数*列数
     int nColumn;            // 列数, 列数 = 行数*2
@@ -748,9 +786,10 @@ typedef struct stru_peanut_abcd{
 }stu_pn_abcd;
 
 /*!
- * \brief 西瓜子算法 
+ * \brief 西瓜子算法
  */
-typedef struct stru_watermelon {
+typedef struct stru_watermelon
+{
     int nEdgeRedSens;           // 边缘发红灵敏度
     int nEdgeRedRatio;          // 发红区域比例
     int nEdgeDamagedSens;       // 边缘破损灵敏度
@@ -765,10 +804,11 @@ typedef struct stru_watermelon {
     int nWhiteMode;             // 选亮/选暗
 }stu_melon;
 
-/*! 
+/*!
  * \brief RS机型算法参数
  */
-typedef struct stru_rice {
+typedef struct stru_rice
+{
     int nSens;                  // 主配灵敏度
     int nDarkSens;              // 主配灵敏度(暗),仅自定义模式下使用
     int nBadDiscolor;           // 主配病点色差
@@ -807,7 +847,7 @@ typedef struct stru_pistachio
 typedef struct stru_ai
 {
     char modelId[MAX_NAME];            // model id
-//    stu_aipara struAiPara[MAX_PARA]; // model para
+    //    stu_aipara struAiPara[MAX_PARA]; // model para
 }stu_ai;
 
 
@@ -827,7 +867,8 @@ typedef struct stru_aipara
  * value = 3	方案参数文件保存错误
  *
  * *********************************************************************************/
-struct struCnfFileStatus {
+struct struCnfFileStatus
+{
     int value;
 };
 
@@ -838,10 +879,11 @@ struct struCnfFileStatus {
  *
  * *********************************************************************************/
 
-/*!
- * \brief 子预制方案文件信息 
- */
-struct struSonPrefixedPrifileInfo {
+ /*!
+  * \brief 子预制方案文件信息
+  */
+struct struSonPrefixedPrifileInfo
+{
     int nIsAble;			 // 子预制方案使能状态
     char sMaterialName[MAX_NAME];        // 子预制方案物料名称
     char sProfileName[MAX_NAME];         // 子预制方案文件名称
@@ -850,17 +892,19 @@ struct struSonPrefixedPrifileInfo {
 /*!
  * \brief 父预制方案文件信息
  */
-struct struParentPrefixedProfileInfo{
-     int nIsAble;                   // 父预制方案使能状态
-     int nSonProfileCount;          // 当前父预制方案中子预制方案数量
-     char sMaterialName[MAX_NAME];       // 父预制方案物料名称
-     struct struSonPrefixedPrifileInfo  struSonProfile[MAX_SON_PREFIXED_PROFILE_COUNT];      // 子预制方案信息
+struct struParentPrefixedProfileInfo
+{
+    int nIsAble;                   // 父预制方案使能状态
+    int nSonProfileCount;          // 当前父预制方案中子预制方案数量
+    char sMaterialName[MAX_NAME];       // 父预制方案物料名称
+    struct struSonPrefixedPrifileInfo  struSonProfile[MAX_SON_PREFIXED_PROFILE_COUNT];      // 子预制方案信息
 };
 
 /*!
- * \brief 工程配置参数  
+ * \brief 工程配置参数
  */
-struct struCnfEngineer {
+struct struCnfEngineer
+{
     int nProduct;                               // 机型类型通用、花生定制
     int nMachine;                               // 机型：CF系、单层履带机、双层履带机
     int nArithmeticTotal;                       // 当前机型物料算法总数
@@ -892,10 +936,11 @@ struct struCnfEngineer {
  *                          全局参数相关结构体
  *
  * *********************************************************************************/
-/*!
- * \brief 方案文件名称和方案命名索引 
- */
-struct struProfileIndex {
+ /*!
+  * \brief 方案文件名称和方案命名索引
+  */
+struct struProfileIndex
+{
     char sProfileName[MAX_NAME];     // 方案保存文件名称
     char sMaterialName[MAX_NAME];    // 界面显示方案名称
 };
@@ -903,7 +948,8 @@ struct struProfileIndex {
 /*!
  * \brief 识别+剔除 组通道信息
  */
-struct stru_group_unit_info{
+struct stru_group_unit_info
+{
     int nLevelIndex;                // 组所在的层索引
     int nNameIndex;                 // 组名称索引
     int nUnitCount;                 // 组内相机板数量
@@ -914,7 +960,8 @@ struct stru_group_unit_info{
 /*!
  * \brief 层内部组信息
  */
-struct struMachineLevel {
+struct struMachineLevel
+{
     int nUnitLevelTotal;                                                    // 层内相机单元数量
     int nUnitId[MAX_UNIT];                                                  // 层内相机编号
     int nViewTotal;                                                         // 2： 当前层双视， 1： 单视  TD机型 2：开启双视 1：没有双视，普通模式
@@ -929,7 +976,8 @@ struct struMachineLevel {
  * \brief 全局配置参数
  * \note  保存于cnf.global文件
  */
-struct struCnfGlobal {
+struct struCnfGlobal
+{
     int nLang;                                                  // 语言
     int nCounter;                                               // 系统累计运行时间
     int nProfile;                                               // 当前应用方案编号
@@ -1014,17 +1062,18 @@ struct struCnfGlobal {
     int imgPicHeight;
     int imgVideoHeight;
 
-    quint64 nThroughtPut[MAX_UNIT/2];          // 总产量
+    quint64 nThroughtPut[MAX_UNIT / 2];          // 总产量
 };
 /* **********************************************************************************
  *
  *                          相机参数相关结构体
  *
  * *********************************************************************************/
-/*!
- * \brief 需要区分各个相机板地址的相机参数结构体
- */
-struct struLevelCameraInfo {
+ /*!
+  * \brief 需要区分各个相机板地址的相机参数结构体
+  */
+struct struLevelCameraInfo
+{
     int nChannelBegin[MAX_UNIT];                                // 象元起始
     int nChannelEnd[MAX_UNIT];                                  // 象元终止
     int nMaizeChannelBegin[MAX_UNIT][2];                        // 象元起始,玉米增加
@@ -1051,9 +1100,10 @@ struct struLevelCameraInfo {
 
 /*!
  * \brief 相机配置参数
- * \note  保存在 cnf.camera 
+ * \note  保存在 cnf.camera
  */
-struct struCnfCamera {
+struct struCnfCamera
+{
     struct struLevelCameraInfo struLevelCamera[MAX_LEVEL];      // 需要区分各个相机板地址的相机参数结构体
     int nRefRed;                                                // 光源标定：红色参考
     int nRefGreen;                                              // 光源标定：绿色参考
@@ -1085,10 +1135,11 @@ struct struCnfCamera {
  *                          色选方案参数相关结构体
  *
  * *********************************************************************************/
-/*!
- * \brief 识别组参数
- */
-typedef struct stu_profile_group_identify{
+ /*!
+  * \brief 识别组参数
+  */
+typedef struct stu_profile_group_identify
+{
     stu_grey_color struGreyColor[4];    // 0: 灰度 A,  1: 灰度 B,  2: 色差 A,  3: 色差 B
     stu_cs struCross;                   // 差分算法
     stu_sp struShape;                   // 形状算法
@@ -1112,9 +1163,10 @@ typedef struct stu_profile_group_identify{
 
 /* ---------------------------------------------------- */
 /*!
- * \brief 剔除组参数 
+ * \brief 剔除组参数
  */
-typedef struct stu_profile_group_tick{
+typedef struct stu_profile_group_tick
+{
     int nEjectDuration;             // 吹气时间
     int nEjectDurationCent;         // 吹气时间百分位
     int nEjectDelay;                // 延迟时间
@@ -1173,10 +1225,11 @@ typedef struct stu_profile_group_tick{
 }stu_group_tick;
 
 /* ---------------------------------------------------- */
-/*! 
- * \brief 控制板参数 
+/*!
+ * \brief 控制板参数
  */
-typedef struct stu_profile_group_control{
+typedef struct stu_profile_group_control
+{
     int nFeeder[MAX_FEED];          // 给料量
     int nWipeDuration;              // 清灰时间
     int nWipeInterval;              // 清灰间隔
@@ -1200,10 +1253,11 @@ typedef struct stu_profile_group_control{
 
 /* ---------------------------------------------------- */
 /*!
- * \brief 色选方案参数 
+ * \brief 色选方案参数
  * \note  保存在 cnf.profile
  */
-struct struCnfProfile {
+struct struCnfProfile
+{
     int nInterfaceBoardMode;                        // 接口板启动模式
     int nColorBoardMode;                            // 彩色相机板启动模式
     int nMatIntelSeq;                               // 智能模式物料设置: 1 good 1 bad, 2:1 good 2 bad, 3:1 good 3 bad, 4:2 good, 1 bad, 5:3 good 1 bad, 6:2 good 2 bad
@@ -1235,8 +1289,8 @@ struct struCnfProfile {
     int nSens[MAX_UNIT][2];                         // 主配独立灵敏度
     int nDarkSens[MAX_UNIT][2];                     // 主配独立灵敏度(暗),仅自定义模式使用
     int nCrossChannel[MAX_GROUP_TICK];              // 交叉象元
-    int nDelayBiasing[MAX_UNIT/2];                  // 延迟偏置
-    int nFeederBias[MAX_UNIT/2];                    // 供料偏置
+    int nDelayBiasing[MAX_UNIT / 2];                  // 延迟偏置
+    int nFeederBias[MAX_UNIT / 2];                    // 供料偏置
     int nColorSpace;                                // 颜色空间 0：RGB 1：HSV
     int nAIMode;                                    // AI模式  0：高维 1:低维
     int isFeederAIEnable;                           // 智能供料使能标志,0:禁止，1：使能
@@ -1255,13 +1309,13 @@ struct struCnfProfile {
     int nAutoBgEnable[MAX_LEVEL][MAX_UNIT];         // 杂粮背景自适应使能标志
     int nAutoBgRange[MAX_LEVEL][MAX_UNIT][3];       // 杂粮背景自适应背景值变化幅度，3表示的是RGB
 
-/* 性能参数统计设置参数 */
+    /* 性能参数统计设置参数 */
     int nMaterialQueryInterval;       // 物料的统计时间
     int nHistogramQueryTime;          // 直方图的统计时间
     int nCameraRef;                   // 参考相机的全局编号
 
     int nArithEdgeCut[MAX_UNIT][ARITHMETIC_TOTAL]; // 算法边缘切除圈数
-} ;
+};
 
 
 /*************************************************************************************
@@ -1270,10 +1324,11 @@ struct struCnfProfile {
  *
  ************************************************************************************/
 
-/*!
- * \brief 延迟损耗 
- */
-struct stu_gsh_tick{
+ /*!
+  * \brief 延迟损耗
+  */
+struct stu_gsh_tick
+{
     float nEdgeCutDelay;
     int   nMaxMatSize;
     float nMatSizeDelay;
@@ -1281,9 +1336,10 @@ struct stu_gsh_tick{
 };
 
 /*!
- * \brief 版本信息 
+ * \brief 版本信息
  */
-struct struVersion {
+struct struVersion
+{
     int sControl[MAX_CTRL][2];                    // 控制板版本，0： 大版本号， 1： 小版本号
     int sInterface[MAX_LEVEL][8];                 // 接口板版本， 0： 大版本号， 1： 小版本号，2：定制机型编号
     int sUnit[MAX_LEVEL][MAX_UNIT][8];            // 彩色相机板版本， 0：小版本号， 1： 大版本号，2：定制机型编号
@@ -1295,7 +1351,8 @@ struct struVersion {
 /*!
  * \brief 识别结果
  */
-struct struIdentifyResult {
+struct struIdentifyResult
+{
     int nPixelSum;      //! 物料像素点数
     int nBadNum[IDE_RESULT_TYPE];   //! 颜色识别算法识别坏点数
     bool nEn[IDE_RESULT_TYPE];      //! 算法显示使能
@@ -1316,7 +1373,8 @@ struct struIdentifyResult {
 /*!
  * \brief 大数据信息结构体
  */
-typedef struct{
+typedef struct
+{
     QByteArray bgBeforeWipeStatistic;           // 清灰前的背景信息
     QByteArray bgAfterWipeStatistic;            // 清灰后的背景信息
     QByteArray materialStatistic;               // 物料点信息统计
@@ -1325,9 +1383,10 @@ typedef struct{
 } StruStatisticInfo;
 
 /*!
- * \brief 全局共享参数 
+ * \brief 全局共享参数
  */
-struct struShare {
+struct struShare
+{
     int nSerialCount1;                      // 串口1 序号
     int nSerialCount2;                      // 串口2 序号
     int nSerialCount3;                      // 串口3 序号
@@ -1368,7 +1427,7 @@ struct struShare {
     int nUnitFeederAI;                      // 当前处理单元编号，智能供料使用
     int nMatGroup;                          // 当前物料参数所在组0-: first front, 1-: first rear, ... 4-: 3rd front, 5-: 3rd rear
 
-    char sRgbRow[SENSOR_MAX_PIXELS*3+16];   // 一帧波形数据信息
+    char sRgbRow[SENSOR_MAX_PIXELS * 3 + 16];   // 一帧波形数据信息
     char sRowRed[SENSOR_MAX_PIXELS];        // 红值信号
     char sRowGreen[SENSOR_MAX_PIXELS];      // 绿值信号
     char sRowBlue[SENSOR_MAX_PIXELS];       // 蓝值信号
@@ -1402,8 +1461,8 @@ struct struShare {
 
     /* RS机型增加参数 */
     bool bIsAssist;                         // 记录当前是否为辅配
-	bool bCurAssist;
-    int pEjectTimes[MAX_EJECTOR_SIXTY*4];   // 记录喷嘴的吹气次数(前视及后视)
+    bool bCurAssist;
+    int pEjectTimes[MAX_EJECTOR_SIXTY * 4];   // 记录喷嘴的吹气次数(前视及后视)
     QString first;                          // 一次,根据次数分配的不同显示不同的内容
     QString second;                         // 二次
     QString third;                          // 三次
@@ -1442,7 +1501,7 @@ struct struShare {
     int nTotalAlarmPreTimes;        //开机气压报警次数
     QStringList strSlaveList;       // 从设备列表
 
-    int idIndex[MAX_LEVEL*2];       // TD机型的TabBar对应的识别组位置
+    int idIndex[MAX_LEVEL * 2];       // TD机型的TabBar对应的识别组位置
 
     QString tempPwd;                // 临时密码
     int aiDeviceNum;
@@ -1451,37 +1510,40 @@ struct struShare {
     QHostAddress     address;
     QString          ftpIpAddress;
     bool             isImageSend;
-    QString aiResult[MAX_UNIT/2];
+    QString aiResult[MAX_UNIT / 2];
 
     QString wifiSsid;
     QString wifiPassWord;
-    quint64 nThroughtPut[MAX_UNIT/2]; // 本次总产量
+    quint64 nThroughtPut[MAX_UNIT / 2]; // 本次总产量
 
 
 };
 
-typedef struct{
+typedef struct
+{
     int selfNetControlPort;     // 端口号
     QHostAddress groupAddress;  // 组播地址（可支持多播或广播）
 } StrNetConfig;
 
 
 /* DFS搜索方向数组 */
-static const int pDirection[4][2] = {{1, 0}, {0, -1}, {0, 1}, {-1, 0}};
+static const int pDirection[4][2] = { {1, 0}, {0, -1}, {0, 1}, {-1, 0} };
 
 extern int nSmallMatArea;
 /* 定义物料参数 */
-struct MaterialParams {
+struct MaterialParams
+{
     int nLabel;         // 物料标签号
     int nNum;           // 物料像素点个数
 };
 
 #define MaxDecryptTimes       	3     // 最大解密次数
 
-typedef struct{
+typedef struct
+{
     int  isEncrypt; //是否加密  0  false  1 true
     QString firstEncryDate; //首次加密日期
-//    bool isDecrypt; //是否解密
+    //    bool isDecrypt; //是否解密
     QString  DecryptCode[MaxDecryptTimes];
     int DecryptType; //解密模式 1 延迟解密 2完全解密 0加密后未解密
     int DecryptDate; //延迟解密日期
@@ -1496,25 +1558,25 @@ typedef struct{
 class MyGlobalString : public QObject
 {
 public:
-   MyGlobalString(){};
-   ~MyGlobalString(){};
+    MyGlobalString() {};
+    ~MyGlobalString() {};
 
-   QString sIdentifyGroupName[MAX_LEVEL][MAX_GROUP_IDTNTIFY];   // 识别组界面显示名称, 一次前后视、二次前后视、三次前后视， 上下视...
-   QString sTickGroupName[MAX_LEVEL][MAX_GROUP_TICK];           // 剔除组界面显示名称, 一次、二次、三次， 上下层...
-   QString sArithmeticName[ARITHMETIC_TOTAL];                   // 物料识别算法名称
-   QString sLamp[MAX_LAMP];                                     // 灯光设置名称
-   QString inf_even;
+    QString sIdentifyGroupName[MAX_LEVEL][MAX_GROUP_IDTNTIFY];   // 识别组界面显示名称, 一次前后视、二次前后视、三次前后视， 上下视...
+    QString sTickGroupName[MAX_LEVEL][MAX_GROUP_TICK];           // 剔除组界面显示名称, 一次、二次、三次， 上下层...
+    QString sArithmeticName[ARITHMETIC_TOTAL];                   // 物料识别算法名称
+    QString sLamp[MAX_LAMP];                                     // 灯光设置名称
+    QString inf_even;
 
-   QString sColorSelectGroupName[MAX_LEVEL];                    // 色选模式界面组名
-   QString sColorSelectModeName[MAX_COLOR_MODE];                // 色选模式名称
+    QString sColorSelectGroupName[MAX_LEVEL];                    // 色选模式界面组名
+    QString sColorSelectModeName[MAX_COLOR_MODE];                // 色选模式名称
 
-   QString sVendor;
-   QString sMachine;
-   QString sProduct;
-   QString sCustomReq;
-   QString sAppVersion;
-   QString sAppSVN;
-   QString sServer;
+    QString sVendor;
+    QString sMachine;
+    QString sProduct;
+    QString sCustomReq;
+    QString sAppVersion;
+    QString sAppSVN;
+    QString sServer;
 protected:
 
 private:

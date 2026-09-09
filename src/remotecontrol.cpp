@@ -7,13 +7,14 @@
  * \date        2015.01.14
  */
 #include "remotecontrol.h"
+#include "unilog.h"
 
-/****************************************************************************
-**
-** definition of class MyRemoteControl
-**
-****************************************************************************/
-MyRemoteControl::MyRemoteControl(QWidget *parent) :
+ /****************************************************************************
+ **
+ ** definition of class MyRemoteControl
+ **
+ ****************************************************************************/
+MyRemoteControl::MyRemoteControl(QWidget* parent) :
     QWidget(parent)
 {
     createRemoteControlPage();
@@ -24,26 +25,26 @@ MyRemoteControl::MyRemoteControl(QWidget *parent) :
 
     /* 从本地文件中读取相关配置 */
     getConfFromFile();
-//    getPasswordFromFile();
+    //    getPasswordFromFile();
 
-    /* 创建网络通信交互线程 */
-    //devStatusMonitorThread = new udpSockThread();
-    //devStatusMonitorThread->start();
+        /* 创建网络通信交互线程 */
+        //devStatusMonitorThread = new udpSockThread();
+        //devStatusMonitorThread->start();
 }
 
 /* 创建远程控制页面 */
 void MyRemoteControl::createRemoteControlPage()
 {
-    QGridLayout *upLay = new QGridLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(this);
+    QGridLayout* upLay = new QGridLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(this);
 
     m_serverIPLabel = new myLabel(myLan.server_ip);
     m_serverIPLineEdit = new myLineEdit("");
     m_serverIPLineEdit->setFixedHeight(BTN_HEIGHT);
     m_portLabel = new myLabel(myLan.server_port);
     m_portLineEdit = new myLineEdit("");
-    m_portLabelNC = new myLabel("NC "+myLan.server_port);
+    m_portLabelNC = new myLabel("NC " + myLan.server_port);
     m_portLineEditNC = new myLineEdit("10000");
     m_portLineEdit->setFixedHeight(BTN_HEIGHT);
     m_portLineEditNC->setFixedHeight(BTN_HEIGHT);
@@ -103,11 +104,11 @@ void MyRemoteControl::createRemoteControlPage()
 /* 响应服务器地址输入框被按下事件 */
 void MyRemoteControl::onServerIPLineEditPressed()
 {
-    myInputPanel *inputDlg = new myInputPanel(textType, 0, 0, 0);
+    myInputPanel* inputDlg = new myInputPanel(textType, 0, 0, 0);
     inputDlg->setText(m_serverIPLineEdit->text());
     inputDlg->setTitle(m_serverIPLabel->text());
 
-    if(inputDlg->exec() == QDialog::Accepted)
+    if (inputDlg->exec() == QDialog::Accepted)
     {
         m_serverIPLineEdit->setText(inputDlg->getText());
         setConfFile();
@@ -117,10 +118,10 @@ void MyRemoteControl::onServerIPLineEditPressed()
 /* 响应服务器端口号被按下事件 */
 void MyRemoteControl::onPortLineEditPressed()
 {
-    myInputPanel *inputDlg = new myInputPanel(intType, 0, 65534, m_portLineEdit->text().toInt());
+    myInputPanel* inputDlg = new myInputPanel(intType, 0, 65534, m_portLineEdit->text().toInt());
     inputDlg->setTitle(myLan.server_port);
 
-    if(inputDlg->exec() == QDialog::Accepted)
+    if (inputDlg->exec() == QDialog::Accepted)
     {
         m_portLineEdit->setText(inputDlg->getText());
         setConfFile();
@@ -129,10 +130,10 @@ void MyRemoteControl::onPortLineEditPressed()
 
 void MyRemoteControl::onPortLineEditNCPressed()
 {
-    myInputPanel *inputDlg = new myInputPanel(intType, 0, 65534, m_portLineEditNC->text().toInt());
-    inputDlg->setTitle("NC "+myLan.server_port);
+    myInputPanel* inputDlg = new myInputPanel(intType, 0, 65534, m_portLineEditNC->text().toInt());
+    inputDlg->setTitle("NC " + myLan.server_port);
 
-    if(inputDlg->exec() == QDialog::Accepted)
+    if (inputDlg->exec() == QDialog::Accepted)
     {
         m_portLineEditNC->setText(inputDlg->getText());
         strNetInfo.selfNetControlPort = m_portLineEditNC->text().toInt();
@@ -142,10 +143,10 @@ void MyRemoteControl::onPortLineEditNCPressed()
 /* 响应用户名输入框被按下事件 */
 void MyRemoteControl::onUsernameLineEditPressed()
 {
-    myInputMethod *inputDlg = new myInputMethod(myLan.username, m_usernameLineEdit->text());
+    myInputMethod* inputDlg = new myInputMethod(myLan.username, m_usernameLineEdit->text());
     inputDlg->setTitle(myLan.username);
 
-    if(inputDlg->exec() == QDialog::Accepted)
+    if (inputDlg->exec() == QDialog::Accepted)
     {
         m_usernameLineEdit->setText(inputDlg->getText());
         setPasswordFile();
@@ -155,10 +156,10 @@ void MyRemoteControl::onUsernameLineEditPressed()
 /* 响应密码输入框被按下事件 */
 void MyRemoteControl::onPasswordLineEditPressed()
 {
-    myInputPanel *inputDlg = new myInputPanel(passwdType, 0, 0, 0);
+    myInputPanel* inputDlg = new myInputPanel(passwdType, 0, 0, 0);
     inputDlg->setTitle(myLan.password);
 
-    if(inputDlg->exec() == QDialog::Accepted)
+    if (inputDlg->exec() == QDialog::Accepted)
     {
         m_passwordLineEdit->setText(inputDlg->getText());
         setPasswordFile();
@@ -177,7 +178,7 @@ void MyRemoteControl::onConnectBtnPressed()
     system(cmd);
     myFlow.sleep(3);
 #endif
-    if(connetToServer())    // 连接服务器成功
+    if (connetToServer())    // 连接服务器成功
     {
         m_connectBtn->setEnabled(false);
         m_disconnectBtn->setEnabled(true);
@@ -217,7 +218,7 @@ void MyRemoteControl::onBackBtnPressed()
 void MyRemoteControl::setConfFile()
 {
     QFile file("/opt/app/OpenVPN/client.conf");
-    if( !file.open(QIODevice::ReadWrite))
+    if (!file.open(QIODevice::ReadWrite))
     {
         qDebug("client.conf open error!");
         return;
@@ -226,12 +227,12 @@ void MyRemoteControl::setConfFile()
     QTextStream io(&file);
     QString str;
     int lineNum = 0;
-    while( !io.atEnd())
+    while (!io.atEnd())
     {
         str = io.readLine();
         lineNum++;
         QString tmpStr = str.mid(0, 6);
-        if(tmpStr == QString("remote"))
+        if (tmpStr == QString("remote"))
         {
             str = QString("remote %1 %2").arg(m_serverIPLineEdit->text()).arg(m_portLineEdit->text());
 #ifdef Q_OS_UNIX
@@ -249,15 +250,15 @@ void MyRemoteControl::setPasswordFile()
     QFile file(QString("%1/userdata/cnf/cnf.vpn-auth").arg(APP_PATH));
     QTextStream in(&file);
 
-    if(!file.open(QIODevice::Truncate | QIODevice::WriteOnly))
+    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly))
     {
         char str[256] = {};
-        sprintf(str,"%s%s",APP_PATH,"/userdata/cnf/cnf.vpn-auth : File open error!");
+        sprintf(str, "%s%s", APP_PATH, "/userdata/cnf/cnf.vpn-auth : File open error!");
         qDebug(str);
         return;
     }
 
-    in<<m_usernameLineEdit->text()<<"\n"<<m_passwordLineEdit->text();
+    in << m_usernameLineEdit->text() << "\n" << m_passwordLineEdit->text();
 
     file.close();
 }
@@ -267,7 +268,8 @@ void MyRemoteControl::getConfFromFile()
 {
     QFile file("/opt/app/OpenVPN/client.conf");
 
-    if(!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly))
+    {
         return;
     }
 
@@ -275,16 +277,20 @@ void MyRemoteControl::getConfFromFile()
     QString str, subStr;
     QString ipStr, portStr;
     int ipLen = 0;
-    while (!out.atEnd()) {
+    while (!out.atEnd())
+    {
         str = out.readLine();
         subStr = str.mid(0, 6);
-        if (subStr == QString("remote")) {
-            for (int i = 7; i < str.length(); i++) {
-                if (str.at(i) == ' ') {
-                    ipLen = i-7;
+        if (subStr == QString("remote"))
+        {
+            for (int i = 7; i < str.length(); i++)
+            {
+                if (str.at(i) == ' ')
+                {
+                    ipLen = i - 7;
                     ipStr = str.mid(7, ipLen);
                     m_serverIPLineEdit->setText(ipStr);
-                    portStr = str.mid(8+ipLen, str.length());
+                    portStr = str.mid(8 + ipLen, str.length());
                     m_portLineEdit->setText(portStr);
                     break;
                 }
@@ -299,18 +305,18 @@ void MyRemoteControl::getConfFromFile()
 void MyRemoteControl::getPasswordFromFile()
 {
     QFile file(QString("%1/userdata/cnf/cnf.vpn-auth").arg(APP_PATH));
-//    QFile file("/userdata/cnf/cnf.vpn-auth");
+    //    QFile file("/userdata/cnf/cnf.vpn-auth");
 
-    /* 若认证文件不存在,则新建文件并写入默认的用户名与密码 */
-    if(!file.exists())
+        /* 若认证文件不存在,则新建文件并写入默认的用户名与密码 */
+    if (!file.exists())
     {
-        if(!file.open(QIODevice::WriteOnly))
+        if (!file.open(QIODevice::WriteOnly))
         {
-           qDebug("userdata/cnf/cnf.vpn-auth : File create error!");
-           return;
+            qDebug("userdata/cnf/cnf.vpn-auth : File create error!");
+            return;
         }
         QTextStream in(&file);
-        in<<"PCUSER1"<<"\n"<<"140219";
+        in << "PCUSER1" << "\n" << "140219";
         m_usernameLineEdit->setText("PCUSER1");
         m_passwordLineEdit->setText("140219");
         file.close();
@@ -319,7 +325,7 @@ void MyRemoteControl::getPasswordFromFile()
     }
 
     /* 若认证文件存在,则从文件中读取用户名与密码 */
-    if(!file.open(QIODevice::ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         qDebug("userdata/cnf/cnf.vpn-auth : File open error!");
         return;
@@ -328,8 +334,8 @@ void MyRemoteControl::getPasswordFromFile()
     QTextStream out(&file);
     QString usernameStr, passwordStr;
 
-    out>>usernameStr;
-    out>>passwordStr;
+    out >> usernameStr;
+    out >> passwordStr;
     m_usernameLineEdit->setText(usernameStr);
     m_passwordLineEdit->setText(passwordStr);
 
@@ -340,13 +346,15 @@ void MyRemoteControl::getPasswordFromFile()
 bool MyRemoteControl::getLocalVirtualAddr()
 {
     QList<QNetworkInterface> interfaceList = QNetworkInterface::allInterfaces();
-    if(interfaceList.size() == 0){
+    if (interfaceList.size() == 0)
+    {
         return false;
     }
-    for(int i=0 ; i<interfaceList.size(); i++)
-//    foreach (QNetworkInterface interface, interfaceList)
+    for (int i = 0; i < interfaceList.size(); i++)
+        //    foreach (QNetworkInterface interface, interfaceList)
     {
-        if(interfaceList.at(i).name() == QString("tun0")){
+        if (interfaceList.at(i).name() == QString("tun0"))
+        {
             m_localVirtualAddrLineEdit->setText(getVpnIpAddress());
             return true;
         }
@@ -354,17 +362,21 @@ bool MyRemoteControl::getLocalVirtualAddr()
     return false;
 }
 
-QString MyRemoteControl::getVpnIpAddress() {
+QString MyRemoteControl::getVpnIpAddress()
+{
     QProcess process;
     // 使用 sh -c 来执行包含管道的命令
     process.start("sh", QStringList() << "-c" << "ip addr show tun0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1");
     process.waitForFinished();
 
-    if (process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0) {
+    if (process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0)
+    {
         QString output = process.readAllStandardOutput();
         output = output.simplified(); // 去除前后空格
         return output;
-    } else {
+    }
+    else
+    {
         // 处理命令执行失败的情况
         QString error = process.readAllStandardError();
         qDebug() << "Command execution failed:" << error;
@@ -378,9 +390,9 @@ bool MyRemoteControl::connetToServer()
 {
     int maxTimes = 30;
 
-    for(int i=0; i<maxTimes; i++)
+    for (int i = 0; i < maxTimes; i++)
     {
-        if(getLocalVirtualAddr())
+        if (getLocalVirtualAddr())
             return true;
 
         myFlow.sleep(1);
@@ -392,7 +404,7 @@ bool MyRemoteControl::connetToServer()
 /* 响应服务器失效的槽函数 */
 void MyRemoteControl::onServerUnaliveSlt()
 {
-	onDisconnectBtnPressed();
+    onDisconnectBtnPressed();
 }
 
 /****************************************************************************
@@ -412,13 +424,16 @@ bool pingThread::serverIsAlive()
     m_cmd = new QProcess;
     m_cmd->start("ping -w 5 10.8.0.1");
 
-    if (m_cmd->waitForFinished()) {
+    if (m_cmd->waitForFinished())
+    {
         QString str = m_cmd->readAll();
 
 #ifdef Q_OS_UNIX
-        if(!str.contains("ttl")) {
+        if (!str.contains("ttl"))
+        {
 #else
-        if(!str.contains("TTL")) {
+        if (!str.contains("TTL"))
+        {
 #endif
 
             m_cmd->kill();
@@ -433,8 +448,10 @@ bool pingThread::serverIsAlive()
 void pingThread::run()
 {
     m_bIsRunning = true;
-    while(m_bIsRunning) {
-        if (!serverIsAlive()) {
+    while (m_bIsRunning)
+    {
+        if (!serverIsAlive())
+        {
             qDebug("ping Fail!");
             emit pingFailSig();
             return;
@@ -458,18 +475,20 @@ void pingThread::stopPing()
 **
 ****************************************************************************/
 /* 网络配置构造函数 */
-MyNetConfig::MyNetConfig(QWidget *parent)
-	: QWidget(parent)
+MyNetConfig::MyNetConfig(QWidget * parent)
+    : QWidget(parent)
 {
-/* page init */
-    for (int i = 0; i < 6; i++) {
+    /* page init */
+    for (int i = 0; i < 6; i++)
+    {
         m_hostLabel.append(new myLabel(tr("")));
         m_hostValue.append(new myLineEdit(tr("")));
         m_hostValue[i]->setFixedHeight(BTN_HEIGHT);
     }
 
-/* page update */
-    for (int i = 0; i < m_hostValue.size(); i++) {
+    /* page update */
+    for (int i = 0; i < m_hostValue.size(); i++)
+    {
         m_hostLabel[i]->setText(getNetText(i));
     }
 
@@ -481,19 +500,21 @@ MyNetConfig::MyNetConfig(QWidget *parent)
 
     /* signals to slots */
     m_sigMapper = new QSignalMapper;
-    for (int i = 0; i < m_hostValue.size(); i++) {
-	/*
-	if (i == NET_MAC || i == NET_ROUTE) 
-	    continue;
-	*/
+    for (int i = 0; i < m_hostValue.size(); i++)
+    {
+        /*
+        if (i == NET_MAC || i == NET_ROUTE)
+            continue;
+        */
         m_sigMapper->setMapping(m_hostValue[i], i);
         connect(m_hostValue[i], SIGNAL(pressed()), m_sigMapper, SLOT(map()));
     }
-    connect(m_sigMapper,     SIGNAL(mapped(int)), this, SLOT(setHostAddress(int)));
+    connect(m_sigMapper, SIGNAL(mapped(int)), this, SLOT(setHostAddress(int)));
 
-/* page layout */
-    QGridLayout *mainLayout = new QGridLayout(this);
-    for (int i = 0; i < m_hostValue.size(); i++) {
+    /* page layout */
+    QGridLayout* mainLayout = new QGridLayout(this);
+    for (int i = 0; i < m_hostValue.size(); i++)
+    {
         mainLayout->addWidget(m_hostLabel[i], i, 0);
         mainLayout->addWidget(m_hostValue[i], i, 1);
     }
@@ -503,7 +524,8 @@ MyNetConfig::MyNetConfig(QWidget *parent)
 QString MyNetConfig::getNetText(int index)
 {
     QString text;
-    switch (index) {
+    switch (index)
+    {
     case NET_IP:
         text = myLan.ip_address;
         break;
@@ -582,27 +604,31 @@ QString MyNetConfig::getGateway()
     QProcess process;
     process.setReadChannelMode(QProcess::MergedChannels);
 #ifdef Q_OS_UNIX
-    process.start("route", QStringList() <<"-n");
+    process.start("route", QStringList() << "-n");
 #else
     process.start("route", QStringList() << "PRINT");
 #endif
 
-    if (process.waitForFinished()) {
+    if (process.waitForFinished())
+    {
         QString input = process.readAll();
 #ifdef Q_OS_UNIX
         QStringList allLine = input.split("\n");
 #else
         QStringList allLine = input.split("\r\n");
 #endif
-        foreach(QString line, allLine) {
+        foreach(QString line, allLine)
+        {
             QStringList field = line.split(" ", QString::SkipEmptyParts);
-            if (field.size() > 0) {
+            if (field.size() > 0)
+            {
                 QString value = field.first();
-                if (value == QHostAddress(QHostAddress::Any).toString()) {
+                if (value == QHostAddress(QHostAddress::Any).toString())
+                {
 #ifdef Q_OS_UNIX
-                    return field.at(field.indexOf(value)+1);
+                    return field.at(field.indexOf(value) + 1);
 #else
-                    return field.at(field.indexOf(value)+2);
+                    return field.at(field.indexOf(value) + 2);
 #endif
                 }
             }
@@ -618,19 +644,23 @@ QString MyNetConfig::getDNS()
     process.setReadChannelMode(QProcess::MergedChannels);
     process.start("nslookup", QStringList() << QHostInfo::localHostName());
 
-    if (process.waitForFinished()) {
-        QString input =  process.readAll();
+    if (process.waitForFinished())
+    {
+        QString input = process.readAll();
 
 #ifdef Q_OS_UNIX
         QStringList allLine = input.split("\n");
 #else
         QStringList allLine = input.split("\r\n");
 #endif
-        foreach(QString line, allLine) {
+        foreach(QString line, allLine)
+        {
             QStringList field = line.split(":", QString::SkipEmptyParts);
-            foreach(QString value, field) {
-                if (value.contains("Address")) {
-                    return field.at(field.indexOf(value)+1).simplified();
+            foreach(QString value, field)
+            {
+                if (value.contains("Address"))
+                {
+                    return field.at(field.indexOf(value) + 1).simplified();
                 }
             }
         }
@@ -645,27 +675,31 @@ QString MyNetConfig::getRoute()
     QProcess process;
     process.setReadChannelMode(QProcess::MergedChannels);
 #ifdef Q_OS_UNIX
-    process.start("traceroute", QStringList() <<"-n");
+    process.start("traceroute", QStringList() << "-n");
 #else
     process.start("route", QStringList() << "PRINT");
 #endif
 
-    if (process.waitForFinished()) {
+    if (process.waitForFinished())
+    {
         QString input = process.readAll();
 #ifdef Q_OS_UNIX
         QStringList allLine = input.split("\n");
 #else
         QStringList allLine = input.split("\r\n");
 #endif
-        foreach(QString line, allLine) {
+        foreach(QString line, allLine)
+        {
             QStringList field = line.split(" ", QString::SkipEmptyParts);
-            if (field.size() > 0) {
+            if (field.size() > 0)
+            {
                 QString value = field.first();
-                if (value == QHostAddress(QHostAddress::Any).toString()) {
+                if (value == QHostAddress(QHostAddress::Any).toString())
+                {
 #ifdef Q_OS_UNIX
-                    return field.at(field.indexOf(value)+1);
+                    return field.at(field.indexOf(value) + 1);
 #else
-                    return field.at(field.indexOf(value)+2);
+                    return field.at(field.indexOf(value) + 2);
 #endif
                 }
             }
@@ -678,37 +712,42 @@ QString MyNetConfig::getRoute()
 /* 获取网络配置信息 */
 void MyNetConfig::getHostAddress()
 {
-/* get setting by default */
+    /* get setting by default */
     QString ip, netmask, gateway, mac, dns, route;
 
-/* get setting from config file */
+    /* get setting from config file */
     getNetSetting(QString("%1/userdata/cnf/cnf.network").arg(APP_PATH));
 
-/* get setting from system config */
-    /* get ip, netmask, mac */
+    /* get setting from system config */
+        /* get ip, netmask, mac */
     QList<QNetworkInterface> interfaceList = QNetworkInterface::allInterfaces();
-    if(interfaceList.size() == 0){
+    if (interfaceList.size() == 0)
+    {
         return;
     }
-    for(int i = 0; i< interfaceList.size(); i++){
-//    foreach (QNetworkInterface interface, interfaceList) {
-        if (!(interfaceList.at(i).flags() & QNetworkInterface::IsUp) || (interfaceList.at(i).flags() & QNetworkInterface::IsLoopBack)) {
-//        if (interfaceList.at(i).flags() & QNetworkInterface::IsLoopBack)
+    for (int i = 0; i < interfaceList.size(); i++)
+    {
+        //    foreach (QNetworkInterface interface, interfaceList) {
+        if (!(interfaceList.at(i).flags() & QNetworkInterface::IsUp) || (interfaceList.at(i).flags() & QNetworkInterface::IsLoopBack))
+        {
+            //        if (interfaceList.at(i).flags() & QNetworkInterface::IsLoopBack)
             continue;
         }
-//        qDebug()<<"123:"<<interfaceList.at(i).name();
+        //        qDebug()<<"123:"<<interfaceList.at(i).name();
 
 #ifdef Q_OS_UNIX
-        if(interfaceList.at(i).name() != "eth0" && interfaceList.at(i).name() != "eth1"){
+        if (interfaceList.at(i).name() != "eth0" && interfaceList.at(i).name() != "eth1")
+        {
             break;
         }
 #endif
         QList<QNetworkAddressEntry> hostAddressList = interfaceList.at(i).addressEntries();
-        if(hostAddressList.size() == 0){
+        if (hostAddressList.size() == 0)
+        {
             return;
         }
-        for(int j=0; j< hostAddressList.size(); j++)
-//        foreach (QNetworkAddressEntry address, hostAddressList)
+        for (int j = 0; j < hostAddressList.size(); j++)
+            //        foreach (QNetworkAddressEntry address, hostAddressList)
         {
             if (hostAddressList.at(j).ip().protocol() != QAbstractSocket::IPv4Protocol)
                 continue;
@@ -718,7 +757,8 @@ void MyNetConfig::getHostAddress()
             netmask = hostAddressList.at(j).netmask().toString();
             break;
         }
-        if (ip != QHostAddress(QHostAddress::LocalHost).toString()) {
+        if (ip != QHostAddress(QHostAddress::LocalHost).toString())
+        {
             mac = interfaceList.at(i).hardwareAddress();
             break;
         }
@@ -735,7 +775,7 @@ void MyNetConfig::getHostAddress()
     m_hostValue[NET_MASK]->setText(netmask);
     m_hostValue[NET_GATEWAY]->setText(gateway);
     m_hostValue[NET_MAC]->setText(mac);
-//  m_hostValue[NET_DNS]->setText(dns);
+    //  m_hostValue[NET_DNS]->setText(dns);
 }
 
 /* 设置主机网络配置信息 */
@@ -746,13 +786,15 @@ void MyNetConfig::setHostAddress(int index)
     myInputPanel inputDlg(textType, 0, 0, 0);
     inputDlg.setTitle(getNetText(index));
     inputDlg.setText(m_hostValue[index]->text());
-    if (inputDlg.exec() == QDialog::Accepted) {
+    if (inputDlg.exec() == QDialog::Accepted)
+    {
         /* get input value */
         hostAddress = inputDlg.getText();
 
         /* config network interface */
         QString cmd;
-        switch (index) {
+        switch (index)
+        {
         case NET_IP:
 #ifdef Q_OS_UNIX
             cmd = QString("ifconfig eth0 %1 netmask %2 up").arg(hostAddress).arg(m_hostValue[NET_MASK]->text());
@@ -812,17 +854,20 @@ void MyNetConfig::setHostAddress(int index)
 ** definition of class MyBigData
 **
 ****************************************************************************/
-MyBigData::MyBigData(QWidget *parent)
+MyBigData::MyBigData(QWidget * parent)
     : QWidget(parent)
 {
-/* page init */
-    /* QR code Group */
+    /* page init */
+        /* QR code Group */
     m_qrcodeCbx = new myGroupBox(myLan.qrcode);
     /* widget to generate QR code */
     m_qrCodeLabel = new myLabel("");
-    if (LCD_HEIGHT == 480) {
+    if (LCD_HEIGHT == 480)
+    {
         m_qrCodeLabel->setFixedSize(200, 200);
-    } else {
+    }
+    else
+    {
         m_qrCodeLabel->setMinimumSize(400, 400);
     }
     m_qrCodeLabel->setPixmap(QPixmap(":res/png/QRCode.png").scaled(m_qrCodeLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -835,20 +880,20 @@ MyBigData::MyBigData(QWidget *parent)
 
     connect(m_serverValue, SIGNAL(pressed()), this, SLOT(setServer()));
 
-/* page layout */
-    // qrcode layout
-    QHBoxLayout *qrcodeLayout = new QHBoxLayout;
+    /* page layout */
+        // qrcode layout
+    QHBoxLayout* qrcodeLayout = new QHBoxLayout;
     qrcodeLayout->addStretch();
     qrcodeLayout->addWidget(m_qrCodeLabel);
     qrcodeLayout->addStretch();
 
     // server layout 
-    QHBoxLayout *serverLayout = new QHBoxLayout(m_serverCbx);
+    QHBoxLayout* serverLayout = new QHBoxLayout(m_serverCbx);
     serverLayout->addWidget(m_serverLabel);
     serverLayout->addWidget(m_serverValue);
 
     // main layout
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addLayout(qrcodeLayout);
 }
 
@@ -859,10 +904,10 @@ MyBigData::~MyBigData()
 
 QString MyBigData::generateQRString()
 {
-     QString url = QString("%1/meyerdata/myindex.php?").arg(myString.sServer);
+    QString url = QString("%1/meyerdata/myindex.php?").arg(myString.sServer);
 
-/* information */
-    /* engineer */
+    /* information */
+        /* engineer */
     url.append(QString("%1=%2&").arg("E0001").arg("meyer"));
 
     /* datetime */
@@ -873,8 +918,8 @@ QString MyBigData::generateQRString()
     /* location */
     url.append(QString("%1=%2&").arg("E0003").arg("Hefei"));
 
-/* factory config */
-    /* machine serial number */
+    /* factory config */
+        /* machine serial number */
     url.append(QString("%1=%2&").arg("E1001").arg(6000));
 
     /* machine type */
@@ -912,8 +957,8 @@ QString MyBigData::generateQRString()
     /* sensor frequency */
     url.append(QString("%1=%2&").arg("E3003").arg(struCnfc.nSensorRowFre));
 
-/* profile config */
-    /* profile's name */
+    /* profile config */
+        /* profile's name */
     QString sProfileName = QString().fromLocal8Bit(struCnfg.struProfileIndex[struCnfg.nProfile].sMaterialName);
     url.append(QString("%1=%2&").arg("E4001").arg(sProfileName));
 
@@ -926,18 +971,19 @@ QString MyBigData::generateQRString()
 
 void MyBigData::setServer()
 {
-	QString server;
+    QString server;
     myInputMethod inputDlg(myLan.server, m_serverValue->text());
-	if (inputDlg.exec() == QDialog::Accepted) {
-		// get input value
-		server = inputDlg.getText();
-		m_serverValue->setText(server);
+    if (inputDlg.exec() == QDialog::Accepted)
+    {
+        // get input value
+        server = inputDlg.getText();
+        m_serverValue->setText(server);
 
-		// save to global param 
-		myString.sServer = server;
-		// save to config file 
-		myFlow.saveServerSetting();
-	}
+        // save to global param 
+        myString.sServer = server;
+        // save to config file 
+        myFlow.saveServerSetting();
+    }
 }
 
 void MyBigData::generateQRcode()
@@ -951,13 +997,13 @@ void MyBigData::generateQRcode()
 **
 ****************************************************************************/
 
-MyLoggerViewer::MyLoggerViewer(QWidget *parent)
+MyLoggerViewer::MyLoggerViewer(QWidget * parent)
     : QWidget(parent)
 {
-    g_Config *config = new g_Config();
+    g_Config* config = new g_Config();
     QDateTime dateTime = QDateTime::currentDateTime();
-    QVBoxLayout *qTextLayout = new QVBoxLayout(this);
-    char cDateTmp[11] = {0};        //当前记录的时间
+    QVBoxLayout* qTextLayout = new QVBoxLayout(this);
+    char cDateTmp[11] = { 0 };        //当前记录的时间
 
     logEventSeq = LOG_ALL;
     maxLine = 2000;
@@ -965,21 +1011,26 @@ MyLoggerViewer::MyLoggerViewer(QWidget *parent)
     qFile.open(QIODevice::ReadOnly);
 
     tmpFileData = new char[MAX_LEN_LOGFILE_SIZE];   //待整理数据
-    if (tmpFileData == NULL) {
-        myLog->error("malloc failed!!LOC: %s,%s,%d",__FILE__,__FUNCTION__,__LINE__);
+    if (tmpFileData == NULL)
+    {
+        LOG_ERROR_STM("malloc failed!");
         return;
     }
-    memset(tmpFileData,0,MAX_LEN_LOGFILE_SIZE);
+    memset(tmpFileData, 0, MAX_LEN_LOGFILE_SIZE);
 
-    dateLen = qFile.read(tmpFileData,MAX_LEN_LOGFILE_SIZE);
+    dateLen = qFile.read(tmpFileData, MAX_LEN_LOGFILE_SIZE);
 
     isBackFileHandled = 1;
-    if (dateLen >= sizeof(cDateTmp)) {
-        for (quint32 i = 0; i < sizeof(cDateTmp)-1; i++) {
+    if (dateLen >= sizeof(cDateTmp))
+    {
+        for (quint32 i = 0; i < sizeof(cDateTmp) - 1; i++)
+        {
             cDateTmp[i] = tmpFileData[i];
         }
         FirstdateInCurFile = QString("%1").fromUtf8(cDateTmp);
-    } else {
+    }
+    else
+    {
         FirstdateInCurFile = QDateTime::currentDateTime().date().toString("yyyy-MM-dd");
     }
 
@@ -989,99 +1040,105 @@ MyLoggerViewer::MyLoggerViewer(QWidget *parent)
     qText->setFont(config->getFont());
     qText->setReadOnly(true);
     qText->setWordWrapMode(QTextOption::WordWrap);
-    if (LCD_WIDTH == 640) {
-        qText->setMinimumSize(455,195);
-    } else {
-        qText->setMinimumSize(760,440);
+    if (LCD_WIDTH == 640)
+    {
+        qText->setMinimumSize(455, 195);
+    }
+    else
+    {
+        qText->setMinimumSize(760, 440);
     }
 
-    QHBoxLayout *qTextContentLayout = new QHBoxLayout;
-    qTextContentLayout->addWidget(qText,0,Qt::AlignLeft);
+    QHBoxLayout* qTextContentLayout = new QHBoxLayout;
+    qTextContentLayout->addWidget(qText, 0, Qt::AlignLeft);
 
-    myLabel *from = new myLabel(myLan.from);
+    myLabel* from = new myLabel(myLan.from);
     dateTimeEditFrom = new QDateTimeEdit(this);
     dateTimeEditFrom->setFont(config->getFont());
     dateTimeEditFrom->setDisplayFormat("yyyy-MM-dd");
     dateTimeEditFrom->setCalendarPopup(true);
-    QCalendarWidget *calendarWidgetFrom = dateTimeEditFrom->calendarWidget();
+    QCalendarWidget* calendarWidgetFrom = dateTimeEditFrom->calendarWidget();
     calendarWidgetFrom->setFont(config->getFont());
     calendarWidgetFrom->setGridVisible(true);
     dateTimeEditFrom->setDateTime(dateTime);
 
-    myLabel *to = new myLabel(myLan.to);
+    myLabel* to = new myLabel(myLan.to);
     dateTimeEditTo = new QDateTimeEdit(this);
     dateTimeEditTo->setFont(config->getFont());
     dateTimeEditTo->setDisplayFormat("yyyy-MM-dd");
     dateTimeEditTo->setCalendarPopup(true);
-    QCalendarWidget *calendarWidgetTo = dateTimeEditTo->calendarWidget();
+    QCalendarWidget* calendarWidgetTo = dateTimeEditTo->calendarWidget();
     calendarWidgetTo->setFont(config->getFont());
     calendarWidgetTo->setGridVisible(true);
     dateTimeEditTo->setDateTime(dateTime);
 
-    QHBoxLayout *qTextControlLayout = new QHBoxLayout;
-    qTextControlLayout->addWidget(from,0,Qt::AlignLeft);
-    qTextControlLayout->addWidget(dateTimeEditFrom,0,Qt::AlignLeft);
+    QHBoxLayout* qTextControlLayout = new QHBoxLayout;
+    qTextControlLayout->addWidget(from, 0, Qt::AlignLeft);
+    qTextControlLayout->addWidget(dateTimeEditFrom, 0, Qt::AlignLeft);
     qTextControlLayout->addStretch();
-    qTextControlLayout->addWidget(to,0,Qt::AlignLeft);
-    qTextControlLayout->addWidget(dateTimeEditTo,0,Qt::AlignLeft);
+    qTextControlLayout->addWidget(to, 0, Qt::AlignLeft);
+    qTextControlLayout->addWidget(dateTimeEditTo, 0, Qt::AlignLeft);
     qTextControlLayout->addStretch();
 
     eventTypeCombo = new MyComboBox();
     eventTypeCombo->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
-    eventTypeCombo->setFixedHeight(BTN_HEIGHT-12);
+    eventTypeCombo->setFixedHeight(BTN_HEIGHT - 12);
 
     reLoadFileBtn = new myPushButton(myLan.fresh, QIcon());
-    reLoadFileBtn->setMaximumSize(BTN_HEIGHT+10,BTN_HEIGHT-12);
+    reLoadFileBtn->setMaximumSize(BTN_HEIGHT + 10, BTN_HEIGHT - 12);
 
-    qTextControlLayout->addWidget(eventTypeCombo,0,Qt::AlignLeft);
+    qTextControlLayout->addWidget(eventTypeCombo, 0, Qt::AlignLeft);
     qTextControlLayout->addStretch();
-    qTextControlLayout->addWidget(reLoadFileBtn,0,Qt::AlignLeft);
+    qTextControlLayout->addWidget(reLoadFileBtn, 0, Qt::AlignLeft);
     qTextControlLayout->addStretch();
     qTextLayout->addLayout(qTextControlLayout);
     qTextLayout->addLayout(qTextContentLayout);
     reLoadFileBtn->hide();
 
-    eventTypeCombo->insertItem(LOG_ALL,myLan.all);                       //LOG_ALL
-    eventTypeCombo->insertItem(LOG_POWER,myLan.power_switch);            //LOG_POWER
-    eventTypeCombo->insertItem(LOG_FEED_SWITCH,myLan.feeder_switch);     //LOG_FEED_SWITCH
+    eventTypeCombo->insertItem(LOG_ALL, myLan.all);                       //LOG_ALL
+    eventTypeCombo->insertItem(LOG_POWER, myLan.power_switch);            //LOG_POWER
+    eventTypeCombo->insertItem(LOG_FEED_SWITCH, myLan.feeder_switch);     //LOG_FEED_SWITCH
     //eventTypeCombo->insertItem(LOG_MACHINE,myLan.machine);             //LOG_MACHINE
-    eventTypeCombo->insertItem(LOG_PROFILE,myLan.profile);               //LOG_PROFILE
-    eventTypeCombo->insertItem(LOG_CAMERA,myLan.camera);                 //LOG_CAMERA
-    eventTypeCombo->insertItem(LOG_BACKGROUD,myLan.bg);                  //LOG_BACKGROUD
-    eventTypeCombo->insertItem(LOG_ARITH,myLan.arith);                   //LOG_ARITH
-    eventTypeCombo->insertItem(LOG_EJECT,myLan.reject);                  //LOG_EJECT
-    eventTypeCombo->insertItem(LOG_WIPE,myLan.wipe);                     //LOG_WIPE
-    eventTypeCombo->insertItem(LOG_FEED,myLan.feeder_value);             //LOG_FEED
-    eventTypeCombo->insertItem(LOG_DEBUG,myLan.debug);                   //LOG_DEBUG
-    eventTypeCombo->insertItem(LOG_WARM,myLan.warm);                   //LOG_DEBUG
+    eventTypeCombo->insertItem(LOG_PROFILE, myLan.profile);               //LOG_PROFILE
+    eventTypeCombo->insertItem(LOG_CAMERA, myLan.camera);                 //LOG_CAMERA
+    eventTypeCombo->insertItem(LOG_BACKGROUD, myLan.bg);                  //LOG_BACKGROUD
+    eventTypeCombo->insertItem(LOG_ARITH, myLan.arith);                   //LOG_ARITH
+    eventTypeCombo->insertItem(LOG_EJECT, myLan.reject);                  //LOG_EJECT
+    eventTypeCombo->insertItem(LOG_WIPE, myLan.wipe);                     //LOG_WIPE
+    eventTypeCombo->insertItem(LOG_FEED, myLan.feeder_value);             //LOG_FEED
+    eventTypeCombo->insertItem(LOG_DEBUG, myLan.debug);                   //LOG_DEBUG
+    eventTypeCombo->insertItem(LOG_WARM, myLan.warm);                   //LOG_DEBUG
 
-    connect(dateTimeEditFrom,SIGNAL(dateTimeChanged(QDateTime)),this,SLOT(onDateTimeEditFromChanged(QDateTime)));
-    connect(dateTimeEditTo,SIGNAL(dateTimeChanged(QDateTime)),this,SLOT(onDateTimeEditToChanged(QDateTime)));
-    connect(eventTypeCombo,   SIGNAL(currentIndexChanged(int)),   this, SLOT(OnEventChanged(int)));
-    connect(reLoadFileBtn,   SIGNAL(pressed()),   this, SLOT(onReloadLogFileBtnClicked()));
+    connect(dateTimeEditFrom, SIGNAL(dateTimeChanged(QDateTime)), this, SLOT(onDateTimeEditFromChanged(QDateTime)));
+    connect(dateTimeEditTo, SIGNAL(dateTimeChanged(QDateTime)), this, SLOT(onDateTimeEditToChanged(QDateTime)));
+    connect(eventTypeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(OnEventChanged(int)));
+    connect(reLoadFileBtn, SIGNAL(pressed()), this, SLOT(onReloadLogFileBtnClicked()));
     updateTextByDate();
     updateTextByEventSeq();
 }
 
 MyLoggerViewer::~MyLoggerViewer()
 {
-    delete []tmpFileData;
+    delete[]tmpFileData;
 }
 
 /* 在长度为len的字符串str中找到字符c的索引 */
-qint64 MyLoggerViewer::getIndexOfCharacter(const char *str, quint64 len, char c)
+qint64 MyLoggerViewer::getIndexOfCharacter(const char* str, quint64 len, char c)
 {
     quint64 i = 0;
     qint64 ret;
     bool isFound = false;
-    for (i = 0; i < len; i++) {
-        if (str[i] == c) {
+    for (i = 0; i < len; i++)
+    {
+        if (str[i] == c)
+        {
             ret = i;
             isFound = true;
             break;
         }
     }
-    if (!isFound) {
+    if (!isFound)
+    {
         ret = -1;
     }
     return ret;
@@ -1091,60 +1148,74 @@ qint64 MyLoggerViewer::getIndexOfCharacter(const char *str, quint64 len, char c)
 void MyLoggerViewer::updateTextByDate()
 {
     dateTimeFrom = dateTimeEditFrom->dateTime();
-    dateTimeTo   = dateTimeEditTo->dateTime();
+    dateTimeTo = dateTimeEditTo->dateTime();
     QString from = dateTimeFrom.date().toString("yyyy-MM-dd");
-    QString to =   dateTimeTo.date().toString("yyyy-MM-dd");
+    QString to = dateTimeTo.date().toString("yyyy-MM-dd");
     qint64 pos = 0;                 //当前记录的开始位置
     qint64 recordCurEnd = 0;        //当前记录的结束位置
     qint64 recordEnd = 0;           //记录的结束位置
     QString DateTmp;                //获取当前记录中时间
-    char cDateTmp[11] = {0};        //当前记录的时间
+    char cDateTmp[11] = { 0 };        //当前记录的时间
     int countRecord = 0;            //符合当前日期显示的记录数
 
-    if (tmpFileData == NULL) {
-        myLog->error("malloc failed!!LOC: %s,%s,%d",__FILE__,__FUNCTION__,__LINE__);
+    if (tmpFileData == NULL)
+    {
+        LOG_ERROR_STM("malloc failed!");
         return;
     }
     qLog.clear();
 
-    if (from > to) {                //调整查询日志的起止时间
+    if (from > to)
+    {                //调整查询日志的起止时间
         DateTmp = from;
         from = to;
         to = DateTmp;
     }
 
-    while (1) {
-        if ((pos + sizeof(cDateTmp)-1) > dateLen) {
+    while (1)
+    {
+        if ((pos + sizeof(cDateTmp) - 1) > dateLen)
+        {
             break;
         }
-        for (quint32 i = 0; i < sizeof(cDateTmp)-1; i++) {
-            cDateTmp[i] = tmpFileData[pos+i];
+        for (quint32 i = 0; i < sizeof(cDateTmp) - 1; i++)
+        {
+            cDateTmp[i] = tmpFileData[pos + i];
         }
         DateTmp = QString("%1").fromUtf8(cDateTmp); //获取当前记录的时间
 
-        recordCurEnd = getIndexOfCharacter(tmpFileData+pos,dateLen-pos,'\n');
-        if (pos == 0) {
+        recordCurEnd = getIndexOfCharacter(tmpFileData + pos, dateLen - pos, '\n');
+        if (pos == 0)
+        {
             recordEnd = recordCurEnd;
-        } else {
+        }
+        else
+        {
             recordEnd = pos + recordCurEnd;
         }
-        if (recordCurEnd == -1) {       //-1表示未找到该字符
+        if (recordCurEnd == -1)
+        {       //-1表示未找到该字符
             break;
         }
 
-        if (DateTmp < from) {
-            pos  = recordEnd + 1;
+        if (DateTmp < from)
+        {
+            pos = recordEnd + 1;
             continue;
-        } else if (DateTmp > to) {
+        }
+        else if (DateTmp > to)
+        {
             break;
-        } else {
-            char tmp = tmpFileData[pos+recordCurEnd+1];
-            tmpFileData[pos+recordCurEnd+1] = '\0';
-            qLog.append(tmpFileData+pos);
-            tmpFileData[pos+recordCurEnd+1] = tmp;
+        }
+        else
+        {
+            char tmp = tmpFileData[pos + recordCurEnd + 1];
+            tmpFileData[pos + recordCurEnd + 1] = '\0';
+            qLog.append(tmpFileData + pos);
+            tmpFileData[pos + recordCurEnd + 1] = tmp;
 
             countRecord++;
-            pos  = recordEnd + 1;
+            pos = recordEnd + 1;
         }
     }
 }
@@ -1164,49 +1235,63 @@ void MyLoggerViewer::onDateTimeEditToChanged(QDateTime dateTime)
 void MyLoggerViewer::updateTextByEventSeq()
 {
     int countLogRecord = 0;         //符合当前日期及当前事件类型的记录数
-    const char *tmpLog = NULL;
+    const char* tmpLog = NULL;
     int numIndexDec = 0;   //十位数
     int numIndex = 0;      //个位数
     int eventSeqFromLog = 0;
-	int logEndIndex   = 0;
-    int *logIndexArr = NULL;
+    int logEndIndex = 0;
+    int* logIndexArr = NULL;
     QString qLogStr;
 
     logIndexArr = new int[maxLine];
-    if (tmpFileData == NULL || logIndexArr == NULL) {
-        myLog->error("malloc failed!!LOC: %s,%s,%d",__FILE__,__FUNCTION__,__LINE__);
+    if (tmpFileData == NULL || logIndexArr == NULL)
+    {
+        LOG_ERROR_STM("malloc failed!");
         return;
     }
 
-    for (logEndIndex=qLog.size()-1; logEndIndex>=0; logEndIndex--) {
+    for (logEndIndex = qLog.size() - 1; logEndIndex >= 0; logEndIndex--)
+    {
         tmpLog = qPrintable(qLog.at(logEndIndex));
-        numIndexDec = getIndexOfCharacter(tmpLog,strlen(tmpLog),'[')+1;   //十位数
-        numIndex = getIndexOfCharacter(tmpLog,strlen(tmpLog),']')-1;      //个位数
+        numIndexDec = getIndexOfCharacter(tmpLog, strlen(tmpLog), '[') + 1;   //十位数
+        numIndex = getIndexOfCharacter(tmpLog, strlen(tmpLog), ']') - 1;      //个位数
         eventSeqFromLog = 0;
-        if (numIndexDec == 0) { //没找到[]字符
+        if (numIndexDec == 0)
+        { //没找到[]字符
             continue;
         }
-        if (numIndexDec == numIndex) {
-            eventSeqFromLog = tmpLog[numIndex]- '0';
-        } else {
-            eventSeqFromLog = ((tmpLog[numIndexDec]-'0') * 10) + tmpLog[numIndex]-'0';
+        if (numIndexDec == numIndex)
+        {
+            eventSeqFromLog = tmpLog[numIndex] - '0';
         }
-        if (logEventSeq == eventSeqFromLog || logEventSeq == LOG_ALL) {
-            if (countLogRecord >= maxLine) {
-				break;
-			} else {
-				logIndexArr[countLogRecord] = logEndIndex;
-			}
-			countLogRecord++;
+        else
+        {
+            eventSeqFromLog = ((tmpLog[numIndexDec] - '0') * 10) + tmpLog[numIndex] - '0';
+        }
+        if (logEventSeq == eventSeqFromLog || logEventSeq == LOG_ALL)
+        {
+            if (countLogRecord >= maxLine)
+            {
+                break;
+            }
+            else
+            {
+                logIndexArr[countLogRecord] = logEndIndex;
+            }
+            countLogRecord++;
         }
     }
-	for (int i=countLogRecord-1; i>=0 ; i--) {
+    for (int i = countLogRecord - 1; i >= 0; i--)
+    {
         qLogStr.append(qLog.at(logIndexArr[i]));
-	}
+    }
 
-    if (isBackFileHandled == 0) {
+    if (isBackFileHandled == 0)
+    {
         qLogStr.append(QString("%1%2").arg("Backup Total:").arg(countLogRecord));
-    } else {
+    }
+    else
+    {
         qLogStr.append(QString("%1%2").arg("Total:").arg(countLogRecord));
     }
 
@@ -1224,32 +1309,42 @@ void MyLoggerViewer::OnEventChanged(int eventSeq)
 void MyLoggerViewer::reloadLogFile()
 {
     if (dateTimeEditFrom->dateTime().date() >= QDateTime::currentDateTime().date()
-            || dateTimeEditTo->dateTime().date() >= QDateTime::currentDateTime().date()) {
+        || dateTimeEditTo->dateTime().date() >= QDateTime::currentDateTime().date())
+    {
         if ((FirstdateInCurFile >= dateTimeEditFrom->dateTime().date().toString("yyyy-MM-dd")
-                || FirstdateInCurFile >= dateTimeEditTo->dateTime().date().toString("yyyy-MM-dd"))
-                && ((QFile(LOG_BACK_FILE_NAME).exists() == 1) && (isBackFileHandled == 0))) {
+            || FirstdateInCurFile >= dateTimeEditTo->dateTime().date().toString("yyyy-MM-dd"))
+            && ((QFile(LOG_BACK_FILE_NAME).exists() == 1) && (isBackFileHandled == 0)))
+        {
             qFile.setFileName(QString("%1").arg(LOG_BACK_FILE_NAME));
-        } else {
+        }
+        else
+        {
             qFile.setFileName(QString("%1").arg(LOG_FILE_NAME));
             isBackFileHandled = 1;
         }
         qFile.open(QIODevice::ReadOnly);
 
-        if (tmpFileData == NULL) {
-            myLog->error("malloc failed!!LOC: %s,%s,%d",__FILE__,__FUNCTION__,__LINE__);
+        if (tmpFileData == NULL)
+        {
+            LOG_ERROR_STM("malloc failed!");
             return;
         }
-        memset(tmpFileData,0,MAX_LEN_LOGFILE_SIZE);
-        dateLen = qFile.read(tmpFileData,MAX_LEN_LOGFILE_SIZE);
+        memset(tmpFileData, 0, MAX_LEN_LOGFILE_SIZE);
+        dateLen = qFile.read(tmpFileData, MAX_LEN_LOGFILE_SIZE);
 
-        if (isBackFileHandled == 1) {       //查询结束，记下当前第一条记录的时间
-            char cDateTmp[11] = {0};
-            if (dateLen >= sizeof(cDateTmp)) {
-                for (quint32 i = 0; i < sizeof(cDateTmp)-1; i++) {
+        if (isBackFileHandled == 1)
+        {       //查询结束，记下当前第一条记录的时间
+            char cDateTmp[11] = { 0 };
+            if (dateLen >= sizeof(cDateTmp))
+            {
+                for (quint32 i = 0; i < sizeof(cDateTmp) - 1; i++)
+                {
                     cDateTmp[i] = tmpFileData[i];
                 }
                 FirstdateInCurFile = QString("%1").fromUtf8(cDateTmp);
-            } else {
+            }
+            else
+            {
                 FirstdateInCurFile = QDateTime::currentDateTime().date().toString("yyyy-MM-dd");
             }
         }
@@ -1266,22 +1361,24 @@ void MyLoggerViewer::onReloadLogFileBtnClicked()
 void MyLoggerViewer::updateText()
 {
     infoWidget->setLabelText(myLan.msg_applying);
-	infoWidget->delayShow();
+    infoWidget->delayShow();
 
     qText->clear();
     isBackFileHandled = 0;
 
-    while (1) {
+    while (1)
+    {
         reloadLogFile();
         updateTextByDate();
         updateTextByEventSeq();
-        if (isBackFileHandled == 1) {
+        if (isBackFileHandled == 1)
+        {
             break;
         }
         isBackFileHandled = 1;
     }
 
-	infoWidget->hide();
+    infoWidget->hide();
 }
 
 /*!
@@ -1289,13 +1386,14 @@ void MyLoggerViewer::updateText()
  * 从设备类
  *
  **********/
-MySlaveList::MySlaveList(QWidget *parent)
+MySlaveList::MySlaveList(QWidget * parent)
     : QWidget(parent)
 {
-    QGridLayout *mainLay = new QGridLayout(this);
+    QGridLayout* mainLay = new QGridLayout(this);
 
-    for (int i = 0; i < MAX_SLAVE; i++) {
-        m_label[i] = new myLabel(QString("%1").arg(i+1));
+    for (int i = 0; i < MAX_SLAVE; i++)
+    {
+        m_label[i] = new myLabel(QString("%1").arg(i + 1));
         m_label[i]->setAlignment(Qt::AlignCenter);
         m_lineEdit[i] = new myLineEdit;
         mainLay->addWidget(m_label[i], i, 0);
@@ -1303,7 +1401,8 @@ MySlaveList::MySlaveList(QWidget *parent)
     }
 
     m_sigMap = new QSignalMapper(this);
-    for (int i = 0; i < MAX_SLAVE; i++) {
+    for (int i = 0; i < MAX_SLAVE; i++)
+    {
         m_sigMap->setMapping(m_lineEdit[i], i);
         connect(m_lineEdit[i], SIGNAL(pressed()), m_sigMap, SLOT(map()));
     }
@@ -1323,11 +1422,13 @@ MySlaveList::~MySlaveList()
 void MySlaveList::refreshDisplay()
 {
     int nCount = struGsh.strSlaveList.count();
-    if (nCount > MAX_SLAVE) {
+    if (nCount > MAX_SLAVE)
+    {
         nCount = MAX_SLAVE;
     }
 
-    for (int i = 0; i < nCount; i++) {
+    for (int i = 0; i < nCount; i++)
+    {
         m_lineEdit[i]->setText(struGsh.strSlaveList.at(i));
     }
 }
@@ -1338,20 +1439,24 @@ void MySlaveList::refreshDisplay()
  */
 void MySlaveList::onLineEditPressed(int nIndex)
 {
-    myInputPanel *input = new myInputPanel(textType, 0, 0, 0);
+    myInputPanel* input = new myInputPanel(textType, 0, 0, 0);
     input->setText(m_lineEdit[nIndex]->text());
 
-    if (input->exec() == QDialog::Accepted) {
+    if (input->exec() == QDialog::Accepted)
+    {
         m_lineEdit[nIndex]->setText(input->getText());
         QFile file(CNF_SLAVE_LIST);
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
             return;
         }
 
         QTextStream in(&file);
         struGsh.strSlaveList.clear();
-        for (int i = 0; i < MAX_SLAVE; i++) {
-            if (m_lineEdit[i]->text() != QString()) {
+        for (int i = 0; i < MAX_SLAVE; i++)
+        {
+            if (m_lineEdit[i]->text() != QString())
+            {
                 in << m_lineEdit[i]->text() << "\n";
                 struGsh.strSlaveList.push_back(m_lineEdit[i]->text());
             }

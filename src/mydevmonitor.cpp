@@ -1,24 +1,25 @@
 #include "mydevmonitor.h"
 #include "globalparams.h"
 #include <QtNetwork>
+#include "unilog.h"
 
 /*!
  * \brief MyDevMonitor::MyDevMonitor
  * 设备状态网络监听服务构造函数
  */
-MyDevMonitor::MyDevMonitor(QObject *parent)
+MyDevMonitor::MyDevMonitor(QObject* parent)
     : QObject(parent)
 {
     m_udpSocket = new QUdpSocket();
 
     //! 绑定监听端口 (默认10000）
-//    if (!m_udpSocket->bind(strNetInfo.selfNetControlPort, QUdpSocket::ShareAddress)) {
-    if (!m_udpSocket->bind(QHostAddress::AnyIPv4, strNetInfo.selfNetControlPort, QUdpSocket::ShareAddress)) {
-        myLog->info(LOG_DEBUG, "bind to port %d failed.", strNetInfo.selfNetControlPort);
+    if (!m_udpSocket->bind(QHostAddress::AnyIPv4, strNetInfo.selfNetControlPort, QUdpSocket::ShareAddress))
+    {
+        LOG_ERROR_STM("Bind to port:" << strNetInfo.selfNetControlPort << " failed");
         return;
-    } else {
-        myLog->debug("bind to port %d sucess.", strNetInfo.selfNetControlPort);
     }
+    LOG_INFO_STM("Bind to port:" << strNetInfo.selfNetControlPort << " successful!");
+
     //! 选择组播类型（多播或广播）
     m_udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 0);
 #ifdef CONFIG_MULTICAST
@@ -43,7 +44,8 @@ MyDevMonitor::~MyDevMonitor()
  */
 void MyDevMonitor::readPendingDatagrams()
 {
-    while (m_udpSocket->hasPendingDatagrams()) {
+    while (m_udpSocket->hasPendingDatagrams())
+    {
         QByteArray datagram;
         datagram.resize(m_udpSocket->pendingDatagramSize());
         datagram.fill('\0');
@@ -51,8 +53,7 @@ void MyDevMonitor::readPendingDatagrams()
         quint16 peerPort;
 
         m_udpSocket->readDatagram(datagram.data(), datagram.size(), &peerAddress, &peerPort);
-
-        myLog->debug("recv from: %s, port: %d", qPrintable(peerAddress.toString()), peerPort);
+        LOG_TRACE_STM("recv from:" << peerAddress.toString().toStdString() << " port:" << peerPort);
 
         processDatagram(datagram, peerAddress, peerPort);
     }
@@ -82,12 +83,14 @@ void MyDevMonitor::processDatagram(QByteArray datagram, QHostAddress peerAddress
     //! 基于屏运行模式过滤此数据包
 
     //! 提取服务请求数据包协议内容
-    if (getProtocolData(datagram, &data) < 0) {
+    if (getProtocolData(datagram, &data) < 0)
+    {
         return;
     }
 
     //! 根据命令类型进入相应处理流程
-    switch (data.nCommandAddress) {
+    switch (data.nCommandAddress)
+    {
     case CMD_SCREEN_SYSTEM_STATE: // 状态
         processSystemState(data, peerAddress, peerPort);
         break;
@@ -101,7 +104,8 @@ void MyDevMonitor::processDatagram(QByteArray datagram, QHostAddress peerAddress
         processBeltControl(data, peerAddress, peerPort);
         break;
     default:
-        myLog->debug("recv from: %s, port: %d invalid request type", qPrintable(peerAddress.toString()), peerPort);
+        LOG_ERROR_STM("recv from:" << peerAddress.toString().toStdString() << " port:" << peerPort
+            << " invalid request type!");
         break;
     }
 }
@@ -113,7 +117,7 @@ void MyDevMonitor::processDatagram(QByteArray datagram, QHostAddress peerAddress
  * \param data
  * \return
  */
-int MyDevMonitor::getProtocolData(QByteArray datagram, Data_Protocol_D *data)
+int MyDevMonitor::getProtocolData(QByteArray datagram, Data_Protocol_D* data)
 {
     //! 协议长度校验
     if (datagram.size() < 6)
@@ -124,9 +128,9 @@ int MyDevMonitor::getProtocolData(QByteArray datagram, Data_Protocol_D *data)
         return -1;
 
     //! 协议数据长度
-    quint16 size = (quint8)datagram[2]*256+(quint8)datagram[3];
+    quint16 size = (quint8)datagram[2] * 256 + (quint8)datagram[3];
     //! 协议命令地址
-    quint16 cmd = (quint8)datagram[4]*256+(quint8)datagram[5];
+    quint16 cmd = (quint8)datagram[4] * 256 + (quint8)datagram[5];
 
     //! 提取协议内容
     if (data == NULL)
@@ -190,14 +194,17 @@ void MyDevMonitor::processFeedControl(Data_Protocol_D data, QHostAddress peerAdd
         return;
 
     quint8 mode = (quint8)data.nCommandData.at(0);
-    switch (mode) {
+    switch (mode)
+    {
     case MODE_CLOSE:
-        if (struGsh.bStatFeed != MODE_CLOSE) {
+        if (struGsh.bStatFeed != MODE_CLOSE)
+        {
             emit closeFeederSig(TRIGGER_SYNC);
         }
         break;
     case MODE_OPEN:
-        if (struGsh.bStatFeed != MODE_OPEN) {
+        if (struGsh.bStatFeed != MODE_OPEN)
+        {
             emit openFeederSig(TRIGGER_SYNC);
         }
         break;
@@ -256,15 +263,17 @@ void MyDevMonitor::printDatagram(const QByteArray datagram)
 {
     QString tmp;
 
-    if (datagram.data() == NULL || datagram.size() == 0) {
+    if (datagram.data() == NULL || datagram.size() == 0)
+    {
         return;
     }
 
-    for (int i = 0; i < datagram.size(); i++) {
-        tmp.sprintf("%s %02x", qPrintable(tmp), datagram.at(i)&0xff);
+    for (int i = 0; i < datagram.size(); i++)
+    {
+        tmp.sprintf("%s %02x", qPrintable(tmp), datagram.at(i) & 0xff);
     }
-    myLog->debug("*Data begin*\ndata length: %d\n===%s  ===", datagram.size(), qPrintable(tmp));
-    myLog->debug("*Data end*");
+
+    LOG_TRACE_STM("data length:" << datagram.size() << ", data:" << tmp.toStdString());
 }
 
 /*!
@@ -283,11 +292,12 @@ int MyDevMonitor::writeDatagram(Data_Protocol_D data, QHostAddress address, quin
     QByteArray datagram;
     datagram[index++] = cmd_data_head_1;
     datagram[index++] = cmd_data_head_2;
-    datagram[index++] = data.nCommandData.size()/256;
-    datagram[index++] = data.nCommandData.size()%256;
-    datagram[index++] = data.nCommandAddress/256;
-    datagram[index++] = data.nCommandAddress%256;
-    for (int i = 0; i < data.nCommandData.size(); i++)  {
+    datagram[index++] = data.nCommandData.size() / 256;
+    datagram[index++] = data.nCommandData.size() % 256;
+    datagram[index++] = data.nCommandAddress / 256;
+    datagram[index++] = data.nCommandAddress % 256;
+    for (int i = 0; i < data.nCommandData.size(); i++)
+    {
         datagram[index++] = data.nCommandData.at(i);
     }
     datagram[index++] = cmd_data_tail_1;
@@ -296,7 +306,7 @@ int MyDevMonitor::writeDatagram(Data_Protocol_D data, QHostAddress address, quin
     //! 发送UDP数据包
 #if DEBUG_OUTPUT == 1
     printDatagram(datagram);
-    myLog->debug("send to: %s, port: %d", qPrintable(address.toString()), port);
+    LOG_TRACE_STM("send to:" << address.toString().toStdString() << ", port:" << port);
 #endif
     return m_udpSocket->writeDatagram(datagram, address, port);
 }
@@ -328,11 +338,13 @@ QString MyDevMonitor::getLocalIP(QAbstractSocket::NetworkLayerProtocol protocol)
 {
     QString ip;
     QList<QNetworkInterface> interfaceList = QNetworkInterface::allInterfaces();
-    foreach (QNetworkInterface interface, interfaceList) {
+    foreach(QNetworkInterface interface, interfaceList)
+    {
         if (interface.flags() & QNetworkInterface::IsLoopBack)
             continue;
         QList<QNetworkAddressEntry> hostAddressList = interface.addressEntries();
-        foreach (QNetworkAddressEntry address, hostAddressList) {
+        foreach(QNetworkAddressEntry address, hostAddressList)
+        {
             if (address.ip().protocol() != protocol)
                 continue;
             /*
@@ -354,11 +366,14 @@ QString MyDevMonitor::getLocalIP(QAbstractSocket::NetworkLayerProtocol protocol)
 bool MyDevMonitor::isLocalIP(QHostAddress address, QAbstractSocket::NetworkLayerProtocol protocol)
 {
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
-    foreach(QHostAddress hostAddress, list) {
-        if (address.protocol() != protocol) {
+    foreach(QHostAddress hostAddress, list)
+    {
+        if (address.protocol() != protocol)
+        {
             continue;
         }
-        if (hostAddress.toString() == address.toString()) {
+        if (hostAddress.toString() == address.toString())
+        {
             return true;
         }
     }
