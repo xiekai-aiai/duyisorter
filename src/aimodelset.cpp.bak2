@@ -5,25 +5,8 @@
 #include "cmdudpmanager.h"
 #include "cmdworker.h"
 #include "sftp_client.h"
-#include "unilog.h"
 #include <queue>
 #include <iostream>
-#include <sstream>
-
-// ── unilog LOG_*_STM 依赖：允许 Qt 类型直接通过 << 输出 ──
-#ifndef AIMODELSET_QT_STREAM_FIX
-#define AIMODELSET_QT_STREAM_FIX
-#include <sstream>
-inline std::ostream& operator<<(std::ostream& os, const QString& s) {
-    return os << s.toStdString();
-}
-inline std::ostream& operator<<(std::ostream& os, const QByteArray& b) {
-    return os << b.toStdString();
-}
-inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
-    return os << l.join(", ").toStdString();
-}
-#endif
 
 #include <QDirIterator>
 #include <QListWidget>
@@ -132,9 +115,9 @@ static bool hasMismatch(const QString& imgPath)
     return false;
 }
 
-// ── FLOW 日志宏（走 unilog WARN 级别）：毫秒时间戳 + 线程ID，定位阻塞点 ──
-#define FLOW(tag) LOG_WARN_STM("[FLOW]" << QDateTime::currentMSecsSinceEpoch() \
-    << "thr=" << (quintptr)QThread::currentThreadId() << tag)
+// ── FLOW 日志宏：毫秒时间戳 + 线程ID，定位阻塞点 ──
+#define FLOW(tag) qWarning() << "[FLOW]" << QDateTime::currentMSecsSinceEpoch() \
+    << "thr=" << (quintptr)QThread::currentThreadId() << tag
 
 //#include <opencv2/opencv.hpp>
 
@@ -158,8 +141,6 @@ AiModelSet::AiModelSet(QWidget *parent) :
     ui(new Ui::AiModelSet)
 {
     ui->setupUi(this);
-    // 强制对齐到 parent 左上角，避免 stackedWidget layout 偏移
-    move(0, 0);
     modelCategoryNum = 2;
 
     // 登录进来不显示 checkbox，等用户新建或加载模型后再显示
@@ -233,7 +214,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         if (!m_currentImagePath.isEmpty()) {
             getFgRects();
             if (m_show_fg_rects) update();  // 显示模式开启才触发重绘
-            else LOG_DEBUG_STM("[阈值] 已重算，但前景显示未开启（点 fg 按钮看效果）");
+            else qDebug() << "[阈值] 已重算，但前景显示未开启（点 fg 按钮看效果）";
         }
     };
     connect(ui->m_areaThresholdlineEdit, &QLineEdit::editingFinished, this, onThresholdChanged);
@@ -303,7 +284,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         showTip(errMsg, true);
         if (m_pollTimer && m_pollTimer->isActive()) m_pollTimer->stop();
         m_trainingBusy = false;
-        LOG_DEBUG_STM("[训练流程] networkError 兜底：m_trainingBusy 已重置");
+        qDebug() << "[训练流程] networkError 兜底：m_trainingBusy 已重置";
     });
 
     // [0.1] SftpWorker 单文件上传进度 → showTip
@@ -363,7 +344,9 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(m_modelApi, &ModelApi::archResult, this, [this](const QString& arch) {
         m_modelArch = arch;
         QString savePath = QString(LOCAL_MODEL_PATH) + downLoadModelName + ".json";
-        LOG_DEBUG_STM("[下载流程] archResult 触发：arch=" << arch << "downLoadModelName=" << downLoadModelName << "savePath=" << savePath);
+        qDebug() << "[下载流程] archResult 触发：arch=" << arch
+                 << "downLoadModelName=" << downLoadModelName
+                 << "savePath=" << savePath;
         showTip(QString("硬件架构：%1，先下载 JSON：%2.json").arg(arch).arg(downLoadModelName));
         QTimer::singleShot(0, this, [this, savePath]() {
             m_modelApi->downloadModelJson(this->downLoadModelName + ".json", savePath);
@@ -372,7 +355,9 @@ AiModelSet::AiModelSet(QWidget *parent) :
 
     // [4] JSON 下载完成 → 读 JSON 取 md5 → 下载 .bin/.dlc
     connect(m_modelApi, &ModelApi::downloadJsonFinished, this, [this](bool success, const QString& errorMsg) {
-        LOG_DEBUG_STM("[下载流程] downloadJsonFinished 触发：success=" << success << "errorMsg=" << errorMsg << "downLoadModelName=" << downLoadModelName);
+        qDebug() << "[下载流程] downloadJsonFinished 触发：success=" << success
+                 << "errorMsg=" << errorMsg
+                 << "downLoadModelName=" << downLoadModelName;
         if (!success) {
             showTip(QString("JSON 下载失败：%1").arg(errorMsg), true);
             m_trainingBusy = false;
@@ -381,27 +366,31 @@ AiModelSet::AiModelSet(QWidget *parent) :
 
         // 读 JSON 取 md5（模型文件名里写进去，供 .bin 下载完成后校验）
         QString jsonPath = QString(LOCAL_MODEL_PATH) + downLoadModelName + ".json";
-        LOG_DEBUG_STM("[下载流程] 尝试读取 JSON：" << jsonPath << "文件存在=" << QFile::exists(jsonPath) << "文件大小=" << (QFile::exists(jsonPath) ? QFileInfo(jsonPath).size() : 0));
+        qDebug() << "[下载流程] 尝试读取 JSON：" << jsonPath
+                 << "文件存在=" << QFile::exists(jsonPath)
+                 << "文件大小=" << (QFile::exists(jsonPath) ? QFileInfo(jsonPath).size() : 0);
         QFile jsonFile(jsonPath);
         QString expectedMd5;
         if (jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QByteArray raw = jsonFile.readAll();
             jsonFile.close();
-            LOG_DEBUG_STM("[下载流程] JSON 原始内容（前 300 字节）：" << raw.left(300));
+            qDebug() << "[下载流程] JSON 原始内容（前 300 字节）：" << raw.left(300);
             QJsonParseError parseErr;
             QJsonDocument doc = QJsonDocument::fromJson(raw, &parseErr);
             if (parseErr.error != QJsonParseError::NoError) {
-                LOG_WARN_STM("[下载流程] JSON 解析错误：" << parseErr.errorString() << "offset=" << parseErr.offset);
+                qWarning() << "[下载流程] JSON 解析错误：" << parseErr.errorString()
+                           << "offset=" << parseErr.offset;
             }
             QJsonObject obj = doc.object();
-            LOG_DEBUG_STM("[下载流程] JSON object keys=" << obj.keys());
+            qDebug() << "[下载流程] JSON object keys=" << obj.keys();
             // 常见字段：md5 / file_md5 / model_md5 / bin_md5
             for (const QString& key : {"md5", "file_md5", "model_md5", "bin_md5", "dlc_md5"}) {
                 if (obj.contains(key)) { expectedMd5 = obj.value(key).toString(); break; }
             }
-            LOG_DEBUG_STM("[下载流程] JSON 解析完成，expectedMd5=" << expectedMd5);
+            qDebug() << "[下载流程] JSON 解析完成，expectedMd5=" << expectedMd5;
         } else {
-            LOG_WARN_STM("[下载流程] JSON 文件读失败" << jsonFile.errorString() << "路径=" << jsonPath);
+            qWarning() << "[下载流程] JSON 文件读失败" << jsonFile.errorString()
+                       << "路径=" << jsonPath;
         }
         m_expectedModelMd5 = expectedMd5;
 
@@ -434,7 +423,8 @@ AiModelSet::AiModelSet(QWidget *parent) :
                 f.close();
             }
         }
-        LOG_DEBUG_STM("[下载流程] md5 校验：expected=" << m_expectedModelMd5 << "actual=" << actualMd5);
+        qDebug() << "[下载流程] md5 校验：expected=" << m_expectedModelMd5
+                 << "actual=" << actualMd5;
 
         if (!m_expectedModelMd5.isEmpty() && !actualMd5.isEmpty()
             && !m_expectedModelMd5.compare(actualMd5, Qt::CaseInsensitive)) {
@@ -446,7 +436,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
             return;
         } else {
             // JSON 里没 md5 字段，跳过校验（正常，先让流程走通）
-            LOG_DEBUG_STM("[下载流程] JSON 里没 md5 字段，跳过校验");
+            qDebug() << "[下载流程] JSON 里没 md5 字段，跳过校验";
             showTip(QString("模型下载完成（JSON 无 md5 字段，跳过校验）"));
         }
 
@@ -661,7 +651,8 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
 
     m_classCheckBoxes.clear();
 
-    LOG_DEBUG_STM("🟢 setupClassCheckBoxes: count=" << count << "rows=" << rows << "cols=" << cols << "names=" << m_classNames);
+    qDebug() << "🟢 setupClassCheckBoxes: count=" << count << "rows=" << rows << "cols=" << cols
+             << "names=" << m_classNames;
 
     for (int r = 0; r < rows; ++r) {
         auto *rowLayout = new QHBoxLayout();
@@ -1134,7 +1125,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
 void AiModelSet::mouseMoveEvent(QMouseEvent *event)
 {
     if (!m_isDrawing) return;
-    LOG_INFO_STM("Begin to draw move");
+    std::cout<<"Begin to draw move"<<std::endl;
     // 1. 鼠标坐标 → imgLabel 控件坐标 → 图片内相对坐标
        QPoint labelPos = ui->imgLabel->mapFromParent(event->pos());
        QPixmap scaledPixmap = ui->imgLabel->pixmap()->copy();
@@ -1359,7 +1350,7 @@ void AiModelSet::getFgRects()
 {
     FLOW("getFgRects 入口");
     if (ui->imgLabel->pixmap() == nullptr || ui->imgLabel->pixmap()->isNull()) {
-        LOG_WARN_STM("⚠️ getFgRects: 没有图片，跳过");
+        qWarning() << "⚠️ getFgRects: 没有图片，跳过";
         return;
     }
 
@@ -1409,7 +1400,7 @@ void AiModelSet::getFgRects()
     } else {
         // 没有 bg 均值 → 直接用灰度图（回退）
         cv::cvtColor(img, processMat, cv::COLOR_BGR2GRAY);
-        LOG_DEBUG_STM("[getFgRects] m_hasBgMean=false，使用纯灰度回退");
+        qDebug() << "[getFgRects] m_hasBgMean=false，使用纯灰度回退";
     }
 
     // Canny 边缘提取（参数和 Python 一致：50, 150）
@@ -1429,8 +1420,9 @@ void AiModelSet::getFgRects()
 
     // 筛选轮廓：像素面积 >= areaThresh
     m_fg_rects.clear();
-    LOG_DEBUG_STM("\n═══════════════ [getFgRects] 筛选前所有轮廓 ═══════════════");
-    LOG_DEBUG_STM("总轮廓数=" << contours.size() << " 面积阈值=" << areaThresh << " 图像尺寸=" << img.cols << "x" << img.rows);
+    qDebug() << "\n═══════════════ [getFgRects] 筛选前所有轮廓 ═══════════════";
+    qDebug() << "总轮廓数=" << contours.size() << " 面积阈值=" << areaThresh
+             << " 图像尺寸=" << img.cols << "x" << img.rows;
     int idx = 0;
     for (const auto& cnt : contours) {
         cv::Rect r = cv::boundingRect(cnt);
@@ -1446,26 +1438,36 @@ void AiModelSet::getFgRects()
         } else {
             reason = "SKIP:面积";
         }
-        LOG_DEBUG_STM(QString("  [%1] x=%2 y=%3 w=%4 h=%5 area=%6  %7") .arg(idx++).arg(r.x).arg(r.y).arg(r.width).arg(r.height).arg(area) .arg(passed ? "PASS" : reason));
+        qDebug() << QString("  [%1] x=%2 y=%3 w=%4 h=%5 area=%6  %7")
+            .arg(idx++).arg(r.x).arg(r.y).arg(r.width).arg(r.height).arg(area)
+            .arg(passed ? "PASS" : reason);
         if (passed) m_fg_rects.append(QRect(r.x, r.y, r.width, r.height));
     }
-    LOG_DEBUG_STM("─────────────── 筛选后保留" << m_fg_rects.size() << "个 ───────────────");
+    qDebug() << "─────────────── 筛选后保留" << m_fg_rects.size() << "个 ───────────────";
     for (int i = 0; i < m_fg_rects.size(); i++) {
         const QRect& r = m_fg_rects[i];
-        LOG_DEBUG_STM(QString("  [%1] x=%2 y=%3 w=%4 h=%5  area=%6  center=(%7,%8)  right=%9  bottom=%10") .arg(i).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()) .arg(r.width() * r.height()) .arg(r.center().x()).arg(r.center().y()) .arg(r.right()).arg(r.bottom()));
+        qDebug() << QString("  [%1] x=%2 y=%3 w=%4 h=%5  area=%6  center=(%7,%8)  right=%9  bottom=%10")
+            .arg(i).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height())
+            .arg(r.width() * r.height())
+            .arg(r.center().x()).arg(r.center().y())
+            .arg(r.right()).arg(r.bottom());
     }
 
     // 去重嵌套框：大框包含小框时仅保留大框（和 Python _remove_nested_bboxes 一致）
     removeNestedBoxes(m_fg_rects);
     FLOW("getFgRects 去重后 数量=" << m_fg_rects.size());
 
-    LOG_DEBUG_STM("\n═══════════════ [getFgRects] 去重后最终前景框 ═══════════════");
-    LOG_DEBUG_STM("最终框数量=" << m_fg_rects.size());
+    qDebug() << "\n═══════════════ [getFgRects] 去重后最终前景框 ═══════════════";
+    qDebug() << "最终框数量=" << m_fg_rects.size();
     for (int i = 0; i < m_fg_rects.size(); i++) {
         const QRect& r = m_fg_rects[i];
-        LOG_DEBUG_STM(QString("  [%1] x=%2 y=%3 w=%4 h=%5  area=%6  center=(%7,%8)  right=%9  bottom=%10") .arg(i).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()) .arg(r.width() * r.height()) .arg(r.center().x()).arg(r.center().y()) .arg(r.right()).arg(r.bottom()));
+        qDebug() << QString("  [%1] x=%2 y=%3 w=%4 h=%5  area=%6  center=(%7,%8)  right=%9  bottom=%10")
+            .arg(i).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height())
+            .arg(r.width() * r.height())
+            .arg(r.center().x()).arg(r.center().y())
+            .arg(r.right()).arg(r.bottom());
     }
-    LOG_DEBUG_STM("══════════════════════════════════════════════════════════════════\n");
+    qDebug() << "══════════════════════════════════════════════════════════════════\n";
 }
 
 // ═══ removeNestedBoxes：移除被大框完全包含的小框，仅保留最外层框 ═══
@@ -1740,7 +1742,7 @@ void AiModelSet::onModelSelPushButtonClicked()
                         classNames.append(QString("%1").arg(i));
                     }
                     jsonOk = true;
-                    LOG_DEBUG_STM("🟡 从 json 读到 class:" << classCount << "names:" << classNames);
+                    qDebug() << "🟡 从 json 读到 class:" << classCount << "names:" << classNames;
                 }
             }
 
@@ -1754,7 +1756,7 @@ void AiModelSet::onModelSelPushButtonClicked()
                 m_classNames.clear();
                 setupClassCheckBoxes(1);
                 showTip(QString("加载模型: %1 (json 读取失败, 默认 1 类)").arg(modelName), true);
-                LOG_WARN_STM("⚠️ json 读取失败:" << jsonPath);
+                qWarning() << "⚠️ json 读取失败:" << jsonPath;
             }
         }
     }
@@ -1917,7 +1919,7 @@ void AiModelSet::onScanFinished(const QStringList& imagePaths)
     for (const QString& path : bgPaths) {
         cv::Mat img = cv::imread(path.toStdString(), cv::IMREAD_COLOR);
         if (img.empty()) {
-            LOG_WARN_STM("[bg均值] 跳过无法读取的文件:" << path);
+            qWarning() << "[bg均值] 跳过无法读取的文件:" << path;
             continue;
         }
         cv::Scalar mean = cv::mean(img);  // BGR 顺序
@@ -1931,11 +1933,12 @@ void AiModelSet::onScanFinished(const QStringList& imagePaths)
         m_bgMeanBGR[1] = int(bgSumG / bgValid + 0.5);
         m_bgMeanBGR[2] = int(bgSumR / bgValid + 0.5);
         m_hasBgMean = true;
-        LOG_DEBUG_STM("[bg均值] 已计算，共" << bgValid << "张，BGR=(" << m_bgMeanBGR[0] << "," << m_bgMeanBGR[1] << "," << m_bgMeanBGR[2] << ")");
+        qDebug() << "[bg均值] 已计算，共" << bgValid << "张，BGR=("
+                 << m_bgMeanBGR[0] << "," << m_bgMeanBGR[1] << "," << m_bgMeanBGR[2] << ")";
     } else {
         m_bgMeanBGR[0] = m_bgMeanBGR[1] = m_bgMeanBGR[2] = 128;  // 默认中灰
         m_hasBgMean = false;
-        LOG_WARN_STM("[bg均值] 所有 bg_ 图片都读取失败，使用默认中灰");
+        qWarning() << "[bg均值] 所有 bg_ 图片都读取失败，使用默认中灰";
     }
     // ═══ bg 校验/均值 结束 ═══
 
@@ -2130,7 +2133,7 @@ void AiModelSet::gotoPage()
 
 void AiModelSet::saveMyAnnotation(const QString& imgPath)
 {
-    LOG_DEBUG_STM("m_currentImagePath "<<imgPath);
+    qDebug()<<"m_currentImagePath "<<imgPath;
     QFileInfo imgFileInfo(imgPath);
     QString imgFileName = imgFileInfo.completeBaseName(); // 示例：H:/images/xxx.jpg → "xxx"
     QString txtFileName = imgFileName + ".txt"; // 文件名与图片相同："xxx.txt"
@@ -2166,7 +2169,7 @@ void AiModelSet::LoadMyAnnotation(const QString& imgPath)
 {
     m_annotations.clear();
     clearAnnotUndo();  // 切换图片 → 丢弃上一张的撤销历史
-    LOG_DEBUG_STM("load txt " << imgPath);
+    qDebug() << "load txt " << imgPath;
     QFileInfo imgFileInfo(imgPath);
     
     QString imgFileName = imgFileInfo.completeBaseName(); 
@@ -2225,14 +2228,14 @@ void AiModelSet::onImageItemClicked(QListWidgetItem* item)
 {
     FLOW("onImageItemClicked 入口");
 
-    LOG_DEBUG_STM("save anno:"<<m_currentImagePath);
+    qDebug()<<"save anno:"<<m_currentImagePath;
     saveMyAnnotation(m_currentImagePath);
 
     if (!item) return;  // 防止空指针
 
     // 1. 获取选中图片的完整路径（之前存储在 Qt::UserRole 中）
     m_currentImagePath  = item->data(Qt::UserRole).toString();
-    LOG_DEBUG_STM("load anno: "<<m_currentImagePath);
+    qDebug()<<"load anno: "<<m_currentImagePath;
     LoadMyAnnotation(m_currentImagePath);
 
 
@@ -2316,10 +2319,10 @@ void AiModelSet::prepareTrain()
                 else
                     QFile::remove(entry.absoluteFilePath());
             }
-            LOG_DEBUG_STM("Cleared existing tmp directory:" << tmpDir);
+            qDebug() << "Cleared existing tmp directory:" << tmpDir;
         } else {
             dir.mkpath(tmpDir);
-            LOG_DEBUG_STM("Created tmp directory:" << tmpDir);
+            qDebug() << "Created tmp directory:" << tmpDir;
         }
 
         // 3. 创建 image 和 label 子目录
@@ -2327,14 +2330,14 @@ void AiModelSet::prepareTrain()
         QString labelDir = QDir(tmpDir).filePath("label");
         dir.mkpath(imageDir);
         dir.mkpath(labelDir);
-        LOG_DEBUG_STM("Created subdirectories:" << imageDir << labelDir);
+        qDebug() << "Created subdirectories:" << imageDir << labelDir;
 
         // 4. 复制图片和标注，收集 class_id
         QSet<int> classIds;
         for (const QString& imgPath : m_train_lists) {
             QFileInfo imgFileInfo(imgPath);
             if (!imgFileInfo.exists()) {
-                LOG_WARN_STM("Image file not found:" << imgPath);
+                qWarning() << "Image file not found:" << imgPath;
                 continue;
             }
 
@@ -2342,9 +2345,9 @@ void AiModelSet::prepareTrain()
             QString destImagePath = QDir(imageDir).filePath(imgFileInfo.fileName());
             QFile::remove(destImagePath);
             if (QFile::copy(imgPath, destImagePath))
-                LOG_DEBUG_STM("Copied image:" << imgPath << "->" << destImagePath);
+                qDebug() << "Copied image:" << imgPath << "->" << destImagePath;
             else
-                LOG_WARN_STM("Failed to copy image:" << imgPath << "->" << destImagePath);
+                qWarning() << "Failed to copy image:" << imgPath << "->" << destImagePath;
 
             // 复制对应标注文件
             QString txtFileName = imgFileInfo.completeBaseName() + ".txt";
@@ -2354,9 +2357,9 @@ void AiModelSet::prepareTrain()
                 QString destLabelPath = QDir(labelDir).filePath(txtFileName);
                 QFile::remove(destLabelPath);
                 if (QFile::copy(txtPath, destLabelPath))
-                    LOG_DEBUG_STM("Copied label:" << txtPath << "->" << destLabelPath);
+                    qDebug() << "Copied label:" << txtPath << "->" << destLabelPath;
                 else
-                    LOG_WARN_STM("Failed to copy label:" << txtPath << "->" << destLabelPath);
+                    qWarning() << "Failed to copy label:" << txtPath << "->" << destLabelPath;
 
                 // 读取标注文件收集 class_id
                 QFile txtFile(txtPath);
@@ -2375,7 +2378,7 @@ void AiModelSet::prepareTrain()
                     txtFile.close();
                 }
             } else {
-                LOG_WARN_STM("Label file not found for image:" << imgPath);
+                qWarning() << "Label file not found for image:" << imgPath;
             }
         }
 
@@ -2390,12 +2393,14 @@ void AiModelSet::prepareTrain()
                 out << id << "\n";
             }
             f.close();
-            LOG_DEBUG_STM("Generated classes.txt:" << classesFile);
+            qDebug() << "Generated classes.txt:" << classesFile;
         } else {
-            LOG_WARN_STM("Failed to create classes.txt:" << classesFile);
+            qWarning() << "Failed to create classes.txt:" << classesFile;
         }
 
-        LOG_DEBUG_STM("prepareTrain completed. Images:" << imageDir << "Labels:" << labelDir << "Classes file:" << classesFile);
+        qDebug() << "prepareTrain completed. Images:" << imageDir
+                << "Labels:" << labelDir
+                << "Classes file:" << classesFile;
 
 
 }
@@ -2478,7 +2483,7 @@ bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
     if (!cli.stat_file(remoteBin.toStdString(), attrs)) {
         // 板卡没有 .bin → 必须上传
         binNeedUpload = true;
-        LOG_DEBUG_STM("[板卡模型] 板卡不存在:" << remoteBin);
+        qDebug() << "[板卡模型] 板卡不存在:" << remoteBin;
     } else {
         // 存在 → 跑 md5sum 比对
         QString boardMd5 = QString::fromStdString(cli.exec(
@@ -2487,9 +2492,10 @@ bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
         boardMd5 = boardMd5.left(32);
         if (boardMd5.compare(localMd5Hex, Qt::CaseInsensitive) != 0) {
             binNeedUpload = true;
-            LOG_DEBUG_STM("[板卡模型] .bin MD5 不一致 local=" << localMd5Hex << "board=" << boardMd5);
+            qDebug() << "[板卡模型] .bin MD5 不一致 local=" << localMd5Hex
+                     << "board=" << boardMd5;
         } else {
-            LOG_DEBUG_STM("[板卡模型] .bin MD5 一致:" << localMd5Hex);
+            qDebug() << "[板卡模型] .bin MD5 一致:" << localMd5Hex;
         }
     }
 
@@ -2520,7 +2526,7 @@ bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
                 cli.disconnect();
                 return false;
             }
-            LOG_DEBUG_STM("[板卡模型] .bin 上传成功");
+            qDebug() << "[板卡模型] .bin 上传成功";
         }
         if (jsonNeedUpload && localHasJson) {
             if (!cli.upload(localJson.toStdString(), remoteJson.toStdString())) {
@@ -2528,7 +2534,7 @@ bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
                 cli.disconnect();
                 return false;
             }
-            LOG_DEBUG_STM("[板卡模型] .json 上传成功");
+            qDebug() << "[板卡模型] .json 上传成功";
         }
         showTip(QString("板卡模型 %1 上传完成").arg(modelName));
     } else {
@@ -2650,7 +2656,7 @@ void AiModelSet::saveEmulateResultToFile(const QString& imgPath, const QVector<O
     QDir().mkpath(predDir);
     QFile f(predFile);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        LOG_WARN_STM("保存 pred txt 失败：" << predFile);
+        qWarning() << "保存 pred txt 失败：" << predFile;
         return;
     }
     QTextStream ts(&f);
@@ -2862,7 +2868,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         // 7a. SFTP upload 图片
         QString remotePath = boardImgDir + "/" + imgFileName;
         if (!cli.upload(imgPath.toStdString(), remotePath.toStdString())) {
-            LOG_WARN_STM("批量仿真 SFTP 上传失败：" << imgFileName);
+            qWarning() << "批量仿真 SFTP 上传失败：" << imgFileName;
             failCount++; continue;
         }
 
@@ -3135,27 +3141,29 @@ ModelApi::ModelApi(QObject *parent)
 
     // 自定义下载完成信号（通过 lambda 转发）
     connect(m_httpTool, &HttpTool::requestSuccess, this, [this](const QByteArray&, int) {
-        LOG_DEBUG_STM("[DOWNLOAD] requestSuccess 转发 lambda，当前 m_currentRequestType=" << static_cast<int>(m_currentRequestType));
+        qDebug() << "[DOWNLOAD] requestSuccess 转发 lambda，当前 m_currentRequestType="
+                 << static_cast<int>(m_currentRequestType);
         if (m_currentRequestType == RequestType::DownloadModel) {
-            LOG_DEBUG_STM("[DOWNLOAD] 命中 DownloadModel → emit downloadFinished(true)");
+            qDebug() << "[DOWNLOAD] 命中 DownloadModel → emit downloadFinished(true)";
             emit downloadFinished(true, "");
             m_currentRequestType = RequestType::None;
         }
         if (m_currentRequestType == RequestType::DownloadJson) {
-            LOG_DEBUG_STM("[DOWNLOAD] 命中 DownloadJson → emit downloadJsonFinished(true)");
+            qDebug() << "[DOWNLOAD] 命中 DownloadJson → emit downloadJsonFinished(true)";
             emit downloadJsonFinished(true, "");
             m_currentRequestType = RequestType::None;
         }
     });
     connect(m_httpTool, &HttpTool::requestFailed, this, [this](const QString& errorMsg, int) {
-        LOG_DEBUG_STM("[DOWNLOAD] requestFailed 转发 lambda，错误=" << errorMsg << "，当前 m_currentRequestType=" << static_cast<int>(m_currentRequestType));
+        qDebug() << "[DOWNLOAD] requestFailed 转发 lambda，错误=" << errorMsg
+                 << "，当前 m_currentRequestType=" << static_cast<int>(m_currentRequestType);
         if (m_currentRequestType == RequestType::DownloadModel) {
-            LOG_DEBUG_STM("[DOWNLOAD] 命中 DownloadModel → emit downloadFinished(false)");
+            qDebug() << "[DOWNLOAD] 命中 DownloadModel → emit downloadFinished(false)";
             emit downloadFinished(false, errorMsg);
             m_currentRequestType = RequestType::None;
         }
         if (m_currentRequestType == RequestType::DownloadJson) {
-            LOG_DEBUG_STM("[DOWNLOAD] 命中 DownloadJson → emit downloadJsonFinished(false)");
+            qDebug() << "[DOWNLOAD] 命中 DownloadJson → emit downloadJsonFinished(false)";
             emit downloadJsonFinished(false, errorMsg);
             m_currentRequestType = RequestType::None;
         }
@@ -3200,7 +3208,7 @@ void ModelApi:: createDirTrain(const QString& taskId)
         QString(jsonData)            // JSON 数据
     );
 
-    LOG_DEBUG_STM("[模型目录建立] 发起请求：URL=" << url << "，任务ID=" << taskId << "，请求体=" << QString(jsonData));
+    qDebug() << "[模型目录建立] 发起请求：URL=" << url << "，任务ID=" << taskId << "，请求体=" << QString(jsonData);
 }
 
 
@@ -3235,7 +3243,7 @@ void ModelApi::startTrain(const QString& taskId)
         QString(jsonData)            // JSON 数据
     );
 
-    LOG_DEBUG_STM("[模型训练启动] 发起请求：URL=" << url << "，任务ID=" << taskId << "，请求体=" << QString(jsonData));
+    qDebug() << "[模型训练启动] 发起请求：URL=" << url << "，任务ID=" << taskId << "，请求体=" << QString(jsonData);
 }
 
 // 2. 查询训练进度（严格匹配协议）
@@ -3266,7 +3274,7 @@ void ModelApi::queryTrainProgress(const QString& taskId)
         QString(jsonData)
     );
 
-    LOG_DEBUG_STM("[训练进度查询] 发起请求：URL=" << url << "，任务ID=" << taskId << "，请求体=" << QString(jsonData));
+    qDebug() << "[训练进度查询] 发起请求：URL=" << url << "，任务ID=" << taskId << "，请求体=" << QString(jsonData);
 }
 
 // 查询硬件架构（GET /api/cloud/config/arch，决定下载 .bin 还是 .dlc）
@@ -3279,13 +3287,14 @@ void ModelApi::queryArch()
     // 发起 GET 请求（无请求体）
     m_httpTool->sendRequest(url, HttpRequestType::GET);
 
-    LOG_DEBUG_STM("[硬件架构查询] 发起请求：URL=" << url);
+    qDebug() << "[硬件架构查询] 发起请求：URL=" << url;
 }
 
 // 3. 下载模型（HTTP GET）
 void ModelApi::downloadModel(const QString& modelName, const QString& savePath)
 {
-    LOG_DEBUG_STM("[DOWNLOAD] ModelApi::downloadModel 入口：modelName=" << modelName << "savePath=" << savePath);
+    qDebug() << "[DOWNLOAD] ModelApi::downloadModel 入口：modelName=" << modelName
+             << "savePath=" << savePath;
     if (modelName.isEmpty()) {
         emit networkError("模型名称不能为空");
         return;
@@ -3304,11 +3313,12 @@ void ModelApi::downloadModel(const QString& modelName, const QString& savePath)
     // 发起 GET 请求下载文件
     m_httpTool->downloadFile(url, savePath);
 
-    LOG_DEBUG_STM("[模型下载] 发起请求：URL=" << url << "，保存路径=" << savePath);
+    qDebug() << "[模型下载] 发起请求：URL=" << url << "，保存路径=" << savePath;
 }
 
 void ModelApi::downloadModelJson(const QString& modelJson, const QString& savePath){
-    LOG_DEBUG_STM("[DOWNLOAD] ModelApi::downloadModelJson 入口：modelJson=" << modelJson << "savePath=" << savePath);
+    qDebug() << "[DOWNLOAD] ModelApi::downloadModelJson 入口：modelJson=" << modelJson
+             << "savePath=" << savePath;
     if (modelJson.isEmpty()) {
         emit networkError("模型Json不能为空");
         return;
@@ -3327,7 +3337,7 @@ void ModelApi::downloadModelJson(const QString& modelJson, const QString& savePa
     // 发起 GET 请求下载文件
     m_httpTool->downloadFile(url, savePath);
 
-    LOG_DEBUG_STM("[模型JSON下载] 发起请求：URL=" << url << "，保存路径=" << savePath);
+    qDebug() << "[模型JSON下载] 发起请求：URL=" << url << "，保存路径=" << savePath;
 }
 
 
@@ -3341,7 +3351,7 @@ void ModelApi::onHttpRequestSuccess(const QByteArray& responseData, int statusCo
         return;
     }
 
-    LOG_DEBUG_STM("[HTTP 成功] 状态码=" << statusCode << "，响应数据=" << QString(responseData));
+    qDebug() << "[HTTP 成功] 状态码=" << statusCode << "，响应数据=" << QString(responseData);
 
     // 严格检查 HTTP 状态码（协议要求 200 正常返回）
     if (statusCode != 200) {
@@ -3396,7 +3406,7 @@ void ModelApi::onHttpRequestFailed(const QString& errorMsg, int errorCode)
     }
 
     QString err = QString("[HTTP 失败] 错误码=%1，错误信息=%2").arg(errorCode).arg(errorMsg);
-    LOG_DEBUG_STM(err);
+    qDebug() << err;
     emit networkError(err);
     m_currentRequestType = RequestType::None;
 }

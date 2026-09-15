@@ -12,7 +12,7 @@
 #include <QFileDialog>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QFtp>
+#include "sftp_client.h"
 #include <QList>
 #include <exception>
 #include <iostream>
@@ -74,12 +74,6 @@ public:
      QString getDownLoadPercent();
      void stop();
 
-private slots:
-    void onCommandFinished(int id, bool error);
-    void onConnectTimeout();
-    void onDataTransferProgress(qint64 bytesRead, qint64 totalBytes);
-    void onFTPListInfo(const QUrlInfo &info);
-
 signals:
     // 下载完成的信号
     void downloadFinished();
@@ -90,27 +84,21 @@ signals:
 protected:
     void run();
 private:
-    QFtp *ftp;
-    QEventLoop *eventLoop;
-    QTimer *timer;
+    void downloadDirRecursive(const QString &remoteDir, const QString &localDir);
+    SftpClient *ftp;
     bool ftpStatus;
     QString remoteDir;
     QString localDir;
-    QList<QFile *> openedFiles;
-    QList<QString> filesPath;
+    QStringList remoteFiles;       // 下载下来的远程文件路径，deleteDir 用
     int totalFiles;
     int finalTotalFiles;
     int transferredFiles;
-    QFile *localFile;
     QList<DownloadTask> downloadQueue;
     volatile bool stopped;
-    volatile bool isPutProcess;
     QString user;
     QString password;
     QString host;
     quint16 port;
-
-
 };
 
 // 喷阀自检线程

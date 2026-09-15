@@ -13,6 +13,7 @@ HttpTool::HttpTool(QObject *parent)
     m_timeoutTimer->setSingleShot(true);  // 单次触发定时器
     m_reply = nullptr;
     m_downloadFile = nullptr;
+    m_readyReadCount = nullptr;
 
     // 连接超时信号
     connect(m_timeoutTimer, &QTimer::timeout, this, &HttpTool::onTimeout);
@@ -112,14 +113,20 @@ void HttpTool::sendRequest(const QString& url,
         m_reply = m_manager->post(request, requestData);
         break;
     }
-
-    // 连接响应信号
-    connect(m_reply, &QNetworkReply::finished, this, &HttpTool::onReplyFinished);
-    connect(m_reply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
-            this, &HttpTool::onReplyError);
-    // 上传/下载进度信号
-    connect(m_reply, &QNetworkReply::downloadProgress, this, &HttpTool::onDownloadProgress);
-    connect(m_reply, &QNetworkReply::uploadProgress, this, &HttpTool::onUploadProgress);
+    
+    // ═══ 关键修复：用 lambda 捕获 reply 指针，不连成员函数 slot ═══
+    // 原因：旧 reply 的 finished/error 信号可能排队延迟触发，
+    // 如果连到成员函数 slot（读 m_reply/m_downloadFile），会被新请求的成员变量拦截，
+    // 导致错误地 emit requestSuccess/requestFailed。
+    QNetworkReply* reply = m_reply;
+    connect(reply, &QNetworkReply::finished, this,
+        [this, reply]() { handleReplyFinished(reply, nullptr); });
+    connect(reply, static_cast<void(QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+            this, [this, reply](QNetworkReply::NetworkError e) { handleReplyError(reply, e, nullptr); });
+    connect(reply, &QNetworkReply::downloadProgress, this,
+        [this, reply](qint64 r, qint64 t) { handleDownloadProgress(reply, r, t); });
+    connect(reply, &QNetworkReply::uploadProgress, this,
+        [this, reply](qint64 r, qint64 t) { handleUploadProgress(reply, r, t); });
 
     // 启动超时定时器
     m_timeoutTimer->start(m_timeoutMs);
@@ -128,6 +135,8 @@ void HttpTool::sendRequest(const QString& url,
 // 下载文件
 void HttpTool::downloadFile(const QString& url, const QString& savePath)
 {
+    qDebug() << "[DOWNLOAD] downloadFile 入口：url=" << url << "savePath=" << savePath;
+
     // 取消之前的请求
     cancelRequest();
 
@@ -161,18 +170,63 @@ void HttpTool::downloadFile(const QString& url, const QString& savePath)
         return;
     }
 
-    // 发起 GET 请求下载
-    m_reply = m_manager->get(request);
-    connect(m_reply, &QNetworkReply::finished, this, &HttpTool::onReplyFinished);
-    connect(m_reply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
-            this, &HttpTool::onReplyError);
-    connect(m_reply, &QNetworkReply::downloadProgress, this, &HttpTool::onDownloadProgress);
-    // 响应数据写入文件
-    connect(m_reply, &QNetworkReply::readyRead, this, [this]() {
-        if (m_downloadFile && m_downloadFile->isOpen()) {
-            m_downloadFile->write(m_reply->readAll());
+    // ═══ 关键修复：下载用独立的 QNetworkAccessManager ═══
+    // 原因：训练服务器返回 Connection: close，训练查询的 POST 轮询
+    // 复用同一个 manager 会导致连接池/内部状态被污染，后续 GET 下载
+    // 可能卡在 TCP 建连阶段，等到 30s 超时。
+    // 每次 downloadFile 都 new 一个干净的 manager，下载完 deleteLater。
+    QNetworkAccessManager* dlManager = new QNetworkAccessManager(this);
+    m_reply = dlManager->get(request);
+    qDebug() << "[DOWNLOAD] 发起网络请求（独立 manager），reply="
+             << (quintptr)m_reply;
+
+    // 下载完成后销毁临时 manager
+    connect(m_reply, &QNetworkReply::finished, dlManager,
+            [dlManager]() { dlManager->deleteLater(); });
+
+    // ═══ 关键修复：用 lambda 捕获 reply + file，不读成员变量 ═══
+    QNetworkReply* reply = m_reply;
+    QFile* outFile = m_downloadFile;
+    // readyReadCount 用堆分配（不能用栈变量被 lambda 引用——downloadFile 返回后栈变量就失效）
+    int* readyReadCount = new int(0);
+    m_readyReadCount = readyReadCount;  // 记录到成员变量，cancelRequest 时释放
+
+    // readyRead：增量写入文件
+    connect(reply, &QNetworkReply::readyRead, this,
+        [reply, outFile, readyReadCount]() {
+        (*readyReadCount)++;
+        if (!outFile || !outFile->isOpen()) {
+            qDebug() << "[DOWNLOAD] readyRead #" << *readyReadCount
+                     << "被跳过：downloadFile 不可用";
+            return;
+        }
+        qint64 n = reply->bytesAvailable();
+        qint64 written = outFile->write(reply->readAll());
+        if (written > 0) {
+            qDebug() << "[DOWNLOAD] readyRead #" << *readyReadCount
+                     << "写入" << written << "字节（总可用" << n << "）";
+        } else {
+            qDebug() << "[DOWNLOAD] readyRead #" << *readyReadCount
+                     << "写入 0 字节";
         }
     });
+
+    // finished：捕获 reply + outFile + readyReadCount
+    // 小响应场景 Qt 可能跳过 readyRead 直接在 finished 时返回全部数据，
+    // 所以这里必须 flush reply->readAll() 到文件
+    connect(reply, &QNetworkReply::finished, this,
+        [this, reply, outFile, readyReadCount]() {
+        handleReplyFinished(reply, outFile, readyReadCount);
+    });
+
+    // error：捕获 reply + outFile（readyReadCount 在 finished 路径释放，因为 Qt 保证 error 之后 finished 还会触发）
+    connect(reply, static_cast<void(QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+            this, [this, reply, outFile](QNetworkReply::NetworkError e) {
+        handleReplyError(reply, e, outFile);
+    });
+
+    connect(reply, &QNetworkReply::downloadProgress, this,
+        [this, reply](qint64 r, qint64 t) { handleDownloadProgress(reply, r, t); });
 
     // 启动超时定时器
     m_timeoutTimer->start(m_timeoutMs);
@@ -182,87 +236,180 @@ void HttpTool::downloadFile(const QString& url, const QString& savePath)
 void HttpTool::cancelRequest()
 {
     m_timeoutTimer->stop();
-    if (m_reply) {
-        m_reply->abort();
-        m_reply->disconnect();
-        m_reply->deleteLater();
-        m_reply = nullptr;
+    qDebug() << "[DOWNLOAD] cancelRequest 进入，当前 m_reply=" << (quintptr)m_reply
+             << "m_downloadFile=" << (quintptr)m_downloadFile;
+    // 关键：先保存并置空成员指针，避免 abort() 同步触发 finished → 重入 onReplyFinished
+    // 时，把本次请求的成员指针再次修改（或 deleteLater 重复调用）。
+    QNetworkReply* reply = m_reply;
+    QFile* dlFile = m_downloadFile;
+    int* readyCount = m_readyReadCount;
+    m_reply = nullptr;
+    m_downloadFile = nullptr;
+    m_readyReadCount = nullptr;
+    if (reply) {
+        // 不调 abort() —— abort() 对进行中的 reply 会同步 emit finished → 重入 onReplyFinished
+        // 直接 disconnect + abort + deleteLater：把 abort 的 OperationCanceledError 拦截（onReplyError 里已跳过）
+        reply->disconnect();
+        reply->abort();      // 发 OperationCanceledError，onReplyError 里跳过；finished 此时 reply 已断开，不会进来
+        reply->deleteLater();
+        qDebug() << "[DOWNLOAD] cancelRequest reply 已清理";
     }
-    if (m_downloadFile) {
-        m_downloadFile->close();
-        delete m_downloadFile;
-        m_downloadFile = nullptr;
+    if (dlFile) {
+        dlFile->close();
+        delete dlFile;
+        qDebug() << "[DOWNLOAD] cancelRequest downloadFile 已清理";
     }
+    if (readyCount) {
+        delete readyCount;  // cancel 时 readyReadCount 不会再被 handleReplyFinished 释放（因为已 disconnect）
+        qDebug() << "[DOWNLOAD] cancelRequest readyReadCount 已释放";
+    }
+    qDebug() << "[DOWNLOAD] cancelRequest 完成";
 }
 
-// 请求完成回调
-void HttpTool::onReplyFinished()
+// ═══ 新实现：全部用 reply 参数，不读成员变量 ═══
+// 这样旧 reply 的延迟信号不会被新请求的成员变量拦截
+
+void HttpTool::handleReplyFinished(QNetworkReply* reply, QFile* outFile, int* readyReadCountPtr)
 {
     m_timeoutTimer->stop();
-    if (!m_reply) return;
-
-    // 获取响应状态码
-    int statusCode = m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QByteArray responseData = m_reply->readAll();
-
-    // 下载文件场景：确保数据写入完成
-    if (m_downloadFile && m_downloadFile->isOpen()) {
-        m_downloadFile->write(responseData);
-        m_downloadFile->close();
-        delete m_downloadFile;
-        m_downloadFile = nullptr;
+    qDebug() << "[DOWNLOAD] handleReplyFinished 进入，reply=" << (quintptr)reply
+             << "outFile=" << (quintptr)outFile;
+    if (!reply) {
+        // 同步清 m_readyReadCount，避免 cancelRequest 后面 double-free
+        if (m_readyReadCount == readyReadCountPtr) m_readyReadCount = nullptr;
+        delete readyReadCountPtr;
+        return;
     }
 
-    // 状态码 2xx 表示成功
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    // 下载场景（outFile != nullptr）
+    if (outFile) {
+        // ═══ Bug 1 修复：flush reply->readAll() 处理小响应跳过 readyRead ═══
+        // Qt 对小响应可能不发 readyRead，直接在 finished 时返回全部数据
+        if (outFile->isOpen()) {
+            qint64 remaining = reply->bytesAvailable();
+            if (remaining > 0) {
+                qint64 flushed = outFile->write(reply->readAll());
+                qDebug() << "[DOWNLOAD] finished flush：" << remaining
+                         << "剩余字节（readyRead 触发数="
+                         << (readyReadCountPtr ? *readyReadCountPtr : 0)
+                         << "），实际写入" << flushed;
+            }
+        }
+
+        qint64 fsize = outFile->size();
+        bool wasOpen = outFile->isOpen();
+        if (wasOpen) {
+            outFile->close();
+        }
+        qDebug() << "[DOWNLOAD] 下载场景：文件"
+                 << (wasOpen ? "正常关闭" : "之前已关闭")
+                 << "，最终大小=" << fsize << "，状态码=" << statusCode;
+
+        // 清理 outFile 指针（只有它是当前 m_downloadFile 时才 delete）
+        if (m_downloadFile == outFile) {
+            delete outFile;
+            m_downloadFile = nullptr;
+        }
+
+        // 同步 reply 指针
+        if (m_reply == reply) m_reply = nullptr;
+
+        // 释放 readyReadCount 堆变量，并同步清成员指针避免 cancelRequest 后面 double-free
+        if (m_readyReadCount == readyReadCountPtr) m_readyReadCount = nullptr;
+        delete readyReadCountPtr;
+        readyReadCountPtr = nullptr;
+
+        // 状态码 + 文件大小双重校验
+        if (statusCode >= 200 && statusCode < 300) {
+            if (fsize <= 0) {
+                qDebug() << "[DOWNLOAD] ✗ 文件为空但状态码" << statusCode
+                         << "，强制判失败";
+                emit requestFailed(QString("下载完成但文件为空（状态码 %1）").arg(statusCode), statusCode);
+            } else {
+                qDebug() << "[DOWNLOAD] ✓ 下载成功，emit requestSuccess";
+                emit requestSuccess(QByteArray(), statusCode);
+            }
+        } else {
+            qDebug() << "[DOWNLOAD] ✗ 下载状态码异常，emit requestFailed";
+            emit requestFailed(QString("请求失败，状态码：%1").arg(statusCode), statusCode);
+        }
+        reply->deleteLater();
+        return;
+    }
+
+    // 非下载场景：直接读响应数据
+    QByteArray responseData = reply->readAll();
+    qDebug() << "[DOWNLOAD] 非下载场景：读取" << responseData.size() << "字节";
+
+    // 释放 readyReadCount 堆变量（非下载场景也传了 nullptr，不会出错）
+    // 并同步清成员指针避免 cancelRequest 后面 double-free
+    if (m_readyReadCount == readyReadCountPtr) m_readyReadCount = nullptr;
+    delete readyReadCountPtr;
+    readyReadCountPtr = nullptr;
+
+    // 置空成员指针（只有匹配时才置空，避免误伤新请求）
+    if (m_reply == reply) m_reply = nullptr;
+
     if (statusCode >= 200 && statusCode < 300) {
         emit requestSuccess(responseData, statusCode);
     } else {
         emit requestFailed(QString("请求失败，状态码：%1，响应：%2").arg(statusCode).arg(QString(responseData)), statusCode);
     }
 
-    // 释放资源
-    m_reply->deleteLater();
-    m_reply = nullptr;
+    reply->deleteLater();
 }
 
-// 请求错误回调
-void HttpTool::onReplyError(QNetworkReply::NetworkError error)
+void HttpTool::handleReplyError(QNetworkReply* reply, QNetworkReply::NetworkError error, QFile* outFile)
 {
+    qDebug() << "[DOWNLOAD] handleReplyError 进入，error=" << error
+             << "reply=" << (quintptr)reply;
     if (error == QNetworkReply::OperationCanceledError) {
-        // 主动取消请求，不触发失败信号
+        qDebug() << "[DOWNLOAD] 主动取消，忽略";
         return;
     }
 
     m_timeoutTimer->stop();
-    QString errorMsg = QString("网络错误：%1").arg(m_reply->errorString());
-    emit requestFailed(errorMsg, static_cast<int>(error));
 
-    // 释放资源
-    m_reply->deleteLater();
-    m_reply = nullptr;
-    if (m_downloadFile) {
-        m_downloadFile->close();
-        delete m_downloadFile;
+    QString errorMsg = QString("网络错误：%1").arg(reply->errorString());
+    qDebug() << "[DOWNLOAD] 网络错误详情：" << errorMsg;
+
+    // 置空成员指针
+    if (m_reply == reply) m_reply = nullptr;
+    if (m_downloadFile == outFile) {
+        if (outFile && outFile->isOpen()) outFile->close();
+        delete outFile;
         m_downloadFile = nullptr;
     }
+
+    emit requestFailed(errorMsg, static_cast<int>(error));
+    reply->deleteLater();
 }
 
-// 超时回调
+// 超时回调（保持不变）
 void HttpTool::onTimeout()
 {
+    qDebug() << "[DOWNLOAD] onTimeout 触发！";
     emit requestFailed("请求超时", -5);
-    cancelRequest();  // 超时后取消请求
+    cancelRequest();
 }
 
-// 下载进度回调
-void HttpTool::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+void HttpTool::handleDownloadProgress(QNetworkReply* reply, qint64 bytesReceived, qint64 bytesTotal)
 {
+    // 只处理当前活跃的 reply，忽略旧 reply 的延迟信号
+    if (reply != m_reply) return;
+    static qint64 lastLogReceived = 0;
+    if (bytesReceived - lastLogReceived >= 1024 * 1024 || bytesReceived == bytesTotal) {
+        qDebug() << "[DOWNLOAD] progress:" << bytesReceived << "/" << bytesTotal;
+        lastLogReceived = bytesReceived;
+    }
     emit downloadProgress(bytesReceived, bytesTotal);
 }
 
-// 上传进度回调
-void HttpTool::onUploadProgress(qint64 bytesSent, qint64 bytesTotal)
+void HttpTool::handleUploadProgress(QNetworkReply* reply, qint64 bytesSent, qint64 bytesTotal)
 {
+    if (reply != m_reply) return;
     emit uploadProgress(bytesSent, bytesTotal);
 }
 
@@ -287,7 +434,7 @@ QByteArray HttpTool::buildMultipartData(const QMap<QString, QString>& params,
 
     // 添加普通参数
     for (auto it = params.begin(); it != params.end(); ++it) {
-        data += boundaryPrefix;
+        data += boundaryPrefix.toUtf8();
         data += QString("Content-Disposition: form-data; name=\"%1\"\r\n\r\n").arg(it.key()).toUtf8();
         data += it.value().toUtf8() + "\r\n";
     }
@@ -302,7 +449,7 @@ QByteArray HttpTool::buildMultipartData(const QMap<QString, QString>& params,
         return QByteArray();
     }
 
-    data += boundaryPrefix;
+    data += boundaryPrefix.toUtf8();
     // Content-Disposition：包含参数名和文件名
     data += QString("Content-Disposition: form-data; name=\"%1\"; filename=\"%2\"\r\n").arg(fileParamName).arg(fileInfo.fileName()).toUtf8();
     // Content-Type：自动识别文件类型（默认 application/octet-stream）
@@ -313,7 +460,7 @@ QByteArray HttpTool::buildMultipartData(const QMap<QString, QString>& params,
     file.close();
 
     // 结束边界
-    data += "--" + boundary + "--\r\n";
+    data += ("--" + boundary + "--\r\n").toUtf8();
 
     return data;
 }

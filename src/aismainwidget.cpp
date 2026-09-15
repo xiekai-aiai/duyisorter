@@ -1,4 +1,7 @@
-﻿#include "aismainwidget.h"
+#include "aismainwidget.h"
+#include "sftp_client.h"
+#include <QDir>
+#include <QFileInfo>
 
 /***
  *   主控件
@@ -1950,10 +1953,10 @@ void AisMainWidget::updateModeParaInfo(){
 
 void AisMainWidget::CreatePageModeUpdate(){
     // 创建一个新的QFtp对象
-//    uploader = new FtpUploader(ftpIpAddress, 21, SFTP_USER, SFTP_PASSWORD);
+//    uploader = new FtpUploader(ftpIpAddress, 22, SFTP_USER, SFTP_PASSWORD);
 //    uploaderList.append(uploader);
     for(int i=0; i<aiDeviceNum; i++){
-        uploaderList.append(new FtpUploader(ftpIpAddressList.at(i), 21, SFTP_USER, SFTP_PASSWORD));
+        uploaderList.append(new FtpUploader(ftpIpAddressList.at(i), 22, SFTP_USER, SFTP_PASSWORD));
     }
     uploader = uploaderList.at(0);
 
@@ -3195,255 +3198,161 @@ AisMainWidget::~AisMainWidget()
 {
 
 }
-FtpUploader :: FtpUploader(const QString &host, quint16 port, const QString &user, const QString &password)
-    : ftp(new QFtp(this)), eventLoop(new QEventLoop(this)) {
-    this->user = user;
-    this->password = password;
-    this->host = host;
-    this->port = port;
-    timer = new QTimer(this);
-    ftpStatus = false;
-    timer->start(20000);
-    timer->setSingleShot(false);
-    ftp->connectToHost(host, port);
-    stopped = false;
-    ftp->setTransferMode(QFtp::Active);
-    ftp->login(user, password);
-    connect(ftp, SIGNAL(commandFinished(int,bool)), this, SLOT(onCommandFinished(int ,bool)));
-    connect(timer, SIGNAL(timeout()), this, SLOT(onConnectTimeout()));
-    connect(ftp, SIGNAL(listInfo(const QUrlInfo &)), this, SLOT(onFTPListInfo(const QUrlInfo &)));
-    connect(ftp, SIGNAL(dataTransferProgress(qint64, qint64)), this, SLOT(onDataTransferProgress(qint64, qint64)));
+// ============ FtpUploader (SFTP via SftpClient) ============
+// 原有 QFtp(FTP) 替换为 libssh2 SFTP，对外接口不变
 
+FtpUploader :: FtpUploader(const QString &host, quint16 port, const QString &user, const QString &password)
+    : ftp(nullptr), ftpStatus(false), totalFiles(0), finalTotalFiles(0),
+      transferredFiles(0), stopped(false)
+{
+    this->user     = user;
+    this->password = password;
+    this->host     = host;
+    this->port     = port;
+
+    SftpClient::init_sftp_lib();
+    ftp = new SftpClient(host.toStdString(), (int)port,
+                         user.toStdString(), password.toStdString());
+    ftpStatus = ftp->connect();
+    if (!ftpStatus) {
+        qWarning() << "FtpUploader: SFTP connect failed" << host << ":" << port;
+    }
 }
 
 FtpUploader :: ~FtpUploader() {
-    ftp->close();
+    if (ftp) {
+        ftp->disconnect();
+        delete ftp;
+        ftp = nullptr;
+    }
+    SftpClient::deinit_sftp_lib();
 }
 
-
-bool FtpUploader::downloadDirectory(const QString &remoteDir, const QString &localDir){
-    // 保存远程和本地目录信息
-    this->remoteDir = remoteDir;
-    this->localDir = localDir;
-    filesPath.clear();
-    openedFiles.clear();
+bool FtpUploader::downloadDirectory(const QString &remoteDir, const QString &localDir)
+{
+    this->remoteDir       = remoteDir;
+    this->localDir        = localDir;
+    remoteFiles.clear();
     downloadQueue.clear();
-    totalFiles = 0;
+    totalFiles       = 0;
+    finalTotalFiles  = 0;
     transferredFiles = 0;
-    finalTotalFiles = 0;
-    stopped = false;
-    isPutProcess = false;
-    // 连接到 FTP 服务器的信号和槽
-//    connect(ftp, SIGNAL(done(bool)), this, SLOT(onFTPDone(bool)));
-//    connect(ftp, SIGNAL(listInfo(const QUrlInfo &)), this, SLOT(onFTPListInfo(const QUrlInfo &)));
-//    connect(ftp, SIGNAL(dataTransferProgress(qint64, qint64)), this, SLOT(onDataTransferProgress(qint64, qint64)));
-//    ftp->connectToHost(this->host, this->port);
-    QString ftpDir(REMOTE_IMG_PATH);
-    ftpDir.chop(1);
-    ftp->setTransferMode(QFtp::Active);
-    ftp->login(this->user, this->password);
-    if(!ftpStatus){
-        return false;
+    stopped          = false;
+
+    if (!ftp || !ftp->isConnected()) {
+        ftpStatus = ftp && ftp->connect();
+        if (!ftpStatus) {
+            qWarning() << "FtpUploader::downloadDirectory: SFTP not connected";
+            return false;
+        }
     }
-    ftp->cd(ftpDir);
-    ftp->list();
+
+    downloadDirRecursive(remoteDir, localDir);
+    finalTotalFiles = totalFiles;
+
+    if (totalFiles == 0) {
+        emit blankDirListFinished();
+        return true;
+    }
+
+    for (int i = 0; i < downloadQueue.size(); ++i) {
+        if (stopped) break;
+        DownloadTask task = downloadQueue.at(i);
+        QFileInfo fi(task.localFilePath);
+        QDir().mkpath(fi.absolutePath());
+
+        if (ftp->download(task.infoName.toStdString(), task.localFilePath.toStdString())) {
+            transferredFiles++;
+            qDebug() << "SFTP dl OK:" << task.infoName
+                     << "(" << transferredFiles << "/" << finalTotalFiles << ")";
+        } else {
+            qWarning() << "SFTP dl FAIL:" << task.infoName;
+        }
+    }
+
+    if (transferredFiles >= finalTotalFiles) {
+        qDebug() << "dir download done";
+        emit downloadFinished();
+    }
     return true;
 }
 
-// 文件下载进度的槽函数
-void FtpUploader::onDataTransferProgress(qint64 bytesRead, qint64 totalBytes){
-     if (ftp->currentCommand() == QFtp::Get){
-         qDebug() << "已下载" << bytesRead << "字节，总共" << totalBytes << "字节";
-         if (bytesRead >= totalBytes) {
-//             myFlow.msleep(100);
-             if(localFile->isOpen()){
-                  localFile->close();
-             }
-//             myFlow.msleep(200);
-             isPutProcess = false;
-
-             transferredFiles++;
-             if (transferredFiles >= finalTotalFiles) {
-                 qDebug() << "目录下载操作完成";
-                 // 在这里可以进行获取目录完成后的操作
-                 emit downloadFinished();
-             }
-         }else{
-             isPutProcess =true;
-         }
-     }
-}
-
-void FtpUploader::stop()
+/** 递归遍历远程目录，文件入 downloadQueue，远程路径入 remoteFiles */
+void FtpUploader::downloadDirRecursive(const QString &remoteDir, const QString &localDir)
 {
-    stopped =true;
-    if(localFile->isOpen()){
-         localFile->close();
+    if (stopped) return;
 
-    }
-}
+    std::vector<std::string> entries;
+    if (!ftp->list_files(remoteDir.toStdString(), entries)) return;
 
+    for (const auto &entry : entries) {
+        QString name = QString::fromStdString(entry);
+        if (name == "." || name == "..") continue;
 
-void FtpUploader::run(){
-    stopped = false;
-    isPutProcess = false;
-    int i = 0;
-    while (!stopped) {
-         if (!downloadQueue.isEmpty()&& !isPutProcess &&(finalTotalFiles == totalFiles)) {
-              DownloadTask task = downloadQueue.takeFirst();
-              localFile = new QFile(task.localFilePath);
-              i++;
-              try {
-                  if (!localFile->open((QIODevice::WriteOnly)))
-                  {
-                      qDebug() << "文件打开异常:" << task.localFilePath<<localFile->errorString();
+        QString remotePath = remoteDir.endsWith("/") ? remoteDir + name : remoteDir + "/" + name;
+        QString localPath  = localDir.endsWith("/")  ? localDir  + name : localDir  + "/" + name;
 
-                      if(localFile->isOpen()){
-                           localFile->close();
-                      }
-                      continue;
-                  }
-                  ftp->get(task.infoName,localFile);
-                  qDebug() << "下载文件序号："<<i;
-              } catch (const std::ios_base::failure& e) {
-
-                  if(localFile->isOpen()){
-                       localFile->close();
-                  }
-                   std::cerr << "I/O操作失败: " << e.what() << std::endl;
-                   continue;
-              }
-            isPutProcess =true;
-         }
-    }
-}
-
-// 获取到 FTP 文件信息的槽函数
-void FtpUploader::onFTPListInfo(const QUrlInfo &info){
-    QString remoteFilePath = remoteDir  + info.name();
-    QString localFilePath = localDir + info.name();
-    if (info.isFile()){
-        totalFiles++;
-//        qDebug() << "remoteFilePath: "<<remoteFilePath;
-
-      DownloadTask task1;
-      task1.infoName = info.name();
-      task1.localFilePath = localFilePath;
-      downloadQueue.append(task1);
-
-       // 将打开的文件指针保存起来，以便后删除处理
-//            openedFiles.append(localFile);
-       filesPath.append(remoteFilePath);
-    }else if (info.isDir() && info.name()!= "." && info.name()!= ".."){
-        // 如果是目录，创建本地目录，并递归下载
-        QDir local(localDir);
-        local.mkdir(info.name());
-        QString newRemoteDir = remoteFilePath;
-        QString newLocalDir = localFilePath;
-        // 递归调用下载函数
-        downloadDirectory(newRemoteDir, newLocalDir);
-    }
-}
-
-
-void FtpUploader :: deleteDir(){
-    if(filesPath.size() <=0){
-        qDebug() << "原图像文件为空"<<endl;
-    }
-    for (int i =0 ; i<filesPath.size(); i++) {
-        qDebug() << (filesPath.at(i));
-        ftp->remove(filesPath.at(i));
-        if(i == filesPath.size()-1){
-            emit removeFinished();
+        LIBSSH2_SFTP_ATTRIBUTES attrs;
+        if (ftp->stat_file(remotePath.toStdString(), attrs)) {
+            DownloadTask t;
+            t.infoName      = remotePath;
+            t.localFilePath = localPath;
+            downloadQueue.append(t);
+            remoteFiles.append(remotePath);
+            totalFiles++;
+        } else {
+            QDir().mkpath(localPath);
+            downloadDirRecursive(remotePath, localPath);
         }
     }
 }
 
-bool FtpUploader :: uploadFile(const QString &localFilePath, const QString &remoteFilePath) {
-    QFile file(localFilePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "无法打开文件：" << localFilePath;
-        return false;
-    }
-//    ftp->connectToHost(this->host, this->port);
-    ftp->setTransferMode(QFtp::Active);
-    ftp->login(this->user, this->password);
-    ftp->put(&file, remoteFilePath);
-    file.close();
-    eventLoop->exec(); // 等待上传完成
+void FtpUploader::stop() { stopped = true; }
 
-    if (ftp->error() == QFtp::NoError) {
-        qDebug() << "文件上传成功：" << remoteFilePath;
-        return true;
-    } else {
-        qDebug() << "文件上传失败：" << ftp->errorString();
-        return false;
-    }
-}
+void FtpUploader::run() { /* sync impl, not used */ }
 
-void  FtpUploader :: onCommandFinished(int id, bool error) {
-    if (error) {
-        qDebug() << "命令失败：" << ftp->errorString();
-        ftpStatus = false;
+void FtpUploader :: deleteDir()
+{
+    if (remoteFiles.isEmpty()) {
+        qDebug() << "原图像文件为空";
+        emit removeFinished();
         return;
-    } else {
-        qDebug() << "命令成功";
-        ftpStatus =true;
     }
-    if(ftp->currentCommand() == QFtp::Put){
-        ftpStatus =true;
-        qDebug() << "上传成功";
-        eventLoop->quit(); // 完成上传
+    for (int i = 0; i < remoteFiles.size(); ++i) {
+        if (stopped) break;
+        qDebug() << "rm remote:" << remoteFiles.at(i);
+        ftp->exec("rm -f " + remoteFiles.at(i).toStdString());
     }
-
-    if(ftp->currentCommand() == QFtp::Get){
-        ftpStatus =true;
-        qDebug() << "下载成功";
-    }
-
-    if(ftp->currentCommand() == QFtp::List){
-        ftpStatus =true;
-        finalTotalFiles = totalFiles;
-        if(filesPath.size() == 0){
-            emit blankDirListFinished();
-            return;
-        }
-        qDebug() << "list成功,文件数量: "<<finalTotalFiles;
-    }
-
-//    timer->stop();
+    remoteFiles.clear();
+    emit removeFinished();
 }
 
+bool FtpUploader :: uploadFile(const QString &localFilePath, const QString &remoteFilePath)
+{
+    if (!ftp || !ftp->isConnected()) {
+        ftpStatus = ftp && ftp->connect();
+        if (!ftpStatus) return false;
+    }
+    QString remoteDir = QFileInfo(remoteFilePath).absolutePath();
+    ftp->mkdir_p(remoteDir.toStdString());
 
-QString FtpUploader::getDownLoadPercent(){
-    if(finalTotalFiles == 0){
-        return "0%";
-    }
-    if(transferredFiles >= finalTotalFiles){
-        return "100%";
-    }
-    double progress = (double)transferredFiles / finalTotalFiles;  // 计算进度的小数表示
-    QString percentageStr = QString::number(progress * 100, 'f', 2) + "%";  // 转换为百分比字符串，保留2位小数并添加%符号
-    qDebug() << "进度百分比: " << percentageStr;
-    return percentageStr;
+    bool ok = ftp->upload(localFilePath.toStdString(), remoteFilePath.toStdString());
+    if (ok) qDebug() << "SFTP up OK:" << remoteFilePath;
+    else    qWarning() << "SFTP up FAIL:" << remoteFilePath;
+    return ok;
 }
 
-
-void FtpUploader::onConnectTimeout(){
-       ftp->rawCommand("NOOP");
-        // 超时处理，比如输出提示信息或者进行其他清理操作
-//      if(ftpStatus){
-//          qDebug() << "Connect to FTP server "+this->host+" .";
-
-//      }else{
-//          qDebug() << "Connect to FTP server "+this->host+" timed out.";
-//          // 可以在这里进行一些清理工作，比如关闭连接等操作
-//          // ftp->abort();
-//      }
-
+QString FtpUploader::getDownLoadPercent()
+{
+    if (finalTotalFiles == 0)  return "0%";
+    if (transferredFiles >= finalTotalFiles) return "100%";
+    double pct = (double)transferredFiles / finalTotalFiles * 100.0;
+    return QString::number(pct, 'f', 2) + "%";
 }
-bool FtpUploader:: getFptStatus(){
-    return ftpStatus;
+
+bool FtpUploader:: getFptStatus()
+{
+    return ftp && ftp->isConnected();
 }
 
 

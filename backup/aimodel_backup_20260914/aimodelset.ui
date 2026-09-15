@@ -40,7 +40,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>200</y>
+     <y>160</y>
      <width>1020</width>
      <height>64</height>
     </rect>
@@ -76,10 +76,10 @@
   <widget class="QLabel" name="modelNameLabel">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>30</y>
+     <x>20</x>
+     <y>40</y>
      <width>281</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -99,6 +99,83 @@
    </property>
    <property name="indent">
     <number>-1</number>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="a_checkBox">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>40</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>60</width>
+     <height>40</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>60</width>
+     <height>40</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string> A</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="b_checkBox">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>40</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>8</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>B</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="c_checkBox">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>40</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>C</string>
    </property>
   </widget>
   <widget class="QLabel" name="tipLabel">
@@ -126,15 +203,15 @@
   <widget class="QPushButton" name="modelTrainPushButton">
    <property name="geometry">
     <rect>
-     <x>690</x>
+     <x>720</x>
      <y>30</y>
-     <width>101</width>
-     <height>41</height>
+     <width>141</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>DejaVu Sans</family>
+     <family>HarmonyOS Sans Medium</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -161,18 +238,16 @@ QPushButton:pressed {
   <widget class="QPushButton" name="modelSelPushButton">
    <property name="geometry">
     <rect>
-     <x>800</x>
+     <x>870</x>
      <y>30</y>
-     <width>101</width>
-     <height>41</height>
+     <width>141</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>DejaVu Sans</family>
+     <family>HarmonyOS Sans Medium</family>
      <pointsize>8</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
     </font>
    </property>
    <property name="styleSheet">
@@ -195,11 +270,11 @@ QPushButton:pressed {
     <string>模型加载</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="oneKeyAnnoPushButton">
+  <widget class="QPushButton" name="simuPushButton">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>410</y>
+     <x>610</x>
+     <y>30</y>
      <width>91</width>
      <height>51</height>
     </rect>
@@ -227,15 +302,50 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>一键标注</string>
+    <string>仿真</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="drawAnnoPushButton">
+  <widget class="QPushButton" name="modelTrainPushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>410</y>
+     <width>111</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	   text-align: center;
+	   outline: none;
+	   background-color: lightcyan;
+	   border-color: #afafaf;
+	   border-width: 2px;
+	   border-style: solid;
+	   border-radius: 5;
+	   padding: 2px;}
+
+QPushButton:pressed {
+	   padding-left: 5px;
+	   padding-top: 5px;
+	   background-color: lightgrey;}</string>
+   </property>
+   <property name="text">
+    <string>手动标注</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="modelTrainPushButton_3">
    <property name="geometry">
     <rect>
      <x>320</x>
      <y>410</y>
-     <width>91</width>
+     <width>111</width>
      <height>51</height>
     </rect>
    </property>
@@ -262,15 +372,15 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>拉框标注</string>
+    <string>自动标注</string>
    </property>
   </widget>
   <widget class="QPushButton" name="addTrainListPushButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>608</y>
-     <width>91</width>
+     <x>500</x>
+     <y>410</y>
+     <width>181</width>
      <height>51</height>
     </rect>
    </property>
@@ -297,13 +407,13 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>+ 添加训练</string>
+    <string>+ 添加到训练资源</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="erasePushButton">
+  <widget class="QPushButton" name="annotationPushButton">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>690</x>
      <y>410</y>
      <width>91</width>
      <height>51</height>
@@ -332,14 +442,49 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>删除标注</string>
+    <string>标注</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="erasePushButton">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>410</y>
+     <width>91</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	   text-align: center;
+	   outline: none;
+	   background-color: lightcyan;
+	   border-color: #afafaf;
+	   border-width: 2px;
+	   border-style: solid;
+	   border-radius: 5;
+	   padding: 2px;}
+
+QPushButton:pressed {
+	   padding-left: 5px;
+	   padding-top: 5px;
+	   background-color: lightgrey;}</string>
+   </property>
+   <property name="text">
+    <string>擦除</string>
    </property>
   </widget>
   <widget class="QLabel" name="preImageNumLabel">
    <property name="geometry">
     <rect>
-     <x>820</x>
-     <y>610</y>
+     <x>920</x>
+     <y>410</y>
      <width>91</width>
      <height>51</height>
     </rect>
@@ -369,8 +514,8 @@ QPushButton:pressed {
   <widget class="QPushButton" name="importImgPushButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>680</y>
+     <x>10</x>
+     <y>600</y>
      <width>141</width>
      <height>51</height>
     </rect>
@@ -401,12 +546,12 @@ QPushButton:pressed {
     <string>导入图片资源</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="mergeImgPushButton">
+  <widget class="QPushButton" name="modelTrainPushButton_6">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>680</y>
-     <width>141</width>
+     <x>160</x>
+     <y>600</y>
+     <width>111</width>
      <height>51</height>
     </rect>
    </property>
@@ -420,7 +565,7 @@ QPushButton:pressed {
     <string notr="true">QPushButton {
 	   text-align: center;
 	   outline: none;
-	   background-color: #e0f7fa;
+	   background-color: lightcyan;
 	   border-color: #afafaf;
 	   border-width: 2px;
 	   border-style: solid;
@@ -433,14 +578,49 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>合并标注目录</string>
+    <string>清空资源</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="backLastAnnoPushButton">
+  <widget class="QPushButton" name="modelTrainPushButton_7">
    <property name="geometry">
     <rect>
-     <x>520</x>
-     <y>410</y>
+     <x>280</x>
+     <y>600</y>
+     <width>111</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	   text-align: center;
+	   outline: none;
+	   background-color: lightcyan;
+	   border-color: #afafaf;
+	   border-width: 2px;
+	   border-style: solid;
+	   border-radius: 5;
+	   padding: 2px;}
+
+QPushButton:pressed {
+	   padding-left: 5px;
+	   padding-top: 5px;
+	   background-color: lightgrey;}</string>
+   </property>
+   <property name="text">
+    <string>全部删除</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="modelTrainPushButton_8">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>600</y>
      <width>91</width>
      <height>51</height>
     </rect>
@@ -465,21 +645,17 @@ QPushButton:pressed {
 QPushButton:pressed {
 	   padding-left: 5px;
 	   padding-top: 5px;
-	   background-color: lightgrey;}
-
-QPushButton:disabled {
-	   background-color: #dcdcdc;
-	   color: #909090;}</string>
+	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>上一步标注</string>
+    <string>删除</string>
    </property>
   </widget>
   <widget class="QPushButton" name="m_prevBtn">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>608</y>
+     <x>600</x>
+     <y>600</y>
      <width>81</width>
      <height>51</height>
     </rect>
@@ -513,8 +689,8 @@ QPushButton:pressed {
   <widget class="QPushButton" name="m_nextBtn">
    <property name="geometry">
     <rect>
-     <x>510</x>
-     <y>608</y>
+     <x>700</x>
+     <y>600</y>
      <width>81</width>
      <height>51</height>
     </rect>
@@ -548,8 +724,8 @@ QPushButton:pressed {
   <widget class="QLabel" name="m_curPageInfoLabel">
    <property name="geometry">
     <rect>
-     <x>610</x>
-     <y>620</y>
+     <x>800</x>
+     <y>600</y>
      <width>131</width>
      <height>21</height>
     </rect>
@@ -579,7 +755,7 @@ QPushButton:pressed {
   <widget class="QLineEdit" name="m_curPagelineEdit">
    <property name="geometry">
     <rect>
-     <x>970</x>
+     <x>940</x>
      <y>610</y>
      <width>41</width>
      <height>31</height>
@@ -592,13 +768,44 @@ QPushButton:pressed {
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <widget class="QLabel" name="modelNameLabel_4">
+   <property name="geometry">
+    <rect>
+     <x>980</x>
+     <y>600</y>
+     <width>31</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="indent">
+    <number>-1</number>
+   </property>
+  </widget>
   <widget class="QPushButton" name="backPushButton">
    <property name="geometry">
     <rect>
-     <x>800</x>
-     <y>680</y>
+     <x>840</x>
+     <y>660</y>
      <width>161</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -630,8 +837,8 @@ QPushButton:pressed {
   <widget class="QLabel" name="m_pageInfoLabel">
    <property name="geometry">
     <rect>
-     <x>810</x>
-     <y>620</y>
+     <x>800</x>
+     <y>630</y>
      <width>131</width>
      <height>20</height>
     </rect>
@@ -657,6 +864,229 @@ QPushButton:pressed {
    <property name="indent">
     <number>-1</number>
    </property>
+  </widget>
+  <widget class="QWidget" name="modeInfowidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>40</y>
+     <width>701</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="modelInfoLabel">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>20</y>
+      <width>211</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>HarmonyOS Sans Medium</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="indent">
+     <number>-1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="modelNameInputLabel">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>100</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>HarmonyOS Sans Medium</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="indent">
+     <number>-1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="modelSizeLabel">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>210</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>HarmonyOS Sans Medium</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="indent">
+     <number>-1</number>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="modelsize1CheckBox">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>210</y>
+      <width>61</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>HarmonyOS Sans Medium</family>
+      <pointsize>9</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>2</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="modelsize2CheckBox">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>210</y>
+      <width>60</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>HarmonyOS Sans Medium</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>3</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="okPushButton">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>360</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>HarmonyOS Sans Medium</family>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	   text-align: center;
+	   outline: none;
+	   background-color: lightcyan;
+	   border-color: #afafaf;
+	   border-width: 2px;
+	   border-style: solid;
+	   border-radius: 5;
+	   padding: 2px;}
+
+QPushButton:pressed {
+	   padding-left: 5px;
+	   padding-top: 5px;
+	   background-color: lightgrey;}</string>
+    </property>
+    <property name="text">
+     <string>确定</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addPushButton">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>100</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>HarmonyOS Sans Medium</family>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	   text-align: center;
+	   outline: none;
+	   background-color: lightcyan;
+	   border-color: #afafaf;
+	   border-width: 2px;
+	   border-style: solid;
+	   border-radius: 5;
+	   padding: 2px;}
+
+QPushButton:pressed {
+	   padding-left: 5px;
+	   padding-top: 5px;
+	   background-color: lightgrey;}</string>
+    </property>
+    <property name="text">
+     <string>加载已有模型</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="modelNameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>100</y>
+      <width>301</width>
+      <height>40</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="Line" name="line">
    <property name="geometry">
@@ -688,7 +1118,7 @@ QPushButton:pressed {
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>660</y>
+     <y>580</y>
      <width>1021</width>
      <height>16</height>
     </rect>
@@ -700,25 +1130,47 @@ QPushButton:pressed {
   <widget class="QListWidget" name="m_imageList">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>40</x>
      <y>470</y>
-     <width>1000</width>
-     <height>128</height>
+     <width>911</width>
+     <height>60</height>
     </rect>
    </property>
    <property name="maximumSize">
     <size>
-     <width>1020</width>
-     <height>128</height>
+     <width>1025</width>
+     <height>60</height>
     </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="annotationInfoEdit">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>280</y>
+     <width>891</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans Medium</family>
+     <pointsize>7</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="indent">
+    <number>-1</number>
    </property>
   </widget>
   <widget class="QPushButton" name="delTrainListPushButton">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>608</y>
-     <width>91</width>
+     <x>880</x>
+     <y>410</y>
+     <width>81</width>
      <height>51</height>
     </rect>
    </property>
@@ -745,60 +1197,15 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>- 从训练删除</string>
+    <string>deltrain</string>
    </property>
   </widget>
   <widget class="QPushButton" name="fgPushButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>410</y>
-     <width>91</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	   text-align: center;
-	   outline: none;
-	   background-color: lightcyan;
-	   border-color: #afafaf;
-	   border-width: 2px;
-	   border-style: solid;
-	   border-radius: 5;
-	   padding: 2px;}
-
-QPushButton:pressed {
-	   padding-left: 5px;
-	   padding-top: 5px;
-	   background-color: lightgrey;}
-
-QPushButton:checked {
-	   background-color: #00bcd4;
-	   color: white;
-	   border-color: #0097a7;
-	   border-width: 3px;
-	   padding: 2px;}</string>
-   </property>
-   <property name="text">
-    <string>前景目标</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="selectAnnoPushButton">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>410</y>
-     <width>91</width>
+     <width>81</width>
      <height>51</height>
     </rect>
    </property>
@@ -825,211 +1232,15 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>点击标注</string>
+    <string>fg</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="modelNewPushButton">
+  <widget class="QPushButton" name="selectPushButton">
    <property name="geometry">
     <rect>
-     <x>910</x>
-     <y>30</y>
-     <width>101</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>8</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	   text-align: center;
-	   outline: none;
-	   background-color: lightcyan;
-	   border-color: #afafaf;
-	   border-width: 2px;
-	   border-style: solid;
-	   border-radius: 5;
-	   padding: 2px;}
-
-QPushButton:pressed {
-	   padding-left: 5px;
-	   padding-top: 5px;
-	   background-color: lightgrey;}</string>
-   </property>
-   <property name="text">
-    <string>新建模型</string>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="annotationInfoEdit">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>100</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="addAllLabeledTrainListPushButton">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>608</y>
-     <width>91</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	   text-align: center;
-	   outline: none;
-	   background-color: lightcyan;
-	   border-color: #afafaf;
-	   border-width: 2px;
-	   border-style: solid;
-	   border-radius: 5;
-	   padding: 2px;}
-
-QPushButton:pressed {
-	   padding-left: 5px;
-	   padding-top: 5px;
-	   background-color: lightgrey;}</string>
-   </property>
-   <property name="text">
-    <string>+有标注文件</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="delTrainListAllPushButton">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>608</y>
-     <width>91</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	   text-align: center;
-	   outline: none;
-	   background-color: lightcyan;
-	   border-color: #afafaf;
-	   border-width: 2px;
-	   border-style: solid;
-	   border-radius: 5;
-	   padding: 2px;}
-
-QPushButton:pressed {
-	   padding-left: 5px;
-	   padding-top: 5px;
-	   background-color: lightgrey;}</string>
-   </property>
-   <property name="text">
-    <string>- 全部删除</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="m_areaThresholdlineEdit">
-   <property name="geometry">
-    <rect>
-     <x>730</x>
+     <x>100</x>
      <y>410</y>
-     <width>61</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>50</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="areaLabel">
-   <property name="geometry">
-    <rect>
-     <x>650</x>
-     <y>420</y>
-     <width>91</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>7</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>面积阈值</string>
-   </property>
-   <property name="indent">
-    <number>-1</number>
-   </property>
-  </widget>
-  <widget class="QLabel" name="colorDiffLabel">
-   <property name="geometry">
-    <rect>
-     <x>820</x>
-     <y>420</y>
-     <width>91</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>7</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>色差阈值</string>
-   </property>
-   <property name="indent">
-    <number>-1</number>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="m_colorDiffThresholdlineEdit">
-   <property name="geometry">
-    <rect>
-     <x>880</x>
-     <y>410</y>
-     <width>61</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>30</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="validImgPushButton">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>680</y>
-     <width>141</width>
+     <width>81</width>
      <height>51</height>
     </rect>
    </property>
@@ -1043,7 +1254,7 @@ QPushButton:pressed {
     <string notr="true">QPushButton {
 	   text-align: center;
 	   outline: none;
-	   background-color: #e0f7fa;
+	   background-color: lightcyan;
 	   border-color: #afafaf;
 	   border-width: 2px;
 	   border-style: solid;
@@ -1053,101 +1264,10 @@ QPushButton:pressed {
 QPushButton:pressed {
 	   padding-left: 5px;
 	   padding-top: 5px;
-	   background-color: lightgrey;}
-
-QPushButton:checked {
-	   background-color: #00bcd4;
-	   color: white;
-	   border-color: #0097a7;
-	   border-width: 3px;
-	   padding: 2px;}</string>
+	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>仿真</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="batchValidImgPushButton">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>680</y>
-     <width>141</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	   text-align: center;
-	   outline: none;
-	   background-color: #e0f7fa;
-	   border-color: #afafaf;
-	   border-width: 2px;
-	   border-style: solid;
-	   border-radius: 5;
-	   padding: 2px;}
-
-QPushButton:pressed {
-	   padding-left: 5px;
-	   padding-top: 5px;
-	   background-color: lightgrey;}
-
-QPushButton:checked {
-	   background-color: #00bcd4;
-	   color: white;
-	   border-color: #0097a7;
-	   border-width: 3px;
-	   padding: 2px;}</string>
-   </property>
-   <property name="text">
-    <string>批量仿真</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="validvsAnnoImgPushButton">
-   <property name="geometry">
-    <rect>
-     <x>620</x>
-     <y>680</y>
-     <width>141</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	   text-align: center;
-	   outline: none;
-	   background-color: #e0f7fa;
-	   border-color: #afafaf;
-	   border-width: 2px;
-	   border-style: solid;
-	   border-radius: 5;
-	   padding: 2px;}
-
-QPushButton:pressed {
-	   padding-left: 5px;
-	   padding-top: 5px;
-	   background-color: lightgrey;}
-
-QPushButton:checked {
-	   background-color: #00bcd4;
-	   color: white;
-	   border-color: #0097a7;
-	   border-width: 3px;
-	   padding: 2px;}</string>
-   </property>
-   <property name="text">
-    <string>仿真vs标注</string>
+    <string>select</string>
    </property>
   </widget>
  </widget>
