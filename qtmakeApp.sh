@@ -190,7 +190,7 @@ $STRIP $APP_DIR/DuySorter
 # release mode: 打包升级包
 # 包顶层为 tar_app/，供目标机 mystart.sh 解压后 "mv tar_app/* ." 使用
 rm -rf tar_app
-mkdir -p tar_app
+mkdir -p tar_app/userdata/db
 
 cp -rf $APP_DIR/DuySorter      tar_app/
 cp -rf $APP_DIR/DuySorter.conf tar_app/
@@ -203,6 +203,7 @@ cp -rf $APP_DIR/norm_train     tar_app/
 cp -rf $APP_DIR/i18n           tar_app/
 cp -rf $APP_DIR/lib            tar_app/
 cp -rf $APP_DIR/OpenVPN        tar_app/
+cp -rf $APP_DIR/db/*           tar_app/userdata/db/
 
 # 打包 OpenCV 依赖库（aarch64）到 opencvlib/，库随项目分发在 src/3rdparty/opencv/arm/lib
 mkdir -p tar_app/opencvlib
