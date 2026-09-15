@@ -1,3 +1,11 @@
+/*
+ * @Description: sftp工作类头文件
+ * @version:
+ * @Author: xiekai
+ * @Date: 2026-09-10 18:19:48
+ * @LastEditors: xiekai
+ * @LastEditTime: 2026-09-15 14:43:35
+ */
 #ifndef SFTPWORKER_H
 #define SFTPWORKER_H
 
@@ -9,7 +17,7 @@ class SftpWorker : public QObject
     Q_OBJECT
 public:
     explicit SftpWorker(const QString& host, const QString& user, const QString& pwd,
-                        QObject *parent = nullptr);
+        QObject* parent = nullptr);
 
 signals:
     /**
@@ -95,7 +103,7 @@ public slots:
      * @param {QString&} remoteDir: 远程目录
      * @return {*}
      */
-    void onUploadLocalDir(const QString& localDir,const QString& remoteDir);
+    void onUploadLocalDir(const QString& localDir, const QString& remoteDir);
 
 
     /**
@@ -112,7 +120,7 @@ public slots:
      * @param {QString&} localDir: 本地目录
      * @return {*}
      */
-    void onDownloadRemoteDir(const QString& remoteDir,const QString& localDir);
+    void onDownloadRemoteDir(const QString& remoteDir, const QString& localDir);
 
 
 private:

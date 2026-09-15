@@ -1,12 +1,23 @@
+/*
+ * @Description: AI交互的类型定义文件
+ * @version:
+ * @Author: xiekai
+ * @Date: 2026-09-11 15:26:28
+ * @LastEditors: xiekai
+ * @LastEditTime: 2026-09-15 14:48:28
+ */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
 
 #include <QString>
 #include <QVector>
+#include "globalparams.h"
+
+#define AI_DB_NAME APP_PATH "/userdata/db/sorter.db"
 
 #define UPD_CMD_PORT 19900
 
-// A类包包头和包尾
+ // A类包包头和包尾
 #define PKGA_HEAD0 0xA5
 #define PKGA_HEAD1 0x5A
 #define PKGA_TAIL0 0xFF
@@ -58,8 +69,11 @@
 #define CMD_CODE_FAIL 0                       // 错误编码
 #define CMD_CODE_SUCCESS 1                    // 成功编码
 
+#define GROUP_NAME_AI "AI"                    // AI分组名称
+
 // 命令包信息
-typedef struct __cmd_package_ {
+typedef struct __cmd_package_
+{
     quint16 addr_;                             // 模块地址
     quint16 cmd_;                              // 命令编码
     quint16 cmd_len_;                          // 命令长度
@@ -68,35 +82,41 @@ typedef struct __cmd_package_ {
 } CmdPackage;
 
 // AI服务的版本号
-typedef struct __version_info_{
+typedef struct __version_info_
+{
     QString version_;                          // 版本信息
 } VersionInfo;
 
 // AI服务器的磁盘空间
-typedef struct __ai_space_{
+typedef struct __ai_space_
+{
     quint32 space_;                            // 磁盘空间，单位M
 } SpaceInfo;
 
 // AI状态信息
-typedef struct __ai_status_info_ {
+typedef struct __ai_status_info_
+{
     quint32 discard_num_;                      // 丢包数量
     quint16 ai_cost_;                          // AI耗时，单位微秒
     quint32 timeout_num_;                      // 超时数量
 } AiStatusInfo;
 
 // 图像采集参数
-typedef struct __img_collect_param_ {
+typedef struct __img_collect_param_
+{
     quint8 start_;                             // 启动标识 0：停止 1：启动
     quint16 num_;                              // 采集张数
 } ImgCollectParam;
 
 // AI通用响应信息
-typedef struct __ai_comm_response_ {
+typedef struct __ai_comm_response_
+{
     quint8 code_;                              // 0： 失败 1： 成功
 } AiCommResponse;
 
 // 像元信息
-typedef struct __ai_pixel_info_ {
+typedef struct __ai_pixel_info_
+{
     quint8 type_;                              // 像元类型
     quint8 cam_no_;                            // 相机编号
     quint16 begin_pixel_;                      // 起始像元
@@ -111,12 +131,14 @@ typedef struct __model_param_
 } ModelParam;
 
 // 模型应用
-typedef struct __model_apply_{
+typedef struct __model_apply_
+{
     QString model_name_;                       // 模型名称
 } ModelApply;
 
 // 图像推理
-typedef struct __img_infer_param_ {
+typedef struct __img_infer_param_
+{
     quint8 start_;                             // 启动标识 0：停止 1：启动
 } ImgInferParam;
 
@@ -164,7 +186,8 @@ typedef struct __emulate_param_
 } EmulateParam;
 
 // 目标信息
-typedef struct __obj_info_{
+typedef struct __obj_info_
+{
     quint8 cls_id_;                           // 类别
     quint8 score_;                            // 得分
     quint16 x_;
@@ -174,7 +197,8 @@ typedef struct __obj_info_{
 } ObjInfo;
 
 // 仿真结果
-typedef struct __emulate_res_info_ {
+typedef struct __emulate_res_info_
+{
     quint8 pic_len_;                          // 图片名称长度
     QString pic_name_;                        // 图片名称
     quint8 code_;                             // 0： 失败 1： 成功
@@ -182,15 +206,46 @@ typedef struct __emulate_res_info_ {
 } EmulateResInfo;
 
 // 图片视频预览参数
-typedef struct __view_param_ {
+typedef struct __view_param_
+{
     quint8 flag_;                             // 0: 图片预览 1: 启动视频预览 2: 停止视频预览
 } ViewParam;
 
 // 面积参数
-typedef struct __area_param_ {
+typedef struct __area_param_
+{
     quint16 min_area_;                        // 最小面积
     quint16 bg_distance_;                     // 背景距离阈值
 } AreaParam;
+
+typedef struct __ai_cfg_info_
+{
+    bool enable_ai_{ false };                 // 使能ai
+    quint16 infer_height_{ 0 };               // 推理图像高度
+    quint16 collect_height_{ 0 };             // 采集图像高度
+    quint16 img_view_height_{ 0 };            // 图像显示高度
+    quint16 video_view_height_{ 0 };          // 视频显示高度
+    quint16 sliding_step_{ 0 };               // 滑动步长高度, 0表示不采用滑动步长
+} AiCfgInfo;
+
+typedef struct __time_cfg_info_
+{
+    bool enable_spray_valve_{ false };        // 是否开启喷阀
+    quint8 trad_blow_time_{ 0 };              // 传统吹气时间
+    quint16 trad_delay_time_{ 0 };            // 传统延迟时间
+    quint8 jets_num_{ 0 };                    // 喷嘴数
+    quint8 blow_time_{ 0 };                   // 吹气时间(0.1 ms)
+    quint16 fixed_delay_{ 0 };                // 固定延时时间(0.1 ms)
+    quint16 dynamics_delay_{ 0 };             // 动态延时时间(0.1 ms)
+} TimeCfgInfo;
+
+typedef struct __config_item__
+{
+    int id;
+    QString group_name_;                      // 分组名称
+    QString param_name_;                      // 参数名称
+    QString param_value_;                     // 参数值
+} ConfigItem;
 
 
 #endif // SORTERTYPES_H
