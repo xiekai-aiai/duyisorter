@@ -37,6 +37,10 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QApplication>
 #include <QHostAddress>
 #include <QCryptographicHash>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QEventLoop>
 
 #include <QDialog>
 #include <QLineEdit>
@@ -197,10 +201,17 @@ AiModelSet::AiModelSet(QWidget *parent) :
     m_modelApi = new ModelApi(this);
     m_modelApi->setHttpTimeout(60000);  // 训练相关接口超时设为 60 秒
 
+    // 加载训练服务器配置（arm 版本从 JSON 读，开发版用默认值）
+    loadTrainServerConfig();
+    // 同步到 ModelApi（用成员变量构建 base URL）
+    QString baseUrl = QString("http://%1:%2").arg(m_trainServerIp).arg(m_trainHttpPort);
+    m_modelApi->setBaseUrl(baseUrl);
+    LOG_INFO_STM("训练服务器配置：" << baseUrl << " SFTP=" << m_trainServerIp << ":" << m_trainSftpPort);
+
     // 初始化 SFTP Worker（libssh2 封装，moveToThread 到子线程）
     // 注意：不能传 parent（this），否则 moveToThread 会失败——Qt 规定有 parent 的 QObject 禁止 moveToThread
-    m_sftpWorker = new SftpWorker(TRAIN_SFTP_HOST, TRAIN_SFTP_USER, TRAIN_SFTP_PASS,
-                                  TRAIN_SFTP_PORT);
+    m_sftpWorker = new SftpWorker(m_trainServerIp, m_trainSftpUser, m_trainSftpPass,
+                                  m_trainSftpPort);
     SftpClient::init_sftp_lib();  // libssh2 全局一次
 
     connect(ui->backPushButton, SIGNAL(pressed()), this, SLOT(onSetBackBtnClicked()));
@@ -218,6 +229,10 @@ AiModelSet::AiModelSet(QWidget *parent) :
     ui->fgPushButton->setCheckable(true);
     connect(ui->fgPushButton, &QPushButton::clicked, this, &AiModelSet::onShowFgRectsBtnClicked);
 
+    // ── 前景像素过滤按钮（toggle，显示每个框的前景像素个数）──────────
+    ui->areaThresholdAnnoPushButton->setCheckable(true);
+    connect(ui->areaThresholdAnnoPushButton, &QPushButton::clicked, this, &AiModelSet::onAreaThresholdAnnoPushButtonClicked);
+
     // ── 校验图片按钮（toggle，触发完整仿真流程）───────────────────
     ui->validImgPushButton->setCheckable(true);
     connect(ui->validImgPushButton, &QPushButton::clicked, this, &AiModelSet::onValidImgPushButtonClicked);
@@ -228,16 +243,17 @@ AiModelSet::AiModelSet(QWidget *parent) :
     ui->validvsAnnoImgPushButton->setCheckable(true);
     connect(ui->validvsAnnoImgPushButton, &QPushButton::clicked, this, &AiModelSet::onValidvsAnnoImgPushButtonClicked);
 
-    // ═══ 阈值 LineEdit：改完回车/失焦自动重算前景框 ═══
+    // ═══ 阈值 LineEdit：改完回车/失焦自动重算前景框 + 像素计数 ═══
     auto onThresholdChanged = [this]() {
         if (!m_currentImagePath.isEmpty()) {
             getFgRects();
-            if (m_show_fg_rects) update();  // 显示模式开启才触发重绘
-            else LOG_DEBUG_STM("[阈值] 已重算，但前景显示未开启（点 fg 按钮看效果）");
+            if (m_show_fg_pixel_count) computeFgPixelCounts();  // ⭐ 像素过滤开着也同步重算
+            if (m_show_fg_rects || m_show_fg_pixel_count) update();
+            else LOG_DEBUG_STM("[阈值] 已重算，但前景/像素过滤显示未开启");
         }
     };
-    connect(ui->m_areaThresholdlineEdit, &QLineEdit::editingFinished, this, onThresholdChanged);
-    connect(ui->m_colorDiffThresholdlineEdit, &QLineEdit::editingFinished, this, onThresholdChanged);
+    connect(ui->m_areaThresholdlineEdit, &QLineEdit::textChanged, this, onThresholdChanged);
+    connect(ui->m_colorDiffThresholdlineEdit, &QLineEdit::textChanged, this, onThresholdChanged);
 
     // draw 和 selcet 模式是互斥的
     // 选中态样式（:checked）与 fgPushButton 一致，按下后有明显选中视觉
@@ -261,6 +277,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(ui->m_imageList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onImageItemClicked(QListWidgetItem*)));
     connect(ui->modelTrainPushButton, SIGNAL(pressed()), this, SLOT(onModelTrainPushButtonClicked()));
     connect(ui->modelNewPushButton, SIGNAL(pressed()), this, SLOT(onModelNewPushButtonClicked()));
+    connect(ui->trainServerCfgPushButton, &QPushButton::clicked, this, &AiModelSet::onTrainServerCfgPushButtonClicked);
 
     connect(ui->addTrainListPushButton, SIGNAL(pressed()), this, SLOT(addTrainListPushButtonPressed()));
     connect(ui->delTrainListPushButton, SIGNAL(pressed()), this, SLOT(delTrainListPushButtonPressed()));
@@ -502,7 +519,7 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
 
     // 2. 在主线程 mkdir_p（必须 connect 之前，因为 mkdir_p 需要 session）
     if (!m_sftpWorker->connect()) {
-        showTip(QString("SFTP connect 失败：%1:%2").arg(TRAIN_SFTP_HOST).arg(TRAIN_SFTP_PORT), true);
+        showTip(QString("SFTP connect 失败：%1:%2").arg(m_trainServerIp).arg(m_trainSftpPort), true);
         m_trainingBusy = false;
         return;
     }
@@ -1133,6 +1150,63 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
 // 鼠标移动：调整标注大小
 void AiModelSet::mouseMoveEvent(QMouseEvent *event)
 {
+    // ── 悬停提示：像素过滤开启时，显示当前悬停框的前景像素数 ──
+    if (!m_isDrawing && m_show_fg_pixel_count && !m_currentPixmap.isNull()) {
+        QPoint labelPos = ui->imgLabel->mapFromParent(event->pos());
+        QPixmap scaledPixmap = ui->imgLabel->pixmap()->isNull() ? m_currentPixmap : ui->imgLabel->pixmap()->copy();
+        if (!scaledPixmap.isNull()) {
+            int offsetX = (ui->imgLabel->width() - scaledPixmap.width()) / 2;
+            int offsetY = (ui->imgLabel->height() - scaledPixmap.height()) / 2;
+            QPoint imgPos = labelPos - QPoint(offsetX, offsetY);
+
+            // 检查标注框
+            for (int i = 0; i < m_annotations.size(); ++i) {
+                if (m_annotations[i].rect.contains(imgPos)) {
+                    int cnt = (i < m_annot_pixel_counts.size()) ? m_annot_pixel_counts[i] : 0;
+                    int thresh = 50;
+                    bool ok = true;
+                    int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
+                    if (ok && t > 0) thresh = t;
+                    showTip(QString("标注[%1] 前景像素=%2 %3")
+                        .arg(m_annotations[i].label).arg(cnt)
+                        .arg(cnt >= thresh ? "≥阈值 ✓" : "<阈值 ✗"));
+                    return;
+                }
+            }
+            // 检查前景框
+            for (int i = 0; i < m_fg_rects.size(); ++i) {
+                if (m_fg_rects[i].contains(imgPos)) {
+                    int cnt = (i < m_fg_pixel_counts.size()) ? m_fg_pixel_counts[i] : 0;
+                    int thresh = 50;
+                    bool ok = true;
+                    int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
+                    if (ok && t > 0) thresh = t;
+                    showTip(QString("前景框[%1] 前景像素=%2 %3")
+                        .arg(i).arg(cnt)
+                        .arg(cnt >= thresh ? "≥阈值 ✓" : "<阈值 ✗"));
+                    return;
+                }
+            }
+            // 检查预测/仿真框
+            for (int i = 0; i < m_emulateObjInfos.size(); ++i) {
+                const ObjInfo& oi = m_emulateObjInfos[i];
+                QRect r(static_cast<int>(oi.x_), static_cast<int>(oi.y_),
+                        static_cast<int>(oi.w_), static_cast<int>(oi.h_));
+                if (r.contains(imgPos)) {
+                    int cnt = (i < m_emulate_pixel_counts.size()) ? m_emulate_pixel_counts[i] : 0;
+                    int thresh = 50;
+                    bool ok = true;
+                    int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
+                    if (ok && t > 0) thresh = t;
+                    showTip(QString("预测框[%1] 前景像素=%2 %3")
+                        .arg(oi.cls_id_).arg(cnt)
+                        .arg(cnt >= thresh ? "≥阈值 ✓" : "<阈值 ✗"));
+                    return;
+                }
+            }
+        }
+    }
+
     if (!m_isDrawing) return;
     LOG_INFO_STM("Begin to draw move");
     // 1. 鼠标坐标 → imgLabel 控件坐标 → 图片内相对坐标
@@ -1163,7 +1237,7 @@ void AiModelSet::mouseReleaseEvent(QMouseEvent *event)
 
     // MODE_DRAW 下拉框后自动用边缘提取拟合（可选，用户原逻辑保留）
     if (m_anno_mode == AnnotaionMode::MODE_DRAW) {
-        QImage image = ui->imgLabel->pixmap()->toImage();
+        QImage image = m_currentPixmap.toImage();  // ✅ 必须用原图，不能用 imgLabel 上已画框的合成图
     FLOW("getFgRects toImage后");
         QRect roi(m_drawStartPos, m_drawEndPos);
         QRect fitted = processROI(image, roi, 80, 50);
@@ -1171,7 +1245,7 @@ void AiModelSet::mouseReleaseEvent(QMouseEvent *event)
             newAnnotRect = fitted;
         }
     }
-
+    
    // 过滤过小矩形
    if (newAnnotRect.width() < 10 || newAnnotRect.height() < 10) {
        showTip("标注矩形过小，请重新绘制", true);
@@ -1209,6 +1283,38 @@ void AiModelSet::mouseReleaseEvent(QMouseEvent *event)
 void AiModelSet::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event); // 必须调用父类方法，确保图片正常显示
+
+    // ⭐ 辅助 lambda：在 painter 上只涂 ROI 区域内的前景像素（半透红）
+    auto tintFgPixels = [&](QPainter& painter, const QRect& roiRect) {
+        if (m_fgMaskQImageCached.isNull()) return;
+
+        QRect roi = roiRect.intersected(QRect(0, 0, m_fgMaskQImageCached.width(),
+                                                    m_fgMaskQImageCached.height()));
+        if (roi.width() <= 0 || roi.height() <= 0) return;
+
+        QImage roiMask = m_fgMaskQImageCached.copy(roi);  // Format_Grayscale8
+        int fgCnt = 0;
+        for (int y = 0; y < roi.height(); y++) {
+            const uchar* s = roiMask.scanLine(y);
+            for (int x = 0; x < roi.width(); x++)
+                if (s[x] > 0) fgCnt++;
+        }
+        if (fgCnt == 0) return;
+
+        // 生成带 alpha 的红色 tint 图
+        QImage tintImg(roi.width(), roi.height(), QImage::Format_ARGB32);
+        tintImg.fill(Qt::transparent);
+
+        for (int y = 0; y < roi.height(); y++) {
+            const uchar* src = roiMask.scanLine(y);
+            QRgb* dst = (QRgb*)tintImg.scanLine(y);
+            for (int x = 0; x < roi.width(); x++) {
+                int alpha = src[x] * 80 / 255;  // 0→0, 255→80
+                dst[x] = qRgba(255, 0, 0, alpha);
+            }
+        }
+        painter.drawImage(roi.x(), roi.y(), tintImg);
+    };
 
     QPixmap tmpPixmap = m_currentPixmap.copy(); // 复制原图
     bool needUpdatePixmap = false;
@@ -1259,11 +1365,35 @@ void AiModelSet::paintEvent(QPaintEvent *event)
         if (!m_emulateObjInfos.isEmpty()) {
             QPainter painter(&tmpPixmap);
             painter.setRenderHint(QPainter::Antialiasing);
-            for (const ObjInfo& obj : m_emulateObjInfos) {
+
+            // 提前读面积阈值（避免每个循环重复 fromText）
+            int areaThresh = 50;
+            if (m_show_fg_pixel_count) {
+                bool ok = true;
+                int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
+                if (ok && t > 0) areaThresh = t;
+            }
+
+            for (int oi = 0; oi < m_emulateObjInfos.size(); ++oi) {
+                const ObjInfo& obj = m_emulateObjInfos[oi];
                 QColor color = getClassColorTable().value(obj.cls_id_, QColor(255, 0, 0));
-                QPen pen(color, 3, Qt::SolidLine);
+
+                // ⭐ 面积过滤粗细：前景像素数 ≥ 阈值 → 粗框(5)，否则 → 细框(2)
+                int penWidth = 3;
+                if (m_show_fg_pixel_count && oi < m_emulate_pixel_counts.size()) {
+                    penWidth = (m_emulate_pixel_counts[oi] >= areaThresh) ? 5 : 2;
+                }
+
+                QPen pen(color, penWidth, Qt::SolidLine);
                 painter.setPen(pen);
-                painter.drawRect(QRect(obj.x_, obj.y_, obj.w_, obj.h_));
+                QRect r(obj.x_, obj.y_, obj.w_, obj.h_);
+                painter.drawRect(r);
+
+                // ⭐ 像素面积过滤：满足条件的框内前景像素区域填半透红色
+                if (m_show_fg_pixel_count && oi < m_emulate_pixel_counts.size()
+                    && m_emulate_pixel_counts[oi] >= areaThresh) {
+                    tintFgPixels(painter, r);
+                }
             }
             needUpdatePixmap = true;
         }
@@ -1286,17 +1416,39 @@ void AiModelSet::paintEvent(QPaintEvent *event)
         // 2. 绘制所有标注（选中的先跳过，最后单独画选中态）
         if (!tmpPixmap.isNull() && !m_annotations.isEmpty()) {
             QPainter painter(&tmpPixmap);
+            painter.setRenderHint(QPainter::Antialiasing);
+            
+            // 提前读面积阈值
+            int areaThresh = 50;
+            if (m_show_fg_pixel_count) {
+                bool ok = true;
+                int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
+                if (ok && t > 0) areaThresh = t;
+            }
+
             for (int i = 0; i < m_annotations.size(); ++i) {
                 if (i == m_selectedAnnotIndex) continue;
                 const AnnotationData& annot = m_annotations[i];
-                QPen pen(getAnnotColorByType(annot.type), 2, Qt::DashLine);
+
+                // ⭐ 面积过滤粗细：开过滤时按像素数区分
+                int penWidth = 2;
+                if (m_show_fg_pixel_count && i < m_annot_pixel_counts.size()) {
+                    penWidth = (m_annot_pixel_counts[i] >= areaThresh) ? 3 : 1;
+                }
+                QPen pen(getAnnotColorByType(annot.type), penWidth, Qt::DashLine);
                 painter.setPen(pen);
                 painter.drawRect(annot.rect);
+
+                // ⭐ 像素面积过滤：满足条件的框内前景像素区域填半透红色
+                if (m_show_fg_pixel_count && i < m_annot_pixel_counts.size()
+                    && m_annot_pixel_counts[i] >= areaThresh) {
+                    tintFgPixels(painter, annot.rect);
+                }
             }
             needUpdatePixmap = true;
         }
 
-        // 3. 选中框：实线 + 加粗
+        // 3. 选中框：实线 + 加粗（选中态视觉优先），也加红色像素数字
         if (m_selectedAnnotIndex >= 0 && m_selectedAnnotIndex < m_annotations.size()) {
             const AnnotationData& annot = m_annotations[m_selectedAnnotIndex];
             QPainter painter(&tmpPixmap);
@@ -1304,24 +1456,55 @@ void AiModelSet::paintEvent(QPaintEvent *event)
             QPen pen(getAnnotColorByType(annot.type), 5, Qt::SolidLine);
             painter.setPen(pen);
             painter.drawRect(annot.rect);
+
+            // ⭐ 像素面积过滤：选中框满足条件也填半透红色
+            int areaThresh = 50;
+            if (m_show_fg_pixel_count) {
+                bool ok = true;
+                int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
+                if (ok && t > 0) areaThresh = t;
+            }
+            if (m_show_fg_pixel_count && m_selectedAnnotIndex < m_annot_pixel_counts.size()
+                && m_annot_pixel_counts[m_selectedAnnotIndex] >= areaThresh) {
+                tintFgPixels(painter, annot.rect);
+            }
             needUpdatePixmap = true;
         }
 
-        // 4. 前景框（黑色虚线）
+        // 4. 前景框（默认黑虚线，开面积过滤后按像素数区分粗细）
         if (m_show_fg_rects && !m_fg_rects.isEmpty()) {
             QPainter painter(&tmpPixmap);
             painter.setRenderHint(QPainter::Antialiasing);
-            QPen pen(Qt::black);
-            pen.setWidth(2);
-            pen.setStyle(Qt::DashLine);
-            painter.setPen(pen);
-            for (const QRect &rc : m_fg_rects) {
+
+            int areaThresh = 50;
+            if (m_show_fg_pixel_count) {
+                bool ok = true;
+                int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
+                if (ok && t > 0) areaThresh = t;
+            }
+
+            for (int i = 0; i < m_fg_rects.size(); ++i) {
+                const QRect &rc = m_fg_rects[i];
                 bool overlapped = false;
                 for (const AnnotationData& a : m_annotations) {
                     if (a.rect.intersects(rc)) { overlapped = true; break; }
                 }
                 if (overlapped) continue;
+
+                // ⭐ 面积过滤粗细：前景像素数 ≥ 阈值 → 粗框(3)，否则 → 细框(1)
+                int penWidth = 2;
+                if (m_show_fg_pixel_count && i < m_fg_pixel_counts.size()) {
+                    penWidth = (m_fg_pixel_counts[i] >= areaThresh) ? 3 : 1;
+                }
+                QPen pen(Qt::black, penWidth, Qt::DashLine);
+                painter.setPen(pen);
                 painter.drawRect(rc);
+
+                // ⭐ 像素面积过滤：满足条件的前景框内前景像素区域填半透红色
+                if (m_show_fg_pixel_count && i < m_fg_pixel_counts.size()
+                    && m_fg_pixel_counts[i] >= areaThresh) {
+                    tintFgPixels(painter, rc);
+                }
             }
             needUpdatePixmap = true;
         }
@@ -1371,7 +1554,7 @@ void AiModelSet::getFgRects()
     if (!ok2 || colorDiffThresh <= 0) colorDiffThresh = 30;  // Python 默认 30（色差）
     FLOW("getFgRects 阈值 areaThresh=" << areaThresh << "colorDiffThresh=" << colorDiffThresh);
 
-    QImage image = ui->imgLabel->pixmap()->toImage();
+    QImage image = m_currentPixmap.toImage();  // ✅ 必须用原图，不能用 imgLabel 上已画框的合成图
 
     // QImage(RGB) → cv::Mat(BGR)，OpenCV 默认 BGR
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -1392,7 +1575,6 @@ void AiModelSet::getFgRects()
     // ═══ 核心：absdiff 背景均值方案（和 Python label_page.py 一致） ═══
     cv::Mat processMat;
     if (m_hasBgMean) {
-        // 有 bg 均值 → absdiff(img, bg_bgr) → threshold → close
         cv::Mat bgMat(img.size(), img.type(),
                       cv::Scalar(m_bgMeanBGR[0], m_bgMeanBGR[1], m_bgMeanBGR[2]));
         cv::Mat diff;
@@ -2058,6 +2240,12 @@ void AiModelSet::loadFirstImage(const QString& path)
         m_fg_rects.clear();  // 即使前景显示没开，也清掉上一张的残留框
     }
 
+    // ⭐ 前景像素过滤：翻页必须重算
+    m_fg_pixel_counts.clear();
+    m_emulate_pixel_counts.clear();
+    m_annot_pixel_counts.clear();
+    if (m_show_fg_pixel_count) computeFgPixelCounts();
+
     update();
 }
 
@@ -2273,6 +2461,16 @@ void AiModelSet::onImageItemClicked(QListWidgetItem* item)
         getFgRects();
     }
 
+    // ⭐ 前景像素过滤：翻页必须重算
+    m_fg_pixel_counts.clear();
+    m_emulate_pixel_counts.clear();
+    m_annot_pixel_counts.clear();
+    m_fgMaskQImageCached = QImage();
+    if (m_show_fg_pixel_count) {
+        if (m_fg_rects.isEmpty()) getFgRects();  // 确保有前景框
+        computeFgPixelCounts();
+    }
+    
     // 仿真状态下，切图自动触发 UDP 仿真
     // 先尝试从 pred txt 读取缓存结果，没有再调用板卡
     if (m_emulating) {
@@ -2424,6 +2622,159 @@ void AiModelSet::onShowFgRectsBtnClicked()
         m_fg_rects.clear();  // 关闭时清空残留
     }
     update();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 前景像素过滤按钮（areaThresholdAnnoPushButton）
+// 切换 m_show_fg_pixel_count，计算并缓存每个前景框 / 仿真框内的前景像素个数
+// 集成 AiSorter/foreground 的 countForegroundPixels 算法：
+//   absdiff(img, bg_mean) → threshold(colorDiffThresh) → 前景掩码 → countNonZero(ROI)
+// ═══════════════════════════════════════════════════════════
+void AiModelSet::onAreaThresholdAnnoPushButtonClicked()
+{
+    if (m_currentPixmap.isNull()) {
+        ui->areaThresholdAnnoPushButton->setChecked(false);
+        showTip("请先加载图片", true);
+        return;
+    }
+    m_show_fg_pixel_count = ui->areaThresholdAnnoPushButton->isChecked();
+
+    if (m_show_fg_pixel_count) {
+        // 先确保前景框已算好（前景按钮没开也没关系，这里独立算）
+        if (m_fg_rects.isEmpty()) getFgRects();
+        computeFgPixelCounts();
+        int total = m_fg_pixel_counts.size() + m_emulate_pixel_counts.size();
+        showTip(QString("前景像素过滤开启（%1 个框已统计）").arg(total));
+    } else {
+        m_fg_pixel_counts.clear();
+        m_emulate_pixel_counts.clear();
+    }
+    update();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 核心：严格按 AiSorter ForegroundExtractor::countForegroundPixels2 实现
+//   absdiff(img, scalar(bg_b_, bg_g_, bg_r_)) → split → 每通道平方 → 相加得 dist_sq
+//   threshold(dist_sq > thresh^2) → 二值掩码
+// ═══════════════════════════════════════════════════════════
+void AiModelSet::computeFgPixelCounts()
+{
+    m_fg_pixel_counts.clear();
+    m_emulate_pixel_counts.clear();
+    m_annot_pixel_counts.clear();
+    m_fgMaskQImageCached = QImage();
+
+    if (m_currentPixmap.isNull()) return;
+    if (!m_hasBgMean) {
+        for (int i = 0; i < m_fg_rects.size(); i++) m_fg_pixel_counts.append(0);
+        for (int i = 0; i < m_emulateObjInfos.size(); i++) m_emulate_pixel_counts.append(0);
+        for (int i = 0; i < m_annotations.size(); i++) m_annot_pixel_counts.append(0);
+        return;
+    }
+
+    // 从 UI 读取阈值
+    bool ok = true;
+    double colorThreshold = ui->m_colorDiffThresholdlineEdit->text().toDouble(&ok);
+    if (!ok || colorThreshold <= 0) colorThreshold = 40.0;
+    int areaThresh = 50;
+    bool ok2 = true;
+    int t = ui->m_areaThresholdlineEdit->text().toInt(&ok2);
+    if (ok2 && t > 0) areaThresh = t;
+
+    // QImage → cv::Mat（BGR）
+    QImage image = m_currentPixmap.toImage();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    image = image.convertToFormat(QImage::Format_BGR888);
+    cv::Mat img(image.height(), image.width(), CV_8UC3, image.bits(), image.bytesPerLine());
+    img = img.clone();
+#else
+    image = image.convertToFormat(QImage::Format_RGB888);
+    cv::Mat img(image.height(), image.width(), CV_8UC3, image.bits(), image.bytesPerLine());
+    img = img.clone();
+    cv::cvtColor(img, img, cv::COLOR_RGB2BGR);
+#endif
+
+    // ⭐ 严格按 countForegroundPixels2 生成全图前景掩码
+    cv::Mat fgMask;
+    {
+        cv::Mat bgMat(img.size(), img.type(),
+                      cv::Scalar(m_bgMeanBGR[0], m_bgMeanBGR[1], m_bgMeanBGR[2]));
+        cv::Mat diff;
+        cv::absdiff(img, bgMat, diff);
+
+        std::vector<cv::Mat> channels(3);
+        cv::split(diff, channels);
+
+        // ⭐ 显式转换 CV_32F，避免隐式类型问题
+        cv::Mat ch0f, ch1f, ch2f;
+        channels[0].convertTo(ch0f, CV_32F);
+        channels[1].convertTo(ch1f, CV_32F);
+        channels[2].convertTo(ch2f, CV_32F);
+
+        cv::Mat dist_sq(img.size(), CV_32F, cv::Scalar(0));
+        cv::add(ch0f.mul(ch0f), ch1f.mul(ch1f), dist_sq);
+        cv::add(dist_sq, ch2f.mul(ch2f), dist_sq);
+
+        double threshold_sq = colorThreshold * colorThreshold;
+
+        // ⭐ threshold 输出跟随 src(CV_32F)，必须 convertTo 成 CV_8U
+        cv::Mat mask_32f;
+        cv::threshold(dist_sq, mask_32f, threshold_sq, 255.0, cv::THRESH_BINARY);
+        mask_32f.convertTo(fgMask, CV_8U);
+    }
+
+    // 缓存 QImage 版本供 paintEvent 涂色
+    // ⭐ 安全逐行 copy：QImage 和 cv::Mat 的 bytesPerLine 对齐可能不同
+    QImage maskImg(fgMask.cols, fgMask.rows, QImage::Format_Grayscale8);
+    maskImg.fill(Qt::black);
+    for (int y = 0; y < fgMask.rows; y++) {
+        const uchar* src = fgMask.ptr<uchar>(y);
+        uchar* dst = maskImg.scanLine(y);
+        memcpy(dst, src, fgMask.cols);
+    }
+    m_fgMaskQImageCached = maskImg.copy();
+
+    // ── 对每个前景框计数 ──
+    for (int i = 0; i < m_fg_rects.size(); ++i) {
+        const QRect& rc = m_fg_rects[i];
+        cv::Rect roi(std::max(0, rc.x()), std::max(0, rc.y()),
+                     std::min(fgMask.cols - rc.x(), rc.width()),
+                     std::min(fgMask.rows - rc.y(), rc.height()));
+        int cnt = 0;
+        if (roi.width > 0 && roi.height > 0)
+            cnt = cv::countNonZero(fgMask(roi));
+        m_fg_pixel_counts.append(cnt);
+    }
+
+    // ── 对每个仿真框计数 ──
+    for (const ObjInfo& obj : m_emulateObjInfos) {
+        int ox = static_cast<int>(obj.x_);
+        int oy = static_cast<int>(obj.y_);
+        int ow = static_cast<int>(obj.w_);
+        int oh = static_cast<int>(obj.h_);
+        cv::Rect roi(std::max(0, ox), std::max(0, oy),
+                     std::min(fgMask.cols - ox, ow),
+                     std::min(fgMask.rows - oy, oh));
+        if (roi.width > 0 && roi.height > 0)
+            m_emulate_pixel_counts.append(cv::countNonZero(fgMask(roi)));
+        else
+            m_emulate_pixel_counts.append(0);
+    }
+
+    // ── 对每个标注框计数 ──
+    for (const AnnotationData& annot : m_annotations) {
+        int ax = std::max(0, annot.rect.x());
+        int ay = std::max(0, annot.rect.y());
+        int aw = annot.rect.width();
+        int ah = annot.rect.height();
+        cv::Rect roi(ax, ay,
+                     std::min(fgMask.cols - ax, aw),
+                     std::min(fgMask.rows - ay, ah));
+        if (roi.width > 0 && roi.height > 0)
+            m_annot_pixel_counts.append(cv::countNonZero(fgMask(roi)));
+        else
+            m_annot_pixel_counts.append(0);
+    }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2980,6 +3331,10 @@ void AiModelSet::onValidvsAnnoImgPushButtonClicked()
 
 
 void AiModelSet::onModelTrainPushButtonClicked(){
+    // 先确保训练服务器已配置（未配置会弹对话框让用户填）
+    if (!ensureTrainServerConfigured()) {
+        return;
+    }
     // 防重入：训练正在进行时不能点
     if (m_trainingBusy) {
         showTip("训练流程正在进行中，请等待完成");
@@ -3117,6 +3472,300 @@ void AiModelSet::onModelNewPushButtonClicked()
     }
 }
 
+// ═══════════════════════════════════════════════════════════
+// 训练服务器配置相关实现
+// ═══════════════════════════════════════════════════════════
+
+// 静态：判断当前编译目标是否 arm
+bool AiModelSet::isArmBuild()
+{
+#if defined(__arm__) || defined(__aarch64__) || defined(Q_PROCESSOR_ARM)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// JSON 配置文件路径（arm → /opt/app/userdata/cnf/trainserver.json，开发版 → 程序目录）
+QString AiModelSet::trainServerJsonPath() const
+{
+    if (isArmBuild()) {
+        return "/opt/app/userdata/cnf/trainserver.json";
+    }
+    return QDir(QCoreApplication::applicationDirPath()).filePath("trainserver.json");
+}
+
+// 加载训练服务器配置
+void AiModelSet::loadTrainServerConfig()
+{
+    QString path = trainServerJsonPath();
+    QFile f(path);
+    if (!f.exists()) {
+        LOG_INFO_STM("[TrainServerCfg] 配置文件不存在：" << path << "，使用默认值");
+        return;
+    }
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        LOG_WARN_STM("[TrainServerCfg] 配置文件读失败：" << path);
+        return;
+    }
+    QByteArray data = f.readAll();
+    f.close();
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &err);
+    if (err.error != QJsonParseError::NoError || !doc.isObject()) {
+        LOG_WARN_STM("[TrainServerCfg] JSON 解析错误：" << err.errorString());
+        return;
+    }
+    QJsonObject obj = doc.object();
+    m_trainServerIp   = obj.value("host").toString(m_trainServerIp);
+    m_trainHttpPort   = obj.value("http_port").toInt(m_trainHttpPort);
+    m_trainSftpPort   = obj.value("sftp_port").toInt(m_trainSftpPort);
+    m_trainSftpUser   = obj.value("sftp_user").toString(m_trainSftpUser);
+    m_trainSftpPass   = obj.value("sftp_pass").toString(m_trainSftpPass);
+
+    LOG_INFO_STM("[TrainServerCfg] 已加载：host=" << m_trainServerIp
+                 << " http_port=" << m_trainHttpPort
+                 << " sftp_port=" << m_trainSftpPort);
+}
+
+// 保存训练服务器配置
+void AiModelSet::saveTrainServerConfig()
+{
+    QString path = trainServerJsonPath();
+    QJsonObject obj;
+    obj["host"]       = m_trainServerIp;
+    obj["http_port"]  = m_trainHttpPort;
+    obj["sftp_port"]  = m_trainSftpPort;
+    obj["sftp_user"]  = m_trainSftpUser;
+    obj["sftp_pass"]  = m_trainSftpPass;
+
+    QJsonDocument doc(obj);
+    QByteArray data = doc.toJson(QJsonDocument::Indented);
+
+    // arm 版本需要确保目录存在
+    QFileInfo fi(path);
+    QDir().mkpath(fi.absolutePath());
+
+    QFile f(path);
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        LOG_WARN_STM("[TrainServerCfg] 保存失败：" << path << " " << f.errorString());
+        return;
+    }
+    f.write(data);
+    f.close();
+    LOG_INFO_STM("[TrainServerCfg] 已保存到：" << path);
+}
+
+// 检查训练服务器是否已配置有效，未配置则弹配置对话框
+bool AiModelSet::ensureTrainServerConfigured()
+{
+    bool valid = !m_trainServerIp.isEmpty() && m_trainHttpPort > 0 && m_trainHttpPort < 65536;
+    if (valid) return true;
+
+    // arm 版也尝试再读一次文件（可能用户之前手动放了 JSON）
+    if (isArmBuild()) {
+        loadTrainServerConfig();
+        valid = !m_trainServerIp.isEmpty() && m_trainHttpPort > 0;
+        if (valid) {
+            // 重新同步到 ModelApi
+            m_modelApi->setBaseUrl(QString("http://%1:%2").arg(m_trainServerIp).arg(m_trainHttpPort));
+            return true;
+        }
+    }
+
+    // 弹配置对话框
+    QMessageBox::information(this, "提示",
+        "训练服务器尚未配置，请先配置训练服务器参数");
+    onTrainServerCfgPushButtonClicked();
+    // 如果用户取消了对话框，valid 还是 false，但我们没法知道他取消了
+    // 简单处理：再检查一次（如果他确定了会同步到成员变量）
+    return !m_trainServerIp.isEmpty() && m_trainHttpPort > 0;
+}
+
+// ── 训练服务器配置对话框 ──
+void AiModelSet::onTrainServerCfgPushButtonClicked()
+{
+    QDialog dlg(this);
+    dlg.setWindowTitle("训练服务器配置");
+    dlg.setWindowModality(Qt::ApplicationModal);
+    dlg.setMinimumWidth(480);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
+
+    // ── 3 栏输入 ──
+    QFormLayout *form = new QFormLayout();
+    form->setLabelAlignment(Qt::AlignRight);
+    form->setSpacing(8);
+
+    QLineEdit *ipEdit   = new QLineEdit(&dlg);
+    QLineEdit *httpPortEdit = new QLineEdit(&dlg);
+    QLineEdit *sftpPortEdit = new QLineEdit(&dlg);
+    QLineEdit *userEdit = new QLineEdit(&dlg);
+    QLineEdit *passEdit = new QLineEdit(&dlg);
+    passEdit->setEchoMode(QLineEdit::Password);
+
+    // 填入当前值
+    ipEdit->setText(m_trainServerIp);
+    httpPortEdit->setText(QString::number(m_trainHttpPort));
+    sftpPortEdit->setText(QString::number(m_trainSftpPort));
+    userEdit->setText(m_trainSftpUser);
+    passEdit->setText(m_trainSftpPass);
+
+    httpPortEdit->setValidator(new QIntValidator(1, 65535, &dlg));
+    sftpPortEdit->setValidator(new QIntValidator(1, 65535, &dlg));
+
+    form->addRow("服务器 IP:", ipEdit);
+    form->addRow("HTTP 端口:", httpPortEdit);
+    form->addRow("SFTP 端口:", sftpPortEdit);
+    form->addRow("SFTP 用户名:", userEdit);
+    form->addRow("SFTP 密码:", passEdit);
+    mainLayout->addLayout(form);
+
+    // ── 2 个测试按钮 ──
+    QHBoxLayout *testRow = new QHBoxLayout();
+    QPushButton *testHttpBtn  = new QPushButton("测试 HTTP 连接", &dlg);
+    QPushButton *testSftpBtn  = new QPushButton("测试 SFTP 连接", &dlg);
+    QLabel *testResultLabel = new QLabel("", &dlg);
+    testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
+    testResultLabel->setWordWrap(true);
+
+    testRow->addWidget(testHttpBtn);
+    testRow->addWidget(testSftpBtn);
+    testRow->addStretch(1);
+    mainLayout->addLayout(testRow);
+    mainLayout->addWidget(testResultLabel);
+
+    // HTTP 测试：POST /api/cloud/train/query {id: "test"}，5s 超时
+    connect(testHttpBtn, &QPushButton::clicked, [&]() {
+        QString ip = ipEdit->text().trimmed();
+        int port = httpPortEdit->text().toInt();
+        if (ip.isEmpty() || port <= 0) {
+            testResultLabel->setText("请先填写有效的 IP 和 HTTP 端口");
+            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            return;
+        }
+        testHttpBtn->setEnabled(false);
+        testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
+        testResultLabel->setText(QString("正在测试 HTTP 连接 %1:%2 ...").arg(ip).arg(port));
+        QApplication::processEvents();
+
+        // 用临时 HttpTool 同步测试（短超时）
+        // ⚠️ 同步发送：直接用 QNetworkAccessManager 更简单可控
+        QNetworkAccessManager manager;
+        QNetworkRequest req(QUrl(QString("http://%1:%2%3")
+            .arg(ip).arg(port).arg(API_TRAIN_QUERY)));
+        req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QNetworkReply *reply = manager.post(req, QByteArray("{\"id\":\"test\"}"));
+        // 同步等 5s
+        QEventLoop loop;
+        QTimer timer;
+        timer.setSingleShot(true);
+        connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
+        connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+        timer.start(5000);
+        loop.exec();
+
+        if (!timer.isActive()) {
+            // 超时
+            reply->abort();
+            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setText(QString("HTTP 连接失败：5 秒超时（%1:%2）").arg(ip).arg(port));
+        } else if (reply->error() != QNetworkReply::NoError) {
+            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setText(QString("HTTP 连接失败：%1").arg(reply->errorString()));
+        } else {
+            int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            testResultLabel->setStyleSheet("color: green; font-size: 8pt;");
+            testResultLabel->setText(QString("HTTP 连接成功（HTTP %1）").arg(code));
+        }
+        reply->deleteLater();
+        testHttpBtn->setEnabled(true);
+    });
+
+    // SFTP 测试：尝试 connect + disconnect
+    connect(testSftpBtn, &QPushButton::clicked, [&]() {
+        QString ip = ipEdit->text().trimmed();
+        int port = sftpPortEdit->text().toInt();
+        QString user = userEdit->text().trimmed();
+        QString pass = passEdit->text();
+        if (ip.isEmpty() || port <= 0) {
+            testResultLabel->setText("请先填写有效的 IP 和 SFTP 端口");
+            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            return;
+        }
+        testSftpBtn->setEnabled(false);
+        testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
+        testResultLabel->setText(QString("正在测试 SFTP 连接 %1:%2 ...").arg(ip).arg(port));
+        QApplication::processEvents();
+
+        SftpClient cli(ip.toStdString(), port, user.toStdString(), pass.toStdString());
+        if (cli.connect()) {
+            cli.disconnect();
+            testResultLabel->setStyleSheet("color: green; font-size: 8pt;");
+            testResultLabel->setText(QString("SFTP 连接成功（%1@%2:%3）").arg(user).arg(ip).arg(port));
+        } else {
+            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setText(QString("SFTP 连接失败：%1:%2").arg(ip).arg(port));
+        }
+        testSftpBtn->setEnabled(true);
+    });
+
+    // ── OK / Cancel ──
+    QHBoxLayout *btnRow = new QHBoxLayout();
+    btnRow->addStretch(1);
+    QPushButton *okBtn = new QPushButton("确定", &dlg);
+    QPushButton *cancelBtn = new QPushButton("取消", &dlg);
+    btnRow->addWidget(okBtn);
+    btnRow->addWidget(cancelBtn);
+    mainLayout->addLayout(btnRow);
+
+    connect(cancelBtn, &QPushButton::clicked, &dlg, &QDialog::reject);
+    connect(okBtn, &QPushButton::clicked, [&]() {
+        QString ip = ipEdit->text().trimmed();
+        int httpPort = httpPortEdit->text().toInt();
+        int sftpPort = sftpPortEdit->text().toInt();
+        if (ip.isEmpty() || httpPort <= 0 || sftpPort <= 0) {
+            QMessageBox::warning(&dlg, "输入错误", "请填写有效的 IP 和端口");
+            return;
+        }
+        dlg.accept();
+    });
+
+    if (dlg.exec() == QDialog::Accepted) {
+        m_trainServerIp = ipEdit->text().trimmed();
+        m_trainHttpPort = httpPortEdit->text().toInt();
+        m_trainSftpPort = sftpPortEdit->text().toInt();
+        m_trainSftpUser = userEdit->text().trimmed();
+        m_trainSftpPass = passEdit->text();
+
+        // 同步到 ModelApi
+        QString baseUrl = QString("http://%1:%2").arg(m_trainServerIp).arg(m_trainHttpPort);
+        m_modelApi->setBaseUrl(baseUrl);
+
+        // 重建 SftpWorker（安全退出旧线程 → delete worker → 用新配置创建）
+        if (m_sftpThread && m_sftpThread->isRunning()) {
+            m_sftpThread->quit();
+            m_sftpThread->wait(2000);
+            delete m_sftpThread;
+            m_sftpThread = nullptr;
+        }
+        if (m_sftpWorker) {
+            if (m_sftpWorker->thread() != QThread::currentThread()) {
+                m_sftpWorker->moveToThread(QThread::currentThread());
+            }
+            delete m_sftpWorker;
+            m_sftpWorker = nullptr;
+        }
+        m_sftpWorker = new SftpWorker(m_trainServerIp, m_trainSftpUser, m_trainSftpPass, m_trainSftpPort);
+
+        // arm 版本保存到 JSON
+        saveTrainServerConfig();
+
+        showTip(QString("训练服务器已更新：HTTP %1，SFTP %2:%3")
+                    .arg(baseUrl).arg(m_trainServerIp).arg(m_trainSftpPort));
+    }
+}
+
 // -------------------------- ImageScanWorker 实现 --------------------------
 // (内联在 .h 里，这里无需额外代码)
 
@@ -3181,7 +3830,7 @@ void ModelApi:: createDirTrain(const QString& taskId)
     }
     
     // 构建请求 URL
-    QString url = BASE_URL + API_TRAIN_CREATE;
+    QString url = m_baseUrl + API_TRAIN_CREATE;
 
     // 构建请求体（协议要求：{"id": "任务唯一id"}）
     QJsonObject requestBody;
@@ -3216,7 +3865,7 @@ void ModelApi::startTrain(const QString& taskId)
     }
 
     // 构建请求 URL
-    QString url = BASE_URL + API_TRAIN_START;
+    QString url = m_baseUrl + API_TRAIN_START;
 
     // 构建请求体（协议要求：{"id": "任务唯一id"}）
     QJsonObject requestBody;
@@ -3247,7 +3896,7 @@ void ModelApi::queryTrainProgress(const QString& taskId)
     }
 
     // 构建请求 URL
-    QString url = BASE_URL + API_TRAIN_QUERY;
+    QString url = m_baseUrl + API_TRAIN_QUERY;
 
     // 构建请求体（协议要求：{"id": "任务唯一id"}）
     QJsonObject requestBody;
@@ -3272,7 +3921,7 @@ void ModelApi::queryTrainProgress(const QString& taskId)
 // 查询硬件架构（GET /api/cloud/config/arch，决定下载 .bin 还是 .dlc）
 void ModelApi::queryArch()
 {
-    QString url = BASE_URL + API_CONFIG_ARCH;
+    QString url = m_baseUrl + API_CONFIG_ARCH;
 
     m_currentRequestType = RequestType::QueryArch;
 
@@ -3296,7 +3945,7 @@ void ModelApi::downloadModel(const QString& modelName, const QString& savePath)
     }
 
     // 构建请求 URL
-    QString url = BASE_URL + API_MODEL_DOWNLOAD + modelName;
+    QString url = m_baseUrl + API_MODEL_DOWNLOAD + modelName;
 
     // 记录当前请求类型
     m_currentRequestType = RequestType::DownloadModel;
@@ -3319,7 +3968,7 @@ void ModelApi::downloadModelJson(const QString& modelJson, const QString& savePa
     }
 
     // 构建请求 URL
-    QString url = BASE_URL + API_MODEL_DOWNLOAD + modelJson;
+    QString url = m_baseUrl + API_MODEL_DOWNLOAD + modelJson;
 
     // 记录当前请求类型
     m_currentRequestType = RequestType::DownloadJson;

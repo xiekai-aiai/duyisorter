@@ -58,14 +58,13 @@ namespace Ui {
 class AiModelSet;
 }
 
-// 接口基础 URL（训练服务器）
-const QString BASE_URL = "http://192.168.0.11:5000";
+// 接口路径（保留为常量，仅 URL 前缀和 SFTP host/port/user/pass 改为成员变量）
+const QString API_TRAIN_CREATE = "/api/cloud/train/create";   // 创建目录
 
-// SFTP 上传配置（训练服务器）
-const QString TRAIN_SFTP_HOST = "192.168.0.11";
-const QString TRAIN_SFTP_USER = "root";
-const QString TRAIN_SFTP_PASS = "duyi";
-const int     TRAIN_SFTP_PORT = 22;
+const QString API_TRAIN_START = "/api/cloud/train/start";    // 训练启动
+const QString API_TRAIN_QUERY = "/api/cloud/train/query";    // 训练查询
+const QString API_MODEL_DOWNLOAD = "/api/cloud/download_file/";                      // 模型下载（路径拼接模型名称）
+const QString API_CONFIG_ARCH = "/api/cloud/config/arch";    // 查询硬件架构（snpe→.dlc，其他→.bin）
 
 // ══════════════════════════════════════════════════════════════════
 // 仿真板卡配置（AI 推理 UDP 通信）
@@ -76,14 +75,6 @@ const QString BOARD_SFTP_HOST = "192.168.0.12"; // 板卡 SFTP 地址（上传�
 const QString BOARD_SFTP_USER = "root";
 const QString BOARD_SFTP_PASS = "linaro";
 const int     BOARD_SFTP_PORT = 22;
-
-// 接口路径
-const QString API_TRAIN_CREATE = "/api/cloud/train/create";   // 创建目录
-
-const QString API_TRAIN_START = "/api/cloud/train/start";    // 训练启动
-const QString API_TRAIN_QUERY = "/api/cloud/train/query";    // 训练查询
-const QString API_MODEL_DOWNLOAD = "/api/cloud/download_file/";                      // 模型下载（路径拼接模型名称）
-const QString API_CONFIG_ARCH = "/api/cloud/config/arch";    // 查询硬件架构（snpe→.dlc，其他→.bin）
 
 // 响应错误码（根据接口文档扩展）
 const int RESPONSE_SUCCESS_CODE = 0;  // 假设 0 表示成功
@@ -171,9 +162,13 @@ public:
 
     // 5. 查询硬件架构（GET /api/cloud/config/arch，决定下载 .bin 还是 .dlc）
     void queryArch();
-
+    
     // 设置 HTTP 超时时间（默认 30 秒）
     void setHttpTimeout(int timeoutMs);
+
+    // 设置训练服务器 base URL（如 "http://192.168.0.11:5000"）
+    void setBaseUrl(const QString& baseUrl) { m_baseUrl = baseUrl; }
+    QString baseUrl() const { return m_baseUrl; }
 
     // 设置模型远程目录（训练返回的 model_dir，SFTP 下载用）
     void setModelRemoteDir(const QString& dir) { m_remoteModelDir = dir; }
@@ -219,6 +214,7 @@ private:
 
 private:
     HttpTool* m_httpTool;       // HTTP 工具类
+    QString m_baseUrl = "http://192.168.0.11:5000";  // 训练服务器 base URL（默认值，可动态配置）
     QString m_currentTaskId;    // 当前请求的任务 ID（用于匹配响应）
     QString m_remoteModelDir;   // 训练返回的 model_dir，SFTP 下载用
     enum class RequestType {    // 当前请求类型（用于区分响应解析）
@@ -342,6 +338,24 @@ private:
     QString m_sftpLocalImgDir, m_sftpLocalLblDir, m_sftpClassesFile;
     QString m_sftpRemoteImgDir, m_sftpRemoteLblDir, m_sftpRemoteRootDir;
 
+    // ── 训练服务器配置（可动态修改，arm 版本保存到 JSON）─────────────
+    QString m_trainServerIp   = "192.168.0.11";
+    int     m_trainHttpPort   = 5000;
+    int     m_trainSftpPort   = 22;
+    QString m_trainSftpUser   = "root";
+    QString m_trainSftpPass   = "duyi";
+
+    // ── 训练服务器 JSON 配置文件路径（arm 部署时指向 /opt/app/userdata/cnf/trainserver.json）
+    QString trainServerJsonPath() const;
+    // 加载训练服务器配置（arm 版本从 JSON 读，上位机/开发版用默认值或历史值）
+    void loadTrainServerConfig();
+    // 保存训练服务器配置（仅 arm 版本写入 JSON）
+    void saveTrainServerConfig();
+    // 静态：是否 arm 版本（通过宏 __arm__ / Q_PROCESSOR_ARCH 等判断）
+    static bool isArmBuild();
+    // 检查训练服务器是否已配置（有有效 IP+HTTP Port），未配置则弹框提示
+    bool ensureTrainServerConfigured();
+
     // ── 训练流程回调（私有 slot，由 HTTP 信号触发） ────────────────────
 
     /** [0] /train/create 返回：connect → mkdir_p → moveToThread → 启动 SFTP 上传线程 */
@@ -370,6 +384,13 @@ private:
 
     QVector<QRect> m_fg_rects; //
     bool m_show_fg_rects = false; // 是否显示前景矩形
+
+    // ── 前景像素过滤（areaThresholdAnnoPushButton）─────────────────────
+    bool m_show_fg_pixel_count = false;      // 是否显示前景像素计数
+    QVector<int> m_fg_pixel_counts;          // 与 m_fg_rects 一一对应的前景像素数
+    QVector<int> m_emulate_pixel_counts;     // 与 m_emulateObjInfos 一一对应的前景像素数
+    QVector<int> m_annot_pixel_counts;       // 与 m_annotations 一一对应的前景像素数
+    QImage m_fgMaskQImageCached;             // 前景掩码缓存（单通道 Format_Grayscale8，paintEvent 用来只涂前景像素区域）
 
     // ── 仿真（AI 推理板卡） ──────────────────────────────────────────
     bool m_emulating = false;                      // 仿真状态（从 pred txt 读推理框显示）
@@ -441,8 +462,12 @@ public slots:
     void onImageItemClicked(QListWidgetItem* item);  // 图片项点击事件
     void onModelTrainPushButtonClicked();
     void onModelNewPushButtonClicked();  // 新建模型按钮 → 弹出模型配置对话框
+    void onTrainServerCfgPushButtonClicked();  // 训练服务器配置按钮 → 弹出配置对话框（带 HTTP/SFTP 测试）
 
     void onShowFgRectsBtnClicked();
+
+    void onAreaThresholdAnnoPushButtonClicked();  // 前景像素过滤按钮
+    void computeFgPixelCounts();                 // 辅助：计算当前图片所有前景框/仿真框的前景像素数
 
     void onValidImgPushButtonClicked();  // 仿真按钮（从 pred 读或远程推理一次）
     void onBatchValidImgPushButtonClicked();  // 批量仿真按钮

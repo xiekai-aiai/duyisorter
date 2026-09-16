@@ -1,4 +1,5 @@
 ﻿#include "aicommunicate.h"
+#include "mylogger.h"
 
 
 //AiCommunicate MyUdp;
