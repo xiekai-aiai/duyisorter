@@ -20,6 +20,20 @@
 #include <QApplication>
 #include <functional>
 
+// 解析浏览起始目录：路径不存在时回退到其父目录，最终回退到 LOCAL_IMG_PATH
+static QString resolveStartDir(const QString& text)
+{
+    QString dir = text.trimmed();
+    if (!dir.isEmpty()) {
+        const QFileInfo fi(dir);
+        dir = fi.isDir() ? fi.absoluteFilePath() : fi.absolutePath();
+    }
+    if (dir.isEmpty() || !QDir(dir).exists())
+        dir = QString::fromLatin1(DEFAULT_IMAGE_ROOT);
+    QDir().mkpath(dir);
+    return dir;
+}
+
 MergeDialog::MergeDialog(QWidget* parent)
     : QDialog(parent)
 {
@@ -202,10 +216,13 @@ void MergeDialog::onAddSourceClicked()
 
 void MergeDialog::onBrowseSource(QLineEdit* pathEdit)
 {
-    QString startDir = pathEdit->text().isEmpty()
-        ? QString::fromLatin1(DEFAULT_IMAGE_ROOT)
-        : pathEdit->text();
-    QString d = QFileDialog::getExistingDirectory(this, "选择源目录", startDir);
+    const QString startDir = resolveStartDir(pathEdit->text());
+    // ⭐ 必须加 DontUseNativeDialog：板卡上 GTK3 原生对话框无 transient parent 会卡死
+    QString d = QFileDialog::getExistingDirectory(
+        this, "选择源目录", startDir,
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+            | QFileDialog::DontUseNativeDialog
+    );
     if (!d.isEmpty()) pathEdit->setText(d);
 }
 
@@ -234,10 +251,13 @@ void MergeDialog::renumberSources()
 
 void MergeDialog::onBrowseTarget()
 {
-    QString startDir = m_tgtPathEdit->text().isEmpty()
-        ? QString::fromLatin1(DEFAULT_IMAGE_ROOT)
-        : m_tgtPathEdit->text();
-    QString d = QFileDialog::getExistingDirectory(this, "选择输出目录", startDir);
+    const QString startDir = resolveStartDir(m_tgtPathEdit->text());
+    // ⭐ 必须加 DontUseNativeDialog：板卡上 GTK3 原生对话框无 transient parent 会卡死
+    QString d = QFileDialog::getExistingDirectory(
+        this, "选择输出目录", startDir,
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+            | QFileDialog::DontUseNativeDialog
+    );
     if (!d.isEmpty()) {
         QString autoName = QFileInfo(m_tgtPathEdit->text()).fileName();
         if (autoName.isEmpty()) autoName = "merged";

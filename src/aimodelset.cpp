@@ -49,6 +49,7 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include "common/myinputmethod.h"
 #include <QPushButton>
 #include <QButtonGroup>
+#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -2110,11 +2111,11 @@ void AiModelSet::onSetBackBtnClicked(){
 void AiModelSet::onModelSelPushButtonClicked()
 {
     // 预加载路径（优先编译宏，否则默认 LOCAL_MODEL_PATH）
-#ifdef FTP_MODELS_PATH
-    QString dirPath = FTP_MODELS_PATH;
-#else
+
     QString dirPath = QString(LOCAL_MODEL_PATH);
-#endif
+
+    qDebug() << "[MODEL] dirPath=" << dirPath
+             << "exists=" << QDir(dirPath).exists();
 
     // 目录不存在则自动创建
     QDir dir(dirPath);
@@ -2228,17 +2229,67 @@ void AiModelSet::onModelSelPushButtonClicked()
 // onOkPushButtonClicked / onModelNameLineEditClicked / onModelsize1/2CheckBoxClicked
 // 已删除（modeInfowidget UI 已移除，相关逻辑迁移到 onModelNewPushButtonClicked 的 QDialog）
 
+// 删除导入对话框里当前选中的目录（供“删除”按钮使用）
+static void removeDirInFileDialog(QFileDialog *dlg)
+{
+    if (!dlg) return;
+
+    const QString sel = dlg->selectedFiles().value(0);
+    if (sel.isEmpty() || !QFileInfo(sel).isDir()) {
+        QMessageBox::warning(dlg, "提示", "请先在列表中选择要删除的目录");
+        return;
+    }
+    // 保护图片根目录，避免误删整个数据目录
+    if (QDir(sel) == QDir(QString(LOCAL_IMG_PATH))) {
+        QMessageBox::warning(dlg, "提示", "不能删除图片根目录：\n" + sel);
+        return;
+    }
+    if (QMessageBox::question(dlg, "删除目录",
+            QString("确定删除该目录及其全部内容吗？此操作不可恢复！\n\n%1").arg(sel),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes) {
+        return;
+    }
+
+    const QFileInfo fi(sel);
+    if (QDir(sel).removeRecursively()) {
+        LOG_INFO_STM("🗑️ 已删除目录:" << sel);
+        dlg->setDirectory(fi.absolutePath());   // 回到父目录并刷新列表
+    } else {
+        LOG_WARN_STM("⚠️ 删除目录失败:" << sel);
+        QMessageBox::warning(dlg, "删除失败", "无法删除目录：\n" + sel);
+    }
+}
+
 void AiModelSet::onImportImgPushButtonClicked(){
     FLOW("import 入口");
     FLOW("import 弹框前");
     // 确保初始目录存在（否则 QFileDialog 会 fallback 到程序工作目录）
-    QString initDir = QString(LOCAL_IMG_PATH);
+    const QString initDir = QString(LOCAL_IMG_PATH);
     QDir().mkpath(initDir);
-    QString dirPath = QFileDialog::getExistingDirectory(
-        this, "选择图片文件夹", initDir,
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
-            | QFileDialog::DontUseNativeDialog
-    );
+    qDebug() << "[IMPORT] LOCAL_IMG_PATH=" << initDir
+             << "exists=" << QDir(initDir).exists()
+             << "AA_DontUseNativeDialogs="
+             << QCoreApplication::testAttribute(Qt::AA_DontUseNativeDialogs);
+
+    QFileDialog dlg(this, "选择图片文件夹", initDir);
+    dlg.setFileMode(QFileDialog::Directory);
+    dlg.setOption(QFileDialog::ShowDirsOnly, true);
+    dlg.setOption(QFileDialog::DontResolveSymlinks, true);
+    // 板卡上 GTK3 原生对话框无 transient parent 会卡死，必须走 Qt 自绘对话框
+    dlg.setOption(QFileDialog::DontUseNativeDialog, true);
+    // 默认打开 LOCAL_IMG_PATH（部分平台会忽略构造参数，这里再显式设置一次）
+    dlg.setDirectory(initDir);
+
+    // 在 Choose 旁边新增“删除”按钮：删除当前选中的目录
+    if (QDialogButtonBox *box = dlg.findChild<QDialogButtonBox*>("buttonBox")) {
+        QPushButton *delBtn = box->addButton("删除", QDialogButtonBox::ActionRole);
+        connect(delBtn, &QPushButton::clicked, &dlg, [&dlg]() {
+            removeDirInFileDialog(&dlg);
+        });
+    }
+
+    if (dlg.exec() != QDialog::Accepted) return;
+    const QString dirPath = dlg.selectedFiles().value(0);
     FLOW("import 弹框后 dirPath=" << dirPath);
     if (dirPath.isEmpty()) return;
     m_currentDir = dirPath;

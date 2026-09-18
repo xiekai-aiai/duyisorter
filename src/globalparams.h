@@ -22,7 +22,7 @@ class MyGlobalString;
 
 /* x86_64 本地调试用 debug_opt；aarch64 板卡保持 /home/mcgs */
 #if defined(Q_PROCESSOR_X86_64)
-#define APP_PATH "/home/mcgs/Desktop/DuySorter_rk3566_simple/debug_opt"
+#define APP_PATH "/opt/app"
 #else
 #define APP_PATH "/opt/app"
 #endif

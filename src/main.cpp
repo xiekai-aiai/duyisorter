@@ -205,6 +205,11 @@ int main(int argc, char *argv[])
     fflush(stdout);
 #endif
 
+    // ⭐ 全局禁用平台原生对话框（板卡上 GTK3 原生文件对话框无 transient parent，
+    // 会导致 Gtk-Message 警告并卡死；且原生对话框会忽略 QFileDialog 的默认目录设置）。
+    // 必须在 QApplication 构造前设置。
+    QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
+
     myApplication a(argc, argv);
 
     // 初始化日志系统（必须在任何 myLog->xxx 调用之前）

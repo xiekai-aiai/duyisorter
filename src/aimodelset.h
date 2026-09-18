@@ -40,16 +40,13 @@
 // ══════════════════════════════════════════════════════════════════
 // 路径配置（编译期宏，可用 -D 覆盖；独立工程从 globalparams/aicommunicate 缺省）
 // ══════════════════════════════════════════════════════════════════
-#ifndef APP_PATH
-#define APP_PATH "./"
-#endif
 
-// 模型下载保存目录：训练完成后模型文件(.bin/.json)下载到本地的目录，默认 /ftp/model/
+// 模型下载保存目录：训练完成后模型文件(.bin/.json)下载到本地的目录，默认 "/opt/app/userdata/model/"
 #ifndef LOCAL_MODEL_PATH
 #define LOCAL_MODEL_PATH "/opt/app/userdata/model/"
 #endif
 
-// 本地图片目录：导入图片时的默认打开目录，默认 ./img/
+// 本地图片目录：导入图片时的默认打开目录，默认 "/opt/app/userdata/image/"
 #ifndef LOCAL_IMG_PATH
 #define LOCAL_IMG_PATH  "/opt/app/userdata/image/"
 #endif

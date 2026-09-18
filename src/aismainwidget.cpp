@@ -500,7 +500,7 @@ void AisMainWidget::onDownLoadImgBtnPressedSlt()
     qDebug("%s", qPrintable(shell));
     system(qPrintable(shell));
     myFlow.sleep(1);
-
+    
     infoWidget->setLabelText(myLan.msg_copy_image);
     infoWidget->delayShow();
     myFlow.sleep(1);
