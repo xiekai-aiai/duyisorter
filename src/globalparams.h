@@ -20,9 +20,9 @@ class AiCommunicate;
 class MyGlobalString;
 
 
-/* x86_64 本地调试用 debug_opt；aarch64 板卡保持 /home/mcgs */
-#if defined(Q_PROCESSOR_X86_64)
-#define APP_PATH "/opt/app"
+/* x86_64 调试：用编译器自带的 __x86_64__（不依赖 Qt 头文件已定义）；aarch64 板卡用 /opt/app */
+#if defined(__x86_64__)
+#define APP_PATH "/home/mcgs/Desktop/duyisorter/debug_opt"
 #else
 #define APP_PATH "/opt/app"
 #endif
