@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-15 14:48:28
+ * @LastEditTime: 2026-09-17 17:28:56
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -13,9 +13,24 @@
 #include <QVector>
 #include "globalparams.h"
 
-#define AI_DB_NAME APP_PATH "/userdata/db/sorter.db"
-
-#define UPD_CMD_PORT 19900
+ // 本地发送udp命令端口
+#define SELF_UPD_CMD_PORT 19900
+// AI设备接收udp命令端口
+#define AI_UPD_CMD_PORT 9193
+// AI响应超时时间
+#define AI_RESPONSE_TIMEOUT 3000
+// AI设备第一个IP地址
+#define AI_DEV_ONE_IP 126
+// AI设备IP信息
+#define AI_DEV_IP_FORMAT "192.168.4.%1"
+// AI板卡用户名
+#define AI_DEV_USER "root"
+// AI板卡密码
+#define AI_DEV_PWD "linaro"
+// AI板卡SFTP采集图片目录
+#define AI_DEV_IMG_ACQ_PATH "/ftp/image/"
+// 下载设备数量
+#define AI_SFTP_DEV_NUM 2
 
  // A类包包头和包尾
 #define PKGA_HEAD0 0xA5
@@ -246,6 +261,15 @@ typedef struct __config_item__
     QString param_name_;                      // 参数名称
     QString param_value_;                     // 参数值
 } ConfigItem;
+
+// 下载进度
+typedef struct __down_progress_item_
+{
+    int idx_{ 0 };                            // 索引
+    int current_num_;                         // 当前下载数量
+    int total_num_;                           // 总体下载数量
+    bool finished_{ false };                  // 下载是否完成
+} DownProgressItem;
 
 
 #endif // SORTERTYPES_H

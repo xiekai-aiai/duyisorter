@@ -47,7 +47,7 @@ void GlobalFlow::initLan()
     myLan.other = tr("other");
     myLan.machine_info = tr("machine_info");
     myLan.engineer_info = tr("engineer_info");
-    myLan.vendor_info = tr ("vendor_info");
+    myLan.vendor_info = tr("vendor_info");
     myLan.device_info = tr("device_info");
     myLan.device_id = tr("device_id");
     myLan.times = tr("times");
@@ -58,7 +58,7 @@ void GlobalFlow::initLan()
     myLan.weight = tr("weight");
 
     //delay code
-    myLan.dc_input  = tr("dc_input");
+    myLan.dc_input = tr("dc_input");
     myLan.dc_productsn = tr("dc_productsn");
     myLan.dc_productsn_mismatch = tr("dc_productsn_mismatch");
     myLan.dc_illegal = tr("dc_illegal");
@@ -66,8 +66,8 @@ void GlobalFlow::initLan()
     myLan.dc_save_erro = tr("dc_save_erro");
     myLan.dc_limit = tr("dc_limit");
     myLan.dc_limit_info = tr("dc_limit_info");
-    myLan.dc_rtc_erro   = tr("dc_rtc_erro");
-    myLan.dc_cnt        = tr("dc_cnt");
+    myLan.dc_rtc_erro = tr("dc_rtc_erro");
+    myLan.dc_cnt = tr("dc_cnt");
 
     // machine view & level
     myLan.chute = tr("chute");
@@ -192,7 +192,7 @@ void GlobalFlow::initLan()
     myLan.ai_cal_set_same = tr("ai_cal_set_same");
     myLan.ai_cal_set_self = tr("ai_cal_set_self");
     myLan.ai_class_mode_null = tr("ai_class_mode_null");
-    myLan.ai_class_mode_usual= tr("ai_class_mode_usual");
+    myLan.ai_class_mode_usual = tr("ai_class_mode_usual");
     myLan.ai_class_mode_multiple = tr("ai_class_mode_multiple");
     myLan.ai_capture = tr("ai_capture");
     myLan.ai_delete = tr("ai_delete");
@@ -211,13 +211,13 @@ void GlobalFlow::initLan()
     myLan.ai_img_colorSpace2 = tr("ai_img_colorSpace2");
     myLan.ai_img_msg_export = tr("ai_img_msg_export");
     myLan.ai_img_msg_import = tr("ai_img_msg_import");
-    myLan.ai_mode           = tr("ai_mode");
-    myLan.ai_mode1          = tr("ai_mode1");
-    myLan.ai_mode2          = tr("ai_mode2");
+    myLan.ai_mode = tr("ai_mode");
+    myLan.ai_mode1 = tr("ai_mode1");
+    myLan.ai_mode2 = tr("ai_mode2");
     myLan.ai_start_purity = tr("ai_start_purity");
     myLan.ai_unsupervisedLearning = tr("ai_unsupervisedLearning");
     myLan.ai_reserved_sens = tr("ai_reserved_sens");
-    myLan.ai_params_set  =tr("ai_params_set");
+    myLan.ai_params_set = tr("ai_params_set");
     // material
     myLan.identify_params = tr("identify_params");
     myLan.infra_identify_params = tr("infra_identify_params");
@@ -231,12 +231,12 @@ void GlobalFlow::initLan()
     myLan.material_cross = tr("material_cross");
     myLan.material_shape = tr("material_shape");
     myLan.material_shape_length = tr("material_shape_length");
-    myLan.material_shape_pole   = tr("material_shape_pole");
+    myLan.material_shape_pole = tr("material_shape_pole");
     myLan.material_shape_pole_a = tr("material_shape_pole_a");
     myLan.material_shape_pole_b = tr("material_shape_pole_b");
     myLan.material_scale_params = tr("material_scale_params");
-    myLan.material_shape_slice  = tr("material_shape_slice");
-    myLan.material_shape_leaf   = tr("material_shape_leaf");
+    myLan.material_shape_slice = tr("material_shape_slice");
+    myLan.material_shape_leaf = tr("material_shape_leaf");
     myLan.material_bud_1 = tr("material_bud_1");
     myLan.material_bud_2 = tr("material_bud_2");
     myLan.material_defect_a = tr("material_defect_a");
@@ -520,9 +520,9 @@ void GlobalFlow::initLan()
     myLan.auto_calibrate_step4 = tr("auto_calibrate_step4");
     myLan.auto_calibrate_step5 = tr("auto_calibrate_step5");
     myLan.auto_calibrate_step6 = tr("auto_calibrate_step6");
-    myLan.background_angle     = tr("background_angle");
+    myLan.background_angle = tr("background_angle");
     myLan.howto = tr("HowTo");
-    myLan.contact_us = tr ("contact_us");
+    myLan.contact_us = tr("contact_us");
     myLan.reload = tr("Reload");
     myLan.one_key_feed = tr("one_key_feed");
     myLan.communication_alarm = tr("communication_alarm");
@@ -556,7 +556,7 @@ void GlobalFlow::initLan()
     myLan.obtain_auto = tr("obtain_auto");
     myLan.qrcode = tr("qrcode");
     myLan.qrcode_generator = tr("qrcode_generator");
-    myLan.devId =  tr("Device info");
+    myLan.devId = tr("Device info");
 
     // factory set
     myLan.factory_set = tr("factory_set");
@@ -595,7 +595,7 @@ void GlobalFlow::initLan()
     myLan.myanmar = tr("myanmar");
     myLan.bengali = tr("bengali");
     myLan.indonesia = tr("indonesia");
-    myLan.poland=tr("poland");
+    myLan.poland = tr("poland");
     myLan.cfm_change_language = tr("cfm_change_language");
     myLan.cfm_clear_time = tr("cfm_clear_time");
     myLan.cfm_ts_calibrate = tr("cfm_ts_calibrate");
@@ -772,22 +772,22 @@ void GlobalFlow::initLan()
     myLan.rear_view_page = tr("rear_view_page");
     myLan.upper_layer_page = tr("upper_layer_page");
     myLan.lower_layer_page = tr("lower_layer_page");
-    myLan.down_front_left_view_begin= tr("down_front_left_view_begin");
-    myLan.down_front_left_view_end= tr("down_front_left_view_end");
-    myLan.down_front_right_view_begin= tr("down_front_right_view_begin");
-    myLan.down_front_right_view_end= tr("down_front_right_view_end");
-    myLan.down_rear_left_view_begin= tr("down_rear_left_view_begin");
-    myLan.down_rear_left_view_end= tr("down_rear_left_view_end");
-    myLan.down_rear_right_view_begin= tr("down_rear_right_view_begin");
-    myLan.down_rear_right_view_end= tr("down_rear_right_view_end");
-    myLan.up_front_left_view_begin= tr("up_front_left_view_begin");
-    myLan.up_front_left_view_end= tr("up_front_left_view_end");
-    myLan.up_front_right_view_begin= tr("up_front_right_view_begin");
-    myLan.up_front_right_view_end= tr("up_front_right_view_end");
-    myLan.up_rear_left_view_begin= tr("up_rear_left_view_begin");
-    myLan.up_rear_left_view_end= tr("up_rear_left_view_end");
-    myLan.up_rear_right_view_begin= tr("up_rear_right_view_begin");
-    myLan.up_rear_right_view_end= tr("up_rear_right_view_end");
+    myLan.down_front_left_view_begin = tr("down_front_left_view_begin");
+    myLan.down_front_left_view_end = tr("down_front_left_view_end");
+    myLan.down_front_right_view_begin = tr("down_front_right_view_begin");
+    myLan.down_front_right_view_end = tr("down_front_right_view_end");
+    myLan.down_rear_left_view_begin = tr("down_rear_left_view_begin");
+    myLan.down_rear_left_view_end = tr("down_rear_left_view_end");
+    myLan.down_rear_right_view_begin = tr("down_rear_right_view_begin");
+    myLan.down_rear_right_view_end = tr("down_rear_right_view_end");
+    myLan.up_front_left_view_begin = tr("up_front_left_view_begin");
+    myLan.up_front_left_view_end = tr("up_front_left_view_end");
+    myLan.up_front_right_view_begin = tr("up_front_right_view_begin");
+    myLan.up_front_right_view_end = tr("up_front_right_view_end");
+    myLan.up_rear_left_view_begin = tr("up_rear_left_view_begin");
+    myLan.up_rear_left_view_end = tr("up_rear_left_view_end");
+    myLan.up_rear_right_view_begin = tr("up_rear_right_view_begin");
+    myLan.up_rear_right_view_end = tr("up_rear_right_view_end");
 
     //LD4&LDS2
     myLan.first_lower_layer = tr("first_lower_layer");
@@ -842,7 +842,7 @@ void GlobalFlow::initLan()
     myLan.msg_testing = tr("msg_testing");
     myLan.msg_change_init_mode = tr("msg_change_init_mode");
     myLan.msg_delay_get_zero = tr("msg_delay_get_zero");
-    myLan.msg_saving_params =  tr("msg_saving_params");
+    myLan.msg_saving_params = tr("msg_saving_params");
     myLan.msg_params_save_error = tr("msg_params_save_error");
     myLan.msg_usb_init_error = tr("msg_usb_init_error");
     myLan.timeout = tr("timeout");
@@ -1006,15 +1006,15 @@ void GlobalFlow::initLan()
     myLan.scheme_all = tr("scheme_all");
 
     /*!<< pmt */
-    myLan.pmt_run    = tr("pmt_run");
+    myLan.pmt_run = tr("pmt_run");
     myLan.pmt_front_frame = tr("pmt_front_frame");
-    myLan.pmt_rear_frame  = tr("pmt_rear_frame");
+    myLan.pmt_rear_frame = tr("pmt_rear_frame");
     myLan.pmt_enable_red1 = tr("pmt_enable_red1");
     myLan.pmt_enable_red2 = tr("pmt_enable_red2");
-    myLan.pmt_enable_green= tr("pmt_enable_green");
+    myLan.pmt_enable_green = tr("pmt_enable_green");
     myLan.pmt_enable_blue = tr("pmt_enable_blue");
-    myLan.pmt_ctrl_voltage= tr("pmt_ctrl_voltage");
-    myLan.pmt_ctrl        = tr("pmt_ctrl");
+    myLan.pmt_ctrl_voltage = tr("pmt_ctrl_voltage");
+    myLan.pmt_ctrl = tr("pmt_ctrl");
 
     //feederAI
     myLan.feeder_AI = tr("feeder_AI");
@@ -1149,7 +1149,7 @@ void GlobalFlow::initLan()
     myLan.set_vib_voltage = tr("set_vib_voltage");
     myLan.tdemag = tr("tdemag");
     myLan.setLight = tr("setLight");
-//    myLan.tick_mode = tr("tick_mode");
+    //    myLan.tick_mode = tr("tick_mode");
     myLan.encrypt = tr("encrypt");
     myLan.out = tr("out");
     myLan.bad_ratio = tr("bad_ratio");
@@ -1170,198 +1170,260 @@ void GlobalFlow::initLan()
     myLan.target_value = tr("target_value");
 
     myLan.download_image = tr("download_image");
-        myLan.image_reasoning = tr("image_reasoning");
-        myLan.image_acquisition = tr("image_acquisition");
+    myLan.image_reasoning = tr("image_reasoning");
+    myLan.image_acquisition = tr("image_acquisition");
 
-        myLan.pixel_info = tr("pixel_info");
-        myLan.ejector_para = tr("ejector_para");
-        myLan.image_height = tr("image_height");
-        myLan.model_para = tr("model_para");
-        myLan.model_update = tr("model_update");
-        myLan.ai_version = tr("ai_version");
-        myLan.disk_space = tr("disk_space");
+    myLan.pixel_info = tr("pixel_info");
+    myLan.ejector_para = tr("ejector_para");
+    myLan.image_height = tr("image_height");
+    myLan.model_para = tr("model_para");
+    myLan.model_update = tr("model_update");
+    myLan.ai_version = tr("ai_version");
+    myLan.disk_space = tr("disk_space");
 
-        myLan.img_downloading = tr("img_downloading");
-        myLan.ftp_status_error = tr("ftp_status_error");
-        myLan.img_download_finished = tr("img_download_finished");
-        myLan.delete_original_image = tr("delete_original_image");
-        myLan.deleting = tr("deleting");
-        myLan.img_list_blank = tr("img_list_blank");
-        myLan.delete_original_image_finished = tr("delete_original_image_finished");
-        myLan.setting_error = tr("setting_error");
-        myLan.setting_succeeded = tr("setting_succeeded");
-        myLan.setting_value_error = tr("setting_value_error");
+    myLan.img_downloading = tr("img_downloading");
+    myLan.ftp_status_error = tr("ftp_status_error");
+    myLan.img_download_finished = tr("img_download_finished");
+    myLan.delete_original_image = tr("delete_original_image");
+    myLan.deleting = tr("deleting");
+    myLan.img_list_blank = tr("img_list_blank");
+    myLan.delete_original_image_finished = tr("delete_original_image_finished");
+    myLan.setting_error = tr("setting_error");
+    myLan.setting_succeeded = tr("setting_succeeded");
+    myLan.setting_value_error = tr("setting_value_error");
 
-        myLan.model_list_blank = tr("model_list_blank");
-        myLan.model_para_error = tr("model_para_error");
-        myLan.beginning = tr("beginning");
-        myLan.error = tr("error");
-        myLan.succeed = tr("succeed");
-        myLan.fixed_delay = tr("fixed_delay");
-        myLan.dynamic_delay = tr("dynamic_delay");
-        myLan.acquisition_height = tr("acquisition_height");
-        myLan.reasoning_height = tr("reasoning_height");
+    myLan.model_list_blank = tr("model_list_blank");
+    myLan.model_para_error = tr("model_para_error");
+    myLan.beginning = tr("beginning");
+    myLan.error = tr("error");
+    myLan.succeed = tr("succeed");
+    myLan.fixed_delay = tr("fixed_delay");
+    myLan.dynamic_delay = tr("dynamic_delay");
+    myLan.acquisition_height = tr("acquisition_height");
+    myLan.reasoning_height = tr("reasoning_height");
+    myLan.ai_pic_num = tr("ai_pic_num");
 
-        myLan.rename = tr("rename");
-        myLan.add = tr("add");
-        myLan.model = tr("model");
-        myLan.id_blank = tr("id_blank");
-        myLan.json_file = tr("json_file");
-        myLan.dlc_file = tr("dlc_file");
-        myLan.content = tr("content");
-        myLan.open = tr("open");
-        myLan.notexist = tr("notexist");
-        myLan.upload = tr("upload");
-        myLan.model_exist_msg = tr("model_exist_msg");
+    myLan.rename = tr("rename");
+    myLan.add = tr("add");
+    myLan.model = tr("model");
+    myLan.id_blank = tr("id_blank");
+    myLan.json_file = tr("json_file");
+    myLan.dlc_file = tr("dlc_file");
+    myLan.content = tr("content");
+    myLan.open = tr("open");
+    myLan.notexist = tr("notexist");
+    myLan.upload = tr("upload");
+    myLan.model_exist_msg = tr("model_exist_msg");
 
-        myLan.spray_valve_number = tr("spray_valve_number");
-        myLan.nozzle_number = tr("nozzle_number");
-        myLan.spray_time_interval = tr("spray_time_interval");
+    myLan.spray_valve_number = tr("spray_valve_number");
+    myLan.nozzle_number = tr("nozzle_number");
+    myLan.spray_time_interval = tr("spray_time_interval");
 
 }
 
 /* 设置界面语言 */
 void GlobalFlow::setLang()
 {
-    QTranslator *trans = new QTranslator;
-    switch(struCnfg.nLang){
+    QTranslator* trans = new QTranslator;
+    switch (struCnfg.nLang)
+    {
     case LANG_CHS:
-        if(QFile(QString("%1zh-cn.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1zh-cn.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1zh-cn.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1zh-cn.qm").arg(LANG_DIR));
         }
         break;
     case LANG_ENG:
-        if(QFile(QString("%1en.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1en.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1en.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1en.qm").arg(LANG_DIR));
         }
         break;
     case LANG_SPAN:
-        if(QFile(QString("%1es.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1es.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1es.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1es.qm").arg(LANG_DIR));
         }
         break;
     case LANG_RUS:
-        if(QFile(QString("%1ru.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1ru.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1ru.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1ru.qm").arg(LANG_DIR));
         }
         break;
     case LANG_VIET:
-        if(QFile(QString("%1vi.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1vi.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1vi.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1vi.qm").arg(LANG_DIR));
         }
         break;
     case LANG_THAILAND:
-        if(QFile(QString("%1th.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1th.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1th.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1th.qm").arg(LANG_DIR));
         }
         break;
     case LANG_CHT:
-        if(QFile(QString("%1zh-tw.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1zh-tw.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1zh-tw.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1zh-tw.qm").arg(LANG_DIR));
         }
         break;
     case LANG_TURKEY:
-        if(QFile(QString("%1tr.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1tr.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1tr.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1tr.qm").arg(LANG_DIR));
         }
         break;
-   case LANG_FARSIE:
-        if(QFile(QString("%1fa.qm").arg(LANG_DIR_SD)).exists()) {
+    case LANG_FARSIE:
+        if (QFile(QString("%1fa.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1fa.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1fa.qm").arg(LANG_DIR));
         }
         break;
     case LANG_FRENCHE:
-         if(QFile(QString("%1fr.qm").arg(LANG_DIR_SD)).exists()) {
-             trans->load(QString("%1fr.qm").arg(LANG_DIR_SD));
-         } else {
-             trans->load(QString("%1fr.qm").arg(LANG_DIR));
-         }
-         break;
+        if (QFile(QString("%1fr.qm").arg(LANG_DIR_SD)).exists())
+        {
+            trans->load(QString("%1fr.qm").arg(LANG_DIR_SD));
+        }
+        else
+        {
+            trans->load(QString("%1fr.qm").arg(LANG_DIR));
+        }
+        break;
     case LANG_UYGHUR:
-        if(QFile(QString("%1ug.qm").arg(LANG_DIR_SD)).exists()){
+        if (QFile(QString("%1ug.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1ug.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1ug.qm").arg(LANG_DIR));
         }
         break;
     case LANG_KOREANE:
-        if(QFile(QString("%1ko.qm").arg(LANG_DIR_SD)).exists()){
+        if (QFile(QString("%1ko.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1ko.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1ko.qm").arg(LANG_DIR));
         }
         break;
     case LANG_ARABICE:
-        if(QFile(QString("%1ar.qm").arg(LANG_DIR_SD)).exists()){
+        if (QFile(QString("%1ar.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1ar.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1ar.qm").arg(LANG_DIR));
         }
         break;
     case LANG_BULGARIANE:
-        if (QFile(QString("%1bg.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1bg.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1bg.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1bg.qm").arg(LANG_DIR));
         }
         break;
     case LANG_SLOVAKE:
-        if (QFile(QString("%1sk.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1sk.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1sk.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1sk.qm").arg(LANG_DIR));
         }
         break;
     case LANG_PORTUGUESEE:
-        if (QFile(QString("%1pt.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1pt.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1pt.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1pt.qm").arg(LANG_DIR));
         }
         break;
     case LANG_MYANMAR:
-        if (QFile(QString("%1my.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1my.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1my.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1my.qm").arg(LANG_DIR));
         }
         break;
     case LANG_BENGALIE:
-        if (QFile(QString("%1bn.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1bn.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1bn.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1bn.qm").arg(LANG_DIR));
         }
         break;
     case LANG_INDONESIA:
-        if (QFile(QString("%1id.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1id.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1id.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1id.qm").arg(LANG_DIR));
         }
         break;
     case LANG_POLAND:
-        if (QFile(QString("%1pl.qm").arg(LANG_DIR_SD)).exists()) {
+        if (QFile(QString("%1pl.qm").arg(LANG_DIR_SD)).exists())
+        {
             trans->load(QString("%1pl.qm").arg(LANG_DIR_SD));
-        } else {
+        }
+        else
+        {
             trans->load(QString("%1pl.qm").arg(LANG_DIR));
         }
         break;

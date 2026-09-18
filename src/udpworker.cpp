@@ -6,9 +6,10 @@
 #include "unilog.h"
 #include "sortertypes.h"
 
-UdpWorker::UdpWorker(QObject *parent)
-    : QObject{parent}, socket_(nullptr)
-{}
+UdpWorker::UdpWorker(QObject* parent)
+    : QObject{ parent }, socket_(nullptr)
+{
+}
 
 UdpWorker::~UdpWorker()
 {
@@ -27,12 +28,12 @@ void UdpWorker::init()
     socket_ = new QUdpSocket(this);
 
     if (!socket_->bind(
-            QHostAddress::AnyIPv4,
-            UPD_CMD_PORT,
-            QUdpSocket::ShareAddress |
-                QUdpSocket::ReuseAddressHint))
+        QHostAddress::AnyIPv4,
+        SELF_UPD_CMD_PORT,
+        QUdpSocket::ShareAddress |
+        QUdpSocket::ReuseAddressHint))
     {
-        LOG_ERROR_STM("upd bind port[" << UPD_CMD_PORT << " failed! " << socket_->errorString().toStdString());
+        LOG_ERROR_STM("upd bind port[" << SELF_UPD_CMD_PORT << " failed! " << socket_->errorString().toStdString());
 
         delete socket_;
         socket_ = nullptr;
@@ -47,14 +48,14 @@ void UdpWorker::onSendCommand(const QHostAddress& address, quint16 port, const Q
     if (!socket_)
     {
         LOG_ERROR_STM("UDP socket is not initialized, host address:" << address.toString().toStdString() << ", port:" << port);
-        emit commandFinished(false,QByteArray(), QStringLiteral("UDP socket is not initialized"));
+        emit commandFinished(false, QByteArray(), QStringLiteral("UDP socket is not initialized"));
         return;
     }
 
     if (request.isEmpty())
     {
         LOG_ERROR_STM("Request data is empty, host address:" << address.toString().toStdString() << ", port:" << port);
-        emit commandFinished(false,QByteArray(), QStringLiteral("Request data is empty"));
+        emit commandFinished(false, QByteArray(), QStringLiteral("Request data is empty"));
         return;
     }
 
@@ -66,31 +67,31 @@ void UdpWorker::onSendCommand(const QHostAddress& address, quint16 port, const Q
     if (written != request.size())
     {
         LOG_ERROR_STM("writeDatagram failed, host address:" << address.toString().toStdString() << ", port:" << port
-                      << ", need write:" << request.size() << " real write:" << written);
-        emit commandFinished(false,QByteArray(),QStringLiteral("writeDatagram failed"));
+            << ", need write:" << request.size() << " real write:" << written);
+        emit commandFinished(false, QByteArray(), QStringLiteral("writeDatagram failed"));
         return;
     }
 
-    emit commandFinished(true,QByteArray(),QString());
+    emit commandFinished(true, QByteArray(), QString());
 }
 
 
 void UdpWorker::onSendCommand(const QHostAddress& address,
-                            quint16 port,
-                            const QByteArray& request,
-                            int timeoutMs)
+    quint16 port,
+    const QByteArray& request,
+    int timeoutMs)
 {
     if (!socket_)
     {
         LOG_ERROR_STM("UDP socket is not initialized, host address:" << address.toString().toStdString() << ", port:" << port);
-        emit commandFinished(false,QByteArray(), QStringLiteral("UDP socket is not initialized"));
+        emit commandFinished(false, QByteArray(), QStringLiteral("UDP socket is not initialized"));
         return;
     }
 
     if (request.isEmpty())
     {
         LOG_ERROR_STM("Request data is empty, host address:" << address.toString().toStdString() << ", port:" << port);
-        emit commandFinished(false,QByteArray(), QStringLiteral("Request data is empty"));
+        emit commandFinished(false, QByteArray(), QStringLiteral("Request data is empty"));
         return;
     }
 
@@ -105,7 +106,7 @@ void UdpWorker::onSendCommand(const QHostAddress& address,
 
         QHostAddress senderAddress;
         quint16 senderPort = 0;
-        socket_->readDatagram(datagram.data(),datagram.size(),&senderAddress,&senderPort);
+        socket_->readDatagram(datagram.data(), datagram.size(), &senderAddress, &senderPort);
     }
 
     // ------------------------------------------------------------
@@ -116,9 +117,9 @@ void UdpWorker::onSendCommand(const QHostAddress& address,
     if (written != request.size())
     {
         LOG_ERROR_STM("writeDatagram failed, host address:" << address.toString().toStdString() << ", port:" << port
-                      << ", need write:" << request.size() << " real write:" << written);
+            << ", need write:" << request.size() << " real write:" << written);
 
-        emit commandFinished(false,QByteArray(),QStringLiteral("writeDatagram failed"));
+        emit commandFinished(false, QByteArray(), QStringLiteral("writeDatagram failed"));
         return;
     }
 
@@ -135,8 +136,8 @@ void UdpWorker::onSendCommand(const QHostAddress& address,
         if (elapsed >= timeoutMs)
         {
             LOG_ERROR_STM("UDP response timeout, host address:" << address.toString().toStdString() << ", port:" << port
-                          << ", timeoutMs:" << timeoutMs);
-            emit commandFinished(false,QByteArray(),QStringLiteral("UDP response timeout"));
+                << ", timeoutMs:" << timeoutMs);
+            emit commandFinished(false, QByteArray(), QStringLiteral("UDP response timeout"));
             return;
         }
 
@@ -145,8 +146,8 @@ void UdpWorker::onSendCommand(const QHostAddress& address,
         if (!socket_->waitForReadyRead(remaining))
         {
             LOG_ERROR_STM("UDP waitForReadyRead timeout, host address:" << address.toString().toStdString() << ", port:" << port
-                          << ", timeoutMs:" << timeoutMs);
-            emit commandFinished(false, QByteArray(),QStringLiteral("UDP response timeout"));
+                << ", timeoutMs:" << timeoutMs);
+            emit commandFinished(false, QByteArray(), QStringLiteral("UDP response timeout"));
             return;
         }
 
@@ -167,7 +168,7 @@ void UdpWorker::onSendCommand(const QHostAddress& address,
 
             QHostAddress senderAddress;
             quint16 senderPort = 0;
-            const qint64 readSize = socket_->readDatagram(response.data(),response.size(),&senderAddress, &senderPort);
+            const qint64 readSize = socket_->readDatagram(response.data(), response.size(), &senderAddress, &senderPort);
             if (readSize < 0)
             {
                 continue;
@@ -187,7 +188,7 @@ void UdpWorker::onSendCommand(const QHostAddress& address,
             // 6. 收到目标设备响应
             // ----------------------------------------------------
 
-            emit commandFinished(true,response,QString());
+            emit commandFinished(true, response, QString());
             return;
         }
     }

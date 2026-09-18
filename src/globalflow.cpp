@@ -6,6 +6,10 @@
  */
 #include "globalflow.h"
 #include "unilog.h"
+#include "aihelper.h"
+#include "cmdworker.h"
+#include "configmgr.h"
+#include "cmdudpmanager.h"
 
 struct struCnfEngineer struCnfe, _t_struCnfe;
 struct struCnfGlobal struCnfg, _t_struCnfg;
@@ -3662,16 +3666,8 @@ void GlobalFlow::onOff()
             }
         }
 
-        //当前是图像推理模式
-        if (!struGsh.isImageSend)
-        {
-            imageInferOnOff(false);
-        }
-        else
-        {
-            imageSendOnOff(false);
-        }
-
+        // 停止工作
+        startAiWorker(false);
         struGsh.bFlagAutowipe = 0;      // 禁止清灰
     }
     else
@@ -3713,15 +3709,8 @@ void GlobalFlow::onOff()
             }
         }
 
-        //当前是图像推理模式
-        if (!struGsh.isImageSend)
-        {
-            imageInferOnOff(true);
-        }
-        else
-        {
-            imageSendOnOff(true);
-        }
+        // 开启工作
+        startAiWorker(true);
 
         sleep(1);
 
@@ -4633,29 +4622,47 @@ void GlobalFlow::initUdpImagPara()
 {
     if (struCnfg.aiEnable != 1)
     {
+        LOG_INFO_STM("ai enable is false!");
         return;
     }
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    args[0] = struCnfg.imgFetchHeight / 256;
-    args[1] = struCnfg.imgFetchHeight % 256;
-    args[2] = struCnfg.imgInferHeight / 256;
-    args[3] = struCnfg.imgInferHeight % 256;
-    args[4] = struCnfg.imgPicHeight / 256;
-    args[5] = struCnfg.imgPicHeight % 256;
-    args[6] = struCnfg.imgVideoHeight / 256;
-    args[7] = struCnfg.imgVideoHeight % 256;
 
-    for (int i = 0; i < struGsh.aiDeviceNum; i++)
+    LOG_INFO_STM("collect image h:" << struCnfg.imgFetchHeight << ", infer image h:" << struCnfg.imgInferHeight
+        << ", capture pic h:" << struCnfg.imgPicHeight << ", video h:" << struCnfg.imgVideoHeight
+        << ", ai device num:" << struGsh.aiDeviceNum << ", nUnitLevelTotal:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+
+    // 图像高度
+    ImgHeightParam info;
+    info.collect_height_ = struCnfg.imgFetchHeight;
+    info.img_view_height_ = struCnfg.imgPicHeight;
+    info.infer_height_ = struCnfg.imgInferHeight;
+    info.sliding_step_ = 0;
+    info.video_view_height_ = struCnfg.imgVideoHeight;
+    QByteArray request = cmdworker::ImgHeightRequest(info);
+
+    // 给所有的AI板卡发送开始采集命令
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
     {
-        MyUpd.writeDatagram(CMD_AI_IMAGE_HEIGHT, i, 8, args, struGsh.addressList.at(i), AI_UDP_SEND_PORT);
-        data.nCommandAddress = CMD_AI_IMAGE_HEIGHT;
-        ret = MyUpd.readUdpDatagrams(&data, 13);
-        if (ret != 0)
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
         {
-            qDebug("aiDevice: %d, img ret: %d", i, ret);
+            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            continue;
         }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            continue;
+        }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",image height opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
@@ -4665,6 +4672,7 @@ void GlobalFlow::initPixelImagPara()
     {
         return;
     }
+
     QByteArray args;
     AI_Data_Protocol_D data;
     int ret;
@@ -4673,6 +4681,9 @@ void GlobalFlow::initPixelImagPara()
     {
         for (j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
         {
+            LOG_INFO_STM("level total:" << struCnfg.nLevelTotal << ",i:" << i << ",j:" << j
+                << ", nUnitLevelTotal:" << struCnfg.struLevelInfo[i].nUnitLevelTotal
+                << ", cam no:" << struCnfg.struLevelInfo[i].nUnitId[j]);
             args.clear();
             nUnitAddr = struCnfg.struLevelInfo[i].nUnitId[j];
             args[0] = AIUNIT;
@@ -4892,103 +4903,214 @@ void GlobalFlow::initModelPara()
     }
 }
 
-void GlobalFlow::imageInferOnOff(bool onOff)
+void GlobalFlow::startAiCollect()
 {
-    if (struCnfg.aiEnable != 1)
+    quint16 collect_num = ConfigMgr::Instance().GetCollPicNum();
+    LOG_INFO_STM("start collect image, collect num:" << collect_num << ", ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+
+    // 开始采集，先通知AI板卡启动 
+    ImgCollectParam imgp;
+    imgp.start_ = 1;
+    imgp.num_ = collect_num;
+    QByteArray request = cmdworker::ImgCollectRequest(imgp);
+
+    // 给所有的AI板卡发送开始采集命令
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
     {
-        return;
-    }
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    //开始推向推理
-    if (onOff)
-    {
-        args[0] = 1;
-        //相机板发送ai协议
-        for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
         {
-            if (i % 2 == 0)
-            {
-                MyUpd.writeDatagram(CMD_AI_IMAGE_INFER, i / 2, 1, args, struGsh.addressList.at(i / 2), AI_UDP_SEND_PORT);
-                data.nCommandAddress = CMD_AI_IMAGE_INFER;
-                ret = MyUpd.readUdpDatagrams(&data, 13);
-                if (ret != 0)
-                {
-                    qDebug("aiDevice: %d, img ret: %d", i / 2, ret);
-                }
-            }
-            MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, i, 0, 0, 0, 0, 1, 3);
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            continue;
         }
-    }
-    else
-    {
-        args[0] = 0;
-        //相机板发送ai协议
-        for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
         {
-            MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, i, 0, 0, 0, 0, 0, 3);
-            myFlow.msleep(500);
-            if (i % 2 == 0)
-            {
-                MyUpd.writeDatagram(CMD_AI_IMAGE_INFER, i / 2, 1, args, struGsh.addressList.at(i / 2), AI_UDP_SEND_PORT);
-                data.nCommandAddress = CMD_AI_IMAGE_INFER;
-                ret = MyUpd.readUdpDatagrams(&data, 13);
-                if (ret != 0)
-                {
-                    qDebug("aiDevice: %d, img ret: %d", i / 2, ret);
-                }
-            }
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            continue;
         }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",collect opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+    }
+
+
+    // 给所有相机发送开启采集指令 
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 1, 3);
+    }
+
+}
+
+void GlobalFlow::stopAiCollect()
+{
+    quint16 collect_num = ConfigMgr::Instance().GetCollPicNum();
+    LOG_INFO_STM("Stop collect image, collect num:" << collect_num << ", ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+
+    // 停止采集，先给所有相机发送停止采集指令 
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 0, 3);
+    }
+
+    // 停止采集，通知AI板卡停止
+    ImgCollectParam imgp;
+    imgp.start_ = 0;
+    imgp.num_ = collect_num;
+    QByteArray request = cmdworker::ImgCollectRequest(imgp);
+
+    // 给所有的AI板卡发送停止采集命令
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            continue;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            continue;
+        }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",collect opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
 
-void GlobalFlow::imageSendOnOff(bool onOff)
+void GlobalFlow::startAiInfer()
+{
+    LOG_INFO_STM("start infer image, ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+
+    // 开始推理，先通知AI板卡启动 
+    ImgInferParam info;
+    info.start_ = 1;
+    QByteArray request = cmdworker::ImgInferRequest(info);
+
+    // 给所有的AI板卡发送开始推理命令
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            continue;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            continue;
+        }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ", infer opr send command : " << request.toHex(' ').toUpper().toStdString() << ", response : "
+            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+    }
+
+    // 给所有相机发送开启推理指令 
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 1, 3);
+    }
+}
+
+
+void GlobalFlow::stopAiInfer()
+{
+    LOG_INFO_STM("Stop infer image, ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+
+    // 停止推理，先给所有相机发送停止推理指令 
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 0, 3);
+    }
+
+    // 停止推理，通知AI板卡停止
+    ImgInferParam info;
+    info.start_ = 0;
+    QByteArray request = cmdworker::ImgInferRequest(info);
+
+    // 给所有的AI板卡发送停止推理命令
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            continue;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            continue;
+        }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ", infer opr send command : " << request.toHex(' ').toUpper().toStdString() << ", response : "
+            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+    }
+}
+
+
+void GlobalFlow::startAiWorker(bool onOff)
 {
     if (struCnfg.aiEnable != 1)
     {
+        LOG_INFO_STM("Ai enable is false!");
         return;
     }
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    //开始推向推理
-    if (onOff)
+
+    bool is_collect = ConfigMgr::Instance().GetEnableAcquisition();
+    LOG_INFO_STM("onOff:" << onOff << ", enable collect:" << is_collect << ", ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+    if (is_collect)
     {
-        args[0] = 1;
-        //相机板发送ai协议
-        MyUpd.writeDatagram(CMD_AI_IMAGE_SEND, 0, 1, args, struGsh.addressList.at(0), AI_UDP_SEND_PORT);
-        data.nCommandAddress = CMD_AI_IMAGE_SEND;
-        ret = MyUpd.readUdpDatagrams(&data, 13);
-        if (ret != 0)
+        if (onOff)
         {
-            qDebug("aiDevice: %d, img ret: %d", 0, ret);
+            startAiCollect();
         }
-        //相机板发送ai协议
-        for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+        else
         {
-            MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, i, 0, 0, 0, 0, 1, 3);
+            stopAiCollect();
         }
     }
     else
     {
-        args[0] = 0;
-        //相机板发送ai协议
-        for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+        if (onOff)
         {
-            MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, i, 0, 0, 0, 0, 0, 3);
+            startAiInfer();
         }
-        myFlow.msleep(500);
-
-        MyUpd.writeDatagram(CMD_AI_IMAGE_INFER, 0, 1, args, struGsh.addressList.at(0), AI_UDP_SEND_PORT);
-        data.nCommandAddress = CMD_AI_IMAGE_INFER;
-        ret = MyUpd.readUdpDatagrams(&data, 13);
-        if (ret != 0)
+        else
         {
-            qDebug("aiDevice: %d, img ret: %d", 0, ret);
+            stopAiInfer();
         }
-
     }
 }
 
@@ -4996,34 +5118,43 @@ int  GlobalFlow::initAiCommunication()
 {
     if (struCnfg.aiEnable != 1)
     {
+        LOG_INFO_STM("enable ai is false!");
         return 0;
     }
-    int i, nAddr = 0;
-    int err = 0;
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    for (i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+
+    int ret_code{ 0 };
+    LOG_INFO_STM("ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+    QByteArray request = cmdworker::VersionRequest();
+
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
     {
-        nAddr = struCnfg.struLevelInfo[0].nUnitId[i];
-        if (nAddr % 2 == 0)
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
         {
-            MyUpd.writeDatagram(CMD_AI_VERSION_FETCH, i / 2, 0, args, struGsh.addressList.at(i / 2), AI_UDP_SEND_PORT);
-            ret = MyUpd.readUdpDatagrams(&data, 18);
-            if (ret != 0)
-            {
-                qDebug("aiDevice: %d, img ret: %d", i / 2, ret);
-                err = 1;
-                break;
-            }
-            else
-            {
-                struGsh.aiResult[i / 2] = QString(data.nCommandData);
-                //              qDebug()<<struGsh.aiResult[i/2];
-            }
+            ret_code = 1;
+            LOG_ERROR_STM("version opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            continue;
         }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            ret_code = 1;
+            LOG_ERROR_STM("version opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            continue;
+        }
+
+        struGsh.aiResult[idx] = cmdworker::VersionResponse(cmd_pkg).version_;
+        LOG_INFO_STM("version index:" << idx << " ip:" << ip.toStdString() << ", version opr send command : " << request.toHex(' ').toUpper().toStdString() << ", response : "
+            << request.toHex(' ').toUpper().toStdString() << ", version:" << struGsh.aiResult[idx].toStdString());
     }
-    return err;
+
+    return ret_code;
 }
 
 /* 开机发送参数 */

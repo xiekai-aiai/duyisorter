@@ -10,13 +10,13 @@
 
 #include <QtCore>
 
-/*!
- * \brief 界面词根类
- */
+ /*!
+  * \brief 界面词根类
+  */
 class MyLanguage : public QObject
 {
 public:
-    MyLanguage(){}
+    MyLanguage() {}
 
     QString ok;
     QString cancel;
@@ -27,7 +27,7 @@ public:
     QString input;
     QString del;
     QString on;
-    QString off ;
+    QString off;
     QString reboot;
     QString apply;
     QString name;
@@ -193,7 +193,7 @@ public:
     QString ai_analysis;
     QString ai_analysis_set;
     QString ai_analysis_material;
-    QString msg_computing ;
+    QString msg_computing;
     QString msg_need_resample;
     QString msg_usb_insert;
     QString msg_copy_image;
@@ -253,7 +253,7 @@ public:
     QString infra_material_general;
     QString material_color;
     QString material_defect_grey_a;
-    QString material_defect_grey_b ;
+    QString material_defect_grey_b;
     QString material_defect_discolor_a;
     QString material_defect_discolor_b;
     QString material_cross;
@@ -271,10 +271,10 @@ public:
     QString material_defect_b;
     QString material_defect_c;
     QString material_defect_d;
-    QString material_infra ;
+    QString material_infra;
     QString material_intelligent_mode_a;
     QString material_intelligent_mode_b;
-    QString material_intelligent_mode_c ;
+    QString material_intelligent_mode_c;
     QString material_intelligent_mode_d;
     QString material_tea;
     QString material_watermelon;
@@ -296,7 +296,7 @@ public:
     QString material_watermelon_ai_edge;
     QString cfm_use_watermelon;
     QString cfm_rename_impurity;
-    QString defect_name ;
+    QString defect_name;
     QString mode;
     QString scale;
     QString purity;
@@ -1168,7 +1168,7 @@ public:
     QString set_vib_voltage;
     QString tdemag;
     QString setLight;
-//    QString tick_mode;
+    //    QString tick_mode;
     QString encrypt;
     QString out;
     QString bad_ratio;
@@ -1191,56 +1191,55 @@ public:
     QString target_value;
 
     // ai翻译
-      QString download_image;      // 图像下载
-      QString image_reasoning;     // 图像推理
-      QString image_acquisition;   // 图像采集
+    QString download_image;                          // 图像下载
+    QString image_reasoning;                         // 图像推理
+    QString image_acquisition;                       // 图像采集
 
-      QString pixel_info;          // 像元信息
-      QString ejector_para;        // 喷阀参数
-      QString image_height;        // 图像高度
-      QString model_para;          // 模型参数
-      QString model_update;        // 模型升级
-      QString ai_version;          // 版本查询
-      QString disk_space;          // 磁盘空间
+    QString pixel_info;                              // 像元信息
+    QString ejector_para;                            // 喷阀参数
+    QString image_height;                            // 图像高度
+    QString model_para;                              // 模型参数
+    QString model_update;                            // 模型升级
+    QString ai_version;                              // 版本查询
+    QString disk_space;                              // 磁盘空间
 
-      QString img_downloading;         //图像下载中
-      QString ftp_status_error;        //ftp状态异常
-      QString img_download_finished;    //图像下载完成
-      QString delete_original_image;   //是否删除原图
-      QString deleting;                //删除中
-      QString img_list_blank;          //图像文件为空
-      QString delete_original_image_finished;//原图删除成功
-      QString setting_error;           //设置失败
-      QString setting_succeeded;       //设置成功
-      QString setting_value_error;     //返回值错误
+    QString img_downloading;                         // 图像下载中
+    QString ftp_status_error;                        // ftp状态异常
+    QString img_download_finished;                   // 图像下载完成
+    QString delete_original_image;                   // 是否删除原图
+    QString deleting;                                // 删除中
+    QString img_list_blank;                          // 图像文件为空
+    QString delete_original_image_finished;          // 原图删除成功
+    QString setting_error;                           // 设置失败
+    QString setting_succeeded;                       // 设置成功
+    QString setting_value_error;                     // 返回值错误
 
-      QString model_list_blank;          //模型列表为空
-      QString model_para_error;          //模型参数异常
-      QString beginning;          //进行中
-      QString error;               //失败
-      QString succeed;             //成功
-      QString fixed_delay;             //固定延迟
-      QString dynamic_delay;           //动态延迟
-      QString acquisition_height;      //采集高度
-      QString reasoning_height;        //推理高度
+    QString model_list_blank;                        // 模型列表为空
+    QString model_para_error;                        // 模型参数异常
+    QString beginning;                               // 进行中
+    QString error;                                   // 失败
+    QString succeed;                                 // 成功
+    QString fixed_delay;                             // 固定延迟
+    QString dynamic_delay;                           // 动态延迟
+    QString acquisition_height;                      // 采集高度
+    QString reasoning_height;                        // 推理高度
 
-      QString rename;                  //重命名
-  //    QString del;                     //删除
-      QString add;                     //新增
-      QString model;                    //模型
-      QString id_blank;                 //id为空
-      QString json_file;                //json文件
-      QString dlc_file;                 //dlc文件
-      QString content;                  //内容
-      QString open;                     //打开
-      QString notexist;                 //不存在
-      QString upload;                 //上传
-      QString model_exist_msg;         //模型已存在，无法新增，仅更新模型
-                                      //The model already exists. New addition is not possible. Only model update is allowed.
+    QString rename;                                  // 重命名
+    QString add;                                     // 新增
+    QString model;                                   // 模型
+    QString id_blank;                                // id为空
+    QString json_file;                               // json文件
+    QString dlc_file;                                // dlc文件
+    QString content;                                 // 内容
+    QString open;                                    // 打开
+    QString notexist;                                // 不存在
+    QString upload;                                  // 上传
+    QString model_exist_msg;                         // 模型已存在，无法新增，仅更新模型
 
-      QString   spray_valve_number;   // 喷阀编号
-      QString   nozzle_number;        // 喷嘴编号
-      QString   spray_time_interval;  // 喷阀间隔
+    QString spray_valve_number;                      // 喷阀编号
+    QString nozzle_number;                           // 喷嘴编号
+    QString spray_time_interval;                     // 喷阀间隔
+    QString ai_pic_num;                              // AI图片采集张数
 
 
 };

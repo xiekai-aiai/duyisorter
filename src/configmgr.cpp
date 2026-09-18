@@ -250,3 +250,15 @@ void ConfigMgr::InitTimeCfgInfo(const QMap<QString, ConfigItem>& cfg_map)
 
     time_cfg_info_ = info;
 }
+
+bool ConfigMgr::GetEnableAcquisition()
+{
+    return enable_acquisition_;
+}
+
+
+void ConfigMgr::SetEnableAcquisition(bool enable)
+{
+    // note: 图像采集使能配置不持久化到数据库
+    enable_acquisition_ = enable;
+}

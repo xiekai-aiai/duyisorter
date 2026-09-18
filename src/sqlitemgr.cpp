@@ -6,6 +6,7 @@
 #include <QSqlError>
 #include <QApplication>
 #include "unilog.h"
+#include "aihelper.h"
 
 SQLiteMgr::SQLiteMgr() {}
 
@@ -13,15 +14,16 @@ SQLiteMgr::~SQLiteMgr() {}
 
 bool SQLiteMgr::Init()
 {
+    db_path_ = ai_helper::GetDBPath();
     db_ = QSqlDatabase::addDatabase("QSQLITE");                // 添加SQLITE数据库驱动
-    db_.setDatabaseName(AI_DB_NAME);                           // 设置数据库文件
+    db_.setDatabaseName(db_path_);                           // 设置数据库文件
     if (!db_.open())
     {
-        LOG_ERROR_STM("open sqlite db[" << AI_DB_NAME << "] failed! " << db_.lastError().text().toStdString());
+        LOG_ERROR_STM("open sqlite db[" << db_path_.toStdString() << "] failed! " << db_.lastError().text().toStdString());
         return false;
     }
 
-    LOG_INFO_STM("open sqlite db[" << AI_DB_NAME << "] successful!");
+    LOG_INFO_STM("open sqlite db[" << db_path_.toStdString() << "] successful!");
     return true;
 }
 
@@ -29,7 +31,7 @@ bool SQLiteMgr::LoadAllCfg(QMap<QString, ConfigItem>& cfg_map)
 {
     if (!db_.isOpen())
     {
-        LOG_ERROR_STM("open sqlite db[" << AI_DB_NAME << "] failed! ");
+        LOG_ERROR_STM("open sqlite db[" << db_path_.toStdString() << "] failed! ");
         return false;
     }
 
@@ -75,7 +77,7 @@ bool SQLiteMgr::UpdateConfig(const QVector<ConfigItem>& cfg_items)
 
     if (!db_.isOpen())
     {
-        LOG_ERROR_STM("open sqlite db[" << AI_DB_NAME << "] failed! ");
+        LOG_ERROR_STM("open sqlite db[" << db_path_.toStdString() << "] failed! ");
         return false;
     }
 

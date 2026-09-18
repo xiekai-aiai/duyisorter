@@ -61,7 +61,7 @@
 #include "src/rgb/setsorterconsistencewidget.h"
 #include "src/rgb/autoanalysiswidget.h"
 #include "src/qdatabase.h"
-#include "aismainwidget.h"
+#include "aidevicewidget.h"
 #include "src/aimodelset.h"
 
 #ifdef Q_OS_UNIX
@@ -69,36 +69,37 @@
 #endif
 
 #if ENABLE_CAPTURE_SCREEN == 1
-    #include <QPixmap>
-    #include <QtGui>
+#include <QPixmap>
+#include <QtGui>
 #endif
 
 class Qtimer;
 class myApplication;
 
 /*----------设置界面索引号-------------*/
-typedef enum{
+typedef enum
+{
     SM_COMM_PAGE,                       // 通信检测页面索引号
     SM_COMM_LIST_PAGE,                  // 通信检测列表页面索引号
     SM_INIT_PAGE,                       // 初始化页面索引号
     SM_PREHEAT_PAGE,                    // 预热页面索引号
     SM_HOME_PAGE,                       // 主页面索引号
     SM_HOME_TEA_PAGE,                   // 茶叶机型主页面索引号
-//    SM_SET_FEED_PAGE,                   // 供料设置页面索引号
-//    SM_SET_WIPE_PAGE,                   // 清灰设置页面索引号
-//    SM_TEST_EJECT_PAGE,                 // 喷阀自检页面索引号
+    //    SM_SET_FEED_PAGE,                   // 供料设置页面索引号
+    //    SM_SET_WIPE_PAGE,                   // 清灰设置页面索引号
+    //    SM_TEST_EJECT_PAGE,                 // 喷阀自检页面索引号
     SM_STATUS_INFO_PAGE,                // 系统状态页面索引号
     SM_SELECT_SCHEME_PAGE,              // 方案选择页面索引号
-//    SM_MANAGE_SCHEME_PAGE,              // 管理方案页面索引号
+    //    SM_MANAGE_SCHEME_PAGE,              // 管理方案页面索引号
     SM_MANAGE_NEW_SCHEME_PAGE,          // 管理新方案页面索引号
     SM_SET_PURVIEW,                     // 权限管理页面索引号
-//    SM_SET_FACTORY,                     // 厂家页面索引号
-//    SM_SCHEME_PARAM_PAGE,               // 方案参数页面索引号
+    //    SM_SET_FACTORY,                     // 厂家页面索引号
+    //    SM_SCHEME_PARAM_PAGE,               // 方案参数页面索引号
     SM_AI_PAGE,                         // 智能分析页面索引号
     SM_ENGINEER_PAGE,                   // 工程模式页面索引号
-//    SM_SET_SENS_PAGE,                   // 灵敏度页面索引号
+    //    SM_SET_SENS_PAGE,                   // 灵敏度页面索引号
     SM_AUTO_PAGE,                       // 一键自动页面索引号
-    SM_COPY_MAJOR_PARAMS_PAGE ,         // 复制重要参数页面索引号
+    SM_COPY_MAJOR_PARAMS_PAGE,         // 复制重要参数页面索引号
     SM_SENS_BIAS_PAGE,
     SM_MOTOR_CTRL_PAGE,
     SM_AUTO_SIGNAL_PAGE,
@@ -114,7 +115,8 @@ typedef enum{
 
 
 
-typedef enum{
+typedef enum
+{
     HOME_SCHEME_PAGE_INDEX,                   // 样本选择页面索引号
     HOME_SENS_PAGE_INDEX,                    // 设置灵敏度页面索引号
     HOME_FEED_PAGE_INDEX,                    // 供料速度页面索引号
@@ -137,11 +139,11 @@ class TestEjectThread : public QThread
 {
     Q_OBJECT
 public:
-   explicit TestEjectThread();
-   void stop();
+    explicit TestEjectThread();
+    void stop();
 
 signals:
-   void ejectorChangeSig();         // 喷阀自检数据变化信号
+    void ejectorChangeSig();         // 喷阀自检数据变化信号
 protected:
     void run();
 private slots:
@@ -156,9 +158,9 @@ private:
 class MainWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
-    MainWidget(QWidget *parent = 0);
+    MainWidget(QWidget* parent = 0);
     ~MainWidget();
 
     void CreateHomeWidget(void);            // 创建主界面
@@ -177,7 +179,7 @@ public:
 
 protected:
 #if ENABLE_CAPTURE_SCREEN == 1
-    void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent* event);
 #endif
 
 signals:
@@ -334,176 +336,176 @@ private slots:
 
 
 private:
-    updateStatusThread *updateStatus;       // 清灰线程
-    getStatusThread *getStatus;             // 获取状态
-    QThread *uploaderThread;
-    g_Config *config;
+    updateStatusThread* updateStatus;       // 清灰线程
+    getStatusThread* getStatus;             // 获取状态
+    QThread* uploaderThread;
+    g_Config* config;
     bool m_bIsFastTest;                     // 标志是否为高速通信自检
 
     QString bkPicName;                      // 主窗口背景图片的名称
     QPoint normalTopLeft;                   // 正常显示的窗口左上角坐标
-    MyDevMonitor *myDevMonitor;             // 设备状态监控网络服务
+    MyDevMonitor* myDevMonitor;             // 设备状态监控网络服务
 
     // 标题栏
-    myPushButton     *statInfoBtn;
-    QFrame           *lineTitle;
-//    myPushButton     *backToHomeBtn;
-//    myPushButton     *machineInfoBtn;
+    myPushButton* statInfoBtn;
+    QFrame* lineTitle;
+    //    myPushButton     *backToHomeBtn;
+    //    myPushButton     *machineInfoBtn;
 
-//    myPushButton     *oprModeBtn;
-//    myPushButton     *mainOprBtn;
-//    myPushButton     *videoBtn;
+    //    myPushButton     *oprModeBtn;
+    //    myPushButton     *mainOprBtn;
+    //    myPushButton     *videoBtn;
 
-    myGroupBox      *leftBackGbx;
+    myGroupBox* leftBackGbx;
 
 
     // 主页面操作选择空间
-    myListWidget      *operateListWidget;
-    myPushButton      *operateButton[7];
+    myListWidget* operateListWidget;
+    myPushButton* operateButton[7];
 
-    QVBoxLayout       *operatePageHBLayout;
-    QHBoxLayout       *operatorLayout;
-//    QGridLayout       *operatorLayout;
+    QVBoxLayout* operatePageHBLayout;
+    QHBoxLayout* operatorLayout;
+    //    QGridLayout       *operatorLayout;
 
-    QStackedWidget      *homePageStackedWidget;
-    QWidget          *pageOprType;
-    myPushButton     *customOprButton;
-    myPushButton     *highSetOprButton;
+    QStackedWidget* homePageStackedWidget;
+    QWidget* pageOprType;
+    myPushButton* customOprButton;
+    myPushButton* highSetOprButton;
 
 
     // 状态栏
 //    myPushButton     *systemHaltBtn;
-    QToolButton     *systemHaltBtn;
-    QToolButton     *saveParamBtn;
-    QToolButton     *feedSwitchBtn;
+    QToolButton* systemHaltBtn;
+    QToolButton* saveParamBtn;
+    QToolButton* feedSwitchBtn;
 
-//    myPushButton     *feedSwitchBtn;
-//    myPushButton     *beltSwitchBtn;
-//    myPushButton     *saveParamBtn;
-//    myPushButton     *setPurviewBtn;
-    QToolButton      *videoBtn;
-    myPushButton     *aiModelSetBtn;
-    QFrame           *lineStatus;
-//    myPushButton     *m_oneKeyFeedBtn;
+    //    myPushButton     *feedSwitchBtn;
+    //    myPushButton     *beltSwitchBtn;
+    //    myPushButton     *saveParamBtn;
+    //    myPushButton     *setPurviewBtn;
+    QToolButton* videoBtn;
+    myPushButton* aiModelSetBtn;
+    QFrame* lineStatus;
+    //    myPushButton     *m_oneKeyFeedBtn;
     bool m_bIsFeed;
-    myPushButton     *aiSetBtn;
+    myPushButton* aiSetBtn;
 
     // 中控界面
-    QStackedWidget      *stackedWidget;
-    communication       *pageComm;
-    communicationList   *pageCommList;
-    initialization  *pageInit;
-    preheat         *pagePreheat;
-    QWidget         *pageHome;
-    QWidget         *pageHomeTea;
-    QWidget         *pageSetFeed;
-    QWidget         *pageHalt;
-    QWidget         *pageSaveParam;
-    QWidget         *pagePurview;
-    QWidget         *pageSetWipe;
-    QWidget         *pageTestEject;
-    QWidget         *pageSelectScheme;
-    QWidget         *pageMotorCtrl;
-    autoSigWidget   *pageAutoSigWid;
-    StatusInfoPage  *pageStatusInfo;
-    ManageSchemePage *pageManageScheme;
-    ManageNewScheme *pageManageNewScheme;
-    CopyMajorParams *pageCopyMajorParams;
-    factorySet      *pageFactory;
-    MySchemeParams  *pageSchemeParams;
+    QStackedWidget* stackedWidget;
+    communication* pageComm;
+    communicationList* pageCommList;
+    initialization* pageInit;
+    preheat* pagePreheat;
+    QWidget* pageHome;
+    QWidget* pageHomeTea;
+    QWidget* pageSetFeed;
+    QWidget* pageHalt;
+    QWidget* pageSaveParam;
+    QWidget* pagePurview;
+    QWidget* pageSetWipe;
+    QWidget* pageTestEject;
+    QWidget* pageSelectScheme;
+    QWidget* pageMotorCtrl;
+    autoSigWidget* pageAutoSigWid;
+    StatusInfoPage* pageStatusInfo;
+    ManageSchemePage* pageManageScheme;
+    ManageNewScheme* pageManageNewScheme;
+    CopyMajorParams* pageCopyMajorParams;
+    factorySet* pageFactory;
+    MySchemeParams* pageSchemeParams;
 #if AI_MODE == 1
-    AIAnalysis      *pageAI;
+    AIAnalysis* pageAI;
 #else
-    AIMainWidget    *pageAI;
+    AIMainWidget* pageAI;
 #endif
-    manageEngineer  *pageEngineer;
-    setMaterialSens *pageSens;
-    setFeedPage     *pageSetFeedRS;
-    autoSetPage     *pageAutoSet;
-    SensBias        *PageSensBias;
-    MyVideo         *pageVideo;
-    AisMainWidget   *pageAiSet;
-    Throughput      *pageThroughput;
-    UnsupervisedAIMainWidget *pageUnsupervisedAIWidget;
-    setSorterConsistenceWidget *pageConsistenceWidget;
-    AutoAnalysisWidget *pageAutoAnalysisWidget;
-    QGridLayout     *mainGridLayout;
+    manageEngineer* pageEngineer;
+    setMaterialSens* pageSens;
+    setFeedPage* pageSetFeedRS;
+    autoSetPage* pageAutoSet;
+    SensBias* PageSensBias;
+    MyVideo* pageVideo;
+    AiDeviceWidget* pageAiSet;
+    Throughput* pageThroughput;
+    UnsupervisedAIMainWidget* pageUnsupervisedAIWidget;
+    setSorterConsistenceWidget* pageConsistenceWidget;
+    AutoAnalysisWidget* pageAutoAnalysisWidget;
+    QGridLayout* mainGridLayout;
 
-    AiModelSet      *aiModelSetWidget;
+    AiModelSet* aiModelSetWidget;
     // 主页面跳转控件
-    myPushButton    *selectSchemeBtn;
-    myPushButton    *manageSchemeBtn;
-    myPushButton    *setFeedBtn;
-    myPushButton    *setSensBtn;
-    myPushButton    *setWipeBtn;
-    myPushButton    *testEjectBtn;
-    myPushButton    *AIComputeBtn;
-    myPushButton    *schemeParamBtn;
+    myPushButton* selectSchemeBtn;
+    myPushButton* manageSchemeBtn;
+    myPushButton* setFeedBtn;
+    myPushButton* setSensBtn;
+    myPushButton* setWipeBtn;
+    myPushButton* testEjectBtn;
+    myPushButton* AIComputeBtn;
+    myPushButton* schemeParamBtn;
 
-    myPushButton    *enteryFactoryBtn;
-    myPushButton    *autoSetBtn;
-    myPushButton    *cameraSignalBtn;
-    myPushButton    *throughputBtn;
-    myGroupBox      *operatorGbx;
-    myGroupBox      *engineerGbx;
-    QGridLayout     *homeLayout;
-//    QGridLayout     *operatorLayout;
-    QGridLayout     *engineerLayout;
+    myPushButton* enteryFactoryBtn;
+    myPushButton* autoSetBtn;
+    myPushButton* cameraSignalBtn;
+    myPushButton* throughputBtn;
+    myGroupBox* operatorGbx;
+    myGroupBox* engineerGbx;
+    QGridLayout* homeLayout;
+    //    QGridLayout     *operatorLayout;
+    QGridLayout* engineerLayout;
 
     // 茶叶定制页面控件
-    myPushButton    *schemeBtn;
-    myLabel         *feederLabel;
-    myLabel         *sensLabel;
-    myLabel         *percentLabel;
-    MyValueBar      *feederValue;
-    myLineEdit      *sensValue;
-    myLineEdit      *percentValue;
-    myGroupBox      *operatorGroup;
+    myPushButton* schemeBtn;
+    myLabel* feederLabel;
+    myLabel* sensLabel;
+    myLabel* percentLabel;
+    MyValueBar* feederValue;
+    myLineEdit* sensValue;
+    myLineEdit* percentValue;
+    myGroupBox* operatorGroup;
 
     // 方案选择控件
-    myListWidget      *listWidget;
-    myPushButton      *okSelectSchemeBtn;
-    myPushButton      *cancelSelectSchemeBtn;
+    myListWidget* listWidget;
+    myPushButton* okSelectSchemeBtn;
+    myPushButton* cancelSelectSchemeBtn;
     int               nProfileTotal;
-    QGridLayout       *schemePageGridLayout;
-    QHBoxLayout       *schemePageHBLayout;
-    QSpacerItem       *horizontalSpacer;
+    QGridLayout* schemePageGridLayout;
+    QHBoxLayout* schemePageHBLayout;
+    QSpacerItem* horizontalSpacer;
 
     // 设置供料控件
-    QSignalMapper  *feederSignalMapper;
-    myLabel        *feedLabel[10];
-    myLineEdit     *feedLbe[10];
-    myPushButton   *cancelSetFeedBtn;
-    MyCheckBox     *feederMonitorBtn;
-    QHBoxLayout    *feederHBLayout[10];
-    QGridLayout    *feederPageGridLayout;
-    QHBoxLayout    *feederPageHBLayout;
-    QSpacerItem    *horizontalSpacer_1;
+    QSignalMapper* feederSignalMapper;
+    myLabel* feedLabel[10];
+    myLineEdit* feedLbe[10];
+    myPushButton* cancelSetFeedBtn;
+    MyCheckBox* feederMonitorBtn;
+    QHBoxLayout* feederHBLayout[10];
+    QGridLayout* feederPageGridLayout;
+    QHBoxLayout* feederPageHBLayout;
+    QSpacerItem* horizontalSpacer_1;
 
     // 设置清灰控件
-    MyTabBar            *mainWipeTabWidget;
-    QStackedWidget      *wipeStackedWidget;
-    WipeBrushWidget		*pageWipeBrush;
-    WipeWindWidget		*pageWipeWind;
-    WipeWaterWidget		*pageWipeWater;
-    WipeModeWidget      *pageWipeMode;
-    myPushButton        *cancelSetWipeBtn;
-    myPushButton        *wipeModeBtn;
+    MyTabBar* mainWipeTabWidget;
+    QStackedWidget* wipeStackedWidget;
+    WipeBrushWidget* pageWipeBrush;
+    WipeWindWidget* pageWipeWind;
+    WipeWaterWidget* pageWipeWater;
+    WipeModeWidget* pageWipeMode;
+    myPushButton* cancelSetWipeBtn;
+    myPushButton* wipeModeBtn;
 
     // 喷阀自检页面
-    myLCDNumber *lcdNumber;
-    mySlider     *ejectorSlider;
-    myLabel     *currentLabel;
-    myPushButton *minusBtn;
-    myPushButton *addBtn;
+    myLCDNumber* lcdNumber;
+    mySlider* ejectorSlider;
+    myLabel* currentLabel;
+    myPushButton* minusBtn;
+    myPushButton* addBtn;
 
-    myCustomCheckBox *loopCbx;
-    myPushButton     *layerBtn;
-    myPushButton *startBtn;
-    myPushButton *stopBtn;
-    myPushButton *cancelTestEjectBtn;
-    myCustomCheckBox *highSpeedCbx;
-    myCustomCheckBox *lowSpeedCbx;
+    myCustomCheckBox* loopCbx;
+    myPushButton* layerBtn;
+    myPushButton* startBtn;
+    myPushButton* stopBtn;
+    myPushButton* cancelTestEjectBtn;
+    myCustomCheckBox* highSpeedCbx;
+    myCustomCheckBox* lowSpeedCbx;
 
     bool        bFlagLoop;
     int         nDisplayNum;
@@ -512,51 +514,51 @@ private:
     int         ejectTestInterval2;
     int         aiEjectDelayTime;
 
-    TestEjectThread    *threadStart;
+    TestEjectThread* threadStart;
 
-    QGridLayout  *ejectPageGridLayout;
-    QHBoxLayout  *ejectPageHBlayout1;
-    QHBoxLayout  *ejectPageHBlayout2;
-    QHBoxLayout  *ejectPageHBlayout3;
-    QHBoxLayout  *ejectPageHBlayout4;
-    QHBoxLayout  *ejectPageHBlayout5;
-    QHBoxLayout  *ejectPageHBlayout6;
-    QSpacerItem    *horizontalSpacer_3;
-    QSpacerItem    *horizontalSpacer_4;
-    QSpacerItem    *horizontalSpacer_5;
-    QSpacerItem    *horizontalSpacer_6;
-    QSpacerItem    *horizontalSpacer_7;
-    QSpacerItem    *horizontalSpacer_8;
+    QGridLayout* ejectPageGridLayout;
+    QHBoxLayout* ejectPageHBlayout1;
+    QHBoxLayout* ejectPageHBlayout2;
+    QHBoxLayout* ejectPageHBlayout3;
+    QHBoxLayout* ejectPageHBlayout4;
+    QHBoxLayout* ejectPageHBlayout5;
+    QHBoxLayout* ejectPageHBlayout6;
+    QSpacerItem* horizontalSpacer_3;
+    QSpacerItem* horizontalSpacer_4;
+    QSpacerItem* horizontalSpacer_5;
+    QSpacerItem* horizontalSpacer_6;
+    QSpacerItem* horizontalSpacer_7;
+    QSpacerItem* horizontalSpacer_8;
 
-    QSpacerItem    *horizontalSpacer_10;
-    QSpacerItem    *horizontalSpacer_11;
+    QSpacerItem* horizontalSpacer_10;
+    QSpacerItem* horizontalSpacer_11;
 
     // 权限设置
-    myPushButton *userOperatorBtn;
-    myPushButton *userEngineerBtn;
-    myPushButton *userFactoryBtn;
-    myPushButton *cancelSetPurviewBtn;
+    myPushButton* userOperatorBtn;
+    myPushButton* userEngineerBtn;
+    myPushButton* userFactoryBtn;
+    myPushButton* cancelSetPurviewBtn;
     quint8 pageIndex;
     QString titleStr;
 
-    QGridLayout  *purviewPageGridLayout;
-    QSpacerItem  *horizontalSpacer_9;
+    QGridLayout* purviewPageGridLayout;
+    QSpacerItem* horizontalSpacer_9;
 
-    QHBoxLayout  *purviewPageHBLayout1;
-    QHBoxLayout  *purviewPageHBLayout2;
-    QHBoxLayout  *purviewPageHBLayout3;
-    QHBoxLayout  *purviewPageHBLayout4;
+    QHBoxLayout* purviewPageHBLayout1;
+    QHBoxLayout* purviewPageHBLayout2;
+    QHBoxLayout* purviewPageHBLayout3;
+    QHBoxLayout* purviewPageHBLayout4;
 
     // 点击控制页面
-    myCustomCheckBox    *m_motorPageStartCbx;
-    myPushButton        *m_motorPageBackBtn;
+    myCustomCheckBox* m_motorPageStartCbx;
+    myPushButton* m_motorPageBackBtn;
 };
 
 class myApplication : public QApplication
 {
 public:
-    myApplication(int & argc, char ** argv);
-    bool qwsEventFilter(QObject *w, QEvent *event);
+    myApplication(int& argc, char** argv);
+    bool qwsEventFilter(QObject* w, QEvent* event);
 
 };
 
