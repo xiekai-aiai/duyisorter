@@ -105,9 +105,34 @@ public:
     void initModelType();                               //初始化udp ejector mode协议
     void initModelPara();                               //初始化udp ejector para协议
 
-    void imageInferOnOff(bool onOff);
-    void imageSendOnOff(bool onOff);
     int  initAiCommunication();
+
+    /**
+     * @brief: 启动AI工作
+     * @param {bool} onOff
+     * @return {*}
+     */
+    void startAiWorker(bool onOff);
+    /**
+     * @brief: 开始AI采集
+     * @return {*}
+     */
+    void startAiCollect();
+    /**
+     * @brief: 停止AI采集
+     * @return {*}
+     */
+    void stopAiCollect();
+    /**
+     * @brief: 开启AI推理
+     * @return {*}
+     */
+    void startAiInfer();
+    /**
+     * @brief: 停止AI推理
+     * @return {*}
+     */
+    void stopAiInfer();
 
 
     void getDefaultPara();

@@ -1,11 +1,11 @@
 /*
- * @Description: Ai相关UI配置管理类，所有的配置由该类进行统一管理(查询和存储)
- * @version:
- * @Author: xiekai
- * @Date: 2026-09-15 14:45:14
- * @LastEditors: xiekai
- * @LastEditTime: 2026-09-15 14:47:19
- */
+  * @Description: Ai相关UI配置管理类，所有的配置由该类进行统一管理(查询和存储)
+  * @version:
+  * @Author: xiekai
+  * @Date: 2026-09-15 14:45:14
+  * @LastEditors: xiekai
+  * @LastEditTime: 2026-09-15 14:47:19
+  */
 #ifndef CONFIGMGR_H
 #define CONFIGMGR_H
 
@@ -63,6 +63,18 @@ public:
      */
     bool SetTimeCfgInfo(const TimeCfgInfo& info);
 
+    /**
+     * @brief: 获取图片采集使能标签
+     * @return {*}
+     */
+    bool GetEnableAcquisition();
+
+    /**
+     * @brief: 设置图片采集使能标签
+     * @return {*}
+     */
+    void SetEnableAcquisition(bool enable);
+
 private:
     ConfigMgr();
     ~ConfigMgr();
@@ -93,8 +105,9 @@ private:
     void InitTimeCfgInfo(const QMap<QString, ConfigItem>& cfg_map);
 
 private:
-    AiCfgInfo ai_cfg_info_;           // AI 信息
-    quint16 coll_pic_num_;            // 图片采集张数
+    AiCfgInfo ai_cfg_info_;                 // AI 信息
+    quint16 coll_pic_num_;                  // 图片采集张数
+    bool enable_acquisition_{ false };      // 图片采集使能
     TimeCfgInfo time_cfg_info_;       //
 };
 

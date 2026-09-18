@@ -80,13 +80,14 @@ HEADERS += $$PWD/src/*.h \
            $$PWD/src/common/mono_shared/venderset/feederremotectrl.h \
            $$PWD/src/rgb/*.h \
            $$PWD/src/rgb/schemeparams/*.h \
-    src/myicon.h \
-    src/common/mycombobox.h \
-    src/rgb/upgradefpga/upgradeprogramwidget.h \
-    src/rgb/upgradefpga/upgradefpgawidget.h \
-    src/rgb/upgradefpga/selectfiledialog.h \
-    src/rgb/tickmodewidget.h \
-    src/rgb/autoanalysiswidget.h
+           $$PWD/src/myicon.h \
+           $$PWD/src/common/mycombobox.h \
+           $$PWD/src/rgb/upgradefpga/upgradeprogramwidget.h \
+           $$PWD/src/rgb/upgradefpga/upgradefpgawidget.h \
+           $$PWD/src/rgb/upgradefpga/selectfiledialog.h \
+           $$PWD/src/rgb/tickmodewidget.h \
+           $$PWD/src/rgb/autoanalysiswidget.h 
+
 # source file
 SOURCES += $$PWD/src/*.cpp \
 #第三方库
@@ -112,9 +113,9 @@ SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/common/mono_shared/venderset/feederremotectrl.cpp \
            $$PWD/src/rgb/*.cpp \
            $$PWD/src/rgb/schemeparams/*.cpp \
-    src/rgb/upgradefpga/upgradeprogramwidget.cpp \
-    src/rgb/upgradefpga/upgradefpgawidget.cpp \
-    src/rgb/upgradefpga/selectfiledialog.cpp
+           $$PWD/src/rgb/upgradefpga/upgradeprogramwidget.cpp \
+           $$PWD/src/rgb/upgradefpga/upgradefpgawidget.cpp \
+           $$PWD/src/rgb/upgradefpga/selectfiledialog.cpp 
 
 win32{
             DESTDIR = app

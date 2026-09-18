@@ -5,18 +5,19 @@
  */
 void GlobalFlow::initChannelPixelCompensateDseries()
 {
-    switch(struCnfg.nEjectorsPerChute) {
+    switch (struCnfg.nEjectorsPerChute)
+    {
     case 60:
-        struGsh.fPixelCompensate[0]  = 0.0;
-        struGsh.fPixelCompensate[1]  = -1.1;
-        struGsh.fPixelCompensate[2]  = -2.2;
-        struGsh.fPixelCompensate[3]  = -3.3;
-        struGsh.fPixelCompensate[4]  = -4.2;
-        struGsh.fPixelCompensate[5]  = -5.0;
-        struGsh.fPixelCompensate[6]  = -5.7;
-        struGsh.fPixelCompensate[7]  = -6.3;
-        struGsh.fPixelCompensate[8]  = -6.8;
-        struGsh.fPixelCompensate[9]  = -7.2;
+        struGsh.fPixelCompensate[0] = 0.0;
+        struGsh.fPixelCompensate[1] = -1.1;
+        struGsh.fPixelCompensate[2] = -2.2;
+        struGsh.fPixelCompensate[3] = -3.3;
+        struGsh.fPixelCompensate[4] = -4.2;
+        struGsh.fPixelCompensate[5] = -5.0;
+        struGsh.fPixelCompensate[6] = -5.7;
+        struGsh.fPixelCompensate[7] = -6.3;
+        struGsh.fPixelCompensate[8] = -6.8;
+        struGsh.fPixelCompensate[9] = -7.2;
         struGsh.fPixelCompensate[10] = -7.5;
         struGsh.fPixelCompensate[11] = -7.7;
         struGsh.fPixelCompensate[12] = -7.8;
@@ -77,25 +78,31 @@ void GlobalFlow::initChannelPixelCompensate()
 {
     int i;
 
-    for (i = 0; i < struCnfg.nEjectorsPerChute; i++) {
-         struGsh.fPixelCompensate[i] = 0.0;
+    for (i = 0; i < struCnfg.nEjectorsPerChute; i++)
+    {
+        struGsh.fPixelCompensate[i] = 0.0;
     }
 
-    if(struCnfc.nLensType == 0) {       // 非美亚定制镜头，不需要镜头畸变补偿系数
-        for (i = 0; i < struCnfg.nEjectorsPerChute; i++) {
+    if (struCnfc.nLensType == 0)
+    {       // 非美亚定制镜头，不需要镜头畸变补偿系数
+        for (i = 0; i < struCnfg.nEjectorsPerChute; i++)
+        {
             struGsh.fPixelCompensate[i] = 0.0;
         }
         return;
     }
-    if(struCnfc.nSensorType == SENSOR_D2) {
+    if (struCnfc.nSensorType == SENSOR_D2)
+    {
         initChannelPixelCompensateDseries();
         return;
     }
 
     //! 根据光学室反馈，镜头畸变受喷嘴及分辨率影响
-    switch(struCnfg.nEjectorsPerChute) {
+    switch (struCnfg.nEjectorsPerChute)
+    {
     case 60:
-        if (struCnfc.nSensorPixel == SENSOR_PIXELS_2048) {
+        if (struCnfc.nSensorPixel == SENSOR_PIXELS_2048)
+        {
             struGsh.fPixelCompensate[0] = 0;
             struGsh.fPixelCompensate[1] = -1.1;
             struGsh.fPixelCompensate[2] = -2.1;
@@ -156,17 +163,19 @@ void GlobalFlow::initChannelPixelCompensate()
             struGsh.fPixelCompensate[57] = 1.9;
             struGsh.fPixelCompensate[58] = 0.7;
             struGsh.fPixelCompensate[59] = 0;
-        } else if (struCnfc.nSensorPixel == SENSOR_PIXELS_1024) {
-            struGsh.fPixelCompensate[0]  = 0.0;
-            struGsh.fPixelCompensate[1]  = -0.5;
-            struGsh.fPixelCompensate[2]  = -1.0;
-            struGsh.fPixelCompensate[3]  = -1.4;
-            struGsh.fPixelCompensate[4]  = -1.8;
-            struGsh.fPixelCompensate[5]  = -2.1;
-            struGsh.fPixelCompensate[6]  = -2.4;
-            struGsh.fPixelCompensate[7]  = -2.6;
-            struGsh.fPixelCompensate[8]  = -2.8;
-            struGsh.fPixelCompensate[9]  = -3.0;
+        }
+        else if (struCnfc.nSensorPixel == SENSOR_PIXELS_1024)
+        {
+            struGsh.fPixelCompensate[0] = 0.0;
+            struGsh.fPixelCompensate[1] = -0.5;
+            struGsh.fPixelCompensate[2] = -1.0;
+            struGsh.fPixelCompensate[3] = -1.4;
+            struGsh.fPixelCompensate[4] = -1.8;
+            struGsh.fPixelCompensate[5] = -2.1;
+            struGsh.fPixelCompensate[6] = -2.4;
+            struGsh.fPixelCompensate[7] = -2.6;
+            struGsh.fPixelCompensate[8] = -2.8;
+            struGsh.fPixelCompensate[9] = -3.0;
             struGsh.fPixelCompensate[10] = -3.1;
             struGsh.fPixelCompensate[11] = -3.2;
             struGsh.fPixelCompensate[12] = -3.2;
@@ -220,16 +229,16 @@ void GlobalFlow::initChannelPixelCompensate()
         }
         break;
     case 40:
-        struGsh.fPixelCompensate[0]  = 0.0;
-        struGsh.fPixelCompensate[1]  = -0.7;
-        struGsh.fPixelCompensate[2]  = -1.3;
-        struGsh.fPixelCompensate[3]  = -1.7;
-        struGsh.fPixelCompensate[4]  = -2.0;
-        struGsh.fPixelCompensate[5]  = -2.2;
-        struGsh.fPixelCompensate[6]  = -2.3;
-        struGsh.fPixelCompensate[7]  = -2.4;
-        struGsh.fPixelCompensate[8]  = -2.3;
-        struGsh.fPixelCompensate[9]  = -2.3;
+        struGsh.fPixelCompensate[0] = 0.0;
+        struGsh.fPixelCompensate[1] = -0.7;
+        struGsh.fPixelCompensate[2] = -1.3;
+        struGsh.fPixelCompensate[3] = -1.7;
+        struGsh.fPixelCompensate[4] = -2.0;
+        struGsh.fPixelCompensate[5] = -2.2;
+        struGsh.fPixelCompensate[6] = -2.3;
+        struGsh.fPixelCompensate[7] = -2.4;
+        struGsh.fPixelCompensate[8] = -2.3;
+        struGsh.fPixelCompensate[9] = -2.3;
         struGsh.fPixelCompensate[10] = -2.2;
         struGsh.fPixelCompensate[11] = -2.1;
         struGsh.fPixelCompensate[12] = -2.0;
@@ -262,16 +271,16 @@ void GlobalFlow::initChannelPixelCompensate()
         struGsh.fPixelCompensate[39] = 0.7;
         break;
     case 50:
-        struGsh.fPixelCompensate[0]  = 0.0;
-        struGsh.fPixelCompensate[1]  = -0.8;
-        struGsh.fPixelCompensate[2]  = -1.4;
-        struGsh.fPixelCompensate[3]  = -2.0;
-        struGsh.fPixelCompensate[4]  = -2.5;
-        struGsh.fPixelCompensate[5]  = -2.9;
-        struGsh.fPixelCompensate[6]  = -3.2;
-        struGsh.fPixelCompensate[7]  = -3.5;
-        struGsh.fPixelCompensate[8]  = -3.6;
-        struGsh.fPixelCompensate[9]  = -3.8;
+        struGsh.fPixelCompensate[0] = 0.0;
+        struGsh.fPixelCompensate[1] = -0.8;
+        struGsh.fPixelCompensate[2] = -1.4;
+        struGsh.fPixelCompensate[3] = -2.0;
+        struGsh.fPixelCompensate[4] = -2.5;
+        struGsh.fPixelCompensate[5] = -2.9;
+        struGsh.fPixelCompensate[6] = -3.2;
+        struGsh.fPixelCompensate[7] = -3.5;
+        struGsh.fPixelCompensate[8] = -3.6;
+        struGsh.fPixelCompensate[9] = -3.8;
         struGsh.fPixelCompensate[10] = -3.8;
         struGsh.fPixelCompensate[11] = -3.8;
         struGsh.fPixelCompensate[12] = -3.7;
@@ -323,31 +332,38 @@ void GlobalFlow::initChannelPixelCompensate()
  */
 void GlobalFlow::resetTickAdvParams()
 {
-    switch (struCnfc.nSensorType) {
+    switch (struCnfc.nSensorType)
+    {
     case SENSOR_K:  // Keda
-        struGsh.delayPerRow = (float)6/struCnfc.nSensorRowFre;
+        struGsh.delayPerRow = (float)6 / struCnfc.nSensorRowFre;
         struGsh.rowColumnRelation = 2;
         struGsh.maxRowNumber = 16;
         break;
     case SENSOR_T_2566:	// T2
-        struGsh.delayPerRow = (float)63*115/(1000*struCnfc.nSensorRowFre);
+        struGsh.delayPerRow = (float)63 * 115 / (1000 * struCnfc.nSensorRowFre);
         struGsh.rowColumnRelation = 2;
         struGsh.maxRowNumber = 16;
         break;
     case SENSOR_T_2564: // T3
 
-            if (struCnfc.nSensorPixelLevel[0] == SENSOR_PIXELS_1024) {
-                struGsh.maxRowNumber = 32;
-                struGsh.rowColumnRelation = 1;
-            } else if (struCnfc.nSensorPixelLevel[0] == SENSOR_PIXELS_2048) {
-                struGsh.maxRowNumber = 32;
-                struGsh.rowColumnRelation = 2;
-            }
-        
+        if (struCnfc.nSensorPixelLevel[0] == SENSOR_PIXELS_1024)
+        {
+            struGsh.maxRowNumber = 32;
+            struGsh.rowColumnRelation = 1;
+        }
+        else if (struCnfc.nSensorPixelLevel[0] == SENSOR_PIXELS_2048)
+        {
+            struGsh.maxRowNumber = 32;
+            struGsh.rowColumnRelation = 2;
+        }
 
-        if (336.0/(0.1*struCnfc.nSensorRowFre) > 100) {
-            struGsh.delayPerRow = 336.0/(100*struCnfc.nSensorRowFre);
-        } else {
+
+        if (336.0 / (0.1 * struCnfc.nSensorRowFre) > 100)
+        {
+            struGsh.delayPerRow = 336.0 / (100 * struCnfc.nSensorRowFre);
+        }
+        else
+        {
             struGsh.delayPerRow = 0.1;
         }
         break;
@@ -400,39 +416,49 @@ void GlobalFlow::initGsh()
 
     struGsh.nDevTypeAddrBias = 0;
 
-    for (i = 0; i < MAX_LEVEL; i++) {
-        for (j = 0; j < MAX_UNIT; j++) {
+    for (i = 0; i < MAX_LEVEL; i++)
+    {
+        for (j = 0; j < MAX_UNIT; j++)
+        {
             nAddr = struCnfg.struLevelInfo[i].nUnitId[j];
-            for (k = 0; k < 8; k++) {
+            for (k = 0; k < 8; k++)
+            {
                 struGsh.struVer.sUnit[i][j][k] = 255;
             }
         }
     }
-    for (i = 0; i < MAX_LEVEL; i++) {
-        for (j = 0; j < 3; j++) {
+    for (i = 0; i < MAX_LEVEL; i++)
+    {
+        for (j = 0; j < 3; j++)
+        {
             struGsh.struVer.sInterface[i][j] = 255;
         }
     }
 
-    for (i = 0; i < MAX_CTRL; i++) {
-        for (j = 0; j < 2; j++) {
+    for (i = 0; i < MAX_CTRL; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
             struGsh.struVer.sControl[i][j] = 255;
         }
     }
 
-    for (i = 0; i < MAX_UNIT/2; i++) {
+    for (i = 0; i < MAX_UNIT; i++)
+    {
         struGsh.aiResult[i] = QString("");
     }
 
     //! 恒流源板版本查询
-    for (i = 0; i < MAX_LIGHT_SOURCE; i++) {
+    for (i = 0; i < MAX_LIGHT_SOURCE; i++)
+    {
         struGsh.struVer.sLightSrc[i][0] = 255;
         struGsh.struVer.sLightSrc[i][1] = 255;
     }
     struGsh.struVer.nUsbFirmware = 255;
 
     struGsh.bStatFeed = 0;
-    for (i = 0; i < MAX_LEVEL; i++) {
+    for (i = 0; i < MAX_LEVEL; i++)
+    {
         struGsh.bStatBelt[i] = 0;
     }
     struGsh.bStatEjectFpga = 1;
@@ -441,7 +467,8 @@ void GlobalFlow::initGsh()
     struGsh.bFlagRowing = 1;
     struGsh.bFlagMachinetest = 0;
     //! 料位检测
-    for (int i = 0; i < MAX_GROUP_TICK; i++) {
+    for (int i = 0; i < MAX_GROUP_TICK; i++)
+    {
         struGsh.nAlarmLevelGroup[i] = 0;
     }
     //! 一键放料标志
@@ -466,7 +493,7 @@ void GlobalFlow::initGsh()
     struGsh.nUnit = 0;
     struGsh.nMatGroup = 0;
 
-    memset(struGsh.sRgbRow, 0, SENSOR_MAX_PIXELS*3+16);
+    memset(struGsh.sRgbRow, 0, SENSOR_MAX_PIXELS * 3 + 16);
     memset(struGsh.sRowRed, 0, SENSOR_MAX_PIXELS);
     memset(struGsh.sRowGreen, 0, SENSOR_MAX_PIXELS);
     memset(struGsh.sRowBlue, 0, SENSOR_MAX_PIXELS);
@@ -474,11 +501,13 @@ void GlobalFlow::initGsh()
     struGsh.nSensCoefficient = CF_SENS_COEFICENT;
 
     //! 接口板波特率
-    for (int i = 0; i < MAX_INT; i++) {
+    for (int i = 0; i < MAX_INT; i++)
+    {
         struGsh.nIntBaud[i] = 0;
     }
 
-    for (i = 0; i < IMAGE_MAX; i++) {
+    for (i = 0; i < IMAGE_MAX; i++)
+    {
         struGsh.nIntelSampColor[i] = 1;
         struGsh.nIntelSampMode[i] = 0;
         struGsh.nIntelSampSens[i] = 255;
@@ -491,16 +520,18 @@ void GlobalFlow::initGsh()
     struGsh.nBacklightCounter = 0;
 
     struGsh.nPixelBegin = 40;
-    struGsh.nPixelEnd   = 2000;
+    struGsh.nPixelEnd = 2000;
     struGsh.isPeaMachineBeanMat = true;
     struGsh.enableJudgeBeanMachine = true;
     struGsh.bIsAssist = false;
     memset(struGsh.pEjectTimes, 0, sizeof(struGsh.pEjectTimes));
 
     //! 颜色算法识别结果
-    for (int i = 0; i < MAX_UNIT; i++) {
+    for (int i = 0; i < MAX_UNIT; i++)
+    {
         struGsh.struResult[i].nPixelSum = 0;
-        for (int j = 0; j < IDE_RESULT_TYPE; j++) {
+        for (int j = 0; j < IDE_RESULT_TYPE; j++)
+        {
             struGsh.struResult[i].nBadNum[j] = 0;
             struGsh.struResult[i].nEn[j] = true;
         }
@@ -517,20 +548,26 @@ void GlobalFlow::initGsh()
 
     //! TD机型根据每层前后视状态初始化对应识别组位置
     int nIndex = 0;
-    for (int i = 0; i < MAX_LEVEL*2; i++) {
+    for (int i = 0; i < MAX_LEVEL * 2; i++)
+    {
         struGsh.idIndex[i] = 0;
     }
-    for (int i = 0; i < struCnfg.nLevelTotal; i++) {
-        if (struCnfg.struLevelInfo[i].nViewTotal == 1) {
-            struGsh.idIndex[nIndex++] = 2*i;
-        } else if (struCnfg.struLevelInfo[i].nViewTotal == 2) {
-            struGsh.idIndex[nIndex++] = 2*i;
-            struGsh.idIndex[nIndex++] = 2*i + 1;
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
+    {
+        if (struCnfg.struLevelInfo[i].nViewTotal == 1)
+        {
+            struGsh.idIndex[nIndex++] = 2 * i;
+        }
+        else if (struCnfg.struLevelInfo[i].nViewTotal == 2)
+        {
+            struGsh.idIndex[nIndex++] = 2 * i;
+            struGsh.idIndex[nIndex++] = 2 * i + 1;
         }
     }
 
     //! 温度检测
-    for (int i = 0; i < MAX_TEMPERATURE_SENSOR; i++) {
+    for (int i = 0; i < MAX_TEMPERATURE_SENSOR; i++)
+    {
         struGsh.nSensorTemperature[i] = 0;
     }
     struGsh.nTemperatureMax = 0;
@@ -538,8 +575,9 @@ void GlobalFlow::initGsh()
 
     struGsh.nIntelSampType = 1;
 
-    for(int i=0; i<MAX_UNIT/2; i++){
-       struGsh.nThroughtPut[i] = 0;
+    for (int i = 0; i < MAX_UNIT / 2; i++)
+    {
+        struGsh.nThroughtPut[i] = 0;
     }
 
     //! 重置与组相关的参数
@@ -557,19 +595,21 @@ void GlobalFlow::initGsh()
     getDefaultPara();
 }
 
-void GlobalFlow::getDefaultPara(){
+void GlobalFlow::getDefaultPara()
+{
     //ai板子数量初始化
     int idTotal = 0;
-    switch(struCnfg.struLevelInfo[struGsh.nLevel].nViewTotal) {
+    switch (struCnfg.struLevelInfo[struGsh.nLevel].nViewTotal)
+    {
     case 1:     // 单视
-        idTotal = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal*2;
+        idTotal = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal * 2;
         break;
     case 2:     // 双视
         idTotal = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal;
         break;
     }
-    struGsh.aiDeviceNum = idTotal/2;
-    qDebug() << "aiDeviceNum"<<struGsh.aiDeviceNum;
+    struGsh.aiDeviceNum = idTotal / 2;
+    qDebug() << "aiDeviceNum" << struGsh.aiDeviceNum;
 
     struGsh.ftpIpAddressList.clear();
     struGsh.addressList.clear();
@@ -577,7 +617,8 @@ void GlobalFlow::getDefaultPara(){
     struGsh.ftpIpAddressList.append(AI_IP_ADDRESS);
     QString oldIpAddress = AI_IP_ADDRESS;
 
-    for(int i=1; i<struGsh.aiDeviceNum; i++){
+    for (int i = 1; i < struGsh.aiDeviceNum; i++)
+    {
         QString newIpAddress = oldIpAddress;
         newIpAddress = incrementLastOctet(oldIpAddress);
         oldIpAddress = newIpAddress;
@@ -586,45 +627,55 @@ void GlobalFlow::getDefaultPara(){
     //json文件解析
     QFile file(DEFAULT_PARA_INIT);
     file.open(QFile::ReadOnly);
-    QString json=  QString::fromUtf8(file.readAll());
+    QString json = QString::fromUtf8(file.readAll());
     file.close();
     bool ok;
     QVariantMap resultMap = QJson::parse(json.toUtf8(), ok).toMap();
-    if(!ok){
-         qDebug() << "json open failed, using default IpAddress";
-    }else{
-        for(int i=0; i<struGsh.aiDeviceNum; i++){
+    if (!ok)
+    {
+        qDebug() << "json open failed, using default IpAddress";
+    }
+    else
+    {
+        for (int i = 0; i < struGsh.aiDeviceNum; i++)
+        {
             QString key = QString("ftpIp%1").arg(i);
-            if(resultMap.keys().contains(key)){
+            if (resultMap.keys().contains(key))
+            {
                 struGsh.ftpIpAddress = resultMap[key].toString();
-                struGsh.ftpIpAddressList.replace(i,struGsh.ftpIpAddress);
+                struGsh.ftpIpAddressList.replace(i, struGsh.ftpIpAddress);
             }
         }
     }
-    qDebug() << "ftpIpAddressList"<<struGsh.ftpIpAddressList;
+    qDebug() << "ftpIpAddressList" << struGsh.ftpIpAddressList;
     struGsh.address = QHostAddress(struGsh.ftpIpAddressList.at(0));
     struGsh.addressList.append(struGsh.address);
-    for(int i=1; i<struGsh.ftpIpAddressList.size(); i++){
+    for (int i = 1; i < struGsh.ftpIpAddressList.size(); i++)
+    {
         struGsh.addressList.append(QHostAddress(struGsh.ftpIpAddressList.at(i)));
     }
 }
 
 // IP地址最后一位+1
-QString GlobalFlow::incrementLastOctet(const QString & ip) {
+QString GlobalFlow::incrementLastOctet(const QString& ip)
+{
     QStringList parts = ip.split(".");
     int lastOctet = parts[3].toInt();
 
     // 处理最后一位+1的逻辑
-    if (lastOctet < 255) {
+    if (lastOctet < 255)
+    {
         lastOctet++;
-    } else {
+    }
+    else
+    {
         // 如果最后一位是255，则保持不变或根据需求处理
         qDebug() << "警告: IP地址最后一位已经是255，无法再增加。" << endl;
         return ip;
     }
 
     // 构建新的IP地址
-    return parts[0] + "." + parts[1] + "." + parts[2] + "." +  QString::number(lastOctet);
+    return parts[0] + "." + parts[1] + "." + parts[2] + "." + QString::number(lastOctet);
 }
 
 

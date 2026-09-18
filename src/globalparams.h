@@ -1509,8 +1509,7 @@ struct struShare
     QList<QString>         ftpIpAddressList;
     QHostAddress     address;
     QString          ftpIpAddress;
-    bool             isImageSend;
-    QString aiResult[MAX_UNIT / 2];
+    QString aiResult[MAX_UNIT];
 
     QString wifiSsid;
     QString wifiPassWord;
@@ -1527,7 +1526,7 @@ typedef struct
 
 
 /* DFS搜索方向数组 */
-static const int pDirection[4][2] = { {1, 0}, {0, -1}, {0, 1}, {-1, 0} };
+static const int pDirection[4][2] = { { 1, 0 },{ 0, -1 },{ 0, 1 },{ -1, 0 } };
 
 extern int nSmallMatArea;
 /* 定义物料参数 */

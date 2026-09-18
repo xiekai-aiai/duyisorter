@@ -1218,7 +1218,7 @@ void MainWidget::CreateHomeWidget()
     pageFactory = new factorySet();
     homePageStackedWidget->addWidget(pageFactory);
 
-    pageAiSet = new AisMainWidget();
+    pageAiSet = new AiDeviceWidget();
     homePageStackedWidget->addWidget(pageAiSet);
 
     // 选择方案
@@ -3756,8 +3756,6 @@ void MainWidget::onVideoBtnClickedSlt()
 
 void MainWidget::onAiSetBtnClickedSlt()
 {
-    pageAiSet->getParaInfo();
-    //    pageVideo->getParaInfo();
     homePageStackedWidget->setCurrentIndex(HIGH_SET_AI_PAGE_INDEX);
 }
 

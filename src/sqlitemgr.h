@@ -54,6 +54,7 @@ private:
 
 private:
     QSqlDatabase db_;                  // 数据库实例
+    QString db_path_;                  // 数据库文件路径
 };
 
 #endif // SQLITEMGR_H
