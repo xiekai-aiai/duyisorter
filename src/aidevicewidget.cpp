@@ -336,7 +336,7 @@ void AiDeviceWidget::onDownBtnPressed()
     LOG_INFO_STM("onDownBtnPressed start download image...");
 
     progressDlg->setValue(0);
-    progressDlg->show();
+    // progressDlg->show();   // 调试时屏蔽下载进度弹窗，后台下载仍进行
     QString downDir = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
     QString downPath = ai_helper::GetAcqImgRootPath() + "/" + downDir;
     if (!QDir().mkpath(downPath))
