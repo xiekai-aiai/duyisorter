@@ -87,12 +87,19 @@ bool SQLiteMgr::UpdateConfig(const QVector<ConfigItem>& cfg_items)
         LOG_ERROR_STM("Begin transaction failed:" << db_.lastError().text().toStdString());
         return false;
     }
-
+#if 0
+    // note: 在老版本上这种写法更新数据库是报错
     query.prepare(
         "INSERT INTO config (group_name, param_name, param_value) "
         "VALUES (:group_name, :param_name, :param_value) "
         "ON CONFLICT (group_name, param_name) "
         "DO UPDATE SET param_value = excluded.param_value"
+    );
+#endif 
+    query.prepare(
+        "INSERT OR REPLACE INTO config "
+        "(group_name, param_name, param_value) "
+        "VALUES (:group_name, :param_name, :param_value)"
     );
 
     for (const ConfigItem& item : cfg_items)
