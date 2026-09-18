@@ -11,7 +11,7 @@ DEPENDPATH += . src/3rdparty src src/common
 INCLUDEPATH += . src src/common src/3rdparty
 CONFIG += qt debug_and_release warn_on thread
 CONFIG += resources_big
-QT += network widgets sql ftp
+QT += network widgets sql
 DEFINES += ENABLE_CAPTURE_SCREEN=1
 
 CONFIG(release,debug|release){ 
@@ -27,16 +27,15 @@ else {
 unix {
     contains(QT_ARCH, x86_64)|contains(QMAKE_TARGET.arch, x86_64) {
         message("qmake: target arch = x86_64 (host/VM debug)")
-        # OpenCV 4.5.5（随项目分发）：上位机 x86_64 调试
+        # OpenCV + OpenSSL + 其他3rdparty：x86_64 版本（随项目分发）
         INCLUDEPATH += $$PWD/src/3rdparty/opencv/x86/include/opencv4 \
-                       $$PWD/src/3rdparty/openssl/x86/include        \
-                       $$PWD/src/3rdparty/unilog/x86/include         \
-                       $$PWD/src/3rdparty/libssh2/x86/include
+                       $$PWD/src/3rdparty/openssl/x86/include      \
+                       $$PWD/src/3rdparty/x86/include
 
         LIBS += -L$$PWD/src/3rdparty/opencv/x86/lib  \
                 -L$$PWD/src/3rdparty/openssl/x86/lib \
-                -L$$PWD/src/3rdparty/unilog/x86/lib  \
-                -L$$PWD/src/3rdparty/libssh2/x86/lib  \
+                -L$$PWD/src/3rdparty/x86/lib  \
+                -L$$PWD/src/3rdparty/x86/lib  \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
     } else {
@@ -44,13 +43,13 @@ unix {
         # OpenCV 4.5.5（随项目分发）：rk3566 aarch64 生产
         INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4 \
                        $$PWD/src/3rdparty/openssl/arm/include        \
-                       $$PWD/src/3rdparty/unilog/arm/include         \
-                       $$PWD/src/3rdparty/libssh2/arm/include
+                       $$PWD/src/3rdparty/arm/include         \
+                       $$PWD/src/3rdparty/arm/include
 
         LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib  \
                 -L$$PWD/src/3rdparty/openssl/arm/lib \
-                -L$$PWD/src/3rdparty/unilog/arm/lib  \
-                -L$$PWD/src/3rdparty/libssh2/arm/lib  \
+                -L$$PWD/src/3rdparty/arm/lib  \
+                -L$$PWD/src/3rdparty/arm/lib  \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
     }
@@ -175,4 +174,5 @@ INSTALLS += target
 target.path=/opt/app
 
 FORMS += \
-    aimodelset.ui
+    aimodelset.ui 
+include($$PWD/src/3rdparty/log4qt/log4qt.pri)

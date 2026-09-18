@@ -9,6 +9,21 @@
 
 source  /opt/app/env.sh
 
+# 查找 DuySorter 进程（排除 grep 自身）
+PID=$(ps -ef | grep DuySorter | grep -v grep | awk '{print $2}')
+
+# 如果 PID 不为空，说明进程在运行
+if [ -n "$PID" ]; then
+    echo "发现 DuySorter 进程，正在停止..."
+    kill $PID
+    
+    # 等待进程退出（可选，更安全）
+    sleep 1
+    echo "DuySorter 进程已停止"
+else
+    echo "DuySorter 进程未运行"
+fi
+
 # if have network config file, do it
 #NETCONF=/userdata/cnf/cnf.network
 #if [ -s $NETCONF ] ; then
@@ -48,8 +63,16 @@ fi
 #fi
 #echo "tun.ko加载成功"
 
-sh check_and_mount_usb.sh /dev/sda1 /udisk
-echo "mount U盘结束"
+#sh check_and_mount_usb.sh /dev/sda1 /udisk
+#echo "mount U盘结束"
+
+# 检查 U 盘是否已挂载
+mount /dev/sda1 /udisk
+if [ $? -eq 0 ]; then
+        echo "U盘成功挂载到 /udisk。"
+else
+        echo "挂载 U 盘时出错，请检查设备和权限。"
+fi
 
 
 if  [ -e /udisk/upgrade/logo.bmp ]; then
@@ -82,6 +105,10 @@ fi
 
 cp lib/libt* /usr/lib/aarch64-linux-gnu/
 
+mkdir -p /opt/app/userdata/i18n
+cp -f i18n/* /opt/app/userdata/i18n/ 2>/dev/null
+
+chmod u+x DuySorter
+ 
 # start app
 ./DuySorter &
-

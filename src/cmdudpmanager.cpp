@@ -57,18 +57,12 @@ bool CmdUdpManager::onSendCommand(const QHostAddress &address, quint16 port, con
     // 防止多个界面同时发送
     QMutexLocker locker(&requestMutex_);
 
+    // Qt 5.4+ 支持 QTimer::singleShot(0, context, lambda)，比 lambda invokeMethod 更兼容
     UdpWorker* worker = worker_;
-    const bool invoked =
-        QMetaObject::invokeMethod
-        (
-            worker,
-            [worker, address, port, request]()
-            {
-                worker->onSendCommand(address, port, request);
-            },
-            Qt::QueuedConnection
-        );
-    return invoked;
+    QTimer::singleShot(0, worker, [worker, address, port, request]() {
+        worker->onSendCommand(address, port, request);
+    });
+    return true;
 }
 
 bool CmdUdpManager::onSendCommand(const QHostAddress& address,
@@ -130,27 +124,12 @@ bool CmdUdpManager::onSendCommand(const QHostAddress& address,
         });
 
     // ------------------------------------------------------------
-    // 投递给 Worker
+    // 投递给 Worker（Qt 5.4+ 兼容的 lambda context 方式）
     // ------------------------------------------------------------
     UdpWorker* worker = worker_;
-    const bool invoked =
-        QMetaObject::invokeMethod(
-            worker,
-            [worker, address, port, request, timeoutMs]()
-            {
-                worker->onSendCommand(
-                    address,
-                    port,
-                    request,
-                    timeoutMs);
-            },
-            Qt::QueuedConnection);
-
-    if (!invoked)
-    {
-        QObject::disconnect(connection);
-        return false;
-    }
+    QTimer::singleShot(0, worker, [worker, address, port, request, timeoutMs]() {
+        worker->onSendCommand(address, port, request, timeoutMs);
+    });
 
     // ------------------------------------------------------------
     // Manager自己的超时保护

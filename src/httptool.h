@@ -58,13 +58,16 @@ signals:
     void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
 
 private slots:
-    void onReplyFinished();          // 请求完成回调
-    void onReplyError(QNetworkReply::NetworkError error);  // 请求错误回调
     void onTimeout();                // 超时回调
-    void onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);  // 下载进度回调
-    void onUploadProgress(qint64 bytesSent, qint64 bytesTotal);        // 上传进度回调
 
 private:
+    // ═══ 新实现：全部接受 reply 指针参数，不读成员变量 ═══
+    // 原因：旧 reply 的 signals 可能排队延迟触发，直接用 reply 参数处理避免串扰
+    void handleReplyFinished(QNetworkReply* reply, QFile* outFile, int* readyReadCount = nullptr);
+    void handleReplyError(QNetworkReply* reply, QNetworkReply::NetworkError error, QFile* outFile = nullptr);
+    void handleDownloadProgress(QNetworkReply* reply, qint64 bytesReceived, qint64 bytesTotal);
+    void handleUploadProgress(QNetworkReply* reply, qint64 bytesSent, qint64 bytesTotal);
+
     // 构建请求参数（表单格式）
     QByteArray buildFormParams(const QMap<QString, QString>& params);
     // 构建多表单数据（文件上传）
@@ -80,6 +83,7 @@ private:
     int m_timeoutMs;                   // 超时时间（毫秒）
     QMap<QString, QString> m_headers;  // 全局请求头
     QFile* m_downloadFile;             // 下载文件对象
+    int* m_readyReadCount;             // downloadFile 里 new 的 readyRead 计数（堆分配，cancel 时需释放）
 };
 
 #endif // HTTPTOOL_H

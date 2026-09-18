@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>色选机深度学习训练工作站</title>
+<style>
+/* SECTION: base */
+:root{
+  --bg:#050a14; --bg2:#081120;
+  --panel:rgba(12,22,38,.78); --panel2:rgba(9,17,30,.9);
+  --line:rgba(56,189,248,.16); --line2:rgba(56,189,248,.32);
+  --cyan:#22d3ee; --cyan2:#67e8f9; --blue:#3b82f6;
+  --green:#34d399; --red:#f87171; --amber:#fbbf24;
+  --txt:#e2edfb; --dim:#7d93b2; --dim2:#54687f;
+  --mono:"Consolas","SF Mono","JetBrains Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  overflow:hidden; font-size:14px;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1100px 500px at 78% -10%, rgba(34,211,238,.10), transparent 60%),
+    radial-gradient(900px 500px at 8% 110%, rgba(59,130,246,.10), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(56,189,248,.035) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, rgba(56,189,248,.035) 0 1px, transparent 1px 44px);
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:1;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0 2px, transparent 2px 4px);
+}
+#app{position:relative; z-index:2; height:100%; display:flex; flex-direction:column; gap:10px; padding:12px 14px}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* SECTION: panel-frame */
+.frame{
+  position:relative; background:var(--panel); border:1px solid var(--line);
+  backdrop-filter:blur(8px); border-radius:10px;
+}
+.frame::before,.frame::after{
+  content:""; position:absolute; width:14px; height:14px; pointer-events:none;
+  border-color:var(--line2); border-style:solid; opacity:.9;
+}
+.frame::before{top:-1px; left:-1px; border-width:2px 0 0 2px; border-radius:10px 0 0 0}
+.frame::after{bottom:-1px; right:-1px; border-width:0 2px 2px 0; border-radius:0 0 10px 0}
+
+/* SECTION: header */
+header{display:flex; align-items:center; gap:16px; padding:10px 16px; flex:none}
+.brand{display:flex; align-items:center; gap:12px; min-width:0}
+.logo{
+  width:38px; height:38px; flex:none; border-radius:9px; position:relative;
+  background:linear-gradient(135deg, rgba(34,211,238,.25), rgba(59,130,246,.15));
+  border:1px solid var(--line2); display:grid; place-items:center;
+  box-shadow:0 0 18px rgba(34,211,238,.25) inset, 0 0 12px rgba(34,211,238,.15);
+}
+.logo svg{width:22px; height:22px}
+.brand h1{font-size:17px; font-weight:600; letter-spacing:1px; white-space:nowrap}
+.brand h1 b{color:var(--cyan2); font-weight:700}
+.brand p{font-size:11px; color:var(--dim); letter-spacing:2.5px; margin-top:2px; white-space:nowrap}
+.h-spacer{flex:1}
+.cls-group{display:flex; gap:8px; align-items:center}
+.cls-chip{
+  display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none;
+  padding:7px 14px; border-radius:8px; border:1px solid var(--line);
+  background:rgba(255,255,255,.02); transition:.18s; font-size:13px;
+}
+.cls-chip i{width:12px; height:12px; border-radius:3px; flex:none}
+.cls-chip[data-cls="0"] i{background:var(--green); box-shadow:0 0 8px var(--green)}
+.cls-chip[data-cls="1"] i{background:var(--red); box-shadow:0 0 8px var(--red)}
+.cls-chip .num{font-weight:700; font-size:15px}
+.cls-chip[data-cls="0"] .num{color:var(--green)}
+.cls-chip[data-cls="1"] .num{color:var(--red)}
+.cls-chip.active{border-color:var(--line2); background:rgba(34,211,238,.10); box-shadow:0 0 14px rgba(34,211,238,.18)}
+.status{display:flex; flex-direction:column; gap:3px; align-items:flex-end; padding-right:4px}
+.status .row{display:flex; gap:8px; align-items:center; font-size:11px; color:var(--dim)}
+.dot{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.status .time{font-size:13px; color:var(--cyan2)}
+.h-actions{display:flex; gap:10px}
+
+/* SECTION: buttons */
+.btn{
+  cursor:pointer; border:1px solid var(--line); border-radius:8px; color:var(--txt);
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+  padding:9px 16px; font-size:13px; letter-spacing:1px; transition:.16s; font-family:inherit;
+  display:inline-flex; align-items:center; gap:7px; justify-content:center; white-space:nowrap;
+}
+.btn:hover{border-color:var(--line2); background:rgba(34,211,238,.10); color:var(--cyan2)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4; cursor:not-allowed}
+.btn-primary{
+  border-color:rgba(34,211,238,.55); color:#031318; font-weight:700;
+  background:linear-gradient(135deg, #22d3ee, #3b82f6);
+  box-shadow:0 0 16px rgba(34,211,238,.35), 0 0 30px rgba(59,130,246,.18);
+}
+.btn-primary:hover{color:#031318; filter:brightness(1.12); background:linear-gradient(135deg,#22d3ee,#3b82f6)}
+.btn-danger:hover{border-color:rgba(248,113,113,.6); background:rgba(248,113,113,.12); color:var(--red)}
+.btn-sm{padding:6px 11px; font-size:12px; border-radius:7px}
+.btn.on{border-color:var(--cyan); color:var(--cyan2); background:rgba(34,211,238,.16); box-shadow:0 0 12px rgba(34,211,238,.25) inset}
+
+/* SECTION: body layout */
+main{flex:1; display:flex; gap:10px; min-height:0}
+.stage-col{flex:1; display:flex; flex-direction:column; gap:10px; min-width:0}
+.stage{flex:1; min-height:0; position:relative; overflow:hidden; display:grid; place-items:center; padding:14px}
+.canvas-wrap{position:relative; width:100%; height:100%; max-width:100%; display:grid; place-items:center}
+.canvas-box{position:relative; aspect-ratio:16/10; max-width:100%; max-height:100%; width:auto; height:100%; border:1px solid var(--line2); border-radius:8px; overflow:hidden; box-shadow:0 0 40px rgba(34,211,238,.10), 0 10px 40px rgba(0,0,0,.5); background:#0b1017}
+.canvas-box canvas{position:absolute; inset:0; width:100%; height:100%}
+#maskCanvas{touch-action:none; cursor:crosshair}
+.empty-state{position:absolute; inset:0; display:flex; flex-direction:column; gap:14px; align-items:center; justify-content:center; background:rgba(6,11,20,.72); z-index:3}
+.empty-state .ring{width:74px; height:74px; border-radius:50%; border:1px dashed var(--line2); display:grid; place-items:center; animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state .ring svg{width:32px; height:32px; animation:spin 14s linear infinite reverse}
+.empty-state h3{font-size:16px; letter-spacing:3px; color:var(--cyan2)}
+.empty-state p{font-size:12px; color:var(--dim); letter-spacing:1px}
+.hidden{display:none !important}
+
+/* SECTION: canvas tools */
+.tool-rail{position:absolute; left:24px; top:50%; transform:translateY(-50%); z-index:4; display:flex; flex-direction:column; gap:8px}
+.tool-rail .btn{writing-mode:horizontal-tb; padding:9px 12px; background:var(--panel2); backdrop-filter:blur(6px)}
+.brush-bar{position:absolute; left:50%; bottom:24px; transform:translateX(-50%); z-index:4; display:flex; align-items:center; gap:10px; padding:8px 14px; background:var(--panel2); backdrop-filter:blur(8px); border:1px solid var(--line); border-radius:999px}
+.brush-bar .sep{width:1px; height:20px; background:var(--line)}
+.brush-bar label{font-size:12px; color:var(--dim); display:flex; align-items:center; gap:8px}
+input[type=range]{accent-color:var(--cyan); width:90px; cursor:pointer}
+.prog-chip{position:absolute; right:24px; top:24px; z-index:4; padding:8px 16px; border-radius:8px; background:var(--panel2); border:1px solid var(--line); backdrop-filter:blur(6px); font-size:13px; color:var(--dim)}
+.prog-chip b{color:var(--cyan2); font-size:16px}
+.popover{position:absolute; z-index:6; width:250px; padding:14px 16px; background:var(--panel2); border:1px solid var(--line2); border-radius:10px; backdrop-filter:blur(10px); box-shadow:0 12px 40px rgba(0,0,0,.55)}
+.popover h4{font-size:13px; color:var(--cyan2); letter-spacing:2px; margin-bottom:10px}
+.popover .frow{display:flex; justify-content:space-between; align-items:center; gap:10px; margin:9px 0; font-size:12px; color:var(--dim)}
+.popover .frow .num{color:var(--txt); min-width:38px; text-align:right}
+
+/* SECTION: resource panel */
+.res-col{width:330px; flex:none; display:flex; flex-direction:column; min-height:0}
+.res-head{padding:12px 14px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px}
+.res-head h2{font-size:14px; letter-spacing:2px; flex:1}
+.res-head h2 span{color:var(--dim2); font-size:11px; letter-spacing:1px; margin-left:6px}
+.count-badge{padding:4px 12px; border-radius:999px; border:1px solid var(--line2); color:var(--cyan2); font-size:13px; background:rgba(34,211,238,.08)}
+.res-tools{padding:10px 12px; display:grid; grid-template-columns:1fr 1fr; gap:8px; border-bottom:1px solid var(--line)}
+.res-list{flex:1; overflow-y:auto; padding:12px; display:grid; grid-template-columns:1fr 1fr; gap:10px; align-content:start}
+.res-list::-webkit-scrollbar{width:6px}
+.res-list::-webkit-scrollbar-thumb{background:rgba(56,189,248,.25); border-radius:3px}
+.res-card{position:relative; border:1px solid var(--line); border-radius:8px; overflow:hidden; cursor:pointer; background:#0b1017; transition:.16s}
+.res-card:hover{border-color:var(--line2); transform:translateY(-2px)}
+.res-card.current{border-color:var(--cyan); box-shadow:0 0 14px rgba(34,211,238,.3)}
+.res-card img{width:100%; aspect-ratio:16/10; object-fit:cover; display:block}
+.res-card .meta{padding:6px 8px; display:flex; align-items:center; gap:6px; font-size:11px; color:var(--dim)}
+.res-card .meta .nm{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--txt)}
+.res-card .tag{padding:1px 6px; border-radius:4px; font-size:10px; border:1px solid}
+.res-card .tag.ok{color:var(--green); border-color:rgba(52,211,153,.5)}
+.res-card .tag.no{color:var(--dim2); border-color:var(--line)}
+.res-card .chk{position:absolute; top:6px; right:6px; width:18px; height:18px; border-radius:4px; border:1px solid var(--line2); background:rgba(5,10,20,.7); display:grid; place-items:center; font-size:12px; color:transparent}
+.res-card.sel .chk{background:var(--cyan); color:#031318; border-color:var(--cyan)}
+.res-empty{grid-column:1/-1; padding:40px 10px; text-align:center; color:var(--dim2); font-size:12px; letter-spacing:2px; border:1px dashed var(--line); border-radius:8px}
+.res-foot{padding:10px 12px; border-top:1px solid var(--line); display:flex; align-items:center; gap:8px}
+.res-foot .pg{flex:1; text-align:center; font-size:12px; color:var(--dim)}
+
+/* SECTION: dock */
+footer{flex:none; padding:10px 14px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+footer .grp{display:flex; gap:8px; flex-wrap:wrap}
+footer .vsep{width:1px; align-self:stretch; background:var(--line); margin:0 6px}
+footer .grow{flex:1}
+
+/* SECTION: modal */
+.modal-backdrop{position:fixed; inset:0; z-index:50; background:rgba(3,7,14,.72); backdrop-filter:blur(4px); display:grid; place-items:center; padding:20px}
+.modal{width:min(680px,100%); max-height:86vh; display:flex; flex-direction:column; background:var(--panel2); border:1px solid var(--line2); border-radius:12px; box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 40px rgba(34,211,238,.08)}
+.modal.wide{width:min(860px,100%)}
+.modal-head{padding:14px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px}
+.modal-head h3{flex:1; font-size:15px; letter-spacing:2px; color:var(--cyan2)}
+.modal-head .x{cursor:pointer; color:var(--dim); font-size:18px; width:28px; height:28px; display:grid; place-items:center; border-radius:6px; border:1px solid transparent}
+.modal-head .x:hover{color:var(--red); border-color:rgba(248,113,113,.4)}
+.modal-body{padding:18px; overflow-y:auto}
+.modal-foot{padding:12px 18px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px}
+.field{margin-bottom:14px}
+.field label{display:block; font-size:12px; color:var(--dim); margin-bottom:6px; letter-spacing:1px}
+.field input[type=text]{width:100%; background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:7px; padding:9px 12px; color:var(--txt); font-size:14px; font-family:inherit; outline:none}
+.field input[type=text]:focus{border-color:var(--cyan)}
+table.tbl{width:100%; border-collapse:collapse; font-size:13px}
+table.tbl th{text-align:left; color:var(--dim); font-weight:500; font-size:11px; letter-spacing:1.5px; padding:8px 10px; border-bottom:1px solid var(--line2)}
+table.tbl td{padding:9px 10px; border-bottom:1px solid var(--line); color:var(--txt)}
+.pill{padding:2px 9px; border-radius:999px; font-size:11px; border:1px solid}
+.pill.g{color:var(--green); border-color:rgba(52,211,153,.5); background:rgba(52,211,153,.08)}
+.pill.c{color:var(--cyan2); border-color:var(--line2); background:rgba(34,211,238,.08)}
+.pill.a{color:var(--amber); border-color:rgba(251,191,36,.5); background:rgba(251,191,36,.08)}
+.pill.r{color:var(--red); border-color:rgba(248,113,113,.5); background:rgba(248,113,113,.08)}
+.train-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.metric{border:1px solid var(--line); border-radius:9px; padding:12px 14px; background:rgba(255,255,255,.02)}
+.metric .k{font-size:11px; color:var(--dim); letter-spacing:2px}
+.metric .v{font-size:24px; color:var(--cyan2); margin-top:4px}
+.metric .v.g{color:var(--green)}
+.bar{height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; margin-top:10px}
+.bar i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--cyan),var(--blue)); box-shadow:0 0 10px var(--cyan); transition:width .25s}
+#lossChart{width:100%; height:170px; border:1px solid var(--line); border-radius:8px; background:rgba(0,0,0,.25); margin-top:14px}
+.logbox{margin-top:12px; height:110px; overflow-y:auto; background:rgba(0,0,0,.35); border:1px solid var(--line); border-radius:8px; padding:9px 12px; font-family:var(--mono); font-size:11.5px; color:var(--dim); line-height:1.75}
+.logbox .t{color:var(--dim2)}
+.logbox .ok{color:var(--green)}
+.logbox .hi{color:var(--cyan2)}
+.sim-wrap{position:relative; border:1px solid var(--line); border-radius:8px; overflow:hidden}
+.sim-wrap canvas{width:100%; display:block}
+
+/* SECTION: model manager */
+.mgr-view{position:fixed; inset:0; z-index:45; background:rgba(3,7,14,.82); backdrop-filter:blur(6px); display:grid; place-items:center; padding:22px}
+.mgr-panel{width:min(1080px,100%); height:min(780px,92vh); display:flex; flex-direction:column; background:var(--panel2); border:1px solid var(--line2); border-radius:14px; box-shadow:0 30px 90px rgba(0,0,0,.65), 0 0 50px rgba(34,211,238,.08); overflow:hidden}
+.mgr-panel .modal-head{background:linear-gradient(90deg, rgba(34,211,238,.10), transparent 55%)}
+.mgr-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:14px 18px; border-bottom:1px solid var(--line)}
+.mgr-stats .metric{padding:10px 14px}
+.mgr-stats .metric .v{font-size:20px}
+.mgr-list{flex:1; overflow-y:auto; padding:14px 18px; display:flex; flex-direction:column; gap:10px}
+.mgr-list::-webkit-scrollbar{width:6px}
+.mgr-list::-webkit-scrollbar-thumb{background:rgba(56,189,248,.25); border-radius:3px}
+.mgr-row{display:grid; grid-template-columns:1.7fr .7fr .7fr .7fr .9fr .8fr; gap:12px; align-items:center; padding:12px 16px; border:1px solid var(--line); border-radius:10px; cursor:pointer; background:rgba(255,255,255,.02); transition:.15s}
+.mgr-row:hover{border-color:var(--line2); background:rgba(34,211,238,.04)}
+.mgr-row.sel{border-color:var(--cyan); background:rgba(34,211,238,.09); box-shadow:0 0 18px rgba(34,211,238,.16) inset, 0 0 14px rgba(34,211,238,.18)}
+.mgr-row .nm{font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.mgr-row .sub{font-size:11px; color:var(--dim); margin-top:3px; letter-spacing:.5px}
+.mgr-row .cell .k{font-size:10px; color:var(--dim2); letter-spacing:1.5px}
+.mgr-row .cell .v{font-size:14px; margin-top:2px}
+.mgr-row .selmark{font-size:11px; color:var(--dim2); text-align:right; letter-spacing:1px}
+.mgr-row.sel .selmark{color:var(--cyan2)}
+.mgr-empty{padding:60px 10px; text-align:center; color:var(--dim2); font-size:13px; letter-spacing:3px; border:1px dashed var(--line); border-radius:10px}
+.mgr-foot{padding:14px 18px; border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(4,1fr); gap:10px; background:rgba(0,0,0,.22)}
+.mgr-foot .btn{padding:11px 10px; letter-spacing:2px}
+@media (max-width:820px){
+  .mgr-stats{grid-template-columns:repeat(2,1fr)}
+  .mgr-row{grid-template-columns:1fr 1fr; row-gap:8px}
+  .mgr-row .selmark{text-align:left}
+  .mgr-foot{grid-template-columns:repeat(2,1fr)}
+}
+
+/* SECTION: classic HMI */
+body.mode-classic .cls-group, body.mode-classic #hDl{display:none}
+body:not(.mode-classic) #dockClassic{display:none}
+body.mode-classic #dockDL{display:none}
+#modeSeg{display:flex; border:1px solid var(--line2); border-radius:8px; overflow:hidden; flex:none}
+#modeSeg .seg{padding:7px 14px; font-size:12px; letter-spacing:2px; color:var(--dim); background:transparent; border:0; cursor:pointer}
+#modeSeg .seg.active{color:#04121c; background:linear-gradient(135deg,var(--cyan),var(--blue)); font-weight:700}
+.top-acts{display:flex; gap:8px; flex:none}
+.ws{display:none; flex:1; min-height:0; gap:10px}
+.ws.active{display:flex}
+.ws-classic{flex-direction:column}
+.cs-rail{display:flex; gap:8px; align-items:center; padding:8px 10px; flex:none; overflow-x:auto}
+.cs-rail .btn.on{border-color:var(--cyan); color:var(--cyan2); box-shadow:inset 0 0 14px rgba(34,211,238,.22)}
+.cs-body{flex:1; min-height:0; display:flex; gap:10px}
+.cs-side{width:136px; flex:none; display:flex; flex-direction:column; gap:6px; padding:10px 8px; overflow-y:auto}
+.cs-side .sbtn{display:flex; flex-direction:column; align-items:center; gap:7px; padding:11px 4px; border:1px solid transparent; border-radius:9px; background:transparent; color:var(--dim); cursor:pointer; font-size:12px; letter-spacing:1px}
+.cs-side .sbtn svg{width:22px; height:22px}
+.cs-side .sbtn.on{color:var(--cyan2); border-color:var(--line2); background:rgba(34,211,238,.08); box-shadow:0 0 12px rgba(34,211,238,.12)}
+.cs-main{flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; padding:14px; overflow-y:auto}
+.cs-tabs{display:flex; gap:6px; flex:none}
+.cs-tabs .tb{padding:8px 24px; font-size:13px; letter-spacing:2px; color:var(--dim); background:var(--panel2); border:1px solid var(--line); border-bottom-color:transparent; border-radius:9px 9px 0 0; cursor:pointer}
+.cs-tabs .tb.on{color:var(--cyan2); background:rgba(34,211,238,.10); border-color:var(--line2); box-shadow:0 -2px 16px rgba(34,211,238,.14)}
+.cs-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:10px}
+.kv{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; background:var(--panel2); border:1px solid var(--line); border-radius:9px}
+.kv .k{font-size:13px; color:var(--dim); letter-spacing:1px}
+.kv .v{font-size:15px; color:var(--txt)}
+.inp{width:150px; padding:7px 10px; background:rgba(4,12,22,.72); border:1px solid var(--line2); border-radius:7px; color:var(--cyan2); font-family:var(--mono); font-size:14px; text-align:right}
+.inp.wide{width:100%}
+.inp:focus{outline:none; border-color:var(--cyan); box-shadow:0 0 10px rgba(34,211,238,.25)}
+.stepper{display:flex; align-items:center; gap:8px}
+.stepper .stp{width:30px; height:30px; border-radius:7px; border:1px solid var(--line2); background:rgba(34,211,238,.08); color:var(--cyan2); font-size:16px; line-height:1; cursor:pointer}
+.stepper .stp:hover{background:rgba(34,211,238,.2)}
+.chk{display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none; font-size:14px; color:var(--txt)}
+.chk i{width:22px; height:22px; border-radius:6px; border:1px solid var(--line2); background:rgba(4,12,22,.6); position:relative; flex:none}
+.chk.on i{background:linear-gradient(135deg,var(--cyan),var(--blue)); border-color:var(--cyan)}
+.chk.on i::after{content:""; position:absolute; left:7px; top:3px; width:6px; height:11px; border:solid #04121c; border-width:0 2px 2px 0; transform:rotate(42deg)}
+.seg2{display:flex; border:1px solid var(--line2); border-radius:8px; overflow:hidden; flex:none}
+.seg2 button{padding:7px 18px; font-size:13px; color:var(--dim); background:transparent; border:0; cursor:pointer}
+.seg2 button.on{color:#04121c; background:linear-gradient(135deg,var(--cyan),var(--blue)); font-weight:700}
+.sliderow{display:flex; align-items:center; gap:12px; width:100%}
+.sliderow input[type=range]{flex:1; accent-color:var(--cyan)}
+.nozzles{display:grid; grid-template-columns:repeat(auto-fill,minmax(24px,1fr)); gap:6px}
+.nz{height:26px; border-radius:5px; border:1px solid var(--line); background:rgba(9,17,30,.8); cursor:pointer}
+.nz.fire{background:linear-gradient(180deg,var(--cyan),var(--blue)); box-shadow:0 0 10px rgba(34,211,238,.6); border-color:var(--cyan)}
+.nz.cur{outline:2px solid var(--amber)}
+.matgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.matcell{border:1px solid var(--line); border-radius:9px; background:var(--panel2); overflow:hidden; cursor:pointer}
+.matcell .ph{height:112px; display:flex; align-items:center; justify-content:center; color:var(--dim2); font-size:12px; letter-spacing:2px; background:repeating-linear-gradient(45deg, rgba(56,189,248,.045) 0 8px, transparent 8px 16px)}
+.matcell img{width:100%; height:112px; object-fit:cover; display:block}
+.matcell .lb{padding:6px; text-align:center; font-size:12px; color:var(--dim); border-top:1px solid var(--line)}
+.matcell.sel{border-color:var(--cyan); box-shadow:0 0 14px rgba(34,211,238,.25)}
+.curvebox{position:relative; height:230px; border:1px solid var(--line); border-radius:9px; background:rgba(4,10,20,.72); overflow:hidden}
+.curvebox canvas{width:100%; height:100%}
+.boot{position:fixed; inset:0; z-index:60; background:radial-gradient(900px 520px at 50% 38%, rgba(10,25,45,.97), rgba(3,7,14,.995)); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px}
+.boot .ring2{width:118px; height:118px; border-radius:50%; border:2px solid rgba(34,211,238,.14); border-top-color:var(--cyan); animation:spin 1.1s linear infinite; position:relative}
+.boot .ring2::after{content:""; position:absolute; inset:15px; border-radius:50%; border:1px solid rgba(59,130,246,.2); border-bottom-color:var(--blue); animation:spin 1.7s linear reverse infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.boot h2{letter-spacing:7px; font-size:20px; color:var(--cyan2)}
+.boot p{font-size:12px; color:var(--dim); letter-spacing:3px}
+.boot .steps{display:flex; flex-direction:column; gap:8px; width:330px}
+.boot .st{display:flex; justify-content:space-between; font-size:12px; color:var(--dim2); letter-spacing:1px}
+.boot .st.done{color:var(--green)}
+.boot .st.doing{color:var(--cyan)}
+.camgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.camgrid .cam{border:1px solid var(--line); border-radius:9px; overflow:hidden; position:relative; background:#04080f}
+.camgrid .cam canvas{width:100%; height:150px; display:block}
+.camgrid .cam .tag{position:absolute; left:8px; top:8px; font-size:11px; letter-spacing:1px; color:var(--cyan2); background:rgba(4,10,20,.7); border:1px solid var(--line2); border-radius:5px; padding:2px 8px}
+
+/* SECTION: toast */
+#toasts{position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:99; display:flex; flex-direction:column; gap:8px; align-items:center}
+.toast{padding:10px 20px; border-radius:8px; background:var(--panel2); border:1px solid var(--line2); color:var(--txt); font-size:13px; letter-spacing:1px; box-shadow:0 8px 30px rgba(0,0,0,.5); animation:tin .25s ease; display:flex; gap:9px; align-items:center}
+.toast.ok{border-color:rgba(52,211,153,.6)} .toast.ok::before{content:"✓"; color:var(--green)}
+.toast.err{border-color:rgba(248,113,113,.6)} .toast.err::before{content:"!"; color:var(--red)}
+.toast.info::before{content:"◆"; color:var(--cyan)}
+@keyframes tin{from{opacity:0; transform:translateY(-10px)}}
+
+/* SECTION: responsive */
+@media (max-width:1080px){
+  body{overflow:auto}
+  #app{height:auto; min-height:100%}
+  main{flex-direction:column}
+  .res-col{width:100%}
+  .res-list{max-height:300px}
+  .stage{min-height:420px}
+  header{flex-wrap:wrap}
+  .status{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SECTION: header -->
+  <header class="frame">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#67e8f9" stroke-width="1.6"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/><circle cx="12" cy="11" r="3.2"/><path d="M12 7.8v-2M12 16.2v-2M8.8 11h-2M17.2 11h-2"/></svg>
+      </div>
+      <div>
+        <h1>色选机 <b>AI 深度学习</b> 训练工作站</h1>
+        <p>COLOR SORTER · DEEP LEARNING CONSOLE</p>
+      </div>
+    </div>
+    <div class="h-spacer"></div>
+    <div class="cls-group" id="clsGroup">
+      <div class="cls-chip" data-cls="0" title="当前标注类别"><i></i>类别 <span class="num">0</span> 合格</div>
+      <div class="cls-chip active" data-cls="1" title="当前标注类别"><i></i>类别 <span class="num">1</span> 异物</div>
+    </div>
+    <div class="status">
+      <div class="row"><span class="dot"></span>设备在线 · YC3568 · 相机 4/4</div>
+      <div class="row time num" id="clock">--:--:--</div>
+    </div>
+    <div id="modeSeg">
+      <button class="seg" data-mode="classic">传统色选</button>
+      <button class="seg active" data-mode="dl">深度学习</button>
+    </div>
+    <div class="top-acts">
+      <button class="btn btn-sm" id="btnCam">视频采集</button>
+      <button class="btn btn-sm" id="btnPower">关机</button>
+      <button class="btn btn-sm" id="btnSave">参数保存</button>
+      <button class="btn btn-sm btn-primary" id="btnWork">开始工作</button>
+    </div>
+    <div class="h-actions" id="hDl">
+      <button class="btn btn-primary" id="btnTrain" data-primary-action>▶ 开始训练</button>
+      <button class="btn" id="btnNewModel">＋ 新建模型</button>
+    </div>
+  </header>
+
+  <!-- SECTION: main -->
+  <main id="wsDL" class="ws active">
+    <div class="stage-col">
+      <div class="stage frame">
+        <div class="canvas-wrap">
+          <div class="canvas-box" id="canvasBox">
+            <canvas id="baseCanvas" width="960" height="600"></canvas>
+            <canvas id="maskCanvas" width="960" height="600"></canvas>
+          </div>
+          <div class="empty-state" id="emptyState">
+            <div class="ring"><svg viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M3 17l5-4 4 3 4-4 5 5"/></svg></div>
+            <h3>请先选择图片！</h3>
+            <p>从右侧训练资源列表选择图片，或导入新的图片资源</p>
+          </div>
+          <div class="tool-rail">
+            <button class="btn btn-sm" id="btnHue">颜色阈值</button>
+            <button class="btn btn-sm" id="btnArea">目标面积</button>
+            <button class="btn btn-sm" id="btnAuto">一键标注</button>
+          </div>
+          <div class="prog-chip">已标注 <b class="num" id="progNow">0</b> / <span class="num" id="progAll">0</span></div>
+          <div class="brush-bar" id="brushBar">
+            <button class="btn btn-sm" id="btnEdit">开始标注</button>
+            <span class="sep"></span>
+            <button class="btn btn-sm on" id="btnBrushPaint" data-tool="annotate">标注</button>
+            <button class="btn btn-sm" id="btnBrushErase" data-tool="erase">擦除</button>
+            <span class="sep"></span>
+            <label>笔刷 <input type="range" id="brushSize" min="6" max="60" value="20"><span class="num" id="brushVal">20</span></label>
+          </div>
+          <div class="popover hidden" id="popHue" style="left:86px; top:50%; transform:translateY(-70%)">
+            <h4>颜色阈值</h4>
+            <div class="frow"><span>色调容差 H</span><input type="range" id="thH" min="0" max="180" value="32"><span class="num" id="thHv">32</span></div>
+            <div class="frow"><span>饱和度下限 S</span><input type="range" id="thS" min="0" max="100" value="40"><span class="num" id="thSv">40</span></div>
+            <div class="frow"><span>明度下限 V</span><input type="range" id="thV" min="0" max="100" value="25"><span class="num" id="thVv">25</span></div>
+          </div>
+          <div class="popover hidden" id="popArea" style="left:86px; top:50%; transform:translateY(-30%)">
+            <h4>目标面积</h4>
+            <div class="frow"><span>最小面积 px</span><input type="range" id="thAmin" min="4" max="200" value="12"><span class="num" id="thAminv">12</span></div>
+            <div class="frow"><span>最大面积 px</span><input type="range" id="thAmax" min="200" max="2000" value="400"><span class="num" id="thAmaxv">400</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: resource panel -->
+    <aside class="res-col frame">
+      <div class="res-head">
+        <h2>训练资源<span>TRAINING SET</span></h2>
+        <span class="count-badge num" id="resCount">0</span>
+      </div>
+      <div class="res-tools">
+        <button class="btn btn-sm btn-primary" id="btnImport" data-primary-action>导入图片资源</button>
+        <button class="btn btn-sm" id="btnAddOne">添加训练资源</button>
+        <button class="btn btn-sm" id="btnAddAll">全部添加</button>
+        <button class="btn btn-sm btn-danger" id="btnDelOne">删除训练资源</button>
+        <button class="btn btn-sm btn-danger" id="btnDelAll">全部删除</button>
+        <button class="btn btn-sm" id="btnRename">资源命名</button>
+        <button class="btn btn-sm" id="btnMerge" style="grid-column:1/-1">资源融合（合并勾选项）</button>
+      </div>
+      <div class="res-list" id="resList"></div>
+      <div class="res-foot">
+        <button class="btn btn-sm" id="btnPrev">‹ 上一页</button>
+        <span class="pg num" id="pgInfo">0 / 0</span>
+        <button class="btn btn-sm" id="btnNext">下一页 ›</button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- SECTION: classic workspace -->
+  <main id="wsClassic" class="ws ws-classic">
+    <nav class="cs-rail frame" id="csRail">
+      <button class="btn btn-sm" data-cs="scheme">方案选择</button>
+      <button class="btn btn-sm" data-cs="sens">感度调节</button>
+      <button class="btn btn-sm" data-cs="clean">清扫</button>
+      <button class="btn btn-sm" data-cs="valve">喷阀检测</button>
+      <button class="btn btn-sm" data-cs="feed">供料速度</button>
+      <button class="btn btn-sm" data-cs="algo">算法设置</button>
+      <button class="btn btn-sm" data-cs="sys">系统参数</button>
+      <span class="grow"></span>
+      <button class="btn btn-sm" id="csApplyTop">应用</button>
+    </nav>
+    <div class="cs-body">
+      <aside class="cs-side frame" id="csSide"></aside>
+      <section class="cs-main frame" id="csMain"></section>
+    </div>
+  </main>
+
+  <!-- SECTION: dock -->
+  <footer class="frame">
+    <div class="grp" id="dockDL">
+      <button class="btn" id="btnSim">模型仿真</button>
+      <button class="btn" id="btnMgr">模型管理</button>
+      <button class="btn" id="btnThCfg">阈值配置</button>
+      <button class="btn" id="btnDownload">模型下载</button>
+    </div>
+    <div class="grp" id="dockClassic" style="display:none">
+      <button class="btn" id="ckAdv">高级设置</button>
+      <button class="btn" id="ckProd">测试产量</button>
+      <button class="btn" id="ckLang">语言设定</button>
+      <button class="btn" id="ckInfo2">设备信息</button>
+    </div>
+    <span class="vsep"></span>
+    <div class="grp">
+      <button class="btn" id="btnBack">返回</button>
+    </div>
+    <span class="grow"></span>
+    <span style="font-size:11px; color:var(--dim2); letter-spacing:2px" id="dockVer">DL-CONSOLE v3.2 · EDGE RUNTIME</span>
+  </footer>
+</div>
+
+<div id="toasts"></div>
+<div id="modalRoot"></div>
+
+<script>
+/* SECTION: state */
+const S = {
+  resources: [], page: 0, pageSize: 8, currentId: null,
+  cls: 1, tool: 'annotate', editing: false, brush: 20,
+  models: [
+    {name:'CSNet-v2.3', epochs:120, acc:98.6, miou:94.2, date:'2026-09-10', status:'使用中'},
+    {name:'CSNet-v2.1', epochs:100, acc:97.2, miou:91.8, date:'2026-08-02', status:'已归档'},
+  ],
+  currentModel:'CSNet-v2.3',
+  th:{h:32, s:40, v:25, amin:12, amax:400},
+  seq: 0, training:false,
+};
+const $ = s => document.querySelector(s);
+const baseC = $('#baseCanvas'), maskC = $('#maskCanvas');
+const bctx = baseC.getContext('2d'), mctx = maskC.getContext('2d');
+const CLS_COLOR = {0:'52,211,153', 1:'248,113,113'};
+
+/* SECTION: utils */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function toast(msg, type='info'){
+  const el = document.createElement('div');
+  el.className = 'toast ' + type; el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300)}, 2600);
+}
+function clock(){ const d=new Date(); const p=n=>String(n).padStart(2,'0');
+  $('#clock').textContent = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; }
+clock(); setInterval(clock, 1000);
+
+/* SECTION: synthetic image */
+function genGrains(seed){
+  const rnd = mulberry32(seed); const grains = [];
+  const n = 64 + Math.floor(rnd()*26);
+  const normals = ['#e6d7ae','#d9c68f','#efe3c0','#e0cf9d'];
+  const defects = ['#8a5a2b','#6b3f2a','#a3762e','#54371f'];
+  for(let i=0;i<n;i++){
+    const defect = rnd() < 0.13;
+    grains.push({
+      x: 40 + rnd()*880, y: 40 + rnd()*520,
+      rx: 11 + rnd()*7, ry: 7 + rnd()*5, rot: rnd()*Math.PI,
+      c: defect ? defects[Math.floor(rnd()*defects.length)] : normals[Math.floor(rnd()*normals.length)],
+      defect
+    });
+  }
+  return grains;
+}
+function drawBase(ctx, grains){
+  const g = ctx.createLinearGradient(0,0,0,600);
+  g.addColorStop(0,'#141c28'); g.addColorStop(1,'#0a0f16');
+  ctx.fillStyle = g; ctx.fillRect(0,0,960,600);
+  ctx.strokeStyle = 'rgba(56,189,248,.06)'; ctx.lineWidth = 1;
+  for(let y=0;y<600;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(960,y); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(255,255,255,.05)';
+  ctx.beginPath(); ctx.moveTo(0,300); ctx.lineTo(960,300); ctx.stroke();
+  for(const gr of grains){
+    ctx.save(); ctx.translate(gr.x, gr.y); ctx.rotate(gr.rot);
+    ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 3;
+    ctx.fillStyle = gr.c;
+    ctx.beginPath(); ctx.ellipse(0,0,gr.rx,gr.ry,0,0,Math.PI*2); ctx.fill();
+    ctx.shadowColor='transparent';
+    ctx.fillStyle = 'rgba(255,255,255,.16)';
+    ctx.beginPath(); ctx.ellipse(-gr.rx*.28,-gr.ry*.3,gr.rx*.42,gr.ry*.36,0,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+  const v = ctx.createRadialGradient(480,300,240,480,300,640);
+  v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.42)');
+  ctx.fillStyle = v; ctx.fillRect(0,0,960,600);
+}
+function makeResource(name){
+  const seed = (Math.random()*1e9)|0;
+  const grains = genGrains(seed);
+  const off = document.createElement('canvas'); off.width=960; off.height=600;
+  drawBase(off.getContext('2d'), grains);
+  const th = document.createElement('canvas'); th.width=192; th.height=120;
+  th.getContext('2d').drawImage(off,0,0,192,120);
+  const mask = document.createElement('canvas'); mask.width=960; mask.height=600;
+  S.seq++;
+  return { id:'r'+S.seq, name, seed, grains, thumb:th.toDataURL('image/png'), mask, annotated:false, sel:false,
+           defects: grains.filter(g=>g.defect).length };
+}
+
+/* SECTION: list render */
+function cur(){ return S.resources.find(r=>r.id===S.currentId) || null; }
+function renderList(){
+  const list = $('#resList'); list.innerHTML = '';
+  const pages = Math.max(1, Math.ceil(S.resources.length / S.pageSize));
+  if(S.page >= pages) S.page = pages - 1;
+  $('#pgInfo').textContent = `${S.page+1} / ${pages}`;
+  $('#resCount').textContent = S.resources.length;
+  $('#progAll').textContent = S.resources.length;
+  $('#progNow').textContent = S.resources.filter(r=>r.annotated).length;
+  if(!S.resources.length){
+    list.innerHTML = '<div class="res-empty">暂无训练资源<br>点击「导入图片资源」开始</div>'; return;
+  }
+  const slice = S.resources.slice(S.page*S.pageSize, S.page*S.pageSize + S.pageSize);
+  for(const r of slice){
+    const card = document.createElement('div');
+    card.className = 'res-card' + (r.id===S.currentId?' current':'') + (r.sel?' sel':'');
+    card.innerHTML = `<img alt="${r.name}" data-image="">
+      <div class="chk">✓</div>
+      <div class="meta"><span class="nm">${r.name}</span>
+      <span class="tag ${r.annotated?'ok':'no'}">${r.annotated?'已标注':'未标注'}</span></div>`;
+    const imgEl = card.querySelector('img');
+    imgEl.dataset.image = r.thumb;
+    imgEl.src = imgEl.dataset.image;
+    imgEl.addEventListener('error', ()=>{ imgEl.style.display='none'; });
+    imgEl.addEventListener('click', ()=>loadResource(r.id));
+    card.querySelector('.chk').addEventListener('click', e=>{ e.stopPropagation(); r.sel=!r.sel; renderList(); });
+    card.addEventListener('click', e=>{ if(e.target.closest('.chk')) return; loadResource(r.id); });
+    list.appendChild(card);
+  }
+}
+
+/* SECTION: canvas */
+function loadResource(id){
+  const r = S.resources.find(x=>x.id===id); if(!r) return;
+  S.currentId = id;
+  drawBase(bctx, r.grains);
+  mctx.clearRect(0,0,960,600);
+  mctx.drawImage(r.mask,0,0);
+  $('#emptyState').classList.add('hidden');
+  renderList();
+}
+function syncMask(){ const r = cur(); if(!r) return;
+  r.mask.getContext('2d').clearRect(0,0,960,600);
+  r.mask.getContext('2d').drawImage(maskC,0,0);
+}
+function markAnnotated(){ const r = cur(); if(r && !r.annotated){ r.annotated = true; }
+  $('#progNow').textContent = S.resources.filter(x=>x.annotated).length; renderList(); }
+
+let drawing = false, last = null;
+function pos(e){ const rect = maskC.getBoundingClientRect();
+  return { x:(e.clientX-rect.left)*960/rect.width, y:(e.clientY-rect.top)*600/rect.height }; }
+function stroke(ctx, a, b){
+  ctx.save();
+  ctx.lineCap='round'; ctx.lineJoin='round'; ctx.lineWidth = S.brush;
+  if(S.tool==='erase'){ ctx.globalCompositeOperation='destination-out'; ctx.strokeStyle='#000'; }
+  else { ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=`rgba(${CLS_COLOR[S.cls]},.55)`; }
+  ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.restore();
+}
+maskC.addEventListener('pointerdown', e=>{
+  if(!S.editing){ toast('请先点击「开始标注」进入标注模式','err'); return; }
+  if(!cur()){ toast('请先选择图片！','err'); return; }
+  drawing = true; last = pos(e); maskC.setPointerCapture(e.pointerId);
+  stroke(mctx, last, {x:last.x+.01,y:last.y+.01}); syncMask(); markAnnotated();
+});
+maskC.addEventListener('pointermove', e=>{ if(!drawing) return; const p = pos(e); stroke(mctx,last,p); last=p; syncMask(); });
+maskC.addEventListener('pointerup', ()=>{ drawing=false; });
+
+/* SECTION: toolbar events */
+$('#clsGroup').addEventListener('click', e=>{
+  const chip = e.target.closest('.cls-chip'); if(!chip) return;
+  S.cls = +chip.dataset.cls;
+  document.querySelectorAll('.cls-chip').forEach(c=>c.classList.toggle('active', c===chip));
+  toast(`当前标注类别：${S.cls}（${S.cls===0?'合格':'异物'}）`,'info');
+});
+$('#btnEdit').addEventListener('click', ()=>{
+  S.editing = !S.editing;
+  $('#btnEdit').classList.toggle('on', S.editing);
+  $('#btnEdit').textContent = S.editing ? '标注中 · 点击退出' : '开始标注';
+  maskC.style.cursor = S.editing ? 'crosshair' : 'default';
+  toast(S.editing ? '已进入标注模式，可在画布上拖动绘制掩膜' : '已退出标注模式', 'info');
+});
+function setTool(t){ S.tool = t;
+  $('#btnBrushPaint').classList.toggle('on', t==='annotate');
+  $('#btnBrushErase').classList.toggle('on', t==='erase'); }
+$('#btnBrushPaint').addEventListener('click', ()=>setTool('annotate'));
+$('#btnBrushErase').addEventListener('click', ()=>setTool('erase'));
+$('#brushSize').addEventListener('input', e=>{ S.brush = +e.target.value; $('#brushVal').textContent = S.brush; });
+
+function bindRange(id, vid, key){ const el=$(id);
+  el.addEventListener('input', ()=>{ S.th[key]=+el.value; $(vid).textContent=el.value; }); }
+bindRange('#thH','#thHv','h'); bindRange('#thS','#thSv','s'); bindRange('#thV','#thVv','v');
+bindRange('#thAmin','#thAminv','amin'); bindRange('#thAmax','#thAmaxv','amax');
+function togglePop(id){ const el=$(id); const was = el.classList.contains('hidden');
+  $('#popHue').classList.add('hidden'); $('#popArea').classList.add('hidden');
+  if(was) el.classList.remove('hidden'); }
+$('#btnHue').addEventListener('click', ()=>togglePop('#popHue'));
+$('#btnArea').addEventListener('click', ()=>togglePop('#popArea'));
+$('#btnAuto').addEventListener('click', ()=>{
+  const r = cur();
+  if(!r){ toast('请先选择图片！','err'); return; }
+  const targets = S.cls===1 ? r.grains.filter(g=>g.defect) : r.grains.filter(g=>!g.defect && g.x%3<1);
+  if(!targets.length){ toast('当前阈值下未检测到目标','err'); return; }
+  const ctx = mctx; ctx.save(); ctx.fillStyle = `rgba(${CLS_COLOR[S.cls]},.55)`;
+  for(const g of targets){ if(g.rx*g.ry < S.th.amin || g.rx*g.ry > S.th.amax) continue;
+    ctx.beginPath(); ctx.ellipse(g.x,g.y,g.rx+4,g.ry+4,g.rot,0,Math.PI*2); ctx.fill(); }
+  ctx.restore(); syncMask(); markAnnotated();
+  toast(`一键标注完成：类别 ${S.cls} 共 ${targets.length} 个目标`,'ok');
+});
+
+/* SECTION: resource ops */
+$('#btnImport').addEventListener('click', ()=>{
+  const n = 4 + Math.floor(Math.random()*3); const names = ['批次A-送料口','批次B-送料口','批次C-回流料','批次D-精挑','批次E-尾料','批次F-复检'];
+  for(let i=0;i<n;i++) S.resources.push(makeResource(names[(S.seq+i)%names.length] + '-' + String(S.seq+i+1).padStart(3,'0')));
+  S.page = Math.max(0, Math.ceil(S.resources.length/S.pageSize)-1);
+  renderList(); toast(`导入完成：新增 ${n} 张图片资源`,'ok');
+});
+$('#btnAddOne').addEventListener('click', ()=>{
+  S.resources.push(makeResource('样本-' + String(S.seq+1).padStart(3,'0')));
+  renderList(); toast('已添加 1 条训练资源','ok');
+});
+$('#btnAddAll').addEventListener('click', ()=>{
+  for(let i=0;i<8;i++) S.resources.push(makeResource('批量-' + String(S.seq+i+1).padStart(3,'0')));
+  renderList(); toast('已全部添加 8 条训练资源','ok');
+});
+$('#btnDelOne').addEventListener('click', ()=>{
+  const sel = S.resources.filter(r=>r.sel);
+  if(sel.length){ S.resources = S.resources.filter(r=>!r.sel); toast(`已删除 ${sel.length} 条勾选资源`,'ok'); }
+  else if(cur()){ const nm = cur().name; S.resources = S.resources.filter(r=>r.id!==S.currentId); S.currentId=null;
+    mctx.clearRect(0,0,960,600); $('#emptyState').classList.remove('hidden'); toast(`已删除「${nm}」`,'ok'); }
+  else { toast('请先勾选或选择要删除的资源','err'); return; }
+  renderList();
+});
+$('#btnDelAll').addEventListener('click', ()=>{
+  if(!S.resources.length){ toast('列表已为空','err'); return; }
+  S.resources = []; S.currentId = null; mctx.clearRect(0,0,960,600);
+  $('#emptyState').classList.remove('hidden'); renderList(); toast('已清空全部训练资源','ok');
+});
+$('#btnRename').addEventListener('click', ()=>{
+  const r = cur(); if(!r){ toast('请先选择要命名的资源','err'); return; }
+  openModal('资源命名', `
+    <div class="field"><label>资源名称</label><input type="text" id="rnInput" value="${r.name}"></div>
+    <p style="font-size:12px;color:var(--dim)">命名将同步到训练数据集与导出清单。</p>`,
+    [{t:'取消'},{t:'保存', primary:true, fn:()=>{ const v=$('#rnInput').value.trim();
+        if(!v){ toast('名称不能为空','err'); return false; } r.name=v; renderList(); toast('命名已保存','ok'); }}]);
+});
+$('#btnMerge').addEventListener('click', ()=>{
+  const sel = S.resources.filter(r=>r.sel);
+  if(sel.length < 2){ toast('请至少勾选 2 条资源后再融合','err'); return; }
+  const merged = makeResource('融合集-' + String(S.seq+1).padStart(2,'0'));
+  const mc = document.createElement('canvas'); mc.width=960; mc.height=600;
+  const mx = mc.getContext('2d');
+  sel.slice(0,4).forEach((r,i)=>{ const im=new Image(); im.src=r.thumb; });
+  drawBase(mx, sel.flatMap(r=>r.grains).slice(0,90));
+  merged.thumb = mc.toDataURL('image/png');
+  S.resources = S.resources.filter(r=>!r.sel); S.resources.push(merged);
+  renderList(); toast(`资源融合完成：${sel.length} 条 → 1 条融合集`,'ok');
+});
+$('#btnPrev').addEventListener('click', ()=>{ if(S.page>0){S.page--; renderList();} });
+$('#btnNext').addEventListener('click', ()=>{ if((S.page+1)*S.pageSize < S.resources.length){S.page++; renderList();} });
+
+/* SECTION: modal infra */
+function openModal(title, bodyHTML, buttons, wide){
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="modal-backdrop"><div class="modal ${wide?'wide':''} frame">
+    <div class="modal-head"><h3>${title}</h3><span class="x" data-close>✕</span></div>
+    <div class="modal-body">${bodyHTML}</div>
+    <div class="modal-foot">${(buttons||[{t:'关闭'}]).map((b,i)=>`<button class="btn ${b.primary?'btn-primary':''} ${b.danger?'btn-danger':''}" data-bi="${i}">${b.t}</button>`).join('')}</div>
+  </div></div>`;
+  const bd = root.firstElementChild;
+  bd.addEventListener('click', e=>{
+    if(e.target===bd || e.target.closest('[data-close]')){ root.innerHTML=''; return; }
+    const bi = e.target.closest('[data-bi]'); if(!bi) return;
+    const b = (buttons||[{t:'关闭'}])[+bi.dataset.bi];
+    if(b && b.fn){ if(b.fn()===false) return; }
+    root.innerHTML='';
+  });
+  return bd;
+}
+
+/* SECTION: training */
+$('#btnTrain').addEventListener('click', ()=>{
+  const annotated = S.resources.filter(r=>r.annotated);
+  if(!annotated.length){ toast('没有已标注的资源，请先完成标注','err'); return; }
+  if(S.training) return;
+  const bd = openModal('模型训练 · ' + S.currentModel, `
+    <div class="train-grid">
+      <div class="metric"><div class="k">训练样本</div><div class="v num">${annotated.length}</div></div>
+      <div class="metric"><div class="k">当前 EPOCH</div><div class="v num" id="trEpoch">0 / 30</div></div>
+      <div class="metric"><div class="k">LOSS</div><div class="v num" id="trLoss">--</div></div>
+      <div class="metric"><div class="k">验证精度 mAP</div><div class="v g num" id="trAcc">--</div></div>
+    </div>
+    <div class="bar"><i id="trBar"></i></div>
+    <canvas id="lossChart" width="640" height="170"></canvas>
+    <div class="logbox" id="trLog"></div>`,
+    [{t:'后台运行并关闭'},{t:'停止训练', danger:true, fn:()=>{ S.training=false; toast('训练已停止','info'); }}], true);
+  S.training = true;
+  let epoch = 0; const losses = [];
+  const log = m=>{ const el = bd.querySelector('#trLog');
+    el.innerHTML += `<div><span class="t">[${new Date().toLocaleTimeString()}]</span> ${m}</div>`; el.scrollTop = 1e6; };
+  log(`<span class="hi">初始化训练器 · 数据集 ${annotated.length} 张 · 类别 2</span>`);
+  log('加载预训练权重 CSNet-backbone.pth … <span class="ok">OK</span>');
+  const chart = bd.querySelector('#lossChart'), cctx = chart.getContext('2d');
+  const timer = setInterval(()=>{
+    if(!S.training){ clearInterval(timer); return; }
+    epoch++;
+    const loss = 2.4*Math.exp(-epoch/9) + 0.12 + Math.random()*0.05;
+    losses.push(loss);
+    if(bd.isConnected){
+      bd.querySelector('#trEpoch').textContent = `${epoch} / 30`;
+      bd.querySelector('#trLoss').textContent = loss.toFixed(4);
+      bd.querySelector('#trAcc').textContent = (88 + 11*(1-Math.exp(-epoch/10)) + Math.random()*.4).toFixed(1) + '%';
+      bd.querySelector('#trBar').style.width = (epoch/30*100) + '%';
+      cctx.clearRect(0,0,640,170);
+      cctx.strokeStyle='rgba(56,189,248,.15)';
+      for(let i=1;i<4;i++){ cctx.beginPath(); cctx.moveTo(0,170*i/4); cctx.lineTo(640,170*i/4); cctx.stroke(); }
+      cctx.strokeStyle='#22d3ee'; cctx.lineWidth=2; cctx.shadowColor='#22d3ee'; cctx.shadowBlur=8;
+      cctx.beginPath();
+      losses.forEach((l,i)=>{ const x=i/(29)*620+10, y=160-(l/2.6)*150; i?cctx.lineTo(x,y):cctx.moveTo(x,y); });
+      cctx.stroke(); cctx.shadowBlur=0;
+    }
+    if(epoch % 5 === 0) log(`epoch ${epoch} · loss ${loss.toFixed(4)} · lr ${(1e-3*Math.pow(.9,epoch/5)).toExponential(1)}`);
+    if(epoch >= 30){
+      clearInterval(timer); S.training = false;
+      const acc = (96 + Math.random()*3).toFixed(1);
+      log(`<span class="ok">训练完成 · mAP ${acc}% · 权重已保存至 /models/${S.currentModel}.pth</span>`);
+      S.models.unshift({name:S.currentModel, epochs:30, acc:+acc, miou:+(acc-3.4).toFixed(1), date:new Date().toISOString().slice(0,10), status:'待部署'});
+      toast(`训练完成，mAP ${acc}%，模型已更新`,'ok');
+    }
+  }, 260);
+});
+$('#btnNewModel').addEventListener('click', ()=>{
+  openModal('新建模型', `
+    <div class="field"><label>模型名称</label><input type="text" id="nmInput" value="CSNet-v3.0-draft"></div>
+    <div class="field"><label>骨干网络</label>
+      <select id="nmBack" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:7px;padding:9px 12px;color:var(--txt);font-family:inherit">
+        <option>CSNet-Mobile（边缘端推荐）</option><option>CSNet-Standard</option><option>CSNet-HighPrec</option>
+      </select></div>
+    <p style="font-size:12px;color:var(--dim)">新建后将成为当前工作模型，标注与训练均作用于该模型。</p>`,
+    [{t:'取消'},{t:'创建', primary:true, fn:()=>{ const v=$('#nmInput').value.trim();
+      if(!v){ toast('名称不能为空','err'); return false; }
+      S.currentModel = v; S.models.unshift({name:v, epochs:0, acc:0, miou:0, date:new Date().toISOString().slice(0,10), status:'草稿'});
+      toast(`模型「${v}」已创建并设为当前模型`,'ok'); }}]);
+});
+
+/* SECTION: dock modals */
+function openSimFor(modelName){
+  const r = cur();
+  const bd = openModal('模型仿真 · ' + modelName, `
+    <p style="font-size:12px;color:var(--dim);margin-bottom:10px">以当前模型对选中图片执行推理，输出检测框与置信度。</p>
+    <div class="sim-wrap"><canvas id="simCanvas" width="960" height="600"></canvas></div>
+    <div id="simInfo" style="margin-top:10px;font-size:12px;color:var(--dim)"></div>`,
+    [{t:'关闭'},{t:'重新推理', primary:true, fn:()=>{ runSim(bd); return false; }}], true);
+  runSim(bd);
+  function runSim(bd){
+    const cv = bd.querySelector('#simCanvas'), ctx = cv.getContext('2d');
+    if(!r){ ctx.clearRect(0,0,960,600); ctx.fillStyle='#0b1017'; ctx.fillRect(0,0,960,600);
+      ctx.fillStyle='#54687f'; ctx.font='22px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('请先选择图片', 480, 300);
+      bd.querySelector('#simInfo').textContent = '无输入图像'; return; }
+    drawBase(ctx, r.grains);
+    const defs = r.grains.filter(g=>g.defect);
+    ctx.font='13px Consolas,monospace'; ctx.textAlign='left';
+    defs.forEach((g,i)=>{
+      const conf = (0.82 + Math.random()*0.17);
+      ctx.strokeStyle='#f87171'; ctx.lineWidth=2; ctx.shadowColor='#f87171'; ctx.shadowBlur=6;
+      ctx.strokeRect(g.x-g.rx-5, g.y-g.ry-5, (g.rx+5)*2, (g.ry+5)*2); ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(248,113,113,.9)';
+      const label = `异物 ${conf.toFixed(2)}`;
+      ctx.fillRect(g.x-g.rx-5, g.y-g.ry-24, ctx.measureText(label).width+10, 18);
+      ctx.fillStyle='#180505'; ctx.fillText(label, g.x-g.rx, g.y-g.ry-10);
+    });
+    bd.querySelector('#simInfo').innerHTML = `推理完成：检出 <b style="color:var(--red)">${defs.length}</b> 个异物目标 · 耗时 ${(18+Math.random()*8).toFixed(0)} ms · 阈值 H${S.th.h}/S${S.th.s}/V${S.th.v}`;
+  }
+}
+$('#btnSim').addEventListener('click', ()=>openSimFor(S.currentModel));
+
+/* SECTION: model manager view */
+let mgrSel = null;
+function mgrStats(){
+  const t = S.models.length;
+  const on = S.models.filter(m=>m.status==='使用中').length;
+  const pend = S.models.filter(m=>m.status==='待部署'||m.status==='草稿').length;
+  const trained = S.models.filter(m=>m.acc>0);
+  const avg = trained.length ? (trained.reduce((a,m)=>a+m.acc,0)/trained.length) : 0;
+  return [t,on,pend,avg];
+}
+function openMgr(){
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="mgr-view"><div class="mgr-panel frame">
+    <div class="modal-head"><h3>推理模型 · 模型管理</h3><span style="font-size:11px;color:var(--dim2);letter-spacing:2px">MODEL REPOSITORY</span><span class="x" data-close>✕</span></div>
+    <div class="mgr-stats">
+      <div class="metric"><div class="k">模型总数</div><div class="v num" id="mgTotal">0</div></div>
+      <div class="metric"><div class="k">使用中</div><div class="v g num" id="mgOn">0</div></div>
+      <div class="metric"><div class="k">待部署 / 草稿</div><div class="v num" id="mgPend" style="color:var(--amber)">0</div></div>
+      <div class="metric"><div class="k">平均 mAP</div><div class="v num" id="mgAvg">--</div></div>
+    </div>
+    <div class="mgr-list" id="mgList"></div>
+    <div class="mgr-foot">
+      <button class="btn" id="mgSim">仿真模型</button>
+      <button class="btn" id="mgApply">应用</button>
+      <button class="btn" id="mgRename">重命名</button>
+      <button class="btn btn-danger" id="mgDel">删除</button>
+      <button class="btn" id="mgExport">导出</button>
+      <button class="btn" id="mgImport">导入</button>
+      <button class="btn" id="mgRefresh">刷新</button>
+      <button class="btn btn-primary" id="mgBack">返回</button>
+    </div>
+  </div></div>`;
+  const view = root.firstElementChild;
+  view.addEventListener('click', e=>{ if(e.target===view || e.target.closest('[data-close]')) root.innerHTML=''; });
+  renderMgr();
+  function renderMgr(){
+    const [t,on,pend,avg] = mgrStats();
+    view.querySelector('#mgTotal').textContent = t;
+    view.querySelector('#mgOn').textContent = on;
+    view.querySelector('#mgPend').textContent = pend;
+    view.querySelector('#mgAvg').textContent = avg ? avg.toFixed(1)+'%' : '--';
+    const list = view.querySelector('#mgList'); list.innerHTML = '';
+    if(!S.models.length){ list.innerHTML = '<div class="mgr-empty">模型库为空 · 点击「导入」或「新建模型」开始</div>'; }
+    S.models.forEach(m=>{
+      const row = document.createElement('div');
+      row.className = 'mgr-row' + (mgrSel===m.name?' sel':'');
+      row.innerHTML = `
+        <div><div class="nm">${m.name}
+          <span class="pill ${m.status==='使用中'?'g':m.status==='草稿'?'a':'c'}">${m.status}</span>
+          ${m.name===S.currentModel?'<span class="pill c">当前</span>':''}</div>
+          <div class="sub">训练日期 ${m.date} · 设备 YC3568</div></div>
+        <div class="cell"><div class="k">EPOCHS</div><div class="v num">${m.epochs||'--'}</div></div>
+        <div class="cell"><div class="k">MAP</div><div class="v num" style="color:var(--green)">${m.acc?m.acc.toFixed(1)+'%':'--'}</div></div>
+        <div class="cell"><div class="k">MIOU</div><div class="v num">${m.miou?m.miou.toFixed(1)+'%':'--'}</div></div>
+        <div class="cell"><div class="k">体积</div><div class="v num">${m.epochs?(2.1+m.acc/40).toFixed(1)+' MB':'--'}</div></div>
+        <div class="selmark">${mgrSel===m.name?'● 已选中':'点击选中'}</div>`;
+      row.addEventListener('click', ()=>{ mgrSel = (mgrSel===m.name? null : m.name); renderMgr(); });
+      list.appendChild(row);
+    });
+    const need = ['mgSim','mgApply','mgRename','mgDel','mgExport'];
+    need.forEach(id=>{ view.querySelector('#'+id).disabled = !mgrSel; });
+  }
+  view.querySelector('#mgSim').addEventListener('click', ()=>{ if(mgrSel) openSimFor(mgrSel); });
+  view.querySelector('#mgApply').addEventListener('click', ()=>{
+    if(!mgrSel) return;
+    S.currentModel = mgrSel;
+    S.models.forEach(m=>{ if(m.status==='使用中') m.status='已归档'; });
+    const m = S.models.find(x=>x.name===mgrSel); if(m && m.status!=='草稿') m.status='使用中';
+    toast(`模型「${mgrSel}」已应用为当前推理模型`,'ok'); renderMgr();
+  });
+  view.querySelector('#mgRename').addEventListener('click', ()=>{
+    if(!mgrSel) return;
+    const m = S.models.find(x=>x.name===mgrSel);
+    openModal('重命名模型', `<div class="field"><label>模型名称</label><input type="text" id="mrInput" value="${m.name}"></div>`,
+      [{t:'取消'},{t:'保存', primary:true, fn:()=>{ const v=$('#mrInput').value.trim();
+        if(!v){ toast('名称不能为空','err'); return false; }
+        if(v!==m.name && S.models.some(x=>x.name===v)){ toast('已存在同名模型','err'); return false; }
+        if(S.currentModel===m.name) S.currentModel=v;
+        m.name=v; mgrSel=v; renderMgr(); toast('重命名已保存','ok'); }}]);
+  });
+  view.querySelector('#mgDel').addEventListener('click', ()=>{
+    if(!mgrSel) return;
+    const name = mgrSel;
+    openModal('删除模型', `<p style="font-size:13px;color:var(--dim);line-height:1.8">确认删除模型「${name}」？<br>删除后其权重文件将从本机模型库移除${name===S.currentModel?'；当前模型将被清除，需重新应用':''}。</p>`,
+      [{t:'取消'},{t:'确认删除', danger:true, fn:()=>{
+        S.models = S.models.filter(x=>x.name!==name);
+        if(S.currentModel===name) S.currentModel = (S.models.find(m=>m.status==='使用中')||S.models[0]||{name:'--'}).name;
+        mgrSel = null; renderMgr(); toast(`模型「${name}」已删除`,'ok'); }}]);
+  });
+  view.querySelector('#mgExport').addEventListener('click', ()=>{
+    if(!mgrSel) return;
+    const m = S.models.find(x=>x.name===mgrSel);
+    const blob = new Blob([JSON.stringify({model:m.name, epochs:m.epochs, mAP:m.acc, mIoU:m.miou, export:'onnx-int8', device:'YC3568', date:new Date().toISOString()}, null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = m.name + '-int8.json'; a.click();
+    URL.revokeObjectURL(a.href);
+    toast(`「${m.name}」已导出到本地下载目录`,'ok');
+  });
+  view.querySelector('#mgImport').addEventListener('click', ()=>{
+    const inp = document.createElement('input'); inp.type='file'; inp.accept='.json,.onnx,.pth';
+    inp.addEventListener('change', ()=>{
+      const f = inp.files && inp.files[0]; if(!f) return;
+      const name = f.name.replace(/\.(json|onnx|pth)$/i,'');
+      if(S.models.some(m=>m.name===name)){ toast('模型库中已存在同名模型','err'); return; }
+      S.models.unshift({name, epochs:'—', acc:0, miou:0, date:new Date().toISOString().slice(0,10), status:'待部署'});
+      renderMgr(); toast(`模型「${name}」已导入模型库`,'ok');
+    });
+    inp.click();
+  });
+  view.querySelector('#mgRefresh').addEventListener('click', ()=>{ renderMgr(); toast('模型库已刷新','info'); });
+  view.querySelector('#mgBack').addEventListener('click', ()=>{ $('#modalRoot').innerHTML=''; });
+}
+$('#btnMgr').addEventListener('click', ()=>{ mgrSel=null; openMgr(); });
+$('#btnThCfg').addEventListener('click', ()=>{
+  openModal('阈值配置', `
+    <div class="frow" style="display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:13px;color:var(--dim)">色调容差 H<input type="range" id="cfH" min="0" max="180" value="${S.th.h}" style="width:200px"><span class="num" id="cfHv">${S.th.h}</span></div>
+    <div class="frow" style="display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:13px;color:var(--dim)">饱和度下限 S<input type="range" id="cfS" min="0" max="100" value="${S.th.s}" style="width:200px"><span class="num" id="cfSv">${S.th.s}</span></div>
+    <div class="frow" style="display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:13px;color:var(--dim)">最小目标面积<input type="range" id="cfA" min="4" max="200" value="${S.th.amin}" style="width:200px"><span class="num" id="cfAv">${S.th.amin}</span></div>
+    <p style="font-size:12px;color:var(--dim);margin-top:8px">阈值同时作用于「一键标注」与在线分选判定。</p>`,
+    [{t:'取消'},{t:'保存配置', primary:true, fn:()=>{
+      S.th.h=+$('#cfH').value; S.th.s=+$('#cfS').value; S.th.amin=+$('#cfA').value;
+      $('#thH').value=S.th.h; $('#thHv').textContent=S.th.h;
+      $('#thS').value=S.th.s; $('#thSv').textContent=S.th.s;
+      $('#thAmin').value=S.th.amin; $('#thAminv').textContent=S.th.amin;
+      toast('阈值配置已保存并生效','ok'); }}]);
+  [['#cfH','#cfHv'],['#cfS','#cfSv'],['#cfA','#cfAv']].forEach(([a,b])=>{
+    document.querySelector(a).addEventListener('input', e=>document.querySelector(b).textContent=e.target.value); });
+});
+$('#btnDownload').addEventListener('click', ()=>{
+  const rows = S.models.filter(m=>m.epochs>0).map(m=>`<tr><td class="num">${m.name}</td><td class="num">${m.acc.toFixed(1)}%</td><td class="num">${(2.1+m.acc/40).toFixed(1)} MB</td>
+    <td><button class="btn btn-sm btn-primary" data-dl="${m.name}">下载</button></td></tr>`).join('');
+  const bd = openModal('模型下载', rows ? `<table class="tbl"><tr><th>模型</th><th>mAP</th><th>体积</th><th></th></tr>${rows}</table>` : '<p style="color:var(--dim)">暂无已训练完成的模型。</p>', [{t:'关闭'}]);
+  bd.querySelector('.modal-body').addEventListener('click', e=>{
+    const b = e.target.closest('[data-dl]'); if(!b) return;
+    const name = b.dataset.dl;
+    const blob = new Blob([JSON.stringify({model:name, export:'onnx-int8', date:new Date().toISOString(), device:'YC3568'}, null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name + '-int8.json'; a.click();
+    URL.revokeObjectURL(a.href);
+    toast(`「${name}」量化包已导出到本地下载目录`,'ok');
+  });
+});
+$('#btnBack').addEventListener('click', ()=>{
+  openModal('返回主画面', '<p style="font-size:13px;color:var(--dim);line-height:1.8">当前标注与训练进度已保存在本机浏览器会话中。<br>确认返回色选机主控画面？</p>',
+    [{t:'取消'},{t:'确认返回', primary:true, fn:()=>toast('已返回主控画面（原型演示）','info')}]);
+});
+
+/* SECTION: classic HMI */
+const CS = {
+  page:'scheme', algo:'norm', algoCfg:'single', sensAlgo:'norm',
+  shots:[], matPage:0, matSel:-1, sensView:'front', sensIdx:1, syncShot:false,
+  clean:{t:1, iv:480},
+  valve:{single:false, speed:'low', cur:1, running:false, timer:null},
+  feed:{f1:0, f2:0, monitor:false},
+  sysPage:'status', sysTab:'det',
+  mon:{air:true, heat:false},
+  net:{tab:'local', ip:'192.168.4.2', mask:'255.255.255.0', gw:'192.168.4.1', dns:'', mac:'F2:C9:A8:3A:98:80', rid:'8823-1140', ron:false, wifiOn:true, ssid:'Sorter-5G', pwd:''},
+  dev:{seller:'', phone:'', expire:''},
+  wb:{ch:1, paused:false, target:140, ag:0, dg:1, fine:0},
+  px:{ch:1, paused:false, start:41, end:978},
+  ccd:{type:'T3', line:3.8, res:'2048', mode:'bright'},
+  lens:{io:1, cam:1},
+  lang:'简体中文',
+  demag:20, bootMode:'auto', saver:5, vib:24,
+  ai:{on:true, cap:128, inf:128, img:500, vid:256, re:0},
+  prod:{ch:1, cur:[0,0], total:[0,0], tT:0, tKg:0},
+  run:{t0:Date.now(), cum:369370, feedOn:false, valveOn:true, airOk:true, alarms:0},
+  smart:{cs:1, cls:'low', sample:0, speed:'high', copy:false},
+  aiAlgo:{on:false, model:'--', conf:60},
+};
+const ICO = {
+  mon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4M7 8l3 3 2-2 3 3"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>',
+  layer:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+  globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
+  calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01"/></svg>',
+  box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></svg>',
+  brain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 4a3.5 3.5 0 00-3.5 3.5A3.5 3.5 0 004 11a3.5 3.5 0 002 3.2V16a4 4 0 004 4h1V4H9z"/><path d="M15 4a3.5 3.5 0 013.5 3.5A3.5 3.5 0 0120 11a3.5 3.5 0 01-2 3.2V16a4 4 0 01-4 4h-1V4h1z"/></svg>',
+  chip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg>',
+};
+function fmtHMS(sec){ const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60; return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+function kv(k, vHTML){ return `<div class="kv"><span class="k">${k}</span><span class="v">${vHTML}</span></div>`; }
+function inp(id, val, w){ return `<input class="inp${w?' '+w:''}" id="${id}" value="${val}">`; }
+function step(id, val, dec){ return `<span class="stepper"><button class="stp" data-st="${id}:-1">−</button>${inp(id, val)}<button class="stp" data-st="${id}:1">＋</button></span>`; }
+function chk(id, label, on, grp){ return `<span class="chk${on?' on':''}" data-chk="${id}"${grp?` data-radio="${grp}"`:''}><i></i>${label}</span>`; }
+function seg2(id, opts, cur){ return `<span class="seg2" data-seg="${id}">${opts.map(o=>`<button data-v="${o}" class="${o===cur?'on':''}">${o}</button>`).join('')}</span>`; }
+function csSide(items, curKey){
+  $('#csSide').innerHTML = items.map(it=>`<button class="sbtn${it.k===curKey?' on':''}" data-side="${it.k}">${ICO[it.i]||''}<span>${it.t}</span></button>`).join('');
+}
+function matGridHTML(){
+  const cells = [];
+  for(let i=0;i<6;i++){
+    const idx = CS.matPage*6+i;
+    cells.push(`<div class="matcell${CS.matSel===idx?' sel':''}" data-mat="${idx}">
+      ${CS.shots[idx]?`<img data-shot="${idx}" alt="物料${i+1}">`:`<div class="ph">物料${i+1} · 空</div>`}
+      <div class="lb">物料${i+1}</div></div>`);
+  }
+  return `<div class="matgrid">${cells.join('')}</div>`;
+}
+function fillMatShots(root){
+  root.querySelectorAll('img[data-shot]').forEach(im=>{ im.src = CS.shots[+im.dataset.shot] || ''; });
+}
+function sensViewHTML(algo){
+  const names = {norm:'常规算法', shape:'形选算法', smart:'智能算法', ai:'AI智能算法'};
+  let extra = '';
+  if(algo==='shape') extra = kv('长度阈值', step('shLen', 12)) + kv('宽度阈值', step('shWid', 8));
+  if(algo==='smart') extra = kv('Phenix 特征', chk('shPhenix','启用', false));
+  if(algo==='ai') extra = kv('AI 模型', `<span class="pill c">${CS.aiAlgo.model}</span>`) + kv('置信度', step('shConf', CS.aiAlgo.conf));
+  return `
+    <div class="cs-tabs"><button class="tb ${CS.sensView==='front'?'on':''}" data-sv="front">一次前视</button><button class="tb ${CS.sensView==='back'?'on':''}" data-sv="back">一次后视</button></div>
+    <div class="cs-grid">
+      ${kv('好料通道', chk('sensGood','启用', false)) + kv('好料精度', step('sensGoodP', 0))}
+      ${kv('坏料通道', chk('sensBad','启用', true)) + kv('坏料精度', step('sensBadP', 0))}
+      ${extra}
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:12px;color:var(--dim);letter-spacing:1px">当前算法 · ${names[algo]}</span>
+      <span class="grow"></span>
+      <button class="btn btn-sm" id="sensGear">⚙ 辅助参数</button>
+    </div>`;
+}
+function matPageHTML(){
+  return `
+    ${matGridHTML()}
+    <div class="cs-grid" style="grid-template-columns:1fr 1fr">
+      <div class="kv"><span class="k">视次 / 通道</span><span class="v">${seg2('matView',['前','后'],'前')} ${step('matIdx', CS.sensIdx)}</span></div>
+      <div class="kv"><span class="k">物料名称</span><span class="v">${inp('matName','material')}</span></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-sm" id="matSingle">单独设置</button>
+      ${chk('matSync','同步拍照', CS.syncShot)}
+      <button class="btn btn-sm" id="matSmart">智能分析</button>
+      <span class="grow"></span>
+      <button class="btn btn-sm" id="matShot">拍摄</button>
+      <button class="btn btn-sm btn-danger" id="matDel">删除</button>
+      <button class="btn btn-sm" id="matPrev">‹ 上一页</button>
+      <button class="btn btn-sm" id="matNext">下一页 ›</button>
+    </div>`;
+}
+const CS_PAGES = {
+  scheme(){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">方案库</button></div>
+      <div class="cs-grid">
+        <div class="matcell sel"><div class="ph" style="height:80px">1 material · 当前方案</div><div class="lb">1 material</div></div>
+        <div class="matcell"><div class="ph" style="height:80px">空槽位</div><div class="lb">2 --</div></div>
+        <div class="matcell"><div class="ph" style="height:80px">空槽位</div><div class="lb">3 --</div></div>
+      </div>
+      <div class="cs-grid">${kv('当前方案','1 material')}${kv('方案来源','出厂默认')}${kv('最后修改','2026-08-31 16:10')}</div>
+      <div style="display:flex;gap:10px"><button class="btn btn-sm btn-primary" id="schApply">应用方案</button><button class="btn btn-sm" id="schSave">另存为新方案</button></div>`;
+  },
+  sens(){
+    csSide([{k:'norm',t:'常规算法',i:'calc'},{k:'shape',t:'形选算法',i:'box'},{k:'smart',t:'智能算法',i:'brain'},{k:'ai',t:'AI智能算法',i:'chip'}], CS.sensAlgo);
+    return sensViewHTML(CS.sensAlgo) + '<div style="border-top:1px solid var(--line);margin-top:4px;padding-top:12px">' + matPageHTML() + '</div>';
+  },
+  clean(){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">清灰</button></div>
+      <div class="cs-grid">${kv('清灰时间 (s)', step('clT', CS.clean.t))}${kv('清灰间隔 (min)', step('clIv', CS.clean.iv))}</div>
+      <div style="display:flex;gap:10px;align-items:center"><button class="btn btn-primary" id="clManual">手动清灰</button><span id="clState" style="font-size:12px;color:var(--dim)">气路待命</span></div>`;
+  },
+  valve(){
+    csSide([], '');
+    const v = CS.valve;
+    let nz = '';
+    for(let i=1;i<=64;i++) nz += `<div class="nz${i===v.cur?' cur':''}" data-nz="${i}" title="喷嘴 ${i}"></div>`;
+    return `<div class="cs-grid" style="grid-template-columns:repeat(3,1fr)">
+        ${kv('单喷阀测试', chk('vSingle','', v.single))}${kv('速度模式', seg2('vSpeed',['高速','低速'], v.speed==='high'?'高速':'低速'))}${kv('当前喷嘴', step('vCur', v.cur))}
+      </div>
+      <div class="frame" style="padding:12px"><div style="font-size:12px;color:var(--dim);letter-spacing:2px;margin-bottom:8px">喷阀阵列 · 64 CH</div><div class="nozzles" id="nzGrid">${nz}</div></div>
+      <div style="display:flex;gap:10px"><button class="btn btn-primary" id="vStart">开始</button><button class="btn" id="vStop">停止</button><span id="vState" style="align-self:center;font-size:12px;color:var(--dim)">${v.running?'测试中…':'未启动'}</span></div>`;
+  },
+  feed(){
+    csSide([], '');
+    return `<div class="cs-grid" style="grid-template-columns:1fr 1fr">
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:10px"><span class="k">供料 1</span><span class="sliderow"><input type="range" min="0" max="100" value="${CS.feed.f1}" id="fd1"><b class="num" id="fd1v">${CS.feed.f1}%</b></span></div>
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:10px"><span class="k">供料 2</span><span class="sliderow"><input type="range" min="0" max="100" value="${CS.feed.f2}" id="fd2"><b class="num" id="fd2v">${CS.feed.f2}%</b></span></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">${chk('fdMon','料位监控', CS.feed.monitor)}<span style="font-size:12px;color:var(--dim2)">开启后料位低于阈值自动暂停供料</span></div>`;
+  },
+  algo(){
+    csSide([{k:'single',t:'单色算法',i:'calc'},{k:'double',t:'双色算法',i:'calc'},{k:'comp',t:'复合算法',i:'layer'},{k:'shape',t:'形选算法',i:'box'},{k:'tip',t:'选尖算法',i:'box'},{k:'size',t:'大小算法',i:'box'},{k:'ai',t:'AI算法',i:'chip'},{k:'smart',t:'智能算法',i:'brain'}], CS.algoCfg);
+    const a = CS.algoCfg;
+    let body = '';
+    if(a==='single') body = kv('颜色空间', seg2('alCs',['颜色空间1','颜色空间2'],'颜色空间1')) + kv('感度', step('alS1', 3)) + kv('背景补偿', chk('alBg','', false));
+    if(a==='double') body = kv('前景颜色空间', seg2('alCsA',['颜色空间1','颜色空间2'],'颜色空间1')) + kv('背景颜色空间', seg2('alCsB',['颜色空间1','颜色空间2'],'颜色空间2')) + kv('感度 A / B', step('alS2', 3));
+    if(a==='comp') body = kv('组合模式', chk('alC1','颜色', true) + ' ' + chk('alC2','形选', false)) + kv('权重', step('alW', 50));
+    if(a==='shape') body = kv('长度范围', step('alL', 12)) + kv('宽度范围', step('alWd', 8)) + kv('形选方向', seg2('alDir',['长短','大小'],'长短'));
+    if(a==='tip') body = kv('尖角阈值', step('alTip', 5)) + kv('检测方向', seg2('alTipD',['上尖','下尖'],'上尖'));
+    if(a==='size') body = kv('最小面积', step('alMin', 4)) + kv('最大面积', step('alMax', 400));
+    if(a==='ai') body = kv('使能AI', chk('alAiOn','', CS.aiAlgo.on)) + kv('推理模型', `<select class="inp" id="alModel">${['--','CS-YOLOv8n-20260831','CS-SegNet-rice'].map(m=>`<option ${m===CS.aiAlgo.model?'selected':''}>${m}</option>`).join('')}</select>`) + kv('置信度 %', step('alConf', CS.aiAlgo.conf));
+    if(a==='smart') body = kv('Phenix 特征', chk('alPhenix','启用', false)) + `<div style="grid-column:1/-1"><button class="btn btn-sm" id="alSmartOpen">智能分析…</button></div>`;
+    return `<div class="cs-tabs"><button class="tb on">一次</button><button class="tb">二次</button></div><div class="cs-grid">${body}</div>`;
+  },
+  sys(){
+    const pages = {
+      status(){
+        const el = Math.floor((Date.now()-CS.run.t0)/1000);
+        if(CS.sysTab==='det') return `<div class="cs-tabs"><button class="tb on" data-systab="det">检测状态</button><button class="tb" data-systab="ai">AI检测状态</button></div>
+          <div class="cs-grid" style="grid-template-columns:1fr 1fr">
+            ${kv('本次运行', `<b class="num">${fmtHMS(el)}</b>`)}${kv('累计运行', `<b class="num">${fmtHMS(CS.run.cum+el)}</b>`)}
+            ${kv('本次供料', `<b class="num">0:00:00</b>`)}${kv('累计供料', `<b class="num">14:38:17</b>`)}
+            ${kv('本次气压报警', `<b class="num">${CS.run.alarms}</b>`)}${kv('累计气压报警', `<b class="num">${CS.run.alarms}</b>`)}
+            ${kv('供料状态', CS.run.feedOn?'<span class="pill g">开</span>':'<span class="pill a">关</span>')}${kv('喷阀状态', CS.run.valveOn?'<span class="pill g">开</span>':'<span class="pill a">关</span>')}
+            ${kv('气压状态', CS.run.airOk?'<span class="pill g">正常</span>':'<span class="pill r">异常</span>')}${kv('AI 检测', CS.ai.on?'<span class="pill c">使能</span>':'<span class="pill a">停用</span>')}
+          </div>`;
+        return `<div class="cs-tabs"><button class="tb" data-systab="det">检测状态</button><button class="tb on" data-systab="ai">AI检测状态</button></div>
+          <table class="tbl"><tr><th>通道</th><th>1</th><th>2</th></tr>
+          <tr><td>前视丢包数</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td>后视丢包数</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td>前视平均推理耗时(ms)</td><td class="num">${CS.ai.on?(1.6+Math.random()).toFixed(3):'0.000'}</td><td class="num">${CS.ai.on?(1.6+Math.random()).toFixed(3):'0.000'}</td></tr>
+          <tr><td>后视平均推理耗时(ms)</td><td class="num">${CS.ai.on?(1.7+Math.random()).toFixed(3):'0.000'}</td><td class="num">${CS.ai.on?(1.7+Math.random()).toFixed(3):'0.000'}</td></tr>
+          <tr><td>前视延迟超时数</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td>后视延迟超时数</td><td class="num">0</td><td class="num">0</td></tr></table>`;
+      },
+      monitor(){ return `<div class="cs-grid" style="grid-template-columns:1fr 1fr">${kv('气压监控', chk('monAir','', CS.mon.air))}${kv('散热监控', chk('monHeat','', CS.mon.heat))}</div>`; },
+      version(){ return `<div class="cs-grid" style="grid-template-columns:1fr 1fr">
+          ${kv('显示屏','V1.00')}${kv('主控板','1 · V1.00')}
+          ${kv('接口板 1','V1.00')}${kv('接口板 USB','<span style="color:var(--red)">NULL</span>')}
+          ${kv('相机板 通道1','前视 V1.00_1 / 后视 V1.00_1')}${kv('相机板 通道2','前视 V1.00_1 / 后视 V1.00_1')}
+        </div><div style="font-size:16px;letter-spacing:2px">Version : <b class="num">323</b> <button class="btn btn-sm" id="verRef" style="margin-left:12px">刷新</button></div>`; },
+      time(){ const d = new Date();
+        return `<div class="cs-grid" style="grid-template-columns:repeat(3,1fr)">
+          ${kv('年', inp('tmY', d.getFullYear()))}${kv('月', inp('tmM', d.getMonth()+1))}${kv('日', inp('tmD', d.getDate()))}
+          ${kv('时', inp('tmH', d.getHours()))}${kv('分', inp('tmMi', d.getMinutes()))}${kv('秒', inp('tmS', d.getSeconds()))}
+        </div><div><button class="btn btn-sm btn-primary" id="tmSet">写入系统时间</button></div>`; },
+      net(){ const n = CS.net;
+        if(n.tab==='local') return `<div class="cs-tabs"><button class="tb on" data-nt="local">本地主机</button><button class="tb" data-nt="remote">远程协助</button><button class="tb" data-nt="wifi">WIFI</button></div>
+          <div class="cs-grid">${kv('IP地址', inp('nIp', n.ip, 'wide'))}${kv('子网掩码', inp('nMask', n.mask, 'wide'))}${kv('默认网关', inp('nGw', n.gw, 'wide'))}${kv('DNS服务器', inp('nDns', n.dns, 'wide'))}${kv('MAC地址', inp('nMac', n.mac, 'wide'))}</div>`;
+        if(n.tab==='remote') return `<div class="cs-tabs"><button class="tb" data-nt="local">本地主机</button><button class="tb on" data-nt="remote">远程协助</button><button class="tb" data-nt="wifi">WIFI</button></div>
+          <div class="cs-grid">${kv('协助ID', inp('nRid', n.rid, 'wide'))}${kv('远程协助', chk('nRon','启用', n.ron))}</div>
+          <p style="font-size:12px;color:var(--dim2)">启用后厂家可通过协助ID发起远程连接，请勿泄露给无关人员。</p>`;
+        return `<div class="cs-tabs"><button class="tb" data-nt="local">本地主机</button><button class="tb" data-nt="remote">远程协助</button><button class="tb on" data-nt="wifi">WIFI</button></div>
+          <div class="cs-grid">${kv('WIFI 开关', chk('nWOn','启用', n.wifiOn))}${kv('SSID', inp('nSsid', n.ssid, 'wide'))}${kv('密码', inp('nPwd', n.pwd, 'wide'))}</div>`;
+      },
+      device(){ return `<div class="cs-grid">${kv('销售员', inp('dS', CS.dev.seller, 'wide'))}${kv('电话', inp('dP', CS.dev.phone, 'wide'))}${kv('过期时间', inp('dE', CS.dev.expire, 'wide'))}</div>`; },
+    };
+    csSide([{k:'status',t:'系统状态',i:'mon'},{k:'monitor',t:'监控设置',i:'gear'},{k:'version',t:'版本查询',i:'layer'},{k:'time',t:'系统时间',i:'clock'},{k:'net',t:'网络设置',i:'globe'},{k:'device',t:'设备信息',i:'info'}], CS.sysPage);
+    return pages[CS.sysPage]();
+  },
+};
+const CS_SUB = {
+  adv(){
+    csSide([], '');
+    const items = [['cam','相机参数'],['model','机型设定'],['lang','语言设定'],['touch','触摸屏校正'],['demag','消磁时间'],['boot','启动模式'],['prod','测试产量'],['age','老化测试'],['saver','设置屏保'],['vib','振动器电压'],['ai','AI 设置']];
+    return `<div class="cs-tabs"><button class="tb on">高级设置</button></div>
+      <div class="cs-grid" style="grid-template-columns:repeat(4,1fr)">${items.map(it=>`<button class="btn" data-adv="${it[0]}">${it[1]}</button>`).join('')}</div>`;
+  },
+  cam(){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">相机参数</button></div>
+      <div class="cs-grid" style="grid-template-columns:repeat(4,1fr)">
+        <button class="btn" data-cam="wb">白平衡</button><button class="btn" data-cam="px">像素划分</button>
+        <button class="btn" data-cam="ccd">CCD设置</button><button class="btn" data-cam="lens">镜头偏置</button>
+      </div>`;
+  },
+  wb(){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">白平衡 · 通道 ${CS.wb.ch}</button></div>
+      <div class="curvebox"><canvas id="wbCurve" width="900" height="230"></canvas></div>
+      <div class="cs-grid" style="grid-template-columns:repeat(3,1fr)">
+        ${kv('通道', seg2('wbCh',['1','2'], String(CS.wb.ch)) + ` <button class="btn btn-sm" data-wbv="back">后视</button>`)}
+        ${kv('target_value', step('wbT', CS.wb.target))}${kv('模拟增益', step('wbAg', CS.wb.ag))}
+        ${kv('数字增益', step('wbDg', CS.wb.dg))}${kv('细调', `<span class="stepper"><button class="stp" data-st="wbFine:-1">◀</button>${inp('wbFine', CS.wb.fine)}<button class="stp" data-st="wbFine:1">▶</button></span>`)}
+        ${kv('采集', `<button class="btn btn-sm" id="wbPause">${CS.wb.paused?'继续':'暂停'}</button>`)}
+      </div>
+      <div style="display:flex;gap:10px"><button class="btn btn-primary" id="wbOnce">单次校正</button><button class="btn" id="wbAll">整机校正</button></div>`;
+  },
+  px(){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">像素划分 · 通道 ${CS.px.ch}</button></div>
+      <div class="curvebox"><canvas id="pxCurve" width="900" height="230"></canvas></div>
+      <table class="tbl"><tr><th></th><th>1</th><th>2</th></tr>
+        <tr><td>前视起始</td><td class="num">61</td><td class="num">79</td></tr>
+        <tr><td>前视终止</td><td class="num">983</td><td class="num">1012</td></tr>
+        <tr><td>后视起始</td><td class="num">41</td><td class="num">34</td></tr>
+        <tr><td>后视终止</td><td class="num">978</td><td class="num">976</td></tr></table>
+      <div class="cs-grid" style="grid-template-columns:repeat(3,1fr)">
+        ${kv('通道', seg2('pxCh',['1','2'], String(CS.px.ch)))}${kv('开始', step('pxS', CS.px.start))}${kv('终止', step('pxE', CS.px.end))}
+      </div>
+      <div style="display:flex;gap:10px"><button class="btn btn-primary" id="pxAuto">自动划分</button><button class="btn" id="pxReset">像元重置</button></div>`;
+  },
+  ccd(){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">CCD设置</button></div>
+      <div class="cs-grid" style="grid-template-columns:1fr 1fr">
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">CCD 型号</span>${['K','T2','T3','D2','P5'].map(t=>chk('ccd'+t, t, CS.ccd.type===t, 'ccdt')).join(' ')}</div>
+        ${kv('行频', step('ccdLine', CS.ccd.line))}
+        ${kv('传感器分辨率', chk('ccdRes','上层 2048', CS.ccd.res==='2048'))}
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">传感器模式</span>${['bright','dark','bw'].map((m,i)=>chk('ccdM'+m, ['亮物料','暗物料','黑白'][i], CS.ccd.mode===m, 'ccdm')).join(' ')}</div>
+      </div>
+      <div><button class="btn btn-primary" id="ccdApply">应用</button></div>`;
+  },
+  lens(){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">镜头偏置</button></div>
+      <div class="cs-grid" style="grid-template-columns:1fr 1fr">
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">接口板</span>${[1,2,3].map(m=>chk('lio'+m, '模式 '+m, CS.lens.io===m, 'lio')).join(' ')}</div>
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">相机板</span>${[1,2,3].map(m=>chk('lcam'+m, '模式 '+m, CS.lens.cam===m, 'lcam')).join(' ')}</div>
+      </div>
+      <div><button class="btn btn-primary" id="lensApply">应用</button></div>`;
+  },
+  lang(){
+    csSide([], '');
+    const langs = [['简体中文','🇨🇳'],['英语','🇬🇧'],['俄语','🇷🇺'],['越南语','🇻🇳'],['泰语','🇹🇭'],['西班牙语','🇪🇸'],['繁体中文','🇨🇳'],['土耳其语','🇹🇷'],['波斯语','🇮🇷'],['法语','🇫🇷']];
+    return `<div class="cs-tabs"><button class="tb on">语言设定</button></div>
+      <div class="frame" style="padding:8px;max-height:340px;overflow-y:auto">
+        ${langs.map(l=>`<div class="kv" data-lang="${l[0]}" style="margin-bottom:6px;cursor:pointer;${CS.lang===l[0]?'border-color:var(--cyan);box-shadow:0 0 12px rgba(34,211,238,.2)':''}"><span class="k">${l[1]} ${l[0]}</span><span class="v">${CS.lang===l[0]?'<span class="pill g">当前</span>':''}</span></div>`).join('')}
+      </div>
+      <div><button class="btn btn-primary" id="langApply">应用</button></div>`;
+  },
+  prod(){
+    csSide([], '');
+    const p = CS.prod;
+    return `<div class="cs-tabs"><button class="tb on">测试产量</button></div>
+      <div class="cs-grid" style="grid-template-columns:repeat(3,1fr)">
+        ${kv('通道', seg2('prCh',['1','2'], String(p.ch)))}${kv('测试时间(s)', inp('prT', p.tT))}${kv('产量(kg)', inp('prKg', p.tKg))}
+      </div>
+      <table class="tbl"><tr><th>通道</th><th>本次产量(kg)</th><th>总产量(kg)</th></tr>
+        <tr><td class="num">1</td><td class="num">${p.cur[0]}</td><td class="num">${p.total[0]}</td></tr>
+        <tr><td class="num">2</td><td class="num">${p.cur[1]}</td><td class="num">${p.total[1]}</td></tr>
+        <tr><td>汇总产量(kg)</td><td class="num">${p.cur[0]+p.cur[1]}</td><td class="num">${p.total[0]+p.total[1]}</td></tr></table>
+      <div style="display:flex;gap:10px"><button class="btn" id="prSet">设置</button><button class="btn btn-primary" id="prStart">开始</button></div>`;
+  },
+  smart(){
+    csSide([], '');
+    const s = CS.smart;
+    return `<div class="cs-tabs"><button class="tb on">智能分析</button></div>
+      <div class="cs-grid" style="grid-template-columns:1fr 1fr">
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">导入/导出图像</span><div style="display:flex;gap:8px"><button class="btn btn-sm" id="smIn">导入图像</button><button class="btn btn-sm" id="smOut">导出图像</button></div></div>
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">腐蚀圈数</span>
+          <span>颜色空间 ${seg2('smCs',['颜色空间1','颜色空间2'],'颜色空间'+s.cs)}</span>
+          <span>分类模式 ${seg2('smCls',['高维','低维'], s.cls==='high'?'高维':'低维')}</span>
+          <span>采样阈值 ${inp('smS', s.sample)}</span></div>
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">拍照算法</span>${chk('smH','高速', s.speed==='high')} ${chk('smL','低速', s.speed==='low')}</div>
+        <div class="kv" style="flex-direction:column;align-items:stretch;gap:8px"><span class="k">其它</span><button class="btn btn-sm" id="smParam">输入智能参数</button>${chk('smCopy','自动复制 A-&gt;B', s.copy)}</div>
+      </div>`;
+  },
+  simple(title, rowsHTML, applyId){
+    csSide([], '');
+    return `<div class="cs-tabs"><button class="tb on">${title}</button></div><div class="cs-grid">${rowsHTML}</div>${applyId?`<div><button class="btn btn-primary" id="${applyId}">应用</button></div>`:''}`;
+  },
+};
+let csSub = null, curveTimer = null;
+function renderCS(){
+  if(curveTimer){ clearInterval(curveTimer); curveTimer = null; }
+  const main = $('#csMain');
+  $('#csRail').querySelectorAll('[data-cs]').forEach(b=>b.classList.toggle('on', b.dataset.cs===CS.page && !csSub));
+  if(csSub){ main.innerHTML = CS_SUB[csSub](); fillMatShots(main); bindSub(); startCurve(); return; }
+  main.innerHTML = CS_PAGES[CS.page]();
+  fillMatShots(main);
+  bindPage();
+}
+function startCurve(){
+  const wb = $('#wbCurve'), px = $('#pxCurve');
+  const cv = wb || px; if(!cv) return;
+  let t = 0;
+  const draw = ()=>{
+    const ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle = 'rgba(56,189,248,.14)'; ctx.lineWidth = 1;
+    for(let i=1;i<6;i++){ ctx.beginPath(); ctx.moveTo(0,H*i/6); ctx.lineTo(W,H*i/6); ctx.stroke(); }
+    const series = wb ? [['#f87171',0],['#34d399',2.1],['#60a5fa',4.2]] : [['#f87171',0],['#34d399',2.1]];
+    series.forEach(([col,ph])=>{
+      ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.shadowColor = col; ctx.shadowBlur = 5; ctx.beginPath();
+      for(let x=0;x<=W;x+=4){
+        const y = H*0.5 + Math.sin((x+t*3)/58 + ph)*H*0.16 + Math.sin((x+t*3)/17 + ph*2)*H*0.05;
+        x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke(); ctx.shadowBlur = 0;
+    });
+    if(px){
+      const x1 = CS.px.start/1024*W, x2 = CS.px.end/1024*W;
+      ctx.fillStyle = 'rgba(34,211,238,.10)'; ctx.fillRect(x1,0,x2-x1,H);
+      ctx.strokeStyle = 'var(--cyan)'; ctx.strokeStyle = '#22d3ee'; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(x1,0); ctx.lineTo(x1,H); ctx.moveTo(x2,0); ctx.lineTo(x2,H); ctx.stroke(); ctx.setLineDash([]);
+    }
+    t++;
+  };
+  draw();
+  curveTimer = setInterval(()=>{ if(wb && CS.wb.paused) return; if(px && CS.px.paused) return; draw(); }, 66);
+}
+function readNum(id, fb){ const el = document.getElementById(id); const v = parseFloat(el && el.value); return isNaN(v) ? fb : v; }
+function bindSteppers(root){
+  root.querySelectorAll('[data-st]').forEach(b=>b.addEventListener('click', ()=>{
+    const [id, d] = b.dataset.st.split(':');
+    const el = document.getElementById(id); if(!el) return;
+    let v = parseFloat(el.value) || 0; const dec = (el.value.indexOf('.')>=0) ? 1 : 0;
+    v = Math.max(0, v + (+d) * (dec ? 0.1 : 1));
+    el.value = dec ? v.toFixed(1) : v;
+    el.dispatchEvent(new Event('input'));
+  }));
+  root.querySelectorAll('[data-chk]').forEach(c=>c.addEventListener('click', ()=>{
+    const grp = c.dataset.radio;
+    if(grp){ root.querySelectorAll(`[data-radio="${grp}"]`).forEach(x=>x.classList.remove('on')); c.classList.add('on'); }
+    else c.classList.toggle('on');
+    c.dispatchEvent(new Event('chk'));
+  }));
+  root.querySelectorAll('[data-seg]').forEach(sg=>sg.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    sg.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+    sg.dispatchEvent(new Event('seg'));
+  }));
+}
+function bindPage(){
+  const main = $('#csMain');
+  bindSteppers(main);
+  main.querySelectorAll('[data-side]').forEach(b=>b.addEventListener('click', ()=>{
+    if(CS.page==='sens'){ CS.sensAlgo = b.dataset.side; }
+    else if(CS.page==='algo'){ CS.algoCfg = b.dataset.side; }
+    else if(CS.page==='sys'){ CS.sysPage = b.dataset.side; }
+    renderCS();
+  }));
+  const on = (id, fn)=>{ const el = $('#'+id); if(el) el.addEventListener('click', fn); };
+  /* scheme */
+  on('schApply', ()=>toast('方案「1 material」已应用到整机','ok'));
+  on('schSave', ()=>toast('方案已另存（原型演示）','info'));
+  /* sens */
+  main.querySelectorAll('[data-sv]').forEach(b=>b.addEventListener('click', ()=>{ CS.sensView = b.dataset.sv; renderCS(); }));
+  on('sensGear', ()=>{ csSub = 'smart'; renderCS(); });
+  on('matShot', ()=>{
+    const r = makeResource('material' + (CS.shots.length+1));
+    CS.shots.push(r.thumb); CS.matSel = CS.shots.length-1;
+    renderCS(); toast('已拍摄物料图像 ' + CS.shots.length + ' 张','ok');
+  });
+  on('matDel', ()=>{ if(CS.matSel<0){ toast('请先选择物料格','err'); return; } CS.shots.splice(CS.matSel,1); CS.matSel=-1; renderCS(); toast('已删除所选物料图像','ok'); });
+  on('matPrev', ()=>{ if(CS.matPage>0){ CS.matPage--; renderCS(); } });
+  on('matNext', ()=>{ CS.matPage++; renderCS(); });
+  on('matSingle', ()=>toast('已进入单独设置模式（原型演示）','info'));
+  on('matSmart', ()=>{ csSub = 'smart'; renderCS(); });
+  main.querySelectorAll('[data-mat]').forEach(c=>c.addEventListener('click', ()=>{ CS.matSel = +c.dataset.mat; renderCS(); }));
+  const syncEl = main.querySelector('[data-chk="matSync"]');
+  if(syncEl) syncEl.addEventListener('chk', ()=>{ CS.syncShot = syncEl.classList.contains('on'); });
+  /* clean */
+  on('clManual', ()=>{
+    const st = $('#clState'); st.textContent = '清灰中…'; st.style.color = 'var(--cyan)';
+    setTimeout(()=>{ st.textContent = '清灰完成 · 气路复位'; st.style.color = 'var(--green)'; toast('手动清灰完成','ok'); }, 1600);
+  });
+  const clT = $('#clT'); if(clT) clT.addEventListener('input', ()=>CS.clean.t = readNum('clT', CS.clean.t));
+  const clIv = $('#clIv'); if(clIv) clIv.addEventListener('input', ()=>CS.clean.iv = readNum('clIv', CS.clean.iv));
+  /* valve */
+  on('vStart', ()=>{
+    CS.valve.running = true; $('#vState').textContent = '测试中…'; $('#vState').style.color = 'var(--cyan)';
+    let i = 0;
+    CS.valve.timer = setInterval(()=>{
+      const cells = $('#nzGrid').children;
+      for(const c of cells) c.classList.remove('fire');
+      if(CS.valve.single){ const c = cells[CS.valve.cur-1]; if(c) c.classList.add('fire'); }
+      else { for(let k=0;k<cells.length;k+=2) if((k/2+i)%2===0) cells[k].classList.add('fire'); }
+      i++;
+    }, 180);
+  });
+  on('vStop', ()=>{
+    CS.valve.running = false; if(CS.valve.timer){ clearInterval(CS.valve.timer); CS.valve.timer = null; }
+    const g = $('#nzGrid'); if(g) for(const c of g.children) c.classList.remove('fire');
+    const st = $('#vState'); if(st){ st.textContent = '已停止'; st.style.color = 'var(--dim)'; }
+  });
+  const vCur = $('#vCur'); if(vCur) vCur.addEventListener('input', ()=>{ CS.valve.cur = Math.min(64, Math.max(1, readNum('vCur',1))); renderCS(); });
+  main.querySelectorAll('[data-nz]').forEach(z=>z.addEventListener('click', ()=>{ CS.valve.cur = +z.dataset.nz; renderCS(); }));
+  const vSingle = main.querySelector('[data-chk="vSingle"]'); if(vSingle) vSingle.addEventListener('chk', ()=>CS.valve.single = vSingle.classList.contains('on'));
+  const vSpeed = main.querySelector('[data-seg="vSpeed"]'); if(vSpeed) vSpeed.addEventListener('seg', ()=>CS.valve.speed = vSpeed.querySelector('.on').dataset.v==='高速'?'high':'low');
+  /* feed */
+  const fd1 = $('#fd1'), fd2 = $('#fd2');
+  if(fd1) fd1.addEventListener('input', ()=>{ CS.feed.f1 = +fd1.value; $('#fd1v').textContent = fd1.value+'%'; });
+  if(fd2) fd2.addEventListener('input', ()=>{ CS.feed.f2 = +fd2.value; $('#fd2v').textContent = fd2.value+'%'; });
+  const fdMon = main.querySelector('[data-chk="fdMon"]'); if(fdMon) fdMon.addEventListener('chk', ()=>{ CS.feed.monitor = fdMon.classList.contains('on'); CS.run.feedOn = CS.feed.monitor; });
+  /* algo */
+  const alModel = $('#alModel'); if(alModel) alModel.addEventListener('change', ()=>CS.aiAlgo.model = alModel.value);
+  on('alSmartOpen', ()=>{ csSub = 'smart'; renderCS(); });
+  /* sys */
+  main.querySelectorAll('[data-systab]').forEach(b=>b.addEventListener('click', ()=>{ CS.sysTab = b.dataset.systab; renderCS(); }));
+  main.querySelectorAll('[data-nt]').forEach(b=>b.addEventListener('click', ()=>{ CS.net.tab = b.dataset.nt; renderCS(); }));
+  on('verRef', ()=>{ renderCS(); toast('版本信息已刷新','info'); });
+  on('tmSet', ()=>toast('系统时间已写入（原型演示）','ok'));
+  const monAir = main.querySelector('[data-chk="monAir"]'); if(monAir) monAir.addEventListener('chk', ()=>CS.mon.air = monAir.classList.contains('on'));
+  const monHeat = main.querySelector('[data-chk="monHeat"]'); if(monHeat) monHeat.addEventListener('chk', ()=>CS.mon.heat = monHeat.classList.contains('on'));
+  /* prod */
+  on('prStart', ()=>{
+    const ch = CS.prod.ch-1;
+    CS.prod.cur[ch] = +(CS.prod.cur[ch] + 12.5 + Math.random()*8).toFixed(1);
+    CS.prod.total[ch] = +(CS.prod.total[ch] + CS.prod.cur[ch]).toFixed(1);
+    renderCS(); toast('通道 ' + CS.prod.ch + ' 产量测试完成','ok');
+  });
+  on('prSet', ()=>toast('产量参数已设置（原型演示）','info'));
+  const prCh = main.querySelector('[data-seg="prCh"]'); if(prCh) prCh.addEventListener('seg', ()=>{ CS.prod.ch = +prCh.querySelector('.on').dataset.v; renderCS(); });
+}
+function bindSub(){
+  const main = $('#csMain');
+  bindSteppers(main);
+  const on = (id, fn)=>{ const el = $('#'+id); if(el) el.addEventListener('click', fn); };
+  main.insertAdjacentHTML('afterbegin', `<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><button class="btn btn-sm" id="subBack">‹ 返回上一层</button><span style="font-size:11px;color:var(--dim2);letter-spacing:2px">${csSub.toUpperCase()} CONFIG</span></div>`);
+  $('#subBack').addEventListener('click', ()=>{ csSub = null; renderCS(); });
+  /* generic apply / value bindings */
+  const grab = (id, key, obj)=>{ const el = document.getElementById(id); if(el) el.addEventListener('input', ()=>{ obj[key] = parseFloat(el.value)||0; }); };
+  grab('dmV','demag',CS); grab('svV','saver',CS); grab('vbV','vib',CS);
+  grab('aiCap','cap',CS.ai); grab('aiInf','inf',CS.ai); grab('aiImg','img',CS.ai); grab('aiVid','vid',CS.ai); grab('aiRe','re',CS.ai);
+  const aiOn = main.querySelector('[data-chk="aiOn"]'); if(aiOn) aiOn.addEventListener('chk', ()=>CS.ai.on = aiOn.classList.contains('on'));
+  const btM = main.querySelector('[data-seg="btM"]'); if(btM) btM.addEventListener('seg', ()=>CS.bootMode = btM.querySelector('.on').dataset.v==='自动'?'auto':'manual');
+  const ccdLine = $('#ccdLine'); if(ccdLine) ccdLine.addEventListener('input', ()=>CS.ccd.line = parseFloat(ccdLine.value)||0);
+  main.querySelectorAll('[data-radio="ccdt"]').forEach(c=>c.addEventListener('chk', ()=>CS.ccd.type = c.dataset.chk.replace('ccd','')));
+  main.querySelectorAll('[data-radio="ccdm"]').forEach(c=>c.addEventListener('chk', ()=>CS.ccd.mode = c.dataset.chk.replace('ccdM','')));
+  main.querySelectorAll('[data-radio="lio"]').forEach(c=>c.addEventListener('chk', ()=>CS.lens.io = +c.dataset.chk.replace('lio','')));
+  main.querySelectorAll('[data-radio="lcam"]').forEach(c=>c.addEventListener('chk', ()=>CS.lens.cam = +c.dataset.chk.replace('lcam','')));
+  on('aiApply', ()=>toast('AI 设置已应用','ok'));
+  on('dmApply', ()=>toast('消磁时间已下发','ok'));
+  on('btApply', ()=>toast('启动模式已保存','ok'));
+  on('svApply', ()=>toast('屏保设置已保存','ok'));
+  on('vbApply', ()=>toast('振动器电压已下发','ok'));
+  on('mdApply', ()=>toast('机型设定已应用','ok'));
+  main.querySelectorAll('[data-adv]').forEach(b=>b.addEventListener('click', ()=>{
+    const k = b.dataset.adv;
+    if(k==='cam') csSub = 'cam';
+    else if(k==='lang') csSub = 'lang';
+    else if(k==='prod') csSub = 'prod';
+    else if(k==='ai') csSub = 'aiSet';
+    else if(k==='demag') csSub = 'demag';
+    else if(k==='boot') csSub = 'boot';
+    else if(k==='saver') csSub = 'saver';
+    else if(k==='vib') csSub = 'vib';
+    else if(k==='model') csSub = 'model';
+    else if(k==='touch'){ toast('触摸屏校正：请依次点按四个十字标记（原型演示）','info'); return; }
+    else if(k==='age'){ toast('老化测试已启动：喷阀循环 10000 次（原型演示）','info'); return; }
+    renderCS();
+  }));
+  main.querySelectorAll('[data-cam]').forEach(b=>b.addEventListener('click', ()=>{ csSub = b.dataset.cam; renderCS(); }));
+  on('wbPause', ()=>{ CS.wb.paused = !CS.wb.paused; renderCS(); });
+  on('wbOnce', ()=>toast('通道 ' + CS.wb.ch + ' 单次白平衡校正完成','ok'));
+  on('wbAll', ()=>toast('整机白平衡校正完成（2 通道 × 前后视）','ok'));
+  const wbCh = main.querySelector('[data-seg="wbCh"]'); if(wbCh) wbCh.addEventListener('seg', ()=>{ CS.wb.ch = +wbCh.querySelector('.on').dataset.v; renderCS(); });
+  on('pxAuto', ()=>toast('像素自动划分完成','ok'));
+  on('pxReset', ()=>{ CS.px.start = 41; CS.px.end = 978; renderCS(); toast('像元已重置','ok'); });
+  const pxCh = main.querySelector('[data-seg="pxCh"]'); if(pxCh) pxCh.addEventListener('seg', ()=>{ CS.px.ch = +pxCh.querySelector('.on').dataset.v; renderCS(); });
+  on('ccdApply', ()=>toast('CCD 设置已应用，需重启相机板生效','ok'));
+  on('lensApply', ()=>toast('镜头偏置已应用','ok'));
+  main.querySelectorAll('[data-lang]').forEach(r=>r.addEventListener('click', ()=>{ CS.lang = r.dataset.lang; renderCS(); }));
+  on('langApply', ()=>toast('界面语言已切换为 ' + CS.lang + '（原型演示）','ok'));
+  on('smIn', ()=>toast('图像已导入智能分析队列（原型演示）','info'));
+  on('smOut', ()=>toast('分析图像已导出到本地下载目录','ok'));
+  on('smParam', ()=>openModal('输入智能参数', `<div class="field"><label>智能参数串</label><input type="text" class="inp wide" id="smParamIn" placeholder="key=value;..."></div>`, [{t:'取消'},{t:'写入', primary:true, fn:()=>toast('智能参数已写入','ok')}], true));
+  const smCopy = main.querySelector('[data-chk="smCopy"]'); if(smCopy) smCopy.addEventListener('chk', ()=>CS.smart.copy = smCopy.classList.contains('on'));
+  const smH = main.querySelector('[data-chk="smH"]'), smL = main.querySelector('[data-chk="smL"]');
+  if(smH) smH.addEventListener('chk', ()=>{ if(smH.classList.contains('on')){ CS.smart.speed='high'; if(smL) smL.classList.remove('on'); } });
+  if(smL) smL.addEventListener('chk', ()=>{ if(smL.classList.contains('on')){ CS.smart.speed='low'; if(smH) smH.classList.remove('on'); } });
+}
+CS_SUB.aiSet = function(){
+  return CS_SUB.simple('AI 设置',
+    kv('使能AI', chk('aiOn','', CS.ai.on)) + kv('采集高度', inp('aiCap', CS.ai.cap)) + kv('推理高度', inp('aiInf', CS.ai.inf)) +
+    kv('图像高度', inp('aiImg', CS.ai.img)) + kv('视频高度', inp('aiVid', CS.ai.vid)) + kv('复选高度', inp('aiRe', CS.ai.re)), 'aiApply');
+};
+CS_SUB.demag = function(){ return CS_SUB.simple('消磁时间', kv('消磁时间 (ms)', step('dmV', CS.demag)), 'dmApply'); };
+CS_SUB.boot = function(){ return CS_SUB.simple('启动模式', kv('启动模式', seg2('btM',['自动','手动'], CS.bootMode==='auto'?'自动':'手动')), 'btApply'); };
+CS_SUB.saver = function(){ return CS_SUB.simple('设置屏保', kv('屏保等待 (min)', step('svV', CS.saver)), 'svApply'); };
+CS_SUB.vib = function(){ return CS_SUB.simple('振动器电压', kv('振动器电压 (V)', step('vbV', CS.vib)), 'vbApply'); };
+CS_SUB.model = function(){ return CS_SUB.simple('机型设定', kv('机型', chk('mdP','Phenix', false)), 'mdApply'); };
+function setMode(m){
+  if(curveTimer){ clearInterval(curveTimer); curveTimer = null; }
+  document.body.classList.toggle('mode-classic', m==='classic');
+  document.querySelectorAll('#modeSeg .seg').forEach(s=>s.classList.toggle('active', s.dataset.mode===m));
+  $('#wsDL').classList.toggle('active', m==='dl');
+  $('#wsClassic').classList.toggle('active', m==='classic');
+  $('#dockClassic').style.display = m==='classic' ? 'flex' : 'none';
+  $('#dockDL').style.display = m==='classic' ? 'none' : 'flex';
+  $('#dockVer').textContent = m==='classic' ? 'CS-HMI v323 · YC3568 EDGE' : 'DL-CONSOLE v3.2 · EDGE RUNTIME';
+  if(m==='classic'){ csSub = null; renderCS(); }
+}
+document.querySelectorAll('#modeSeg .seg').forEach(s=>s.addEventListener('click', ()=>setMode(s.dataset.mode)));
+$('#csRail').addEventListener('click', e=>{
+  const b = e.target.closest('[data-cs]'); if(!b) return;
+  CS.page = b.dataset.cs; csSub = null; renderCS();
+});
+$('#csApplyTop').addEventListener('click', ()=>toast('当前页面参数已下发整机','ok'));
+$('#ckAdv').addEventListener('click', ()=>{ setMode('classic'); csSub = 'adv'; renderCS(); });
+$('#ckProd').addEventListener('click', ()=>{ setMode('classic'); csSub = 'prod'; renderCS(); });
+$('#ckLang').addEventListener('click', ()=>{ setMode('classic'); csSub = 'lang'; renderCS(); });
+$('#ckInfo2').addEventListener('click', ()=>{ setMode('classic'); CS.page='sys'; CS.sysPage='device'; csSub=null; renderCS(); });
+/* top system actions */
+function bootOverlay(steps, done){
+  const el = document.createElement('div'); el.className = 'boot';
+  el.innerHTML = `<div class="ring2"></div><h2 id="bootTitle">系统初始化中，请稍候…</h2>
+    <div class="steps">${steps.map(s=>`<div class="st" data-s="${s}"><span>${s}</span><span class="r">等待</span></div>`).join('')}</div>
+    <p>COLOR SORTER · YC3568 · EDGE RUNTIME</p>`;
+  document.body.appendChild(el);
+  let i = 0;
+  const tick = ()=>{
+    if(i>0){ const prev = el.querySelector(`[data-s="${steps[i-1]}"]`); prev.classList.replace('doing','done'); prev.querySelector('.r').textContent = '完成'; }
+    if(i>=steps.length){ setTimeout(()=>{ el.remove(); done && done(); }, 420); return; }
+    const cur = el.querySelector(`[data-s="${steps[i]}"]`); cur.classList.add('doing'); cur.querySelector('.r').textContent = '进行中';
+    if(i===0) el.querySelector('#bootTitle').textContent = '系统初始化中，请稍候…';
+    else el.querySelector('#bootTitle').textContent = '通信中，请稍候…';
+    i++; setTimeout(tick, 620);
+  };
+  tick();
+}
+$('#btnCam').addEventListener('click', ()=>{
+  const bd = openModal('视频采集 · 四目实时', `<div class="camgrid">
+      ${[1,2,3,4].map(i=>`<div class="cam"><canvas id="cam${i}" width="480" height="300"></canvas><span class="tag">CAM ${i} · ${i<=2?'前视':'后视'}</span></div>`).join('')}
+    </div><p style="margin-top:10px;font-size:12px;color:var(--dim)">采集分辨率 2048 × 128 · 行频 3.8 kHz（演示为合成画面）</p>`, [{t:'关闭'}], true);
+  let t = 0;
+  const timers = [];
+  const drawCam = (cv, ph)=>{
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#060b13'; ctx.fillRect(0,0,480,300);
+    for(let k=0;k<26;k++){
+      const x = ((k*97 + t*(2+ph)) % 520) - 20, y = 40 + (k*53)%220;
+      ctx.fillStyle = k%7===0 ? '#7c4a2d' : '#d8cdb4';
+      ctx.beginPath(); ctx.ellipse(x, y, 7, 5, k, 0, 7); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(34,211,238,.25)'; ctx.strokeRect(4,4,472,292);
+  };
+  const loop = ()=>{ [1,2,3,4].forEach(i=>{ const cv = bd.querySelector('#cam'+i); if(cv) drawCam(cv, i); }); t++; };
+  loop();
+  const iv = setInterval(()=>{ if(!document.body.contains(bd)){ clearInterval(iv); return; } loop(); }, 90);
+});
+$('#btnPower').addEventListener('click', ()=>{
+  openModal('关机确认', '<p style="font-size:13px;color:var(--dim);line-height:1.8">关闭上位机前将自动保存当前参数。<br>确认关机？</p>',
+    [{t:'取消'},{t:'确认关机', danger:true, fn:()=>{
+      bootOverlay(['保存参数','停止供料','关闭喷阀','下电'], ()=>toast('已关机（原型演示）· 点击「开始工作」重新上电','info'));
+    }}]);
+});
+$('#btnSave').addEventListener('click', ()=>toast('参数已保存到整机存储','ok'));
+$('#btnWork').addEventListener('click', ()=>{
+  CS.run.t0 = Date.now(); CS.run.feedOn = true;
+  bootOverlay(['上电自检','相机板握手','加载方案 1 material','启动供料'], ()=>{
+    toast('设备已进入工作状态','ok');
+    if(document.body.classList.contains('mode-classic')){ CS.page='scheme'; csSub=null; renderCS(); }
+  });
+});
+bootOverlay(['上电自检','相机板握手','接口板握手','加载方案'], null);
+
+/* SECTION: init */
+renderList();
+</script>
+</body>
+</html>

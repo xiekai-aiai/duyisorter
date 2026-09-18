@@ -2,27 +2,186 @@
 #include <fstream>
 #include <string.h>
 #include <cstring>
+#include <netdb.h>
 #include "unilog.h"
 
-#define SFTP_PORT 22
-
-SftpClient::SftpClient(const std::string& host, const std::string& user, const std::string& passwd)
-    : host_(host),
-    user_(user),
-    passwd_(passwd)
+SftpClient::SftpClient(const std::string& host, int port,
+                       const std::string& user, const std::string& passwd)
+    : host_(host), port_(port), user_(user), passwd_(passwd)
 {
-    LOG_INFO_STM("SftpClient::SftpClient(), host:" << host_ << ", user:" << user_ << ", passwd:" << passwd_);
+    LOG_INFO_STM("SftpClient ctor: " << host_ << ":" << port_ << " user=" << user_);
 }
 
 SftpClient::~SftpClient()
 {
-    LOG_INFO_STM("SftpClient::~SftpClient(), host:" << host_ << ", user:" << user_ << ", passwd:" << passwd_);
+    disconnect();
+    LOG_INFO_STM("SftpClient dtor: " << host_ << ":" << port_);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// 持久连接管理
+// ═══════════════════════════════════════════════════════════════════════
+
+bool SftpClient::connect()
+{
+    if (is_init_) return true;  // 已连接，复用
+
+    do
+    {
+        // DNS 解析（支持域名 / IP）
+        struct addrinfo hints{0}, *res{nullptr};
+        hints.ai_family   = AF_INET;
+        hints.ai_socktype = SOCK_STREAM;
+        char portbuf[16]; snprintf(portbuf, sizeof(portbuf), "%d", port_);
+        if (getaddrinfo(host_.c_str(), portbuf, &hints, &res) != 0 || !res)
+        {
+            LOG_ERROR_STM("getaddrinfo failed, host:" << host_ << ", port:" << port_);
+            break;
+        }
+
+        // TCP socket + connect（遍历 addrinfo 直到成功）
+        bool tcp_ok = false;
+        for (struct addrinfo* rp = res; rp; rp = rp->ai_next)
+        {
+            socket_fd_ = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+            if (socket_fd_ < 0) continue;
+            if (::connect(socket_fd_, rp->ai_addr, rp->ai_addrlen) == 0)
+            {
+                tcp_ok = true;
+                break;
+            }
+            close(socket_fd_);
+            socket_fd_ = -1;
+        }
+        freeaddrinfo(res);
+        if (!tcp_ok)
+        {
+            LOG_ERROR_STM("connect failed, host:" << host_ << ", port:" << port_);
+            break;
+        }
+
+        // SSH session
+        session_ = libssh2_session_init();
+        if (!session_)
+        {
+            LOG_ERROR_STM("libssh2_session_init failed.");
+            break;
+        }
+
+        if (libssh2_session_handshake(session_, socket_fd_) < 0)
+        {
+            LOG_ERROR_STM("session handshake failed, host:" << host_ << ", port:" << port_);
+            break;
+        }
+
+        if (libssh2_userauth_password(session_, user_.c_str(), passwd_.c_str()) < 0)
+        {
+            LOG_ERROR_STM("user auth failed, user:" << user_ << ", host:" << host_);
+            break;
+        }
+
+        // SFTP init
+        sftp_ = libssh2_sftp_init(session_);
+        if (!sftp_)
+        {
+            LOG_ERROR_STM("sftp init failed, host:" << host_);
+            break;
+        }
+
+        is_init_ = true;
+        LOG_INFO_STM("SftpClient connect OK: " << host_ << ":" << port_);
+
+    } while (false);
+
+    if (!is_init_)
+    {
+        disconnect();
+    }
+    return is_init_;
+}
+
+void SftpClient::disconnect()
+{
+    if (sftp_)
+    {
+        libssh2_sftp_shutdown(sftp_);
+        sftp_ = nullptr;
+    }
+    if (session_)
+    {
+        libssh2_session_disconnect(session_, "Normal Shutdown");
+        libssh2_session_free(session_);
+        session_ = nullptr;
+    }
+    if (socket_fd_ >= 0)
+    {
+        close(socket_fd_);
+        socket_fd_ = -1;
+    }
+    is_init_ = false;
+    LOG_INFO_STM("SftpClient disconnect: " << host_ << ":" << port_);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// 操作方法（全部假设已 connect()，失败不自动断连）
+// ═══════════════════════════════════════════════════════════════════════
+
+bool SftpClient::mkdir(const std::string& remote_dir, int mode)
+{
+    if (!is_init_)
+    {
+        LOG_ERROR_STM("mkdir: not connected, call connect() first");
+        return false;
+    }
+
+    // 先 stat，已存在 → 直接 true
+    LIBSSH2_SFTP_ATTRIBUTES attrs;
+    if (libssh2_sftp_stat(sftp_, remote_dir.c_str(), &attrs) == 0)
+    {
+        if (LIBSSH2_SFTP_S_ISDIR(attrs.permissions)) {
+            LOG_INFO_STM("mkdir: already exists: " << remote_dir);
+            return true;
+        }
+        LOG_ERROR_STM("mkdir: path exists but is not a dir: " << remote_dir);
+        return false;
+    }
+
+    int rc = libssh2_sftp_mkdir(sftp_, remote_dir.c_str(), mode);
+    if (rc < 0) {
+        LOG_ERROR_STM("mkdir failed: " << remote_dir << ", rc=" << rc);
+        return false;
+    }
+    LOG_INFO_STM("mkdir OK: " << remote_dir);
+    return true;
+}
+
+bool SftpClient::mkdir_p(const std::string& remote_dir, int mode)
+{
+    if (remote_dir.empty()) return false;
+
+    // 逐级 mkdir，逐段用 / 切割
+    std::string partial;
+    size_t start = (remote_dir[0] == '/') ? 1 : 0;
+
+    for (size_t i = start; i <= remote_dir.size(); ++i) {
+        if (i == remote_dir.size() || remote_dir[i] == '/') {
+            if (i == start) continue;
+            partial = remote_dir.substr(0, i);
+            if (partial.empty()) continue;
+            if (!mkdir(partial, mode)) {
+                LOG_ERROR_STM("mkdir_p failed at: " << partial);
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool SftpClient::upload(const std::string& local_file, const std::string& remote_file)
 {
-    if (!init())
+    if (!is_init_)
     {
+        LOG_ERROR_STM("upload: not connected, call connect() first");
         return false;
     }
 
@@ -56,7 +215,7 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
                 if (written < 0)
                 {
                     ret = false;
-                    LOG_ERROR_STM("failed to write remote file: " << remote_file << ", written:" << written << ", need send:" << in.gcount() - snd_cnt);
+                    LOG_ERROR_STM("failed to write remote file: " << remote_file << ", written:" << written);
                     break;
                 }
                 snd_cnt += written;
@@ -70,21 +229,17 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
         libssh2_sftp_close(handle);
     }
 
-    if (!ret)
-    {
-        clear();
+    if (!ret) {
+        LOG_ERROR_STM("upload FAILED local:" << local_file << " -> remote:" << remote_file);
     }
-
-    LOG_INFO_STM("upload local_file:" << local_file << ", remote_file:" << remote_file << ", ret:"
-                 << ret);
     return ret;
 }
 
-
 bool SftpClient::download(const std::string& remote_file, const std::string& local_file)
 {
-    if (!init())
+    if (!is_init_)
     {
+        LOG_ERROR_STM("download: not connected, call connect() first");
         return false;
     }
 
@@ -107,7 +262,6 @@ bool SftpClient::download(const std::string& remote_file, const std::string& loc
             break;
         }
 
-
         char buffer[32768];
         ssize_t n;
         while ((n = libssh2_sftp_read(handle, buffer, sizeof(buffer))) > 0)
@@ -117,7 +271,7 @@ bool SftpClient::download(const std::string& remote_file, const std::string& loc
 
         if (n < 0)
         {
-            LOG_ERROR_STM("Error reading from remote file, n:" << n);
+            LOG_ERROR_STM("read error, remote:" << remote_file);
             break;
         }
 
@@ -131,19 +285,17 @@ bool SftpClient::download(const std::string& remote_file, const std::string& loc
         libssh2_sftp_close(handle);
     }
 
-    if (!ret)
-    {
-        clear();
+    if (!ret) {
+        LOG_ERROR_STM("download FAILED remote:" << remote_file << " -> local:" << local_file);
     }
-
-    LOG_INFO_STM("Downloaded: " << remote_file << " -> " << local_file << ", ret:" << ret);
     return ret;
 }
 
 bool SftpClient::list_files(const std::string& remote_path, std::vector<std::string>& files)
 {
-    if (!init())
+    if (!is_init_)
     {
+        LOG_ERROR_STM("list_files: not connected, call connect() first");
         return false;
     }
 
@@ -164,7 +316,6 @@ bool SftpClient::list_files(const std::string& remote_path, std::vector<std::str
         {
             if (std::strcmp(filename, ".") == 0 || std::strcmp(filename, "..") == 0)
                 continue;
-            // note: 只返回文件，不返回路径
             if (LIBSSH2_SFTP_S_ISDIR(attrs.permissions))
                 continue;
             files.push_back(filename);
@@ -178,118 +329,80 @@ bool SftpClient::list_files(const std::string& remote_path, std::vector<std::str
         libssh2_sftp_closedir(dir);
     }
 
-    if (!ret)
-    {
-        clear();
-    }
-
     return ret;
 }
 
-void SftpClient::init_sftp_lib()
+bool SftpClient::stat_file(const std::string& remote_file, LIBSSH2_SFTP_ATTRIBUTES& attrs)
 {
-    libssh2_init(0);
-}
-
-void SftpClient::deinit_sftp_lib()
-{
-    libssh2_exit();
-}
-
-bool SftpClient::init()
-{
-    if (is_init_)
-    {
-        return true;
-    }
-
-    do
-    {
-        // 创建 TCP socket
-        socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
-        if (socket_fd_ < 0)
-        {
-            LOG_ERROR_STM("create scoket failed.");
-            break;
-        }
-
-        struct sockaddr_in sin;
-        sin.sin_family = AF_INET;
-        sin.sin_port = htons(SFTP_PORT);
-        if (inet_pton(AF_INET, host_.c_str(), &sin.sin_addr) <= 0)
-        {
-            LOG_ERROR_STM("inet pton failed, host:" << host_ << ", port:" << SFTP_PORT);
-            break;
-        }
-
-        if (connect(socket_fd_, (struct sockaddr*)(&sin), sizeof(struct sockaddr_in)) != 0)
-        {
-            LOG_ERROR_STM("connect failed, host:" << host_ << ", port:" << SFTP_PORT);
-            break;
-        }
-
-        // 创建 SSH session
-        session_ = libssh2_session_init();
-        if (!session_)
-        {
-            LOG_ERROR_STM("create session failed.");
-            break;
-        }
-
-        if (libssh2_session_handshake(session_, socket_fd_) < 0)
-        {
-            LOG_ERROR_STM("session handshake failed. host:" << host_ << ", port:" << SFTP_PORT);
-            break;
-        }
-
-        if (libssh2_userauth_password(session_, user_.c_str(), passwd_.c_str()) < 0)
-        {
-            LOG_ERROR_STM("user auth failed, user:" << user_ << ", passwd:" << passwd_ << ", host:"
-                         << host_ << ", port:" << SFTP_PORT);
-            break;
-        }
-
-        // 启动 SFTP
-        sftp_ = libssh2_sftp_init(session_);
-        if (!sftp_)
-        {
-            LOG_ERROR_STM("sftp init failed. host:" << host_ << ", port:" << SFTP_PORT);
-            break;
-        }
-
-        is_init_ = true;
-        LOG_INFO_STM("SftpClient::init success, host:" << host_ << ", user:" << user_ << ", passwd:" << passwd_);
-
-    } while (false);
-
     if (!is_init_)
     {
-        clear();
+        LOG_ERROR_STM("stat_file: not connected");
+        return false;
     }
-
-    return is_init_;
+    int rc = libssh2_sftp_stat(sftp_, remote_file.c_str(), &attrs);
+    if (rc != 0)
+    {
+        // 文件不存在是正常情况，不算错误
+        return false;
+    }
+    return true;
 }
 
-void SftpClient::clear()
+std::string SftpClient::exec(const std::string& cmd)
 {
-    if (sftp_)
+    if (!is_init_)
     {
-        libssh2_sftp_shutdown(sftp_);
-        sftp_ = nullptr;
-    }
-    if (session_)
-    {
-        libssh2_session_disconnect(session_, "Normal Shutdown");
-        libssh2_session_free(session_);
-        session_ = nullptr;
-    }
-    if (socket_fd_ >= 0)
-    {
-        close(socket_fd_);
-        socket_fd_ = -1;
+        LOG_ERROR_STM("exec: not connected");
+        return "";
     }
 
-    is_init_ = false;
+    LIBSSH2_CHANNEL* chan = libssh2_channel_open_session(session_);
+    if (!chan)
+    {
+        LOG_ERROR_STM("exec: channel_open_session failed");
+        return "";
+    }
 
-    LOG_INFO_STM("ftp client clear. host:" << host_ << ", user:" << user_ << ", passwd:" << passwd_);
+    if (libssh2_channel_exec(chan, cmd.c_str()) < 0)
+    {
+        LOG_ERROR_STM("exec: exec failed for cmd: " << cmd);
+        libssh2_channel_close(chan);
+        libssh2_channel_free(chan);
+        return "";
+    }
+
+    // 读 stdout
+    std::string output;
+    char buf[4096];
+    while (true)
+    {
+        ssize_t n = libssh2_channel_read(chan, buf, sizeof(buf));
+        if (n > 0)
+        {
+            output.append(buf, n);
+        }
+        else if (n == 0)
+        {
+            break;  // EOF
+        }
+        else
+        {
+            LOG_ERROR_STM("exec: read failed, cmd=" << cmd);
+            break;
+        }
+    }
+
+    libssh2_channel_wait_closed(chan);
+    libssh2_channel_close(chan);
+    libssh2_channel_free(chan);
+
+    LOG_INFO_STM("exec OK: " << cmd << " → " << output);
+    return output;
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// 全局 libssh2 初始化（程序启动/退出各一次）
+// ═══════════════════════════════════════════════════════════════════════
+
+void SftpClient::init_sftp_lib()  { libssh2_init(0); }
+void SftpClient::deinit_sftp_lib(){ libssh2_exit(); }
