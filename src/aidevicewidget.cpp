@@ -132,12 +132,12 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     progressDlg->setAutoClose(false);
     progressDlg->setAutoReset(false);
     progressDlg->setRange(0, 100);
+    progressDlg->setMinimumDuration(INT_MAX);
     progressDlg->setValue(0);
     progressDlg->setFixedSize(600, 200);
     // 不允许取消，直接隐藏取消按钮
     progressDlg->setCancelButton(nullptr);
     progressDlg->hide();
-    progressDlg->setVisible(false);
 
     LOG_INFO_STM("list size:" << listWidget->count() << ",statcked:" << stackedWidget->count());
 
@@ -289,8 +289,8 @@ void AiDeviceWidget::onDownloadFinished(int idx, bool success)
         progressDlg->setLabelText("Download Finished!");
         progressDlg->hide();;
 
-        // 下载按钮先不可用
-        applyBtn->setEnabled(true);
+        // 下载按钮可用
+        downBtn->setEnabled(true);
     }
 
 }
@@ -355,5 +355,5 @@ void AiDeviceWidget::onDownBtnPressed()
     }
 
     // 下载按钮先不可用
-    applyBtn->setEnabled(false);
+    downBtn->setEnabled(false);
 }
