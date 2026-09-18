@@ -37,6 +37,7 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     listWidget->setStyleSheet("background-color:transparent");
     listWidget->setFixedSize(LCD_WIDTH / 5, LCD_HEIGHT - 200);
 
+
     // 右侧StackedWidet控件
     stackedWidget = new QStackedWidget(this);
     stackedWidget->setFixedSize(700, LCD_HEIGHT - 150);
@@ -44,11 +45,10 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     // 第一个widget是默认参数Widget,即图像采集配置页面
     AiImageAcquisitionWidget* imgAcqWidget = new AiImageAcquisitionWidget();
     stackedWidget->addWidget(imgAcqWidget);
-    // 默认显示第一个空间
-    stackedWidget->setCurrentIndex(0);
 
     myListWidgetItem* item1 = new myListWidgetItem(QString(""), QIcon(), QSize());
     item1->setText(myLan.default_params);
+    item1->setSizeHint(QSize(100, 70));
     listWidget->addItem(item1);
 
     // 第二个widget是磁盘信息Widget
@@ -57,6 +57,7 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
 
     myListWidgetItem* item2 = new myListWidgetItem(QString(""), QIcon(), QSize());
     item2->setText(myLan.disk_space);
+    item2->setSizeHint(QSize(100, 70));
     listWidget->addItem(item2);
 
     // 应用按钮
@@ -131,15 +132,23 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     progressDlg->setAutoClose(false);
     progressDlg->setAutoReset(false);
     progressDlg->setRange(0, 100);
+    progressDlg->setMinimumDuration(INT_MAX);
     progressDlg->setValue(0);
     progressDlg->setFixedSize(600, 200);
     // 不允许取消，直接隐藏取消按钮
     progressDlg->setCancelButton(nullptr);
+    progressDlg->hide();
+
+    LOG_INFO_STM("list size:" << listWidget->count() << ",statcked:" << stackedWidget->count());
 
     connect(listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onListWidgetRowChangedSlt(int)));
     connect(applyBtn, SIGNAL(pressed()), this, SLOT(onApplyBtnPressed()));
     connect(downBtn, SIGNAL(pressed()), this, SLOT(onDownBtnPressed()));
     connect(backBtn, SIGNAL(pressed()), this, SLOT(onBackBtnPressed()));
+
+    // 默认显示第一个空间
+    stackedWidget->setCurrentIndex(0);
+    listWidget->setCurrentRow(0);
 }
 
 
@@ -211,6 +220,7 @@ void AiDeviceWidget::onListWidgetRowChangedSlt(int idx)
 void AiDeviceWidget::onApplyBtnPressed()
 {
     int idx = listWidget->currentIndex().row();
+
     switch (idx)
     {
     case 0:
@@ -279,8 +289,8 @@ void AiDeviceWidget::onDownloadFinished(int idx, bool success)
         progressDlg->setLabelText("Download Finished!");
         progressDlg->hide();;
 
-        // 下载按钮先不可用
-        applyBtn->setEnabled(true);
+        // 下载按钮可用
+        downBtn->setEnabled(true);
     }
 
 }
@@ -323,6 +333,8 @@ void AiDeviceWidget::onDownBtnPressed()
         downProgressArr[idx].finished_ = false;
     }
 
+    LOG_INFO_STM("onDownBtnPressed start download image...");
+
     progressDlg->setValue(0);
     progressDlg->show();
     QString downDir = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
@@ -343,5 +355,5 @@ void AiDeviceWidget::onDownBtnPressed()
     }
 
     // 下载按钮先不可用
-    applyBtn->setEnabled(false);
+    downBtn->setEnabled(false);
 }
