@@ -46,6 +46,7 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QLabel>
+#include "common/myinputmethod.h"
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QFormLayout>
@@ -164,7 +165,13 @@ AiModelSet::AiModelSet(QWidget *parent) :
     ui->setupUi(this);
     // 强制对齐到 parent 左上角，避免 stackedWidget layout 偏移
     move(0, 0);
-    modelCategoryNum = 2;
+    modelCategoryNum = 0;  // ⭐ 默认 0，页面刚进来不显示类别按钮；新建/加载模型后才设置
+
+    // ⭐ 开启鼠标追踪：让 mouseMoveEvent 在不按任何键时也能触发（悬停提示前景像素数）
+    setMouseTracking(true);
+    ui->imgLabel->setMouseTracking(true);
+    // imgLabel 上的鼠标移动事件转发给父级（AiModelSet::mouseMoveEvent）
+    ui->imgLabel->installEventFilter(this);
 
     // 登录进来不显示 checkbox，等用户新建或加载模型后再显示
     // (m_cbContainer 初始为 nullptr, setupClassCheckBoxes 首次调用时才创建)
@@ -199,8 +206,8 @@ AiModelSet::AiModelSet(QWidget *parent) :
 
     // 初始化模型接口
     m_modelApi = new ModelApi(this);
-    m_modelApi->setHttpTimeout(60000);  // 训练相关接口超时设为 60 秒
-
+    m_modelApi->setHttpTimeout(5000);  // 训练查询/创建/启动超时 5 秒（超过基本可以判定服务挂了）
+    
     // 加载训练服务器配置（arm 版本从 JSON 读，开发版用默认值）
     loadTrainServerConfig();
     // 同步到 ModelApi（用成员变量构建 base URL）
@@ -255,6 +262,38 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(ui->m_areaThresholdlineEdit, &QLineEdit::textChanged, this, onThresholdChanged);
     connect(ui->m_colorDiffThresholdlineEdit, &QLineEdit::textChanged, this, onThresholdChanged);
 
+    // ⭐ 板卡上点击阈值输入框弹软键盘（只允许数字）
+    {
+        struct KbFilter : QObject {
+            QString t;
+            bool onlyDigits;
+            explicit KbFilter(const QString &tt, bool digits, QObject *p) : QObject(p), t(tt), onlyDigits(digits) {}
+            bool eventFilter(QObject *o, QEvent *e) override {
+                if (e->type() == QEvent::MouseButtonPress) {
+                    QLineEdit *le = qobject_cast<QLineEdit*>(o);
+                    if (le) {
+                        myInputMethod kb(t, le->text());
+                        if (kb.exec() == QDialog::Accepted) {
+                            QString txt = kb.getText();
+                            if (onlyDigits) {
+                                txt.remove(QRegularExpression("[^0-9]"));
+                            }
+                            le->setText(txt);
+                        }
+                        return true;
+                    }
+                }
+                return QObject::eventFilter(o, e);
+            }
+        };
+        ui->m_areaThresholdlineEdit->setFocusPolicy(Qt::NoFocus);
+        ui->m_areaThresholdlineEdit->setValidator(new QIntValidator(1, 9999, this));
+        ui->m_areaThresholdlineEdit->installEventFilter(new KbFilter("面积阈值", true, this));
+        ui->m_colorDiffThresholdlineEdit->setFocusPolicy(Qt::NoFocus);
+        ui->m_colorDiffThresholdlineEdit->setValidator(new QIntValidator(1, 9999, this));
+        ui->m_colorDiffThresholdlineEdit->installEventFilter(new KbFilter("色差阈值", true, this));
+    }
+
     // draw 和 selcet 模式是互斥的
     // 选中态样式（:checked）与 fgPushButton 一致，按下后有明显选中视觉
     const QString modeBtnQss = QStringLiteral(
@@ -281,6 +320,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
 
     connect(ui->addTrainListPushButton, SIGNAL(pressed()), this, SLOT(addTrainListPushButtonPressed()));
     connect(ui->delTrainListPushButton, SIGNAL(pressed()), this, SLOT(delTrainListPushButtonPressed()));
+    connect(ui->delTrainListAllPushButton, &QPushButton::pressed, this, &AiModelSet::delTrainListAllPushButtonPressed);
     connect(ui->addAllLabeledTrainListPushButton, SIGNAL(pressed()), this, SLOT(addAllLabeledTrainListPushButtonPressed()));
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -317,9 +357,20 @@ AiModelSet::AiModelSet(QWidget *parent) :
     // [全局] HTTP 网络错误兜底处理（createDirTrain/startTrain/queryTrain/arch 查询等环节的 ConnectionRefused/Timeout 等）
     // 下载阶段（DownloadModel/DownloadJson）由 downloadFinished/downloadJsonFinished 独立处理，不走这里
     connect(m_modelApi, &ModelApi::networkError, this, [this](const QString& errMsg) {
+        // ⭐ 轮询阶段的网络波动：允许重试 3 次（15 秒超时 × 3 = 45 秒足够判断）
+        if (m_pollTimer && m_pollTimer->isActive()) {
+            m_pollFailCount++;
+            showTip(QString("训练服务连接波动（%1/3）：%2").arg(m_pollFailCount).arg(errMsg), true);
+            if (m_pollFailCount >= 3) {
+                m_pollTimer->stop();
+                resetTrainingState();
+                showTip("训练服务连接连续失败 3 次，已停止轮询", true);
+            }
+            return;
+        }
+        // 非轮询阶段（createDir/startTrain/arch 查询等），立即终止
         showTip(errMsg, true);
-        if (m_pollTimer && m_pollTimer->isActive()) m_pollTimer->stop();
-        m_trainingBusy = false;
+        resetTrainingState();
         LOG_DEBUG_STM("[训练流程] networkError 兜底：m_trainingBusy 已重置");
     });
 
@@ -344,12 +395,14 @@ AiModelSet::AiModelSet(QWidget *parent) :
 
     // [0.2] SftpWorker 一批上传完成 → 串联下一个（image → label → classes → startTrain）
     connect(m_sftpWorker, &SftpWorker::allUploadCompleted, this, &AiModelSet::onSftpUploadCompleted);
+    // [0.3] 上传后验证：remoteList 完成回调
+    connect(m_sftpWorker, &SftpWorker::remoteListCompleted, this, &AiModelSet::onSftpRemoteListCompleted);
 
     // [1] 训练启动成功 → 启动 QTimer 轮询进度（每 5 秒一次）
     connect(m_modelApi, &ModelApi::startTrainResult, this, [this](const TrainStartResponse& response) {
         if (!response.isSuccess()) {
             showTip(QString("训练启动失败：%1（错误码：%2）").arg(response.message).arg(response.code), true);
-            m_trainingBusy = false;
+            resetTrainingState();
             return;
         }
         showTip(QString("训练任务已提交，开始查询进度..."));
@@ -392,7 +445,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         LOG_DEBUG_STM("[下载流程] downloadJsonFinished 触发：success=" << success << "errorMsg=" << errorMsg << "downLoadModelName=" << downLoadModelName);
         if (!success) {
             showTip(QString("JSON 下载失败：%1").arg(errorMsg), true);
-            m_trainingBusy = false;
+            resetTrainingState();
             return;
         }
 
@@ -436,7 +489,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(m_modelApi, &ModelApi::downloadFinished, this, [this](bool success, const QString& errorMsg) {
         if (!success) {
             showTip(QString("模型下载失败：%1").arg(errorMsg), true);
-            m_trainingBusy = false;
+            resetTrainingState();
             return;
         }
 
@@ -459,7 +512,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         } else if (!m_expectedModelMd5.isEmpty()) {
             showTip(QString("✗ 模型 MD5 校验失败！expected=%1 actual=%2")
                     .arg(m_expectedModelMd5).arg(actualMd5), true);
-            m_trainingBusy = false;
+            resetTrainingState();
             return;
         } else {
             // JSON 里没 md5 字段，跳过校验（正常，先让流程走通）
@@ -467,7 +520,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
             showTip(QString("模型下载完成（JSON 无 md5 字段，跳过校验）"));
         }
 
-        m_trainingBusy = false;
+        resetTrainingState();
     });
 
 
@@ -490,7 +543,7 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
 {
     if (!response.isSuccess()) {
         showTip(QString("创建远程目录失败：%1（错误码：%2）").arg(response.message).arg(response.code), true);
-        m_trainingBusy = false;
+        resetTrainingState();
         return;
     }
     showTip("远程目录已创建，准备 SFTP 上传...");
@@ -505,35 +558,16 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
     m_sftpRemoteLblDir  = m_sftpRemoteRootDir + "/label";
     m_sftpUploadPhase = 0;
 
-    // 1. 保证 worker 在主线程（上一次 moveToThread 后要移回来）
-    if (m_sftpThread) {
-        if (m_sftpThread->isRunning()) {
-            m_sftpThread->quit();
-            m_sftpThread->wait(1000);
-        }
-        m_sftpThread = nullptr;
-    }
-    if (m_sftpWorker->thread() != QThread::currentThread()) {
-        m_sftpWorker->moveToThread(QThread::currentThread());
-    }
-
-    // 2. 在主线程 mkdir_p（必须 connect 之前，因为 mkdir_p 需要 session）
+    // 1. 清理旧 SFTP 线程（worker 保留，在主线程重新 connect）
+    cleanupSftpResources();
+    
+    // 2. 主线程 connect（服务器端会在 startTrain 时自动准备好 /ftp/{taskId}/raw/ 目录结构）
     if (!m_sftpWorker->connect()) {
         showTip(QString("SFTP connect 失败：%1:%2").arg(m_trainServerIp).arg(m_trainSftpPort), true);
-        m_trainingBusy = false;
+        resetTrainingState();
         return;
     }
-    if (!m_sftpWorker->mkdir_p(m_sftpRemoteImgDir)) {
-        showTip(QString("SFTP mkdir 失败：%1").arg(m_sftpRemoteImgDir), true);
-        m_trainingBusy = false;
-        return;
-    }
-    if (!m_sftpWorker->mkdir_p(m_sftpRemoteLblDir)) {
-        showTip(QString("SFTP mkdir 失败：%1").arg(m_sftpRemoteLblDir), true);
-        m_trainingBusy = false;
-        return;
-    }
-    showTip(QString("远程子目录已创建，开始上传..."));
+    showTip("SFTP 已连接，开始上传训练数据...");
 
     // 3. moveToThread + 启动上传（session 已建立，moveToThread 后继续复用）
     m_sftpThread = new QThread(this);
@@ -545,69 +579,194 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
                                   Q_ARG(QString, m_sftpRemoteImgDir));
     });
     connect(m_sftpThread, &QThread::finished, this, [this]() {
-        // 线程退出后，把 worker 移回主线程 + disconnect
         if (m_sftpWorker) m_sftpWorker->moveToThread(this->thread());
-        showTip("SFTP 线程已退出");
     });
 
     m_sftpThread->start();
 }
 
-// [0.2] SftpWorker 一批上传完成 → 串联下一个（image → label → classes → startTrain）
+// [0.2] SftpWorker 一批上传完成 → 验证 → 串联下一个（image → label → classes → startTrain）
 void AiModelSet::onSftpUploadCompleted(bool success)
 {
+    LOG_DEBUG_STM("[SFTP] onSftpUploadCompleted：phase=" << m_sftpUploadPhase << " success=" << success);
     if (!success) {
-        showTip("SFTP 上传出现错误，继续执行（部分上传成功）", true);
+        showTip("SFTP 上传出现错误，继续验证...", true);
     }
-    m_sftpUploadPhase++;
-    if (m_sftpUploadPhase == 1) {
-        // 图片上传完成 → 开始上传标签
-        showTip("图片上传完成，开始上传标签...");
-        QMetaObject::invokeMethod(m_sftpWorker, "onUploadLocalDir", Qt::QueuedConnection,
-                                  Q_ARG(QString, m_sftpLocalLblDir),
-                                  Q_ARG(QString, m_sftpRemoteLblDir));
+
+    // 图片/标签/classes 每个阶段上传完后都做验证
+    m_sftpVerifyRetry = 0;  // 重置重试计数
+    QString remoteDir;
+    QString phaseName;
+    QString uploadMethod;      // "onUploadLocalDir" 或 "onUploadFiles"
+    QString uploadArg1;        // 第一个参数（本地目录 or 本地文件）
+    QString uploadArg2;        // 第二个参数（远程目录）
+
+    if (m_sftpUploadPhase == 0) {
+        remoteDir = m_sftpRemoteImgDir;
+        phaseName = "图片";
+        uploadMethod = "onUploadLocalDir";
+        uploadArg1 = m_sftpLocalImgDir;
+        uploadArg2 = m_sftpRemoteImgDir;
+    } else if (m_sftpUploadPhase == 1) {
+        remoteDir = m_sftpRemoteLblDir;
+        phaseName = "标签";
+        uploadMethod = "onUploadLocalDir";
+        uploadArg1 = m_sftpLocalLblDir;
+        uploadArg2 = m_sftpRemoteLblDir;
     } else if (m_sftpUploadPhase == 2) {
-        // 标签上传完成 → 上传 classes.txt（单文件列表）
-        if (QFileInfo::exists(m_sftpClassesFile)) {
-            showTip("标签上传完成，开始上传 classes.txt...");
-            QMetaObject::invokeMethod(m_sftpWorker, "onUploadFiles", Qt::QueuedConnection,
-                                      Q_ARG(QStringList, QStringList{m_sftpClassesFile}),
-                                      Q_ARG(QString, m_sftpRemoteRootDir));
-        } else {
-            showTip("标签上传完成，无 classes.txt，直接启动训练");
-            QMetaObject::invokeMethod(m_sftpWorker, "onUploadFiles", Qt::QueuedConnection,
-                                      Q_ARG(QStringList, QStringList{}),
-                                      Q_ARG(QString, m_sftpRemoteRootDir));
-        }
+        remoteDir = m_sftpRemoteRootDir;
+        phaseName = "classes.txt";
+        uploadMethod = "onUploadFiles";
+        uploadArg1 = m_sftpClassesFile;
+        uploadArg2 = m_sftpRemoteRootDir;
     } else {
-        // 全部上传完成 → disconnect session + quit thread + 启动训练
-        showTip("训练数据上传完成，正在启动远程训练...");
-
-        // 断开持久 session（必须用 invokeMethod 到子线程调，因为 worker 在子线程）
-        QMetaObject::invokeMethod(m_sftpWorker, "disconnect", Qt::QueuedConnection);
-
-        // 等 disconnect 执行完（同一事件队列顺序），再 quit
-        QTimer::singleShot(0, m_sftpThread, [this]() {
-            if (m_sftpThread) m_sftpThread->quit();
-        });
-
-        // 启动训练（不用等 thread 真退出，HTTP 和 SFTP 独立）
-        m_modelApi->startTrain(m_currentTaskId);
+        goto TRAIN_START;
     }
+
+    m_sftpLastUploadMethod = uploadMethod;
+    m_sftpLastUploadArg1 = uploadArg1;
+    m_sftpLastUploadArg2 = uploadArg2;
+    m_sftpVerifyPhase = m_sftpUploadPhase;
+
+    // 发起 remoteList 验证
+    m_sftpVerifying = true;
+    showTip(QString("%1上传完成，正在验证...").arg(phaseName));
+    LOG_DEBUG_STM("[SFTP] 开始验证 phase=" << m_sftpUploadPhase << " remoteDir=" << remoteDir);
+    QMetaObject::invokeMethod(m_sftpWorker, "onRemoteList", Qt::QueuedConnection,
+                              Q_ARG(QString, remoteDir));
+    return;
+
+TRAIN_START:
+    // ── 全部上传验证通过 → disconnect + quit + startTrain ──
+    showTip("训练数据上传验证通过，正在启动远程训练...");
+    QMetaObject::invokeMethod(m_sftpWorker, "disconnect", Qt::QueuedConnection);
+    QTimer::singleShot(0, m_sftpThread, [this]() {
+        if (m_sftpThread) m_sftpThread->quit();
+    });
+    m_modelApi->startTrain(m_currentTaskId);
+}
+
+// [0.3] 上传后验证回调：remoteList 返回远程文件列表 → 对比本地数量
+void AiModelSet::onSftpRemoteListCompleted(const QStringList& remoteFiles)
+{
+    if (!m_sftpVerifying) return;
+    m_sftpVerifying = false;
+
+    // 算本地期望文件数
+    int localCount = 0;
+    if (m_sftpVerifyPhase == 0 || m_sftpVerifyPhase == 1) {
+        localCount = QDir(m_sftpVerifyPhase == 0 ? m_sftpLocalImgDir : m_sftpLocalLblDir)
+                         .entryInfoList(QDir::Files).size();
+    } else if (m_sftpVerifyPhase == 2) {
+        localCount = QFileInfo(m_sftpClassesFile).exists() ? 1 : 0;
+    }
+
+    int remoteCount = remoteFiles.size();
+    QString phaseName = (m_sftpVerifyPhase == 0) ? "图片"
+                       : (m_sftpVerifyPhase == 1) ? "标签"
+                                                  : "classes.txt";
+
+    LOG_DEBUG_STM("[SFTP] 验证 phase=" << m_sftpVerifyPhase
+                  << " localCount=" << localCount << " remoteCount=" << remoteCount
+                  << " retry=" << m_sftpVerifyRetry);
+
+    if (remoteCount >= localCount && localCount > 0) {
+        // ✅ 验证通过，进入下一 phase
+        showTip(QString("%1验证通过（%2/%3）").arg(phaseName).arg(remoteCount).arg(localCount));
+        m_sftpUploadPhase++;
+        // 递归触发下一个阶段（直接调 onSftpUploadCompleted，它会根据 phase 决定是验证还是 startTrain）
+        onSftpUploadCompleted(true);
+        return;
+    }
+
+    // 远程文件数 < 本地期望 → 重试上传（最多 3 次）
+    if (m_sftpVerifyRetry < 3) {
+        m_sftpVerifyRetry++;
+        showTip(QString("%1验证失败（远程%2 < 本地%3），重试上传 (%4/3)...")
+                    .arg(phaseName).arg(remoteCount).arg(localCount).arg(m_sftpVerifyRetry), true);
+        if (m_sftpLastUploadMethod == "onUploadLocalDir") {
+            QMetaObject::invokeMethod(m_sftpWorker, "onUploadLocalDir", Qt::QueuedConnection,
+                                      Q_ARG(QString, m_sftpLastUploadArg1),
+                                      Q_ARG(QString, m_sftpLastUploadArg2));
+        } else {
+            QMetaObject::invokeMethod(m_sftpWorker, "onUploadFiles", Qt::QueuedConnection,
+                                      Q_ARG(QStringList, QStringList{m_sftpLastUploadArg1}),
+                                      Q_ARG(QString, m_sftpLastUploadArg2));
+        }
+        return;
+    }
+
+    // ❌ 3 次重试都失败 → 报错 + 终止
+    showTip(QString("%1上传验证失败（远程%2 < 本地%3），重试 3 次仍不通过，终止训练")
+                .arg(phaseName).arg(remoteCount).arg(localCount), true);
+    resetTrainingState();
+}
+
+// ⭐ 统一的训练状态重置：所有错误/成功结束都调用
+void AiModelSet::resetTrainingState()
+{
+    LOG_DEBUG_STM("[训练流程] resetTrainingState() 被调用");
+    // 1. 标志位
+    m_trainingBusy = false;
+    m_sftpUploadPhase = 0;
+    m_sftpVerifyRetry = 0;
+    m_sftpVerifyPhase = 0;
+    m_sftpVerifying = false;
+    m_sftpLastUploadMethod.clear();
+    m_sftpLastUploadArg1.clear();
+    m_sftpLastUploadArg2.clear();
+    // 2. 轮询定时器
+    if (m_pollTimer) m_pollTimer->stop();
+    m_pollFailCount = 0;
+    // 3. SFTP 资源彻底清理（阻塞等待线程退出，确保无悬垂指针）
+    cleanupSftpResources();
+}
+
+// ⭐ 彻底清理 SFTP 线程（worker 保留，prepareTrain 里复用重连）
+void AiModelSet::cleanupSftpResources()
+{
+    if (!m_sftpThread) return;
+    LOG_DEBUG_STM("[训练流程] cleanupSftpResources()  thread="
+                  << (m_sftpThread ? "running" : "null"));
+
+    // ⭐ 先阻塞 disconnect（BlockingQueuedConnection，立即在子线程执行），确保 socket 正常关闭
+    //    如果用 QueuedConnection，disconnect 会投到子线程事件队列，
+    //    紧接着 quit() 把线程退了，disconnect 可能没跑到 → socket 残留 TIME_WAIT
+    if (m_sftpWorker && m_sftpThread->isRunning()) {
+        bool ok = QMetaObject::invokeMethod(m_sftpWorker, "disconnect",
+                                            Qt::BlockingQueuedConnection);
+        LOG_DEBUG_STM("[训练流程] blocking disconnect result=" << ok);
+    }
+
+    // 通知线程退出（此时 disconnect 已执行完毕）
+    m_sftpThread->quit();
+    if (!m_sftpThread->wait(2000)) {
+        LOG_WARN_STM("[训练流程] cleanupSftpResources 线程未正常退出，terminate");
+        m_sftpThread->terminate();
+        m_sftpThread->wait(500);
+    }
+    // 把 worker 移回主线程（在删除 thread 之前）
+    if (m_sftpWorker) {
+        m_sftpWorker->moveToThread(QThread::currentThread());
+    }
+    delete m_sftpThread;
+    m_sftpThread = nullptr;
 }
 
 // [2] 查询进度结果
 void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
 {
+    // ⭐ task_id 匹配：只处理当前正在训练的任务响应，忽略旧任务/其他任务的异步返回
+    if (!response.task_id.isEmpty() && response.task_id != m_currentTaskId) {
+        LOG_DEBUG_STM("[轮询] 忽略非当前任务响应：response.task_id=" << response.task_id
+                     << " m_currentTaskId=" << m_currentTaskId);
+        return;
+    }
+
     if (!response.isSuccess()) {
-        m_pollFailCount++;
-        showTip(QString("进度查询失败（%1）：%2").arg(m_pollFailCount).arg(response.message), true);
-        if (m_pollFailCount >= 5) {
-            // 连续失败 5 次 → 停止轮询，标记训练流程结束
-            m_pollTimer->stop();
-            showTip("进度查询连续失败，已停止轮询", true);
-            m_trainingBusy = false;
-        }
+        m_pollTimer->stop();   // 服务端已返回错误，立即停止轮询
+        resetTrainingState();
+        showTip(QString("训练服务错误：%1（错误码：%2）").arg(response.message).arg(response.code), true);
         return;
     }
     m_pollFailCount = 0;
@@ -621,7 +780,13 @@ void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
     } else {
         stateText = "训练中";
     }
-    showTip(QString("训练进度：%1% | %2").arg(response.progress).arg(stateText));
+
+    // ⭐ 训练过程中如果服务端返回了 message（可能是错误/警告/状态），一并显示到 tipLabel
+    QString tipMsg = QString("训练进度：%1% | %2").arg(response.progress).arg(stateText);
+    if (!response.message.isEmpty() && response.progress < 100) {
+        tipMsg += QString(" | %1").arg(response.message);
+    }
+    showTip(tipMsg);
 
     // 进度 100% → 停止轮询 + 开始下载
     if (response.progress >= 100 && !response.model_name.isEmpty()) {
@@ -637,20 +802,30 @@ void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
     }
 }
 
-// ── 动态创建类别 checkbox ────────────────────────────────────────────────────
-// 固定区域: x=220, y=10, w=451, h=71 (左上角, 宽451高71)
-// 每排自动等分宽度，放不下两排，间距由布局自动调整
+// ── 动态创建类别按钮 ──────────────────────────────────────────────────────────
+// 固定区域: x=30, y=30, w=640, h=40
+// 按钮宽度固定 24px，在区域内居中展开；底部跟计数 label
 void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
 {
     if (m_cbContainer) {
         delete m_cbContainer;
         m_cbContainer = nullptr;
     }
+    if (m_classBtnGroup) {
+        delete m_classBtnGroup;
+        m_classBtnGroup = nullptr;
+    }
 
-    if (count <= 0 || count > 10) count = 10;
+    // ⭐ 没加载数据 / 新建模型时 count<=0 → 不创建按钮
+    if (count <= 0) {
+        LOG_DEBUG_STM("🟡 setupClassCheckBoxes: count<=0, 跳过创建");
+        return;
+    }
+    if (count > 9) count = 9;
+
     auto colorTable = getClassColorTable();
 
-    // 存类别名（如果传了就用传入的，没传就用 "0"/"1"/...）
+    // 存类别名
     m_classNames = names;
     if (m_classNames.size() < count) {
         for (int i = m_classNames.size(); i < count; ++i) {
@@ -658,84 +833,149 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
         }
     }
 
-    // 固定区域
-    const int AREA_X = 220, AREA_Y = 10, AREA_W = 450, AREA_H = 70;
-    const int FIXED_SPACING = 8;  // checkbox 之间的固定间距（像素）
-
-    // 计算布局: 每排 cols 个, rows 排
-    // 1~5 个 → 一排; 6~10 个 → 两排
-    int rows = (count <= 5) ? 1 : 2;
-    int cols = (count + rows - 1) / rows;   // ceil(count/rows)
+    const int AREA_X = 30, AREA_Y = 35, AREA_W = 640, AREA_H = 60;  // ⭐ 垂直中心对齐 trainServerCfgPushButton(y=30,h=41 → 中心50.5)
+    const int BTN_FIXED_W = 48;
+    const int BTN_FIXED_H = 24;
+    const int FIXED_SPACING = 6;  // 按钮间水平间距
+    const int BTN_LABEL_GAP = 5;  // 按钮行和计数行之间的垂直间距
 
     m_cbContainer = new QWidget(this);
-    m_cbContainer->setObjectName("classCheckBoxContainer");
+    m_cbContainer->setObjectName("classButtonContainer");
     m_cbContainer->setGeometry(AREA_X, AREA_Y, AREA_W, AREA_H);
 
-    // 外层垂直布局包每一排
-    auto *outerLayout = new QVBoxLayout(m_cbContainer);
-    outerLayout->setContentsMargins(0, 0, 0, 0);
-    outerLayout->setSpacing(4);
+    m_classBtnGroup = new QButtonGroup(this);
+    m_classBtnGroup->setExclusive(true);
 
-    m_classCheckBoxes.clear();
+    // ⭐ 容器用 QVBoxLayout：上面按钮一行，下面计数一行
+    // 不设 stretch，两行自然堆叠，垂直间距完全由 spacing 控制
+    auto *vbox = new QVBoxLayout(m_cbContainer);
+    vbox->setContentsMargins(0, 4, 0, 4);  // 上下各 4px margin
+    vbox->setSpacing(BTN_LABEL_GAP);
 
-    LOG_DEBUG_STM("🟢 setupClassCheckBoxes: count=" << count << "rows=" << rows << "cols=" << cols << "names=" << m_classNames);
+    // ── 第一行：按钮 ──
+    auto *btnRow = new QHBoxLayout();
+    btnRow->setContentsMargins(0, 0, 0, 0);
+    btnRow->setSpacing(FIXED_SPACING);
+    btnRow->addStretch(1);  // 左 stretch 居中
 
-    for (int r = 0; r < rows; ++r) {
-        auto *rowLayout = new QHBoxLayout();
-        rowLayout->setContentsMargins(0, 0, 0, 0);
-        rowLayout->setSpacing(FIXED_SPACING);
-        rowLayout->addStretch(1);   // ⭐ 左 stretch → 居中
+    // ── 第二行：计数 label ──
+    auto *countRow = new QHBoxLayout();
+    countRow->setContentsMargins(0, 0, 0, 0);
+    countRow->setSpacing(FIXED_SPACING);  // 和按钮行同 spacing → label 对齐按钮
+    countRow->addStretch(1);  // 左 stretch 居中
 
-        int rowStart = r * cols;
-        int rowEnd = qMin(rowStart + cols, count);
-        for (int i = rowStart; i < rowEnd; ++i) {
-            QString label = (i < m_classNames.size()) ? m_classNames[i] : QString("%1").arg(i);
-            auto* cb = new QCheckBox(label, m_cbContainer);
-            cb->setFont(QFont("HarmonyOS Sans Medium", 10, QFont::Bold));
+    m_classButtons.clear();
+    m_classCountLabels.clear();
 
-            QColor color = (i < colorTable.size()) ? colorTable[i] : QColor(Qt::black);
-            cb->setStyleSheet(QString(
-                "QCheckBox { color: rgb(%1,%2,%3); font-family: 'HarmonyOS Sans Medium'; font-size: 10pt; font-weight: bold; }"
-            ).arg(color.red()).arg(color.green()).arg(color.blue()));
+    LOG_DEBUG_STM("🟢 setupClassCheckBoxes: count=" << count);
 
-            connect(cb, &QCheckBox::clicked, this, &AiModelSet::onClassCheckBoxClicked);
+    for (int i = 0; i < count; ++i) {
+        QColor color = (i < colorTable.size()) ? colorTable[i] : QColor(Qt::black);
+        QString label = (i < m_classNames.size()) ? m_classNames[i] : QString("%1").arg(i);
 
-            rowLayout->addWidget(cb);
-            m_classCheckBoxes.append(cb);
-        }
+        // 互斥按钮（checkable），固定 48x24
+        auto* btn = new QPushButton(label, m_cbContainer);
+        btn->setCheckable(true);
+        btn->setFixedSize(BTN_FIXED_W, BTN_FIXED_H);
+        btn->setFont(QFont("HarmonyOS Sans Medium", 8, QFont::Bold));
+        btn->setCursor(Qt::PointingHandCursor);
 
-        rowLayout->addStretch(1);   // ⭐ 右 stretch → 左右平衡 → 居中
+        QString colorStr = QString("rgb(%1,%2,%3)").arg(color.red()).arg(color.green()).arg(color.blue());
+        btn->setStyleSheet(QString(
+            "QPushButton { background-color: %1; color: white; border: 2px solid transparent; border-radius: 3px; }"
+            "QPushButton:checked { border: 2px solid #333333; }"
+        ).arg(colorStr));
 
-        outerLayout->addLayout(rowLayout);
+        m_classBtnGroup->addButton(btn, i);
+        connect(btn, &QPushButton::clicked, this, &AiModelSet::onClassButtonClicked);
+
+        // 计数 label，固定 48x18（和按钮同宽 → 完美对齐，高度足够容纳 8pt 文字）
+        auto* countLbl = new QLabel("0", m_cbContainer);
+        countLbl->setAlignment(Qt::AlignCenter);
+        countLbl->setFixedSize(BTN_FIXED_W, 18);
+        countLbl->setStyleSheet("color: #888; font-size: 9pt;");
+
+        btnRow->addWidget(btn);
+        countRow->addWidget(countLbl);
+        m_classButtons.append(btn);
+        m_classCountLabels.append(countLbl);
     }
 
+    btnRow->addStretch(1);    // 右 stretch 居中
+    countRow->addStretch(1);  // 右 stretch 居中
+
+    vbox->addLayout(btnRow);
+    vbox->addLayout(countRow);
+
     m_cbContainer->show();
+    updateClassAnnotCounts();
 }
 
-// 通用类别 checkbox 点击槽（sender() 确定是哪个 checkbox → 找到 classId）
-void AiModelSet::onClassCheckBoxClicked()
+// 通用类别按钮点击槽
+void AiModelSet::onClassButtonClicked()
 {
-    auto* cb = qobject_cast<QCheckBox*>(sender());
-    if (!cb) return;
-    int classId = m_classCheckBoxes.indexOf(cb);
+    auto* btn = qobject_cast<QPushButton*>(sender());
+    if (!btn) return;
+    int classId = m_classBtnGroup->id(btn);
     if (classId < 0) return;
 
     QString className = (classId < m_classNames.size()) ? m_classNames[classId] : QString("%1").arg(classId);
+    auto colorTable = getClassColorTable();
+    QString colorName = (classId < colorTable.size())
+        ? QString("(%1,%2,%3)").arg(colorTable[classId].red()).arg(colorTable[classId].green()).arg(colorTable[classId].blue())
+        : "";
 
-    if (cb->isChecked()) {
-        m_currentAnnotType = annotTypeFromClassId(classId);
-        auto colorTable = getClassColorTable();
-        QString colorName = (classId < colorTable.size())
-            ? QString("(%1,%2,%3)").arg(colorTable[classId].red()).arg(colorTable[classId].green()).arg(colorTable[classId].blue())
-            : "";
-        showTip(QString("当前标注类型：%1 %2").arg(className).arg(colorName));
-        // 互斥：取消其他所有 checkbox
-        for (auto* other : m_classCheckBoxes) {
-            if (other != cb) other->setChecked(false);
+    // QButtonGroup exclusive 模式自动互斥，不需要手动取消其他按钮
+    m_currentAnnotType = annotTypeFromClassId(classId);
+    showTip(QString("当前标注类型：%1 %2").arg(className).arg(colorName));
+}
+
+// 刷新每个类别按钮下的标注计数（统计所有训练图片的标签，非当前图片）
+void AiModelSet::updateClassAnnotCounts()
+{
+    // 先清零
+    for (auto* lbl : m_classCountLabels) {
+        lbl->setText("0");
+        lbl->setStyleSheet("color: #888; font-size: 9pt;");
+    }
+
+    // ⭐ 统计所有训练图片的标签（不是当前图片）
+    // 规则：当前图片用内存 m_annotations（可能尚未保存），其余图片读同名 txt
+    QMap<int, int> counts;
+    for (const QString& imgPath : m_train_lists) {
+        if (imgPath == m_currentImagePath) {
+            // 当前图片：用内存标注，避免未保存导致计数遗漏
+            for (const auto& a : m_annotations) {
+                counts[static_cast<int>(a.type)]++;
+            }
+            continue;
         }
-    } else {
-        showTip(QString("取消标注类型：%1").arg(className));
-        m_currentAnnotType = AnnotationType::TYPE_NONE;
+        // 其他图片：读取同名 label txt
+        QFileInfo fi(imgPath);
+        QString txtPath = fi.absolutePath() + "/" + fi.completeBaseName() + ".txt";
+        QFile f(txtPath);
+        if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) continue;
+        QTextStream in(&f);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line.isEmpty()) continue;
+            QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+            if (parts.isEmpty()) continue;
+            bool ok = false;
+            int cid = parts[0].toInt(&ok);
+            if (ok) counts[cid]++;
+        }
+        f.close();
+    }
+
+    // 更新 label
+    for (int i = 0; i < m_classCountLabels.size(); ++i) {
+        int n = counts.value(i, 0);
+        auto* lbl = m_classCountLabels[i];
+        lbl->setText(QString::number(n));
+        if (n > 0) {
+            lbl->setStyleSheet("color: #000; font-size: 9pt; font-weight: bold;");
+        }
     }
 }
 
@@ -746,6 +986,7 @@ void AiModelSet::onClearAnnotBtnClicked()
     m_annotations.clear();
     m_selectedAnnotIndex = -1;
     ui->annotationInfoEdit->clear();
+    updateClassAnnotCounts();
     update(); // 刷新绘图
 }
 
@@ -792,6 +1033,7 @@ void AiModelSet::onOneKeyAnnoBtnClicked()
     }
     showTip(QString("一键标注完成，共 %1 个框（类别 %2）")
         .arg(m_fg_rects.size()).arg(getAnnotLabelByType(m_currentAnnotType)));
+    updateClassAnnotCounts();
     update();
 }
 
@@ -926,6 +1168,7 @@ void AiModelSet::onDeleteAnnotBtnClicked()
         m_annotations.removeAt(m_selectedAnnotIndex);
         m_selectedAnnotIndex = -1;
         ui->annotationInfoEdit->clear();
+        updateClassAnnotCounts();
         update();
     } else {
         showTip("请先选中标注", true);
@@ -1102,6 +1345,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
         m_activate_class_ids.insert(classIdFromAnnotType(a.type));
         m_selectedAnnotIndex = m_annotations.size() - 1;  // ⭐ 新建后自动选中
         showTip(QString("点击标注：类别 %1").arg(a.label));
+        updateClassAnnotCounts();
         update();
         return;
     }
@@ -1277,7 +1521,25 @@ void AiModelSet::mouseReleaseEvent(QMouseEvent *event)
 //    }
 
 
+   updateClassAnnotCounts();
    update();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 事件过滤器：转发 imgLabel 的鼠标移动事件到 mouseMoveEvent
+// 因为 imgLabel 是子控件，AiModelSet::mouseMoveEvent 默认收不到它上面的悬停事件
+// ═══════════════════════════════════════════════════════════
+bool AiModelSet::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->imgLabel && event->type() == QEvent::MouseMove) {
+        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        // 把 imgLabel 坐标转成 AiModelSet 父级坐标，调用自身 mouseMoveEvent
+        QPoint parentPos = ui->imgLabel->mapToParent(me->pos());
+        QMouseEvent newEvent(QEvent::MouseMove, parentPos, me->globalPos(),
+                              me->button(), me->buttons(), me->modifiers());
+        mouseMoveEvent(&newEvent);
+    }
+    return QWidget::eventFilter(watched, event);
 }
 
 void AiModelSet::paintEvent(QPaintEvent *event)
@@ -1694,6 +1956,7 @@ void AiModelSet::addTrainListPushButtonPressed(){
     // ⭐ 刷新缩略图 + 更新大图 QSS 绿框
     refreshThumbnails();
     updateImgLabelBorder();
+    updateClassAnnotCounts();  // ⭐ 加入训练集后刷新全局类别计数
 }
 
 void AiModelSet::delTrainListPushButtonPressed(){
@@ -1702,6 +1965,23 @@ void AiModelSet::delTrainListPushButtonPressed(){
     // ⭐ 刷新缩略图 + 更新大图 QSS 绿框
     refreshThumbnails();
     updateImgLabelBorder();
+    updateClassAnnotCounts();  // ⭐ 移出训练集后刷新全局类别计数
+}
+
+// ⭐ 全部删除：清空训练集，所有绿框消失
+void AiModelSet::delTrainListAllPushButtonPressed()
+{
+    if (m_train_lists.isEmpty()) {
+        showTip("训练集已为空", true);
+        return;
+    }
+    int n = m_train_lists.size();
+    m_train_lists.clear();
+    m_train_lists.squeeze();
+    refreshThumbnails();     // 缩略图四周绿框消失
+    updateImgLabelBorder();  // 大图绿框消失
+    updateClassAnnotCounts();  // ⭐ 清空训练集后刷新全局类别计数
+    showTip(QString("已从训练集移除 %1 张图片").arg(n));
 }
 
 // ⭐ 一键添加所有「有标注文件」的图片到训练集（自动去重）
@@ -1732,6 +2012,7 @@ void AiModelSet::addAllLabeledTrainListPushButtonPressed()
 
     refreshThumbnails();
     updateImgLabelBorder();
+    updateClassAnnotCounts();  // ⭐ 批量加入后刷新全局类别计数
 
     showTip(
         QString("批量添加完成：新增 %1 张，跳过 %2 张")
@@ -1816,7 +2097,7 @@ void AiModelSet::updateWidget(){
 }
 
 void AiModelSet::updateCategoryChenkBox(){
-    // 重新构建 checkbox（保留已有的 m_classNames，数量变化时自动补/裁）
+    // ⭐ 没加载模型时 modelCategoryNum==0 → 跳过（setupClassCheckBoxes 里有 count<=0 guard）
     setupClassCheckBoxes(modelCategoryNum, m_classNames);
     m_currentAnnotType = AnnotationType::TYPE_NONE;
 }
@@ -1825,15 +2106,21 @@ void AiModelSet::onSetBackBtnClicked(){
     emit backToHomePageSig();
 }
 
-// ── 模型加载：弹出 QDialog，列出 /ftp/models 下所有 .bin 文件，按时间倒序 ──────
+// ── 模型加载：弹出 QDialog，列出 LOCAL_MODEL_PATH 下所有 .bin 文件，按时间倒序 ──────
 void AiModelSet::onModelSelPushButtonClicked()
 {
-    // 预加载路径（编译宏，部署时可改）
+    // 预加载路径（优先编译宏，否则默认 LOCAL_MODEL_PATH）
 #ifdef FTP_MODELS_PATH
     QString dirPath = FTP_MODELS_PATH;
 #else
-    QString dirPath = "/ftp/model";
+    QString dirPath = QString(LOCAL_MODEL_PATH);
 #endif
+
+    // 目录不存在则自动创建
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        dir.mkpath(dirPath);
+    }
 
     QDialog dlg(this);
     dlg.setWindowTitle("加载模型");
@@ -1851,16 +2138,12 @@ void AiModelSet::onModelSelPushButtonClicked()
     listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     mainLayout->addWidget(listWidget, 1);
 
-    // 扫描 .bin 文件
-    QDir dir(dirPath);
-    if (!dir.exists()) 
-    {
-        QMessageBox::warning(this, "模型加载", QString("目录不存在: %1").arg(dirPath));
-        return;
-    }
-
+    // 扫描 .bin 文件 + 手动按修改时间倒序（最新在前）
     QStringList filters; filters << "*.bin";
-    QFileInfoList files = dir.entryInfoList(filters, QDir::Files, QDir::Time);
+    QFileInfoList files = dir.entryInfoList(filters, QDir::Files);
+    std::sort(files.begin(), files.end(), [](const QFileInfo& a, const QFileInfo& b) {
+        return a.lastModified() > b.lastModified();  // 时间大（新）的排前面
+    });
 
     // 填充列表 + 存 .bin 名（去掉后缀）
     QStringList binNames;
@@ -1948,8 +2231,11 @@ void AiModelSet::onModelSelPushButtonClicked()
 void AiModelSet::onImportImgPushButtonClicked(){
     FLOW("import 入口");
     FLOW("import 弹框前");
+    // 确保初始目录存在（否则 QFileDialog 会 fallback 到程序工作目录）
+    QString initDir = QString(LOCAL_IMG_PATH);
+    QDir().mkpath(initDir);
     QString dirPath = QFileDialog::getExistingDirectory(
-        this, "选择图片文件夹", LOCAL_IMG_PATH,
+        this, "选择图片文件夹", initDir,
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
             | QFileDialog::DontUseNativeDialog
     );
@@ -1957,7 +2243,7 @@ void AiModelSet::onImportImgPushButtonClicked(){
     if (dirPath.isEmpty()) return;
     m_currentDir = dirPath;
     showTip("扫描中...");
-
+    
     // 先干净地停掉上一次的扫描（如果有）
     cleanupScanThread();
     FLOW("import cleanup后");
@@ -2059,21 +2345,25 @@ void AiModelSet::onScanFinished(const QStringList& imagePaths)
 {
     FLOW("scanFinished 入口 数量=" << imagePaths.size());
 
-    m_allImagePaths = imagePaths;
-
     // ⭐ 排序：bg_ 开头 → img_ 开头；每组内按相机序号 x → 图像序号 xxxx 升序
-    // 文件名格式：bg_x_xxxx.jpg 或 img_x_xxxx.jpg
-    std::sort(m_allImagePaths.begin(), m_allImagePaths.end(), compareImageFileNames);
+    QStringList allPaths = imagePaths;
+    std::sort(allPaths.begin(), allPaths.end(), compareImageFileNames);
 
-    // ═══ 新增：bg_ 图片校验 + 背景均值提取 ═══
-    // 用户要求：bg_ 开头图片 >= 2 张，否则警告并取消导入
-    QStringList bgPaths;
-    for (const QString& p : m_allImagePaths) {
+    // ═══ 分离 bg_ 和 img_：bg_ 不进 imglist，但存到 m_bgPaths 供训练时一并提交 ═══
+    m_bgPaths.clear();
+    QStringList imgOnlyPaths;
+    for (const QString& p : allPaths) {
         if (QFileInfo(p).fileName().startsWith("bg_")) {
-            bgPaths.append(p);
+            m_bgPaths.append(p);
+        } else {
+            imgOnlyPaths.append(p);
         }
     }
-    m_bgCount = bgPaths.size();
+    m_allImagePaths = imgOnlyPaths;   // imglist 只显示 img_ 开头的
+
+    // ═══ bg_ 图片校验 + 背景均值提取 ═══
+    // 用户要求：bg_ 开头图片 >= 2 张，否则警告并取消导入
+    m_bgCount = m_bgPaths.size();
     FLOW("bg_ 图片数量=" << m_bgCount);
 
     if (m_bgCount < 2) {
@@ -2083,6 +2373,7 @@ void AiModelSet::onScanFinished(const QStringList& imagePaths)
             QString("导入目录必须包含 2 张以上 bg_ 开头的背景图像\n当前目录仅有 %1 张 bg_ 图片").arg(m_bgCount));
         // 清空数据 + 返回
         m_allImagePaths.clear();
+        m_bgPaths.clear();
         showTip("bg_ 图片不足，导入取消");
         ui->m_prevBtn->setEnabled(false);
         ui->m_nextBtn->setEnabled(false);
@@ -2096,7 +2387,7 @@ void AiModelSet::onScanFinished(const QStringList& imagePaths)
     // Python 用 cv2.mean(img)[:3] 取 BGR，再转 RGB 存。C++ 直接用 BGR 存（OpenCV 默认）
     double bgSumB = 0, bgSumG = 0, bgSumR = 0;
     int bgValid = 0;
-    for (const QString& path : bgPaths) {
+    for (const QString& path : m_bgPaths) {
         cv::Mat img = cv::imread(path.toStdString(), cv::IMREAD_COLOR);
         if (img.empty()) {
             LOG_WARN_STM("[bg均值] 跳过无法读取的文件:" << path);
@@ -2246,6 +2537,7 @@ void AiModelSet::loadFirstImage(const QString& path)
     m_annot_pixel_counts.clear();
     if (m_show_fg_pixel_count) computeFgPixelCounts();
 
+    updateClassAnnotCounts();  // ⭐ 切换图片后刷新全局类别计数
     update();
 }
 
@@ -2402,6 +2694,7 @@ void AiModelSet::LoadMyAnnotation(const QString& imgPath)
 
     txtFile.close();
     showTip(QString("标注已加载：%1").arg(txtPath));
+    updateClassAnnotCounts();
 
 }
 
@@ -2496,7 +2789,7 @@ void AiModelSet::onImageItemClicked(QListWidgetItem* item)
 //    update(); // 刷新绘图
 }
 
-void AiModelSet::prepareTrain()
+bool AiModelSet::prepareTrain()
 {
         // 1. 使用程序目录下的 tmp
         QString tmpDir = QDir(QCoreApplication::applicationDirPath()).filePath("tmp");
@@ -2544,58 +2837,134 @@ void AiModelSet::prepareTrain()
             else
                 LOG_WARN_STM("Failed to copy image:" << imgPath << "->" << destImagePath);
 
-            // 复制对应标注文件
+            // 复制并清洗标注文件（过滤空行/无效行，防止服务器端 parse_yolo_file 因空行 IndexError）
+            // 标注格式：class_id x1 y1 w h（全整数绝对坐标）
             QString txtFileName = imgFileInfo.completeBaseName() + ".txt";
             QString txtPath = imgFileInfo.absolutePath() + "/" + txtFileName;
             QFileInfo txtFileInfo(txtPath);
             if (txtFileInfo.exists()) {
                 QString destLabelPath = QDir(labelDir).filePath(txtFileName);
-                QFile::remove(destLabelPath);
-                if (QFile::copy(txtPath, destLabelPath))
-                    LOG_DEBUG_STM("Copied label:" << txtPath << "->" << destLabelPath);
-                else
-                    LOG_WARN_STM("Failed to copy label:" << txtPath << "->" << destLabelPath);
 
-                // 读取标注文件收集 class_id
-                QFile txtFile(txtPath);
-                if (txtFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                    QTextStream in(&txtFile);
+                QFile srcTxt(txtPath);
+                if (srcTxt.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QStringList validLines;
+                    QTextStream in(&srcTxt);
                     while (!in.atEnd()) {
                         QString line = in.readLine().trimmed();
                         if (line.isEmpty()) continue;
-                        QStringList parts = line.split(" ");
-                        if (!parts.isEmpty()) {
-                            bool ok = false;
-                            int classId = parts[0].toInt(&ok);
-                            if (ok) classIds.insert(classId);
+                        QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+                        if (parts.size() < 5) continue;
+                        bool ok0, ok1, ok2, ok3, ok4;
+                        int classId = parts[0].toInt(&ok0);
+                        parts[1].toInt(&ok1); parts[2].toInt(&ok2);
+                        parts[3].toInt(&ok3); parts[4].toInt(&ok4);
+                        if (!(ok0 && ok1 && ok2 && ok3 && ok4)) continue;
+
+                        validLines.append(line);
+                        classIds.insert(classId);
+                    }
+                    srcTxt.close();
+
+                    // 重写清洗后的 label 文件（空文件或只有空行的不写入）
+                    QFile::remove(destLabelPath);
+                    if (!validLines.isEmpty()) {
+                        QFile dstTxt(destLabelPath);
+                        if (dstTxt.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                            QTextStream out(&dstTxt);
+                            for (const QString& vl : validLines)
+                                out << vl << "\n";
+                            dstTxt.close();
                         }
                     }
-                    txtFile.close();
+                    LOG_DEBUG_STM("Label cleaned:" << txtPath << "->" << destLabelPath
+                                                           << "(" << validLines.size() << " valid lines)");
+                } else {
+                    LOG_WARN_STM("Failed to open label for cleaning:" << txtPath);
                 }
             } else {
                 LOG_WARN_STM("Label file not found for image:" << imgPath);
             }
         }
 
+        // ═══ 4.1 一并提交 bg_ 背景图片（复制到 tmp/image/，并创建同名空 .txt 到 label/） ═══
+        for (const QString& bgPath : m_bgPaths) {
+            QFileInfo bgFileInfo(bgPath);
+            if (!bgFileInfo.exists()) {
+                LOG_WARN_STM("[bg] Image file not found:" << bgPath);
+                continue;
+            }
+            QString destBgPath = QDir(imageDir).filePath(bgFileInfo.fileName());
+            QFile::remove(destBgPath);
+            if (QFile::copy(bgPath, destBgPath))
+                LOG_DEBUG_STM("[bg] Copied:" << bgPath << "->" << destBgPath);
+            else
+                LOG_WARN_STM("[bg] Failed to copy:" << bgPath);
+
+            // 创建同名空 .txt（背景图无标注，但训练框架要求 image/ 和 label/ 一一对应）
+            QString bgTxtName = bgFileInfo.completeBaseName() + ".txt";
+            QString destBgTxtPath = QDir(labelDir).filePath(bgTxtName);
+            QFile::remove(destBgTxtPath);
+            QFile f(destBgTxtPath);
+            if (f.open(QIODevice::WriteOnly)) f.close();  // 创建空文件
+        }
+        LOG_DEBUG_STM("[bg] prepareTrain: 已追加" << m_bgPaths.size() << "张 bg_ 图片 + 空 txt");
+
         // 5. 生成 classes.txt
         QString classesFile = QDir(tmpDir).filePath("classes.txt");
         QFile f(classesFile);
+        QList<int> sortedIds = classIds.values();
+        std::sort(sortedIds.begin(), sortedIds.end());
+
+        // ⭐ 类别校验：扫描出来的 classIds 必须覆盖 [0, modelCategoryNum-1]
+        //    缺了 → 弹告警让用户确认（可能是漏标了某个类别的图片）
+        QSet<int> expectedIds;
+        for (int i = 0; i < modelCategoryNum; ++i) expectedIds.insert(i);
+        QSet<int> scannedSet;
+        for (int id : sortedIds) scannedSet.insert(id);
+
+        // 缺的（expected - scanned）
+        QList<int> missing;
+        for (int i = 0; i < modelCategoryNum; ++i)
+            if (!scannedSet.contains(i)) missing.append(i);
+
+        // 多余的（scanned - expected）
+        QList<int> extra;
+        for (int id : sortedIds)
+            if (!expectedIds.contains(id)) extra.append(id);
+
+        if (!missing.isEmpty() || !extra.isEmpty()) {
+            QStringList ms, es;
+            for (int i : missing) ms << QString::number(i);
+            for (int i : extra) es << QString::number(i);
+
+            QString warnMsg = QString(
+                "当前模型类别数为 %1（0 ~ %2），但标注中扫描到的类别不匹配：\n\n"
+            ).arg(modelCategoryNum).arg(modelCategoryNum - 1);
+
+            if (!missing.isEmpty())
+                warnMsg += QString("❌ 缺少类别：%1\n").arg(ms.join(", "));
+            if (!extra.isEmpty())
+                warnMsg += QString("⚠️  存在超范围类别：%1\n").arg(es.join(", "));
+
+            QMessageBox::critical(this, tr("类别不匹配，无法提交训练"), warnMsg);
+            showTip("类别不匹配，请检查标注文件后重试", true);
+            return false;
+        }
+
         if (f.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream out(&f);
-            QList<int> sortedIds = classIds.values();
-            std::sort(sortedIds.begin(), sortedIds.end());
             for (int id : sortedIds) {
                 out << id << "\n";
             }
             f.close();
-            LOG_DEBUG_STM("Generated classes.txt:" << classesFile);
+            LOG_DEBUG_STM("Generated classes.txt:" << classesFile << " count=" << sortedIds.size());
         } else {
             LOG_WARN_STM("Failed to create classes.txt:" << classesFile);
         }
 
         LOG_DEBUG_STM("prepareTrain completed. Images:" << imageDir << "Labels:" << labelDir << "Classes file:" << classesFile);
 
-
+        return true;
 }
 
 void AiModelSet::onShowFgRectsBtnClicked()
@@ -3335,14 +3704,24 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     if (!ensureTrainServerConfigured()) {
         return;
     }
-    // 防重入：训练正在进行时不能点
+    // 防重入：训练正在进行时 → 主动查询进度（不提交新训练）
     if (m_trainingBusy) {
-        showTip("训练流程正在进行中，请等待完成");
+        if (!m_currentTaskId.isEmpty()) {
+            showTip("正在训练，查询最新进度...");
+            m_modelApi->queryTrainProgress(m_currentTaskId);
+        } else {
+            showTip("训练流程正在进行中，请等待完成");
+        }
         return;
     }
+
     // 空训练集校验
     if (m_train_lists.isEmpty()) {
         showTip("训练集为空，请先添加训练图片", true);
+        return;
+    }
+    if (m_train_lists.size() <= 20) {
+        showTip(QString("训练图片数量不足（当前 %1 张，需超过 20 张，不含背景图）").arg(m_train_lists.size()), true);
         return;
     }
     if (modelName.isEmpty()) {
@@ -3352,7 +3731,10 @@ void AiModelSet::onModelTrainPushButtonClicked(){
 
     // 1. 准备训练数据（本地 tmp 目录）
     showTip(QString("准备训练数据（%1 张图片）...").arg(m_train_lists.size()));
-    prepareTrain();
+    if (!prepareTrain()) {
+        // 类别校验没通过且用户点了 No，已经弹过告警了
+        return;
+    }
 
     // 1.5 校验 prepareTrain 产物（防止 tmp 里空文件就开始 SFTP）
     QString tmpDir = QDir(QCoreApplication::applicationDirPath()).filePath("tmp");
@@ -3375,6 +3757,7 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     }
 
     // 3. 发起远程创建任务目录
+    ++m_tryTimes;   // 内部计数，不影响 task_id
     m_currentTaskId = modelName;
     m_trainingBusy = true;
     m_pollFailCount = 0;
@@ -3396,6 +3779,24 @@ void AiModelSet::onModelNewPushButtonClicked()
     QLabel *nameLabel = new QLabel("模型名称:", &dlg);
     QLineEdit *nameEdit = new QLineEdit(&dlg);
     nameEdit->setPlaceholderText("仅允许英文字母、数字、下划线 _");
+    nameEdit->setFocusPolicy(Qt::NoFocus);  // ⭐ 阻止系统虚拟键盘自动弹出，只用 myInputMethod
+    // ⭐ 板卡上点击 QLineEdit 弹软键盘
+    struct KbFilter : QObject {
+        QString title;
+        explicit KbFilter(const QString &t, QObject *p = nullptr) : QObject(p), title(t) {}
+        bool eventFilter(QObject *o, QEvent *e) override {
+            if (e->type() == QEvent::MouseButtonPress) {
+                QLineEdit *le = qobject_cast<QLineEdit*>(o);
+                if (le) {
+                    myInputMethod kb(title, le->text());
+                    if (kb.exec() == QDialog::Accepted) le->setText(kb.getText());
+                    return true;
+                }
+            }
+            return QObject::eventFilter(o, e);
+        }
+    };
+    nameEdit->installEventFilter(new KbFilter("新建模型", &dlg));
 
     // 正则: 英文字母/数字/下划线，不允许中文和其他特殊符号
     QRegularExpression reModelName("^[A-Za-z0-9_]+$");
@@ -3603,6 +4004,32 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
     QLineEdit *userEdit = new QLineEdit(&dlg);
     QLineEdit *passEdit = new QLineEdit(&dlg);
     passEdit->setEchoMode(QLineEdit::Password);
+    
+    // ⭐ 板卡上点击 QLineEdit 弹软键盘（小 helper）
+    auto installKb = [&](QLineEdit *le, const QString &title) {
+        le->setFocusPolicy(Qt::NoFocus);  // ⭐ 阻止系统虚拟键盘
+        struct KbFilter : QObject {
+            QString t;
+            explicit KbFilter(const QString &tt, QObject *p) : QObject(p), t(tt) {}
+            bool eventFilter(QObject *o, QEvent *e) override {
+                if (e->type() == QEvent::MouseButtonPress) {
+                    QLineEdit *le2 = qobject_cast<QLineEdit*>(o);
+                    if (le2) {
+                        myInputMethod kb(t, le2->text());
+                        if (kb.exec() == QDialog::Accepted) le2->setText(kb.getText());
+                        return true;
+                    }
+                }
+                return QObject::eventFilter(o, e);
+            }
+        };
+        le->installEventFilter(new KbFilter(title, &dlg));
+    };
+    installKb(ipEdit,        "训练服务器 IP");
+    installKb(httpPortEdit,  "HTTP 端口");
+    installKb(sftpPortEdit,  "SFTP 端口");
+    installKb(userEdit,      "SFTP 用户名");
+    installKb(passEdit,      "SFTP 密码");
 
     // 填入当前值
     ipEdit->setText(m_trainServerIp);
@@ -3935,6 +4362,7 @@ void ModelApi::queryArch()
 void ModelApi::downloadModel(const QString& modelName, const QString& savePath)
 {
     LOG_DEBUG_STM("[DOWNLOAD] ModelApi::downloadModel 入口：modelName=" << modelName << "savePath=" << savePath);
+    m_httpTool->setTimeout(120000);  // 下载大文件给 120 秒超时
     if (modelName.isEmpty()) {
         emit networkError("模型名称不能为空");
         return;
@@ -4101,6 +4529,7 @@ TrainQueryResponse ModelApi::parseQueryTrainResponse(const QByteArray& data)
 
     QJsonObject obj = doc.object();
     // 解析字段（严格匹配协议中的 key：code、message、progress、number、model）
+    response.task_id = obj.contains("task_id") ? obj["task_id"].toString() : "";
     response.code = obj.contains("code") ? obj["code"].toInt() : -1;
     response.message = obj.contains("message") ? obj["message"].toString() : "未知错误";
     response.progress = obj.contains("progress") ? obj["progress"].toInt() : 0;

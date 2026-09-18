@@ -1,0 +1,13 @@
+# Qt 生成文件
+ui_*.h
+moc_*.cpp
+qrc_*.cpp
+Makefile*
+*.user
+.qmake.stash
+build/
+rel/
+app/
+
+# 3rdparty arm 产物
+src/3rdparty/arm/

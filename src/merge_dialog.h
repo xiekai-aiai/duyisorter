@@ -16,7 +16,7 @@
 #include <QGroupBox>
 #include <QFrame>
 
-constexpr const char* DEFAULT_IMAGE_ROOT = "/home/mcgs/Desktop/data";
+constexpr const char* DEFAULT_IMAGE_ROOT = "/opt/app/userdata/image/";
 constexpr int MAX_SOURCE_DIRS = 10;
 
 class MergeDialog : public QDialog
