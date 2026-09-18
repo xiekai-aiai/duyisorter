@@ -45,6 +45,7 @@ public:
 private slots:
     void createButtons(void);   //创建按钮
     void displayAlphabet(void); //显示字母
+    void displayLowercase(void); //显示小写字母
     void displayNumber(void);   //显示数字
     void displaySpecialChar(void);//显示特殊符号
     void sendChar(int indexOfCharToSend);//打印所按的符号

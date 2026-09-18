@@ -1,6 +1,7 @@
 // merge_dialog.cpp — 合并标注目录对话框（同步阻塞 + 文本进度）
 #include "merge_dialog.h"
 #include "mergeworker.h"
+#include "common/myinputmethod.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -68,6 +69,26 @@ void MergeDialog::initUi()
     tgtRow->addWidget(new QLabel("输出路径："));
     m_tgtPathEdit = new QLineEdit(this);
     m_tgtPathEdit->setPlaceholderText("请选择或等待自动生成...");
+    m_tgtPathEdit->setFocusPolicy(Qt::NoFocus);  // ⭐ 阻止系统虚拟键盘
+    // ⭐ 板卡上点击弹软键盘
+    {
+        struct KbFilter : QObject {
+            QString t;
+            explicit KbFilter(const QString &tt, QObject *p) : QObject(p), t(tt) {}
+            bool eventFilter(QObject *o, QEvent *e) override {
+                if (e->type() == QEvent::MouseButtonPress) {
+                    QLineEdit *le = qobject_cast<QLineEdit*>(o);
+                    if (le) {
+                        myInputMethod kb(t, le->text());
+                        if (kb.exec() == QDialog::Accepted) le->setText(kb.getText());
+                        return true;
+                    }
+                }
+                return QObject::eventFilter(o, e);
+            }
+        };
+        m_tgtPathEdit->installEventFilter(new KbFilter("输出路径", this));
+    }
     tgtRow->addWidget(m_tgtPathEdit, 1);
     auto* btnBrowseTarget = new QPushButton("浏览...", this);
     connect(btnBrowseTarget, &QPushButton::clicked, this, &MergeDialog::onBrowseTarget);
@@ -131,6 +152,26 @@ void MergeDialog::onAddSourceClicked()
 
     auto* pathEdit = new QLineEdit(rowWidget);
     pathEdit->setPlaceholderText("请选择源目录...");
+    pathEdit->setFocusPolicy(Qt::NoFocus);  // ⭐ 阻止系统虚拟键盘
+    // ⭐ 板卡上点击弹软键盘
+    {
+        struct KbFilter : QObject {
+            QString t;
+            explicit KbFilter(const QString &tt, QObject *p) : QObject(p), t(tt) {}
+            bool eventFilter(QObject *o, QEvent *e) override {
+                if (e->type() == QEvent::MouseButtonPress) {
+                    QLineEdit *le = qobject_cast<QLineEdit*>(o);
+                    if (le) {
+                        myInputMethod kb(t, le->text());
+                        if (kb.exec() == QDialog::Accepted) le->setText(kb.getText());
+                        return true;
+                    }
+                }
+                return QObject::eventFilter(o, e);
+            }
+        };
+        pathEdit->installEventFilter(new KbFilter("源目录路径", rowWidget));
+    }
     rowLayout->addWidget(pathEdit, 1);
 
     auto* btnBrowse = new QPushButton("浏览", rowWidget);

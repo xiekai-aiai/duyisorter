@@ -378,6 +378,22 @@ void myInputMethod::displayAlphabet(void)
 
     return;
 }
+
+/**
+ * @brief myInputMethod::displayLowercase
+ * 显示小写字母（与 displayAlphabet 对应）
+ */
+void myInputMethod::displayLowercase(void)
+{
+    unsigned char qwertyLower[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0','q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '-'};
+
+    for(int i=0; i < 37; i++)
+    {
+       button[i]->setText(QChar::fromLatin1(qwertyLower[i]));
+    }
+
+    return;
+}
 /**
  * @brief myInputMethod::displayNumber
  * 显示字母
@@ -422,7 +438,13 @@ void myInputMethod::displaySpecialChar(void)
  */
 void myInputMethod::buttonC3Function(void)
 {
-    if(buttonC3->text() == QString(".?123"))
+    QString cur = buttonC3->text();
+    if(cur == QString(".?123"))         // ABC → abc
+    {
+        displayLowercase();
+        buttonC3->setText(QString("ABC"));
+    }
+    else if(cur == QString("ABC"))      // abc → .?123
     {
         pinyin->setEnabled(false);
         listUp->setEnabled(false);
@@ -434,14 +456,13 @@ void myInputMethod::buttonC3Function(void)
         listDown->setEnabled(false);
         methodBtn->setEnabled(false);
 
-        buttonC3->setText(QString("ABC"));
-
+        buttonC3->setText(QString("abc"));
         displayNumber();
     }
-    else {
+    else                                // .?123 → ABC（大写）
+    {
         enableInputMethod();
         buttonC3->setText(QString(".?123"));
-
         displayAlphabet();
     }
 

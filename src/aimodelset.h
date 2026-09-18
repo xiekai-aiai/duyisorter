@@ -27,7 +27,9 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QDateTime>
-#include <QCheckBox>
+#include <QPushButton>
+#include <QButtonGroup>
+#include <QLabel>
 #include <QSet>
 #include <QTimer>
 #include "httptool.h"
@@ -44,12 +46,12 @@
 
 // 模型下载保存目录：训练完成后模型文件(.bin/.json)下载到本地的目录，默认 /ftp/model/
 #ifndef LOCAL_MODEL_PATH
-#define LOCAL_MODEL_PATH "/ftp/model/"
+#define LOCAL_MODEL_PATH "/opt/app/userdata/model/"
 #endif
 
 // 本地图片目录：导入图片时的默认打开目录，默认 ./img/
 #ifndef LOCAL_IMG_PATH
-#define LOCAL_IMG_PATH  APP_PATH "img/"
+#define LOCAL_IMG_PATH  "/opt/app/userdata/image/"
 #endif
 
 
@@ -81,12 +83,13 @@ const int RESPONSE_SUCCESS_CODE = 0;  // 假设 0 表示成功
 
 // 训练查询响应数据结构（匹配接口返回字段）
 struct TrainQueryResponse {
-    int code;          // 错误码
-    QString message;       // 错误描述
-    int progress;          // 任务进度（百分比）
-    int number;            // 0:训练中，其他：前面的任务个数
-    QString model_name;         // 模型名称（progress=100 时有效）
-    QString model_dir;          // 模型远程目录（/ftp/xxx/model_dir/时间戳），用于 SFTP 下载
+    QString task_id;        // ⭐ 服务器端任务ID，用于匹配当前训练任务（防止异步响应串台）
+    int code;               // 错误码
+    QString message;        // 错误描述
+    int progress;           // 任务进度（百分比）
+    int number;             // 0:训练中，其他：前面的任务个数
+    QString model_name;     // 模型名称（progress=100 时有效）
+    QString model_dir;      // 模型远程目录（/ftp/xxx/model_dir/时间戳），用于 SFTP 下载
     bool isSuccess() const { return code == RESPONSE_SUCCESS_CODE; }
 };
 
@@ -286,7 +289,7 @@ public:
     void LoadMyAnnotation(const QString& imgPath);
 
     
-    void prepareTrain();
+    bool prepareTrain();   // 返回 false 表示类别校验不通过，弹了告警
     
    // 辅助函数：classId ↔ AnnotationType（枚举值直接等于 classId）
    int classIdFromAnnotType(AnnotationType type) { return type == AnnotationType::TYPE_NONE ? -1 : static_cast<int>(type); }
@@ -314,7 +317,8 @@ private:
 
     QThread* m_scanThread = nullptr;    // 扫描线程（子线程，不操作 UI）
     ImageScanWorker* m_scanWorker = nullptr;  // 被 moveToThread 的 Worker
-    QStringList m_allImagePaths;    // 所有图片路径
+    QStringList m_allImagePaths;    // 所有图片路径（含 bg_ 和 img_）
+    QStringList m_bgPaths;          // bg_ 开头的背景图片路径（不显示在 imglist，但训练时一并提交）
 
     int m_currentPage = 1;          // 当前页码
     const int m_pageSize = 10;      // 每页显示数量
@@ -322,7 +326,7 @@ private:
 
     int m_currentImg = 1;          // 当前图片张数
     int m_totalImg = 0;           // 总张数
-
+    
     ModelApi* m_modelApi;  // 模型接口实例
     QString m_currentTaskId;  // 当前训练任务 ID
 
@@ -330,11 +334,18 @@ private:
     bool m_trainingBusy = false;       // 训练流程中（防重入）
     QTimer* m_pollTimer = nullptr;     // 训练进度轮询定时器
     int m_pollFailCount = 0;           // 连续查询失败次数
+    int m_tryTimes = 0;                // 当前模型训练尝试次数（每次新训练 +1，用于区分 task_id）
 
     // SFTP（用 libssh2 的 SftpWorker，moveToThread 到子线程）
     SftpWorker* m_sftpWorker = nullptr;   // SFTP Worker 对象（子线程执行）
     QThread*    m_sftpThread = nullptr;   // SFTP 后台线程
     int  m_sftpUploadPhase = 0;           // 0=未开始 1=image完成 2=label完成 3=classes完成
+    int  m_sftpVerifyRetry = 0;           // 当前 phase 的上传验证重试次数（0-3）
+    int  m_sftpVerifyPhase = 0;           // 正在验证的 phase
+    bool m_sftpVerifying = false;         // 是否正在等待 remoteListCompleted 验证
+    QString m_sftpLastUploadMethod;       // 上一次上传方法名（"onUploadLocalDir" 或 "onUploadFiles"）
+    QString m_sftpLastUploadArg1;         // 上一次上传参数1（本地目录/本地文件）
+    QString m_sftpLastUploadArg2;         // 上一次上传参数2（远程目录）
     QString m_sftpLocalImgDir, m_sftpLocalLblDir, m_sftpClassesFile;
     QString m_sftpRemoteImgDir, m_sftpRemoteLblDir, m_sftpRemoteRootDir;
 
@@ -366,9 +377,15 @@ private:
     void onStartTrainResult(const TrainStartResponse& response);
     /** [7] SFTP 上传阶段串联：image → label → classes → startTrain */
     void onSftpUploadCompleted(bool success);
+    /** [7.1] 上传后验证：remoteListCompleted 返回后比较文件数 */
+    void onSftpRemoteListCompleted(const QStringList& remoteFiles);
+    /** ⭐ 统一的训练状态重置：所有错误/成功结束都调用它，确保下次点击"开始训练"时状态干净 */
+    void resetTrainingState();
+    /** ⭐ 彻底清理 SFTP 线程和 worker（阻塞等待退出，确保无悬垂指针） */
+    void cleanupSftpResources();
     /** 轮询定时器触发：每 5 秒打一次 /train/query */
     void onPollTrainProgress();
-
+    
     QVector<AnnotationData> m_annotations;  // 所有标注数据
     AnnotationType m_currentAnnotType;      // 当前标注类型
     bool m_isDrawing;                       // 是否正在绘制
@@ -406,9 +423,11 @@ private:
     bool m_hasBgMean = false;                // 是否已计算过 bg 均值
     int m_bgCount = 0;                       // bg_ 图片数量（导入时校验 >= 2）
 
-    QVector<QCheckBox*> m_classCheckBoxes;  // 动态创建的类别 checkbox（对应 classId 下标）
-    QStringList m_classNames;               // 类别名（checkbox 显示文字）
-    QWidget* m_cbContainer = nullptr;       // checkbox 的 container widget
+    QVector<QPushButton*> m_classButtons;       // 互斥类别按钮（checkable, 对应 classId 下标）
+    QVector<QLabel*>      m_classCountLabels;   // 每个按钮下面的标注计数 label
+    QStringList m_classNames;                   // 类别名（按钮显示文字）
+    QWidget* m_cbContainer = nullptr;           // 类别按钮的 container widget
+    QButtonGroup* m_classBtnGroup = nullptr;    // 互斥按钮组
 
     AnnotaionMode m_anno_mode = AnnotaionMode::MODE_NONE; // 当前标注模式
 
@@ -500,13 +519,15 @@ public slots:
     void onSelectAnnoBtnClicked();  // selectAnnoPushButton
     void onDrawAnnoBtnClicked();    // drawAnnoPushButton
 
-    void onClassCheckBoxClicked();  // 通用类别 checkbox 点击
+    void onClassButtonClicked();   // 通用类别按钮点击（互斥 QPushButton）
+    void updateClassAnnotCounts(); // 刷新每个类别按钮下的标注计数（当前图片）
     void onClearAnnotBtnClicked();  // 清除所有标注
     void onDeleteAnnotBtnClicked(); // 删除选中标注
     void onBackLastAnnoBtnClicked(); // 退回上一步标注
 
     void addTrainListPushButtonPressed();
     void delTrainListPushButtonPressed();
+    void delTrainListAllPushButtonPressed();
     void addAllLabeledTrainListPushButtonPressed(); // 一键添加所有有标注文件的图片到训练集
     void refreshThumbnails();   // 刷新当前页缩略图绿框（训练集变更后调用）
     void updateImgLabelBorder(); // 根据当前图片是否在训练集，设置 imgLabel 的 QSS 绿框
@@ -524,6 +545,8 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     // 重写鼠标松开事件（完成标注）
     void mouseReleaseEvent(QMouseEvent *event) override;
+    // 事件过滤器：转发 imgLabel 的鼠标移动事件到自身 mouseMoveEvent（悬停提示前景像素数）
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 
 signals:

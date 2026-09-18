@@ -204,6 +204,9 @@ int main(int argc, char *argv[])
 
     myApplication a(argc, argv);
 
+    // 初始化日志系统（必须在任何 myLog->xxx 调用之前）
+    myLog = new MyLogger();
+    
     // 注册 HarmonyOS Sans 字体（aimodelset.ui 和全局 getFont() 都依赖它）
     // 不注册会导致 Qt 回退默认字体 → 控件 label 尺寸变大 → UI 整体下移
     static const char* kFonts[] = {
