@@ -28,7 +28,6 @@
 #include "common/myinputpanel.h"
 #include "common/mycustomcheckbox.h"
 #include "common/myinputmethod.h"
-#include "mylogger.h"
 #include "rgb/factoryset.h"
 #include "statusinfopage.h"
 #include "manageschemepage.h"

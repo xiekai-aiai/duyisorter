@@ -6,6 +6,7 @@ Makefile*
 *.user
 .qmake.stash
 build/
+build_x86/
 rel/
 app/
 

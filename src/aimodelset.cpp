@@ -47,6 +47,7 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QCheckBox>
 #include <QLabel>
 #include "common/myinputmethod.h"
+#include "common/myinputpanel.h"
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QDialogButtonBox>
@@ -264,7 +265,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(ui->m_areaThresholdlineEdit, &QLineEdit::textChanged, this, onThresholdChanged);
     connect(ui->m_colorDiffThresholdlineEdit, &QLineEdit::textChanged, this, onThresholdChanged);
 
-    // ⭐ 板卡上点击阈值输入框弹软键盘（只允许数字）
+    // ⭐ 板卡上点击阈值输入框弹纯数字面板（myInputPanel = 项目内专用数字面板）
     {
         struct KbFilter : QObject {
             QString t;
@@ -274,13 +275,18 @@ AiModelSet::AiModelSet(QWidget *parent) :
                 if (e->type() == QEvent::MouseButtonPress) {
                     QLineEdit *le = qobject_cast<QLineEdit*>(o);
                     if (le) {
-                        myInputMethod kb(t, le->text());
-                        if (kb.exec() == QDialog::Accepted) {
-                            QString txt = kb.getText();
-                            if (onlyDigits) {
-                                txt.remove(QRegularExpression("[^0-9]"));
+                        if (onlyDigits) {
+                            // 与 mainwidget 里 operation level 密码同模式：栈上构造、不传 parent、intType=纯数字不遮罩
+                            myInputPanel kb(intType, 1, 9999, le->text().toInt());
+                            kb.setTitle(t);
+                            if (kb.exec() == QDialog::Accepted) {
+                                le->setText(QString::number((int)kb.getValue()));
                             }
-                            le->setText(txt);
+                        } else {
+                            myInputMethod kb(t, le->text());
+                            if (kb.exec() == QDialog::Accepted) {
+                                le->setText(kb.getText());
+                            }
                         }
                         return true;
                     }

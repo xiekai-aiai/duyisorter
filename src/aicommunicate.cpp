@@ -1,5 +1,5 @@
 ﻿#include "aicommunicate.h"
-#include "mylogger.h"
+#include "unilog.h"
 
 
 //AiCommunicate MyUdp;
@@ -309,7 +309,7 @@ int  AiCommunicate::readUdpDatagrams(AI_Data_Protocol_D *data, int nLen)
         QHostAddress peerAddress;
         ret = ai_udpSocket->readDatagram(datagram.data(), datagram.size(), &peerAddress, &peerPort);
 
-        myLog->debug("recv from: %s, port: %d", qPrintable(peerAddress.toString()), peerPort);
+        LOG_DEBUG_FMT("recv from: %s, port: %d", qPrintable(peerAddress.toString()), peerPort);
 
 #if DEBUG_OUTPUT == 1
         printDatagram(datagram);
@@ -320,7 +320,7 @@ int  AiCommunicate::readUdpDatagrams(AI_Data_Protocol_D *data, int nLen)
             continue;
 #endif
         if(ret<8){
-            myLog->debug("datagram length error: %d",ret);
+            LOG_DEBUG_FMT("datagram length error: %d", ret);
             canSend = true; // 允许发送下一个报文
             ret = -1;
             return ret;
@@ -482,7 +482,7 @@ int AiCommunicate::writeDatagram(AI_Data_Protocol_D data, char sAiIntAddr,  QHos
     //! 发送UDP数据包
 #if DEBUG_OUTPUT == 1
     printDatagram(datagram);
-    myLog->debug("send to: %s, port: %d", qPrintable(address.toString()), port);
+    LOG_DEBUG_FMT("send to: %s, port: %d", qPrintable(address.toString()), port);
 #endif
     return ai_udpSocket->writeDatagram(datagram, address, port);
 }
@@ -501,8 +501,8 @@ void AiCommunicate::printDatagram(const QByteArray datagram)
     for (int i = 0; i < datagram.size(); i++) {
         tmp.sprintf("%s %02x", qPrintable(tmp), datagram.at(i)&0xff);
     }
-    myLog->debug("*Data begin*\ndata length: %d\n===%s  ===", datagram.size(), qPrintable(tmp));
-    myLog->debug("*Data end*");
+    LOG_DEBUG_FMT("*Data begin*\ndata length: %d\n===%s  ===", datagram.size(), qPrintable(tmp));
+    LOG_DEBUG("*Data end*");
 }
 
 

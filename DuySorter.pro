@@ -30,26 +30,35 @@ unix {
         # OpenCV + OpenSSL + 其他3rdparty：x86_64 版本（随项目分发）
         INCLUDEPATH += $$PWD/src/3rdparty/opencv/x86/include/opencv4 \
                        $$PWD/src/3rdparty/openssl/x86/include      \
-                       $$PWD/src/3rdparty/x86/include
+                       $$PWD/src/3rdparty/unilog/x86/include       \
+                       $$PWD/src/3rdparty/libssh2/x86/include      \
+                       $$PWD/src/3rdparty/spdlog/x86/include
 
         LIBS += -L$$PWD/src/3rdparty/opencv/x86/lib  \
                 -L$$PWD/src/3rdparty/openssl/x86/lib \
-                -L$$PWD/src/3rdparty/x86/lib  \
-                -L$$PWD/src/3rdparty/x86/lib  \
+                -L$$PWD/src/3rdparty/unilog/x86/lib  \
+                -L$$PWD/src/3rdparty/libssh2/x86/lib \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
+
+        # 把 3rdparty 绝对路径烘焙进 RUNPATH，VM 调试时直接可运行
+        QMAKE_LFLAGS += -Wl,-rpath,$$PWD/src/3rdparty/opencv/x86/lib \
+                        -Wl,-rpath,$$PWD/src/3rdparty/openssl/x86/lib \
+                        -Wl,-rpath,$$PWD/src/3rdparty/unilog/x86/lib  \
+                        -Wl,-rpath,$$PWD/src/3rdparty/libssh2/x86/lib
     } else {
         message("qmake: target arch = aarch64 (rk3566 production)")
         # OpenCV 4.5.5（随项目分发）：rk3566 aarch64 生产
         INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4 \
                        $$PWD/src/3rdparty/openssl/arm/include        \
-                       $$PWD/src/3rdparty/arm/include         \
-                       $$PWD/src/3rdparty/arm/include
+                       $$PWD/src/3rdparty/unilog/arm/include         \
+                       $$PWD/src/3rdparty/libssh2/arm/include        \
+                       $$PWD/src/3rdparty/spdlog/arm/include
 
         LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib  \
                 -L$$PWD/src/3rdparty/openssl/arm/lib \
-                -L$$PWD/src/3rdparty/arm/lib  \
-                -L$$PWD/src/3rdparty/arm/lib  \
+                -L$$PWD/src/3rdparty/unilog/arm/lib  \
+                -L$$PWD/src/3rdparty/libssh2/arm/lib \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
     }
@@ -176,4 +185,3 @@ target.path=/opt/app
 
 FORMS += \
     aimodelset.ui 
-include($$PWD/src/3rdparty/log4qt/log4qt.pri)

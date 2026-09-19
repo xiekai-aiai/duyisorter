@@ -212,9 +212,6 @@ int main(int argc, char *argv[])
 
     myApplication a(argc, argv);
 
-    // 初始化日志系统（必须在任何 myLog->xxx 调用之前）
-    myLog = new MyLogger();
-
     // 初始化日志库
     LOG_INIT(CNF_LOG_CFG);
 
