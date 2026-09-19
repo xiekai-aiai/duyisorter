@@ -50,6 +50,7 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QDialogButtonBox>
+#include <QComboBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -542,6 +543,8 @@ AiModelSet::AiModelSet(QWidget *parent) :
 // [0] 创建远程目录 → moveToThread → worker.connect() → mkdir_p → 依次上传 → startTrain
 void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
 {
+    qInfo() << "[SFTP] ⭐ onCreateDirTrainResult：success=" << response.isSuccess()
+            << "msg=" << response.message << "code=" << response.code;
     if (!response.isSuccess()) {
         showTip(QString("创建远程目录失败：%1（错误码：%2）").arg(response.message).arg(response.code), true);
         resetTrainingState();
@@ -560,9 +563,11 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
     m_sftpUploadPhase = 0;
 
     // 1. 清理旧 SFTP 线程（worker 保留，在主线程重新 connect）
+    qInfo() << "[SFTP] ⭐ step1: cleanupSftpResources()";
     cleanupSftpResources();
     
     // 2. 主线程 connect（服务器端会在 startTrain 时自动准备好 /ftp/{taskId}/raw/ 目录结构）
+    qInfo() << "[SFTP] ⭐ step2: m_sftpWorker->connect()";
     if (!m_sftpWorker->connect()) {
         showTip(QString("SFTP connect 失败：%1:%2").arg(m_trainServerIp).arg(m_trainSftpPort), true);
         resetTrainingState();
@@ -573,8 +578,11 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
     // 3. moveToThread + 启动上传（session 已建立，moveToThread 后继续复用）
     m_sftpThread = new QThread(this);
     m_sftpWorker->moveToThread(m_sftpThread);
+    qInfo() << "[SFTP] ⭐ step3: moveToThread done, starting thread";
 
     connect(m_sftpThread, &QThread::started, this, [this]() {
+        qInfo() << "[SFTP] ⭐ thread started → invokeMethod onUploadLocalDir("
+                << m_sftpLocalImgDir << ")";
         QMetaObject::invokeMethod(m_sftpWorker, "onUploadLocalDir", Qt::QueuedConnection,
                                   Q_ARG(QString, m_sftpLocalImgDir),
                                   Q_ARG(QString, m_sftpRemoteImgDir));
@@ -589,6 +597,9 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
 // [0.2] SftpWorker 一批上传完成 → 验证 → 串联下一个（image → label → classes → startTrain）
 void AiModelSet::onSftpUploadCompleted(bool success)
 {
+    qInfo() << "[SFTP] ⭐ onSftpUploadCompleted：phase=" << m_sftpUploadPhase
+            << "success=" << success
+            << "lastMethod=" << m_sftpLastUploadMethod;
     LOG_DEBUG_STM("[SFTP] onSftpUploadCompleted：phase=" << m_sftpUploadPhase << " success=" << success);
     if (!success) {
         showTip("SFTP 上传出现错误，继续验证...", true);
@@ -2280,9 +2291,61 @@ void AiModelSet::onImportImgPushButtonClicked(){
     // 默认打开 LOCAL_IMG_PATH（部分平台会忽略构造参数，这里再显式设置一次）
     dlg.setDirectory(initDir);
 
-    // 在 Choose 旁边新增“删除”按钮：删除当前选中的目录
-    if (QDialogButtonBox *box = dlg.findChild<QDialogButtonBox*>("buttonBox")) {
-        QPushButton *delBtn = box->addButton("删除", QDialogButtonBox::ActionRole);
+    // 缩短 Directory 右边的编辑框 + 顶部 Look in 下拉框
+    if (QLineEdit *fileNameEdit = dlg.findChild<QLineEdit*>("fileNameEdit"))
+        fileNameEdit->setMaximumWidth(350);
+    if (QComboBox *lookCombo = dlg.findChild<QComboBox*>("lookInCombo"))
+        lookCombo->setMaximumWidth(280);
+
+    // 在 buttonBox 里加 Delete 但立刻 hide + 从 buttonBox 脱出来，
+    // 然后手动定位到 Choose(AcceptedRole) 按钮的正左边，
+    // 完全绕过 theme 对 buttonBox 内部布局的竖排行为
+    // ⭐ 调试：探测 QFileDialog 自绘对话框的 buttonBox 结构
+    QDialogButtonBox *box = dlg.findChild<QDialogButtonBox*>("buttonBox");
+    qDebug() << "[DBG] buttonBox=" << box;
+
+    if (!box) {
+        qWarning() << "[DBG] buttonBox not found!";
+    } else {
+        // 找到 AcceptRole 的那个按钮（就是 Choose）
+        QPushButton *chooseBtn = nullptr;
+        for (QAbstractButton *ab : box->buttons()) {
+            QPushButton *btn = qobject_cast<QPushButton*>(ab);
+            if (!btn) continue;
+            qDebug() << "[DBG] box button:" << btn->text()
+                     << "role=" << box->buttonRole(btn);
+            if (box->buttonRole(btn) == QDialogButtonBox::AcceptRole)
+                chooseBtn = btn;
+        }
+
+        QPushButton *delBtn = box->addButton("Delete", QDialogButtonBox::DestructiveRole);
+        qDebug() << "[DBG] delBtn=" << delBtn << "chooseBtn=" << chooseBtn;
+        // 从 buttonBox 脱出来挂到 dlg 顶层，绕过 theme 的竖排布局
+        delBtn->setParent(&dlg);
+
+        QPushButton *chooseRef = chooseBtn;
+        QMetaObject::invokeMethod(&dlg, [delBtn, chooseRef, &dlg]() {
+            if (!chooseRef) { qWarning() << "[DBG] chooseRef null"; return; }
+            delBtn->setFixedSize(chooseRef->size());
+            // ⭐ 关键：chooseRef 的坐标是相对 buttonBox 的，必须 mapTo dlg 才能用于 delBtn
+            const QPoint p = chooseRef->mapTo(&dlg, QPoint(0, 0));
+            delBtn->move(p.x() - delBtn->width() - 6, p.y());
+            delBtn->raise();
+            delBtn->show();
+
+            // ⭐ Delete 是浮在 dlg 顶层的独立控件，不参与 grid 布局，
+            // Directory 编辑框不会自动让位 → 把它的右端收到 Delete 左侧，避免被遮挡
+            if (QLineEdit *edit = dlg.findChild<QLineEdit*>("fileNameEdit")) {
+                const QPoint ep = edit->mapTo(&dlg, QPoint(0, 0));
+                const int w = delBtn->x() - 6 - ep.x();
+                if (w > 60) edit->setMaximumWidth(w);
+            }
+
+            qDebug() << "[DBG] delBtn ->" << delBtn->geometry()
+                     << "choose(mapTo dlg) ->" << p
+                     << "visible=" << delBtn->isVisible();
+        }, Qt::QueuedConnection);
+
         connect(delBtn, &QPushButton::clicked, &dlg, [&dlg]() {
             removeDirInFileDialog(&dlg);
         });

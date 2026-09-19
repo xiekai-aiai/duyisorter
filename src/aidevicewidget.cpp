@@ -343,7 +343,7 @@ void AiDeviceWidget::onDownBtnPressed()
     {
         LOG_ERROR_STM("mkdir downPath:" << downPath.toStdString() << " failed!");
     }
-
+    
     for (int idx = 0; idx < sftpWorkers.size(); idx++)
     {
         QMetaObject::invokeMethod(
