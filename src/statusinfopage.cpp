@@ -16,6 +16,7 @@
 #include "statusinfopage.h"
 #include "src/qdatabase.h"
 #include "unilog.h"
+#include "configmgr.h"
 
 
 StatusInfoPage::StatusInfoPage(QWidget* parent) :
@@ -2844,7 +2845,7 @@ void StatusInfoPage::versionUpdateCameraCF()
     {
         str.sprintf("%s\t%-22s", qPrintable(str), qPrintable(myLan.rear_view));
     }
-    if (struCnfg.aiEnable == 1)
+    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         str.sprintf("%s\t%-20s", qPrintable(str), qPrintable("AI"));
     }
@@ -2953,7 +2954,7 @@ void StatusInfoPage::versionUpdateCameraCF()
             strChuteVerTmp[3] = "";
         }
 
-        if (struCnfg.aiEnable == 1)
+        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
         {
             if (struGsh.aiResult[i] == QString(""))
             {

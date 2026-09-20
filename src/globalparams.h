@@ -22,7 +22,7 @@ class MyGlobalString;
 
 /* x86_64 调试：用编译器自带的 __x86_64__（不依赖 Qt 头文件已定义）；aarch64 板卡用 /opt/app */
 #if defined(__x86_64__)
-#define APP_PATH "/home/mcgs/Desktop/duyisorter/debug_opt"
+#define APP_PATH "/mnt/hgfs/duyisorter/build-DuySorter-x86_64_Qt5_Ubuntu_Qt5_15_2-Debug/app"
 #else
 #define APP_PATH "/opt/app"
 #endif
@@ -1055,12 +1055,6 @@ struct struCnfGlobal
     double bFactor;                  // 实时产量计算系数b
 
     int bAssitCameraEnable;        // 标识当前是否有辅配相机使能
-
-    int aiEnable;                   // ai使能 1： 使能， 0， 不使能，默认为0
-    int imgFetchHeight;
-    int imgInferHeight;
-    int imgPicHeight;
-    int imgVideoHeight;
 
     quint64 nThroughtPut[MAX_UNIT / 2];          // 总产量
 };

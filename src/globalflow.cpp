@@ -10,6 +10,7 @@
 #include "cmdworker.h"
 #include "configmgr.h"
 #include "cmdudpmanager.h"
+#include "sortertypes.h"
 
 struct struCnfEngineer struCnfe, _t_struCnfe;
 struct struCnfGlobal struCnfg, _t_struCnfg;
@@ -4620,23 +4621,25 @@ void GlobalFlow::initAll()
 
 void GlobalFlow::initUdpImagPara()
 {
-    if (struCnfg.aiEnable != 1)
+    AiCfgInfo cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
+
+    if (!cfg_info.enable_ai_)
     {
         LOG_INFO_STM("ai enable is false!");
         return;
     }
 
-    LOG_INFO_STM("collect image h:" << struCnfg.imgFetchHeight << ", infer image h:" << struCnfg.imgInferHeight
-        << ", capture pic h:" << struCnfg.imgPicHeight << ", video h:" << struCnfg.imgVideoHeight
-        << ", ai device num:" << struGsh.aiDeviceNum << ", nUnitLevelTotal:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
+    LOG_INFO_STM("collect image h:" << cfg_info.collect_height_ << ", infer image h:" << cfg_info.infer_height_
+        << ", capture pic h:" << cfg_info.img_view_height_ << ", video h:" << cfg_info.video_view_height_
+        << ", dev num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
 
     // 图像高度
     ImgHeightParam info;
-    info.collect_height_ = struCnfg.imgFetchHeight;
-    info.img_view_height_ = struCnfg.imgPicHeight;
-    info.infer_height_ = struCnfg.imgInferHeight;
-    info.sliding_step_ = 0;
-    info.video_view_height_ = struCnfg.imgVideoHeight;
+    info.collect_height_ = cfg_info.collect_height_;
+    info.img_view_height_ = cfg_info.img_view_height_;
+    info.infer_height_ = cfg_info.infer_height_;
+    info.sliding_step_ = cfg_info.sliding_step_;
+    info.video_view_height_ = cfg_info.video_view_height_;
     QByteArray request = cmdworker::ImgHeightRequest(info);
 
     // 给所有的AI板卡发送开始采集命令
@@ -4668,7 +4671,7 @@ void GlobalFlow::initUdpImagPara()
 
 void GlobalFlow::initPixelImagPara()
 {
-    if (struCnfg.aiEnable != 1)
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         return;
     }
@@ -4706,7 +4709,7 @@ void GlobalFlow::initPixelImagPara()
 
 void GlobalFlow::initEjectorDelayPara()
 {
-    if (struCnfg.aiEnable != 1)
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         return;
     }
@@ -4759,7 +4762,7 @@ void GlobalFlow::initEjectorModePara()
         nArithmeticEnable[i] = struCnfp.nArithmeticEnable[i];
     }
     //ai模式且算法使能
-    if (struCnfg.aiEnable == 1 && nArithmeticEnable[ARITH_PISTACHIO] == 1)
+    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_ && nArithmeticEnable[ARITH_PISTACHIO] == 1)
     {
         args[0] = 3;
     }
@@ -4781,7 +4784,7 @@ void GlobalFlow::initEjectorModePara()
 
 void GlobalFlow::initModelType()
 {
-    if (struCnfg.aiEnable != 1)
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         return;
     }
@@ -4821,7 +4824,7 @@ void GlobalFlow::initModelType()
 
 void GlobalFlow::initModelPara()
 {
-    if (struCnfg.aiEnable != 1)
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         return;
     }
@@ -4924,7 +4927,7 @@ void GlobalFlow::startAiCollect()
 
         if (!ok)
         {
-            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! reqeust body:" << request.toHex(' ').toUpper().toStdString());
             continue;
         }
 
@@ -4932,12 +4935,12 @@ void GlobalFlow::startAiCollect()
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
         {
-            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
-            continue;
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! reqeust body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",collect opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 
 
@@ -4976,7 +4979,7 @@ void GlobalFlow::stopAiCollect()
 
         if (!ok)
         {
-            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! reqeust body:" << request.toHex(' ').toUpper().toStdString());
             continue;
         }
 
@@ -4984,12 +4987,13 @@ void GlobalFlow::stopAiCollect()
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
         {
-            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! reqeust body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
             continue;
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",collect opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
@@ -5013,7 +5017,7 @@ void GlobalFlow::startAiInfer()
 
         if (!ok)
         {
-            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! request body:" << request.toHex(' ').toUpper().toStdString());
             continue;
         }
 
@@ -5021,12 +5025,13 @@ void GlobalFlow::startAiInfer()
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
         {
-            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
             continue;
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ", infer opr send command : " << request.toHex(' ').toUpper().toStdString() << ", response : "
-            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 
     // 给所有相机发送开启推理指令 
@@ -5062,7 +5067,7 @@ void GlobalFlow::stopAiInfer()
 
         if (!ok)
         {
-            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! request body:" << request.toHex(' ').toUpper().toStdString());
             continue;
         }
 
@@ -5070,19 +5075,20 @@ void GlobalFlow::stopAiInfer()
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
         {
-            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            LOG_ERROR_STM("infer opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed !request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
             continue;
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ", infer opr send command : " << request.toHex(' ').toUpper().toStdString() << ", response : "
-            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
 
 void GlobalFlow::startAiWorker(bool onOff)
 {
-    if (struCnfg.aiEnable != 1)
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         LOG_INFO_STM("Ai enable is false!");
         return;
@@ -5116,7 +5122,7 @@ void GlobalFlow::startAiWorker(bool onOff)
 
 int  GlobalFlow::initAiCommunication()
 {
-    if (struCnfg.aiEnable != 1)
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         LOG_INFO_STM("enable ai is false!");
         return 0;

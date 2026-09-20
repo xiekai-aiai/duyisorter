@@ -7,12 +7,15 @@
  */
 #include "factoryset.h"
 #include <QProcess>
+#include "configmgr.h"
+#include "sortertypes.h"
+#include "unilog.h"
 
-factorySet::factorySet(QWidget *parent)
+factorySet::factorySet(QWidget* parent)
     : QMainWindow(parent)
 {
-    setGeometry(0, 0, LCD_WIDTH-20, LCD_HEIGHT-60);
-    setFixedSize(LCD_WIDTH-20, LCD_HEIGHT-60);
+    setGeometry(0, 0, LCD_WIDTH - 20, LCD_HEIGHT - 60);
+    setFixedSize(LCD_WIDTH - 20, LCD_HEIGHT - 60);
 
     config = g_Config::getInstance();
     stackedWidget = new QStackedWidget(this);
@@ -22,17 +25,17 @@ factorySet::factorySet(QWidget *parent)
     createFactorySetPage();
 
     // 彩色相机设置界面
-    setColorCamera *setColorCameraWidget = new setColorCamera;
+    setColorCamera* setColorCameraWidget = new setColorCamera;
     stackedWidget->addWidget(setColorCameraWidget);
 
     // 设置语言界面
     createSetLanguagePage();
 
     // 设置通用机型界面
-    setMachineMode *setMachineModeWidget = NULL;
+    setMachineMode* setMachineModeWidget = NULL;
     setMachineModeWidget = new setMachineMode;
     stackedWidget->addWidget(setMachineModeWidget);
-    connect(setMachineModeWidget,SIGNAL(resetCamera(int)),setColorCameraWidget,SLOT(onDivChannelListResetBtnClicked(int)));
+    connect(setMachineModeWidget, SIGNAL(resetCamera(int)), setColorCameraWidget, SLOT(onDivChannelListResetBtnClicked(int)));
 
     // 设置老化测试界面
     createAgeingTestPage();
@@ -76,6 +79,7 @@ factorySet::factorySet(QWidget *parent)
     m_tickModeWidget = new tickModeWidget;
     stackedWidget->addWidget(m_tickModeWidget);
 
+    //! 设置AI高度参数设置界面
     setAiParams();
 
     connect(setColorCameraWidget, SIGNAL(backToMainWindow()), this, SLOT(backToFactorySet()));
@@ -88,85 +92,103 @@ factorySet::factorySet(QWidget *parent)
     connect(upgradeFpgaWidget, SIGNAL(sBackToFactorySetPage()), this, SLOT(backToFactorySet()));
     connect(this, SIGNAL(sonIntGoToFirstSig()), setColorCameraWidget, SLOT(gotoFirstPageSlt()));
     connect(stackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onStackedWidgetIndexChangedSlt(int)));
-    connect(pageLampCtrl,SIGNAL(backToHomePageSig()),this,SLOT(backToFactorySet()));
+    connect(pageLampCtrl, SIGNAL(backToHomePageSig()), this, SLOT(backToFactorySet()));
     connect(m_feederCtrlWidget, SIGNAL(backToHomePageSig()), this, SLOT(backToFactorySet()));
     connect(m_autoSigListWidget, SIGNAL(sBackToFactorySetPage()), this, SLOT(backToFactorySet()));
-    connect(m_througPutWidget,SIGNAL(backToHomePageSig()),this,SLOT(backToFactorySet()));
-    connect(m_tickModeWidget,SIGNAL(backToHomePageSig()),this,SLOT(backToFactorySet()));
+    connect(m_througPutWidget, SIGNAL(backToHomePageSig()), this, SLOT(backToFactorySet()));
+    connect(m_tickModeWidget, SIGNAL(backToHomePageSig()), this, SLOT(backToFactorySet()));
 }
 
 factorySet::~factorySet()
 {
 }
 
-void factorySet::setAiParams(){
+void factorySet::setAiParams()
+{
     setAiWidget = new QWidget;
     setAiWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
     stackedWidget->addWidget(setAiWidget);
 
-    imgFetchHeight = struCnfg.imgFetchHeight;
-    imgInferHeight = struCnfg.imgInferHeight;
-    imgPicHeight = struCnfg.imgPicHeight;
-    imgVideoHeight = struCnfg.imgVideoHeight;
-    aiEnbaleChx = new myCustomCheckBox(myLan.enable+"AI", false);
+    AiCfgInfo ai_cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
+
+    aiEnbaleChx = new myCustomCheckBox(myLan.enable + "AI", ai_cfg_info.enable_ai_);
     setAiSureBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);
     setAiSureBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     setAiBackbtn = new myPushButton(myLan.back, myIcon.Action_Back);
     setAiBackbtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
+    // 采集高度配置
     imgFetchHeightLbl = new myLabel(myLan.acquisition_height, setAiWidget);
-    imgFetchHeightEdit = new myLineEdit(QString("%1").arg(imgFetchHeight), setAiWidget);
-
+    imgFetchHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.collect_height_), setAiWidget);
     imgFetchHeightEdit->setReadOnly(true);
-    imgFetchHeightEdit->setFixedSize(BTN_WIDTH+20,BTN_HEIGHT);
+    imgFetchHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
+    // 推理高度配置
     imgInferHeightLbl = new myLabel(myLan.reasoning_height, setAiWidget);
-    imgInferHeightEdit = new myLineEdit(QString("%1").arg(imgInferHeight), setAiWidget);
-
+    imgInferHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.infer_height_), setAiWidget);
     imgInferHeightEdit->setReadOnly(true);
-    imgInferHeightEdit->setFixedSize(BTN_WIDTH+20,BTN_HEIGHT);
+    imgInferHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
+    // 图像预览高度配置 xktodo 国际化
     imgPicHeightLbl = new myLabel("图片高度", setAiWidget);
-    imgPicHeightEdit = new myLineEdit(QString("%1").arg(imgPicHeight), setAiWidget);
-
+    imgPicHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.img_view_height_), setAiWidget);
     imgPicHeightEdit->setReadOnly(true);
-    imgPicHeightEdit->setFixedSize(BTN_WIDTH+20,BTN_HEIGHT);
+    imgPicHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
+    // 视频预览高度配置 xktodo国际化
     imgVideoHeightLbl = new myLabel("视频高度", setAiWidget);
-    imgVideoHeightEdit = new myLineEdit(QString("%1").arg(imgVideoHeight), setAiWidget);
-
+    imgVideoHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.video_view_height_), setAiWidget);
     imgVideoHeightEdit->setReadOnly(true);
-    imgVideoHeightEdit->setFixedSize(BTN_WIDTH+20,BTN_HEIGHT);
+    imgVideoHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
-    QVBoxLayout *upLay = new QVBoxLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(setAiWidget);
+    // 高精度复选高度配置 xktodo国际化
+    imgSliderHeightLbl = new myLabel("复选高度", setAiWidget);
+    imgSliderHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.sliding_step_), setAiWidget);
+    imgSliderHeightEdit->setReadOnly(true);
+    imgSliderHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
-    QHBoxLayout * imgFetchHeightHLayout = new QHBoxLayout;
+    QVBoxLayout* upLay = new QVBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(setAiWidget);
+
+    // 图像采集高度布局
+    QHBoxLayout* imgFetchHeightHLayout = new QHBoxLayout;
     imgFetchHeightHLayout->addWidget(imgFetchHeightLbl);
     imgFetchHeightHLayout->addWidget(imgFetchHeightEdit);
     imgFetchHeightHLayout->addSpacing(300);
 
-    QHBoxLayout * imgInferHeightHLayout = new QHBoxLayout;
+    // 图像推理高度布局
+    QHBoxLayout* imgInferHeightHLayout = new QHBoxLayout;
     imgInferHeightHLayout->addWidget(imgInferHeightLbl);
     imgInferHeightHLayout->addWidget(imgInferHeightEdit);
     imgInferHeightHLayout->addSpacing(300);
 
-    QHBoxLayout * imgPicHeightHLayout = new QHBoxLayout;
+    // 图像预览高度布局
+    QHBoxLayout* imgPicHeightHLayout = new QHBoxLayout;
     imgPicHeightHLayout->addWidget(imgPicHeightLbl);
     imgPicHeightHLayout->addWidget(imgPicHeightEdit);
     imgPicHeightHLayout->addSpacing(300);
 
-    QHBoxLayout * imgVideoHeightHLayout = new QHBoxLayout;
+    // 图像视频高度布局
+    QHBoxLayout* imgVideoHeightHLayout = new QHBoxLayout;
     imgVideoHeightHLayout->addWidget(imgVideoHeightLbl);
     imgVideoHeightHLayout->addWidget(imgVideoHeightEdit);
     imgVideoHeightHLayout->addSpacing(300);
-    upLay->setContentsMargins(80,10,20,10);
-    upLay->addWidget(aiEnbaleChx,Qt::AlignCenter);
+
+    // 高精度复选高度布局
+    QHBoxLayout* imgSliderHeightHLayout = new QHBoxLayout;
+    imgSliderHeightHLayout->addWidget(imgSliderHeightLbl);
+    imgSliderHeightHLayout->addWidget(imgSliderHeightEdit);
+    imgSliderHeightHLayout->addSpacing(300);
+
+
+    upLay->setContentsMargins(80, 10, 20, 10);
+    upLay->addWidget(aiEnbaleChx, Qt::AlignCenter);
     upLay->addLayout(imgFetchHeightHLayout);
     upLay->addLayout(imgInferHeightHLayout);
     upLay->addLayout(imgPicHeightHLayout);
     upLay->addLayout(imgVideoHeightHLayout);
+    upLay->addLayout(imgSliderHeightHLayout);
 
 
     downLay->addWidget(setAiSureBtn, Qt::AlignLeft);
@@ -182,17 +204,22 @@ void factorySet::setAiParams(){
     connect(imgInferHeightEdit, SIGNAL(pressed()), this, SLOT(onImgInferHeightEditPressedSlt()));
     connect(imgPicHeightEdit, SIGNAL(pressed()), this, SLOT(onImgPicHeightEditPressedSlt()));
     connect(imgVideoHeightEdit, SIGNAL(pressed()), this, SLOT(onImgVideoHeightEditPressedSlt()));
+    connect(imgSliderHeightEdit, SIGNAL(pressed()), this, SLOT(onImgSliderHeightEditPressedSlt()));
     connect(setAiSureBtn, SIGNAL(pressed()), this, SLOT(onSetAiSureBtnClicked()));
     connect(setAiBackbtn, SIGNAL(pressed()), this, SLOT(onSetAiBackBtnClicked()));
 }
 
 void factorySet::onSetAiSureBtnClicked()
 {
-    struCnfg.imgFetchHeight = imgFetchHeight;
-    struCnfg.imgInferHeight = imgInferHeight;
-    struCnfg.imgPicHeight = imgPicHeight;
-    struCnfg.imgVideoHeight = imgVideoHeight;
-    struCnfg.aiEnable = aiEnable;
+    AiCfgInfo cfg_info;
+    cfg_info.enable_ai_ = aiEnbaleChx->getChecked();
+    cfg_info.collect_height_ = imgFetchHeightEdit->text().toShort();
+    cfg_info.infer_height_ = imgInferHeightEdit->text().toShort();
+    cfg_info.img_view_height_ = imgPicHeightEdit->text().toShort();
+    cfg_info.video_view_height_ = imgVideoHeightEdit->text().toShort();
+    cfg_info.sliding_step_ = imgSliderHeightEdit->text().toShort();
+    ConfigMgr::Instance().SetAiCfgInfo(cfg_info);
+
     myFlow.initUdpImagPara();
 }
 
@@ -201,49 +228,68 @@ void factorySet::onSetAiBackBtnClicked()
     stackedWidget->setCurrentIndex(FACTORY_SET_PAGE);
 }
 
-void factorySet::onAiEnbaleChxBtnClicked(){
-    aiEnable = !aiEnable;
-    aiEnbaleChx->setChecked(aiEnable);
-    struCnfg.aiEnable = aiEnable;
+void factorySet::onAiEnbaleChxBtnClicked()
+{
+    LOG_INFO_STM("ai enable:" << aiEnbaleChx->getChecked());
 }
 
-void factorySet::onImgFetchHeightEditPressedSlt(){
-    myInputPanel inputDlg(intType, 0, 65535, imgFetchHeight);
+void factorySet::onImgFetchHeightEditPressedSlt()
+{
+    myInputPanel inputDlg(intType, 0, 65535, ConfigMgr::Instance().GetAiCfgInfo().collect_height_);
     int ret = inputDlg.exec();
-    if (ret == QDialog::Accepted) {
-        imgFetchHeight = inputDlg.getValue();
-        QString str = QString("%1").arg(imgFetchHeight);
+    if (ret == QDialog::Accepted)
+    {
+        quint16 value = inputDlg.getValue();
+        QString str = QString("%1").arg(value);
         imgFetchHeightEdit->setText(str);
     }
 }
 
-void factorySet::onImgInferHeightEditPressedSlt(){
-    myInputPanel inputDlg(intType, 0, 65535, imgInferHeight);
+void factorySet::onImgInferHeightEditPressedSlt()
+{
+    myInputPanel inputDlg(intType, 0, 65535, ConfigMgr::Instance().GetAiCfgInfo().infer_height_);
     int ret = inputDlg.exec();
-    if (ret == QDialog::Accepted) {
-        imgInferHeight = inputDlg.getValue();
-        QString str = QString("%1").arg(imgInferHeight);
+    if (ret == QDialog::Accepted)
+    {
+        quint16 value = inputDlg.getValue();
+        QString str = QString("%1").arg(value);
         imgInferHeightEdit->setText(str);
     }
 }
 
-void factorySet::onImgPicHeightEditPressedSlt(){
-    myInputPanel inputDlg(intType, 0, 65535, imgPicHeight);
+void factorySet::onImgPicHeightEditPressedSlt()
+{
+    myInputPanel inputDlg(intType, 0, 65535, ConfigMgr::Instance().GetAiCfgInfo().img_view_height_);
     int ret = inputDlg.exec();
-    if (ret == QDialog::Accepted) {
-        imgPicHeight = inputDlg.getValue();
-        QString str = QString("%1").arg(imgPicHeight);
+    if (ret == QDialog::Accepted)
+    {
+        quint16 value = inputDlg.getValue();
+        QString str = QString("%1").arg(value);
         imgPicHeightEdit->setText(str);
     }
 }
 
-void factorySet::onImgVideoHeightEditPressedSlt(){
-    myInputPanel inputDlg(intType, 0, 65535, imgVideoHeight);
+void factorySet::onImgVideoHeightEditPressedSlt()
+{
+    myInputPanel inputDlg(intType, 0, 65535, ConfigMgr::Instance().GetAiCfgInfo().video_view_height_);
     int ret = inputDlg.exec();
-    if (ret == QDialog::Accepted) {
-        imgVideoHeight = inputDlg.getValue();
-        QString str = QString("%1").arg(imgVideoHeight);
+    if (ret == QDialog::Accepted)
+    {
+        quint16 value = inputDlg.getValue();
+        QString str = QString("%1").arg(value);
         imgVideoHeightEdit->setText(str);
+    }
+}
+
+void factorySet::onImgSliderHeightEditPressedSlt()
+{
+    myInputPanel inputDlg(intType, 0, 65535, ConfigMgr::Instance().GetAiCfgInfo().sliding_step_);
+    int ret = inputDlg.exec();
+    if (ret == QDialog::Accepted)
+    {
+        quint16 value = inputDlg.getValue();
+        QString str = QString("%1").arg(value);
+        imgSliderHeightEdit->setText(str);
     }
 }
 
@@ -251,8 +297,8 @@ void factorySet::onImgVideoHeightEditPressedSlt(){
 void factorySet::createFactorySetPage()
 {
     factorySetWidget = new QWidget(stackedWidget);
-    factorySetWidget->setGeometry(0,0,stackedWidget->width(),stackedWidget->height());
-    factorySetWidget->setFixedSize(LCD_WIDTH-20,  LCD_HEIGHT-80);
+    factorySetWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
+    factorySetWidget->setFixedSize(LCD_WIDTH - 20, LCD_HEIGHT - 80);
 
 
     upLay = new QGridLayout;
@@ -260,12 +306,12 @@ void factorySet::createFactorySetPage()
     mainLay = new QVBoxLayout(factorySetWidget);
 
     setColorCameraBtn = new myPushButton(QString(myLan.camera_new), QIcon(), true, true);
-//    setColorCameraBtn = new myPushButton("相机参数", QIcon(), true, true);
+    //    setColorCameraBtn = new myPushButton("相机参数", QIcon(), true, true);
 
     setLanguageBtn = new myPushButton(myLan.language, QIcon(), true, true);
-//    setLanguageBtn = new myPushButton("语言设定", QIcon(), true, true);
+    //    setLanguageBtn = new myPushButton("语言设定", QIcon(), true, true);
 
-    setAiBtn = new myPushButton("Ai "+myLan.set, QIcon(), true, true);
+    setAiBtn = new myPushButton("Ai " + myLan.set, QIcon(), true, true);
 
     clearRunningTimeBtn = new myPushButton(myLan.clear_running_time, QIcon(), true, true);
     ageingTestBtn = new myPushButton(QString(myLan.old_test), QIcon(), true, true);
@@ -274,10 +320,10 @@ void factorySet::createFactorySetPage()
 
     setMachineModeBtn = new myPushButton(QString(myLan.set_machine), QIcon(), true, true);
 
-//    setMachineModeBtn = new myPushButton("机型设定", QIcon(), true, true);
+    //    setMachineModeBtn = new myPushButton("机型设定", QIcon(), true, true);
 
     calibrationTSBtn = new myPushButton(myLan.ts_calibrate, QIcon(), true, true);
-//    calibrationTSBtn = new myPushButton("触摸屏校正", QIcon(), true, true);
+    //    calibrationTSBtn = new myPushButton("触摸屏校正", QIcon(), true, true);
 
 
     outPutTestBtn = new myPushButton(myLan.throughput_test, QIcon(), true, true);
@@ -286,23 +332,23 @@ void factorySet::createFactorySetPage()
 
     setFeederVoltageBtn = new myPushButton(QString(myLan.set_vib_voltage), QIcon(), true, true);
 
-//    setFeederVoltageBtn = new myPushButton("振动器电压", QIcon(), true, true);
+    //    setFeederVoltageBtn = new myPushButton("振动器电压", QIcon(), true, true);
 
     factorySetBackBtn = new myPushButton(myLan.back, QIcon(), true, true);
-    lampCtrlBtn = new myPushButton(QString(myLan.setLight),QIcon(), true, true);
+    lampCtrlBtn = new myPushButton(QString(myLan.setLight), QIcon(), true, true);
     degaussTimeBtn = new myPushButton(QString(myLan.tdemag), QIcon(), true, true);
     m_feederCtrlBtn = new myPushButton(myLan.feeder_remote_control, QIcon(), true, true);
     m_througPutBtn = new myPushButton(QString(myLan.test_output), QIcon(), true, true);
-    m_tickModeBtn = new myPushButton(myLan.tick_mode,QIcon(),true,true);
+    m_tickModeBtn = new myPushButton(myLan.tick_mode, QIcon(), true, true);
 
-    m_setNetWorkBtn = new myPushButton(myLan.network,QIcon(),true,true);
-    m_sysHelpBtn = new myPushButton(myLan.help,QIcon(),true,true);
-    m_sysInfoBtn = new myPushButton(myLan.device,QIcon(),true,true);
+    m_setNetWorkBtn = new myPushButton(myLan.network, QIcon(), true, true);
+    m_sysHelpBtn = new myPushButton(myLan.help, QIcon(), true, true);
+    m_sysInfoBtn = new myPushButton(myLan.device, QIcon(), true, true);
 
     setAiBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
     //设备加密
-    m_encryptBtn = new myPushButton(myLan.encrypt,QIcon(), true,true);
+    m_encryptBtn = new myPushButton(myLan.encrypt, QIcon(), true, true);
     setColorCameraBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     setLanguageBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     clearRunningTimeBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -358,106 +404,109 @@ void factorySet::createFactorySetPage()
     connect(lampCtrlBtn, SIGNAL(pressed()), this, SLOT(onLampCtrlBtnClicked()));
     connect(degaussTimeBtn, SIGNAL(pressed()), this, SLOT(onDegaussTimeBtnClicked()));
     connect(m_feederCtrlBtn, SIGNAL(pressed()), this, SLOT(onFeederCtrlBtnPressed()));
-    connect(m_througPutBtn,SIGNAL(pressed()),this,SLOT(onThroughPutBtnPressedSlt()));      //吞吐量按钮
-    connect(m_tickModeBtn,SIGNAL(pressed()),this,SLOT(onTickModeBtnPressedSlt()));
-    connect(setAiBtn,SIGNAL(pressed()),this,SLOT(onAiSetBtnPressedSlt()));
+    connect(m_througPutBtn, SIGNAL(pressed()), this, SLOT(onThroughPutBtnPressedSlt()));      //吞吐量按钮
+    connect(m_tickModeBtn, SIGNAL(pressed()), this, SLOT(onTickModeBtnPressedSlt()));
+    connect(setAiBtn, SIGNAL(pressed()), this, SLOT(onAiSetBtnPressedSlt()));
 
-    connect(m_encryptBtn,SIGNAL(pressed()),this,SLOT(onEncryptBtnBtnClickedSlt()));
+    connect(m_encryptBtn, SIGNAL(pressed()), this, SLOT(onEncryptBtnBtnClickedSlt()));
 
 }
 
 void factorySet::factoryUpdateSlt()
 {
-    switch(struCnfe.nMachine){
+    switch (struCnfe.nMachine)
+    {
     case MACHINE_CF:
+    {
+        //                qDebug()<<"AuthenticationLevel"<<struGsh.nAuthenticationLevel<<endl;
+        upLay->addWidget(setColorCameraBtn, 0, 0);
+        upLay->addWidget(setMachineModeBtn, 0, 1);
+        upLay->addWidget(setLanguageBtn, 0, 2);
+        upLay->addWidget(calibrationTSBtn, 0, 3);
+        upLay->addWidget(degaussTimeBtn, 1, 0);
+        upLay->addWidget(setFPGAStartModeBtn, 1, 1);
+        upLay->addWidget(m_througPutBtn, 1, 2);
+        upLay->addWidget(ageingTestBtn, 1, 3);
+        upLay->addWidget(setBacklightPasswordBtn, 2, 1);
+        upLay->addWidget(setFeederVoltageBtn, 2, 2);
+        //                  upLay->addWidget(lampCtrlBtn, 2, 3);
+        upLay->addWidget(setAiBtn, 2, 3);
+
+        upLay->addWidget(updateARMBtn, 3, 0);
+        upLay->addWidget(updateFPGABtn, 3, 1);
+        upLay->addWidget(m_encryptBtn, 3, 2);
+        upLay->addWidget(m_sysHelpBtn, 3, 3);
+
+        upLay->addWidget(m_setNetWorkBtn, 4, 0);
+        upLay->addWidget(m_sysInfoBtn, 4, 1);
+
+        if (struGsh.nAuthenticationLevel == 1)
         {
-//                qDebug()<<"AuthenticationLevel"<<struGsh.nAuthenticationLevel<<endl;
-                upLay->addWidget(setColorCameraBtn, 0, 0);
-                upLay->addWidget(setMachineModeBtn, 0, 1);
-                upLay->addWidget(setLanguageBtn, 0, 2);
-                upLay->addWidget(calibrationTSBtn, 0, 3);
-                upLay->addWidget(degaussTimeBtn, 1, 0);
-                upLay->addWidget(setFPGAStartModeBtn, 1, 1);
-                upLay->addWidget(m_througPutBtn, 1, 2);
-                upLay->addWidget(ageingTestBtn, 1, 3);
-                upLay->addWidget(setBacklightPasswordBtn, 2, 1);
-                upLay->addWidget(setFeederVoltageBtn, 2, 2);
-//                  upLay->addWidget(lampCtrlBtn, 2, 3);
-                upLay->addWidget(setAiBtn, 2, 3);
+            setColorCameraBtn->show();
+            setMachineModeBtn->show();
+            setLanguageBtn->show();
+            m_througPutBtn->show();
+            ageingTestBtn->show();
+            calibrationTSBtn->show();
+            setBacklightPasswordBtn->show();
+            setFeederVoltageBtn->show();
+            degaussTimeBtn->show();
+            lampCtrlBtn->show();
+            setFPGAStartModeBtn->show();
+            setAiBtn->show();
 
-                upLay->addWidget(updateARMBtn, 3, 0);
-                upLay->addWidget(updateFPGABtn, 3, 1);
-                upLay->addWidget(m_encryptBtn, 3, 2);
-                upLay->addWidget(m_sysHelpBtn, 3, 3);
-
-                upLay->addWidget(m_setNetWorkBtn, 4, 0);
-                upLay->addWidget(m_sysInfoBtn, 4, 1);
-
-                if(struGsh.nAuthenticationLevel == 1){
-                   setColorCameraBtn->show();
-                   setMachineModeBtn->show();
-                   setLanguageBtn->show();
-                   m_througPutBtn->show();
-                   ageingTestBtn->show();
-                   calibrationTSBtn->show();
-                   setBacklightPasswordBtn->show();
-                   setFeederVoltageBtn->show();
-                   degaussTimeBtn->show();
-                   lampCtrlBtn->show();
-                   setFPGAStartModeBtn->show();
-                   setAiBtn->show();
-
-                   updateARMBtn->hide();
-                   updateFPGABtn->hide();
-                   m_setNetWorkBtn->hide();
-                   m_sysHelpBtn->hide();
-                   m_sysInfoBtn->hide();
-                   m_encryptBtn->hide();
-                }
-                if(struGsh.nAuthenticationLevel == 2){
-
-                    setColorCameraBtn->hide();
-                    setMachineModeBtn->hide();
-                    setLanguageBtn->hide();
-                    m_througPutBtn->hide();
-                    ageingTestBtn->hide();
-                    calibrationTSBtn->hide();
-                    setBacklightPasswordBtn->hide();
-                    setFeederVoltageBtn->hide();
-                    degaussTimeBtn->hide();
-                    lampCtrlBtn->hide();
-                    setFPGAStartModeBtn->hide();
-                    setAiBtn->hide();
-
-                    updateARMBtn->show();
-                    updateFPGABtn->show();
-                    m_setNetWorkBtn->show();
-                    m_sysHelpBtn->show();
-                    m_sysInfoBtn->show();
-                    m_encryptBtn->show();
-                }
-
-                lampCtrlBtn->hide();
-                m_setNetWorkBtn->hide();
-                m_sysInfoBtn->hide();
-//                m_encryptBtn->hide();
-
-//                upLay->addWidget(setMachineModeBtn, 0, 0);
-//                upLay->addWidget(setFPGAStartModeBtn, 0, 1);
-//                upLay->addWidget(setColorCameraBtn, 1, 0);
-//                upLay->addWidget(setLanguageBtn, 1, 1);
-//                upLay->addWidget(setFeederVoltageBtn, 2, 0);
-//                upLay->addWidget(degaussTimeBtn, 2, 1);
-//                upLay->addWidget(m_througPutBtn, 3, 0);
-//                upLay->addWidget(ageingTestBtn, 3, 1);
-//                upLay->addWidget(updateARMBtn, 4, 0);
-//                upLay->addWidget(updateFPGABtn, 4, 1);
-//                upLay->addWidget(calibrationTSBtn, 5, 0);
-//                upLay->addWidget(setBacklightPasswordBtn, 5, 1);
-//                upLay->addWidget(m_encryptBtn, 6, 0);
-
+            updateARMBtn->hide();
+            updateFPGABtn->hide();
+            m_setNetWorkBtn->hide();
+            m_sysHelpBtn->hide();
+            m_sysInfoBtn->hide();
+            m_encryptBtn->hide();
         }
-        break;
+        if (struGsh.nAuthenticationLevel == 2)
+        {
+
+            setColorCameraBtn->hide();
+            setMachineModeBtn->hide();
+            setLanguageBtn->hide();
+            m_througPutBtn->hide();
+            ageingTestBtn->hide();
+            calibrationTSBtn->hide();
+            setBacklightPasswordBtn->hide();
+            setFeederVoltageBtn->hide();
+            degaussTimeBtn->hide();
+            lampCtrlBtn->hide();
+            setFPGAStartModeBtn->hide();
+            setAiBtn->hide();
+
+            updateARMBtn->show();
+            updateFPGABtn->show();
+            m_setNetWorkBtn->show();
+            m_sysHelpBtn->show();
+            m_sysInfoBtn->show();
+            m_encryptBtn->show();
+        }
+
+        lampCtrlBtn->hide();
+        m_setNetWorkBtn->hide();
+        m_sysInfoBtn->hide();
+        //                m_encryptBtn->hide();
+
+        //                upLay->addWidget(setMachineModeBtn, 0, 0);
+        //                upLay->addWidget(setFPGAStartModeBtn, 0, 1);
+        //                upLay->addWidget(setColorCameraBtn, 1, 0);
+        //                upLay->addWidget(setLanguageBtn, 1, 1);
+        //                upLay->addWidget(setFeederVoltageBtn, 2, 0);
+        //                upLay->addWidget(degaussTimeBtn, 2, 1);
+        //                upLay->addWidget(m_througPutBtn, 3, 0);
+        //                upLay->addWidget(ageingTestBtn, 3, 1);
+        //                upLay->addWidget(updateARMBtn, 4, 0);
+        //                upLay->addWidget(updateFPGABtn, 4, 1);
+        //                upLay->addWidget(calibrationTSBtn, 5, 0);
+        //                upLay->addWidget(setBacklightPasswordBtn, 5, 1);
+        //                upLay->addWidget(m_encryptBtn, 6, 0);
+
+    }
+    break;
     default:
         break;
     }
@@ -467,17 +516,18 @@ void factorySet::factoryUpdateSlt()
 void factorySet::createSetLanguagePage()
 {
     langWidget = new QWidget;
-    langWidget->setGeometry(0,0,stackedWidget->width(),stackedWidget->height());
+    langWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
 
-    QHBoxLayout *upLay = new QHBoxLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(langWidget);
+    QHBoxLayout* upLay = new QHBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(langWidget);
 
     langList = new QListWidget(langWidget);
     langList->setIconSize(QSize(ICON_WID, ICON_HEI));
     langList->setMinimumWidth(500);
 
-    for (int i = 0; i < MAX_LANG; i++){
+    for (int i = 0; i < MAX_LANG; i++)
+    {
         items[i] = new QListWidgetItem;
         items[i]->setFont(config->getFont(DEFAULT_FONT_SIZE));
         items[i]->setSizeHint(QSize(50, 60));
@@ -516,10 +566,10 @@ void factorySet::createAgeingTestPage()
     int groupWidth = 320;
     int groupHeight = 140;
 
-    QHBoxLayout *upLay = new QHBoxLayout;
-    QHBoxLayout *midLay = new QHBoxLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(ageingTestWidget);
+    QHBoxLayout* upLay = new QHBoxLayout;
+    QHBoxLayout* midLay = new QHBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(ageingTestWidget);
 
     runningModeGroup = new myMutex(Qt::Vertical, m_nMachineTestFlag, ageingTestWidget);
     runningModeGroup->setNum(2);
@@ -527,16 +577,16 @@ void factorySet::createAgeingTestPage()
     runningModeGroup->setLabelText(myLan.normal, myLan.run_test);
     runningModeGroup->setMinimumSize(QSize(groupWidth, groupHeight));
 
-    QGroupBox *ageingTestFre = new QGroupBox(myLan.run_fre, ageingTestWidget);
+    QGroupBox* ageingTestFre = new QGroupBox(myLan.run_fre, ageingTestWidget);
     ageingTestFre->setFont(config->getFont());
     ageingTestFre->setMinimumSize(QSize(groupWidth, groupHeight));
-    QHBoxLayout *groupLay  = new QHBoxLayout(ageingTestFre);
+    QHBoxLayout* groupLay = new QHBoxLayout(ageingTestFre);
     ageingTestValueBar = new myValueBar(0, 255, 1, 10, m_nDetectFre, ageingTestFre);
     groupLay->addWidget(ageingTestValueBar);
 
     ageingTestSureBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);
     ageingTestSureBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
-    ageingTestBackBtn = new myPushButton(myLan.back,myIcon.Action_Back);
+    ageingTestBackBtn = new myPushButton(myLan.back, myIcon.Action_Back);
     ageingTestBackBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
     upLay->addStretch();
@@ -550,7 +600,7 @@ void factorySet::createAgeingTestPage()
     downLay->addWidget(ageingTestBackBtn, Qt::AlignRight);
     mainLay->addSpacing(20);
     mainLay->addLayout(upLay);
-    if(LCD_WIDTH == 640)
+    if (LCD_WIDTH == 640)
         mainLay->addSpacing(20);
     else
         mainLay->addSpacing(50);
@@ -572,18 +622,18 @@ void factorySet::createOutputTestPage()
     outputTestWidget = new QWidget;
     outputTestWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
 
-    QHBoxLayout *upLay = new QHBoxLayout;
-    QHBoxLayout *midLay = new QHBoxLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(outputTestWidget);
+    QHBoxLayout* upLay = new QHBoxLayout;
+    QHBoxLayout* midLay = new QHBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(outputTestWidget);
 
     int groupWidth = 400;
     int groupHeight = 100;
 
-    QGroupBox *testTimeGroup = new QGroupBox(myLan.test_time, outputTestWidget);
+    QGroupBox* testTimeGroup = new QGroupBox(myLan.test_time, outputTestWidget);
     testTimeGroup->setFont(config->getFont());
     testTimeGroup->setMinimumSize(QSize(groupWidth, groupHeight));
-    QGridLayout *testTimeLayout = new QGridLayout;
+    QGridLayout* testTimeLayout = new QGridLayout;
 
     QSize btnSize = config->getBtnSize(SMALL_BTN_SIZE);
     outputTestMinusBtn = new myPushButton(myIcon.Action_Minus, btnSize);
@@ -604,7 +654,7 @@ void factorySet::createOutputTestPage()
     testTimeLayout->addWidget(outputTestTimeNum, 0, 7, 1, 1);
     testTimeGroup->setLayout(testTimeLayout);
 
-    outputTestStartBtn = new myPushButton(myLan.start,myIcon.Media_Start);
+    outputTestStartBtn = new myPushButton(myLan.start, myIcon.Media_Start);
     outputTestStartBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     outputTestBackBtn = new myPushButton(myLan.back, myIcon.Action_Back);
     outputTestBackBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -639,9 +689,9 @@ void factorySet::createSetFPGAModePage()
     setFPGAUserModeWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
     setFPGAModeParams();
 
-    QHBoxLayout *upLay = new QHBoxLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(setFPGAUserModeWidget);
+    QHBoxLayout* upLay = new QHBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(setFPGAUserModeWidget);
     int groupHei = 300;
 
     intModeGroup = new myMutex(Qt::Vertical, m_nIntMode, setFPGAUserModeWidget);
@@ -685,8 +735,8 @@ void factorySet::createSetFPGAModePage()
 void factorySet::setFPGAModeParams()
 {
     //除以2是因为模式的索引号0、1、2对应的参数为1、2、4
-    m_nIntMode = struCnfp.nInterfaceBoardMode/2;
-    m_nColorMode = struCnfp.nColorBoardMode/2;
+    m_nIntMode = struCnfp.nInterfaceBoardMode / 2;
+    m_nColorMode = struCnfp.nColorBoardMode / 2;
 }
 
 /* 响应子界面返回主界面的操作 */
@@ -707,26 +757,29 @@ void factorySet::onFactoryBackBtnClicked()
 void factorySet::onSetColorCameraBtnClicked()
 {
     myMessageBox msgBox(MSG_QUES, myLan.confirm_set_camera);
-	if (msgBox.exec() == QDialog::Accepted) {
+    if (msgBox.exec() == QDialog::Accepted)
+    {
         struGsh.bIsAssist = false;  //当前界面显示的是主配信号
         myFlow.updateOnoff(0);      // 进入相机设置界面后发送校准停止命令
         stackedWidget->setCurrentIndex(SET_COLOR_CAMERA_PAGE);
-	}
+    }
 }
 
 /* 响应厂家设置界面的设置语言按钮　*/
 void factorySet::onSetLanguageBtnClicked()
 {
     int index = 0;
-    
+
     struCnfe.nLangList[0] = 20;
-    for (int i = 0; i < 20; i++){
-        struCnfe.nLangList[i+1] = i+1;
+    for (int i = 0; i < 20; i++)
+    {
+        struCnfe.nLangList[i + 1] = i + 1;
     }
 
-    for (int i = 0; i < struCnfe.nLangList[0]; i++) {
+    for (int i = 0; i < struCnfe.nLangList[0]; i++)
+    {
         items[i]->setHidden(false);
-        nLangIndex[i] = struCnfe.nLangList[i+1];
+        nLangIndex[i] = struCnfe.nLangList[i + 1];
         items[index]->setText(myFlow.getLanguageListName(nLangIndex[i], false));
         items[index]->setIcon(myFlow.getLanguageListIcon(nLangIndex[i]));
         index++;
@@ -736,8 +789,10 @@ void factorySet::onSetLanguageBtnClicked()
     //    items[i]->setHidden(true);
     //}
 
-    for(int i = 0; i < struCnfe.nLangList[0]; i++){
-        if (nLangIndex[i] == struCnfg.nLang) {
+    for (int i = 0; i < struCnfe.nLangList[0]; i++)
+    {
+        if (nLangIndex[i] == struCnfg.nLang)
+        {
             langList->setCurrentRow(i);
         }
     }
@@ -751,10 +806,12 @@ void factorySet::onLangSureBtnClicked()
     int oldLang = struCnfg.nLang;
     int newLang = nLangIndex[langList->currentRow()];
 
-    if(newLang != oldLang){
+    if (newLang != oldLang)
+    {
         myMessageBox mesBox(MSG_QUES, myLan.cfm_change_language);
         int ret = mesBox.exec();
-        if(ret == QDialog::Accepted){
+        if (ret == QDialog::Accepted)
+        {
             struCnfg.nLang = newLang;
             myFlow.setLang();
             myFlow.saveCamera();
@@ -784,27 +841,29 @@ void factorySet::onSetMachineModeBtnClicked()
 /* 响应厂家设置界面的清零累计运行时间按钮　*/
 void factorySet::onClearRunningTimeBtnClicked()
 {
-    myMessageBox *mesBox = new myMessageBox(MSG_QUES, myLan.cfm_clear_time);
+    myMessageBox* mesBox = new myMessageBox(MSG_QUES, myLan.cfm_clear_time);
     int ret = mesBox->exec();
-    if(ret == QDialog::Accepted){
+    if (ret == QDialog::Accepted)
+    {
         struCnfg.nCounter = 0;
     }
 }
 /* 响应厂家设置界面的清零累计运行时间按钮　*/
 void factorySet::onSwitchToCFBtnClicked()
 {
-    myMessageBox *mesBox = new myMessageBox(MSG_QUES, "确定启动CF程序");
+    myMessageBox* mesBox = new myMessageBox(MSG_QUES, "确定启动CF程序");
     int ret = mesBox->exec();
-    if(ret == QDialog::Accepted)
-         system("/app/startcf.sh -d");
+    if (ret == QDialog::Accepted)
+        system("/app/startcf.sh -d");
 }
 
 /* 响应厂家设置界面的校准触摸屏按钮　*/
 void factorySet::onCalibrationBtnClicked()
 {
-    myMessageBox *mesBox = new myMessageBox(MSG_QUES, myLan.cfm_ts_calibrate);
+    myMessageBox* mesBox = new myMessageBox(MSG_QUES, myLan.cfm_ts_calibrate);
     int ret = mesBox->exec();
-    if(ret == QDialog::Accepted){
+    if (ret == QDialog::Accepted)
+    {
         char cmd[64];
         sprintf(cmd, "rm /etc/pointercal");
         system(cmd);
@@ -831,7 +890,7 @@ void factorySet::onAgeingTestSureBtnClicked()
 {
     struGsh.nSelfExamineFre = m_nDetectFre;
     struGsh.bFlagMachinetest = (m_nMachineTestFlag == 0) ? 0 : 2;
-    
+
     stackedWidget->setCurrentIndex(FACTORY_SET_PAGE);
 }
 
@@ -865,9 +924,10 @@ void factorySet::onOutputTestBtnClicked()
 void factorySet::onOutputTestPlusBtnClicked()
 {
     int tmp = outputTestTimeNum->value();
-    if(tmp < 99){
-        outputTestTimeNum->display(tmp+1);
-        outputTestSlider->setValue(tmp+1);
+    if (tmp < 99)
+    {
+        outputTestTimeNum->display(tmp + 1);
+        outputTestSlider->setValue(tmp + 1);
     }
 }
 
@@ -875,21 +935,22 @@ void factorySet::onOutputTestPlusBtnClicked()
 void factorySet::onOutputTestMinusBtnClicked()
 {
     int tmp = outputTestTimeNum->value();
-    if(tmp > 1){
-        outputTestTimeNum->display(tmp-1);
-        outputTestSlider->setValue(tmp-1);
+    if (tmp > 1)
+    {
+        outputTestTimeNum->display(tmp - 1);
+        outputTestSlider->setValue(tmp - 1);
     }
 }
 
 /* 响应产量测试界面的开始按钮　*/
 void factorySet::onOutputTestStartBtnClicked()
-{   
+{
     infoWidget->setLabelText(myLan.msg_testing);
     infoWidget->delayShow();
     myFlow.onOff();
     outputTestTimer = new QTimer;
-    connect(outputTestTimer,SIGNAL(timeout()),this,SLOT(outputTimeoutSlt()));
-    outputTestTimer->start(1000*outputTestTimeNum->value());
+    connect(outputTestTimer, SIGNAL(timeout()), this, SLOT(outputTimeoutSlt()));
+    outputTestTimer->start(1000 * outputTestTimeNum->value());
 }
 
 /* 响应产量测试界面的返回按钮 */
@@ -900,22 +961,24 @@ void factorySet::onOutputTestBackBtnClicked()
 
 /* 响应厂家设置界面的升级上位机程序按钮　*/
 void factorySet::onUpdateARMBtnClicked()
-{   
-    myMessageBox *mesBox = new myMessageBox(MSG_QUES, myLan.cfm_upgrade_screen);
+{
+    myMessageBox* mesBox = new myMessageBox(MSG_QUES, myLan.cfm_upgrade_screen);
     int ret = mesBox->exec();
-    if(ret == QDialog::Accepted){
-        QProcess *process = new QProcess;
+    if (ret == QDialog::Accepted)
+    {
+        QProcess* process = new QProcess;
         QStringList strList;
 
         //! MC机型升级仅显示英文
-        if (struGsh.bIsMC) {
+        if (struGsh.bIsMC)
+        {
             strList << "-eng";
         }
 
         strList << "-qws" << "-display" << "VNC:LinuxFB";
 
 #ifdef Q_OS_UNIX
-//        process->startDetached("./MyUpdate", strList);
+        //        process->startDetached("./MyUpdate", strList);
         system("killall DuySorter");
 #endif
     }
@@ -923,10 +986,11 @@ void factorySet::onUpdateARMBtnClicked()
 
 /* 响应厂家设置界面的升级下位机程序按钮　*/
 void factorySet::onUpdateFPGABtnClicked()
-{  
-    myMessageBox *mesBox = new myMessageBox(MSG_QUES,  myLan.cfm_upgrade_fpga);
+{
+    myMessageBox* mesBox = new myMessageBox(MSG_QUES, myLan.cfm_upgrade_fpga);
     int ret = mesBox->exec();
-    if(ret == QDialog::Accepted){
+    if (ret == QDialog::Accepted)
+    {
 #ifdef Q_OS_UNIX
         emit hideTitleBtns();
 #endif
@@ -951,20 +1015,27 @@ void factorySet::onSetModeSureBtnClicked()
     myMessageBox msgBox(MSG_QUES, myLan.msg_change_init_mode);
     int ret = msgBox.exec();
 
-    if (ret == QDialog::Accepted) {
+    if (ret == QDialog::Accepted)
+    {
         infoWidget->setLabelText(myLan.msg_applying);
         infoWidget->delayShow();
-        
-		if (m_nIntMode == 0) {
-        	struCnfp.nInterfaceBoardMode = 1;
-        } else {
-            struCnfp.nInterfaceBoardMode = m_nIntMode*2;
+
+        if (m_nIntMode == 0)
+        {
+            struCnfp.nInterfaceBoardMode = 1;
+        }
+        else
+        {
+            struCnfp.nInterfaceBoardMode = m_nIntMode * 2;
         }
 
-        if (m_nColorMode == 0) {
+        if (m_nColorMode == 0)
+        {
             struCnfp.nColorBoardMode = 1;
-        } else {
-            struCnfp.nColorBoardMode = m_nColorMode*2;
+        }
+        else
+        {
+            struCnfp.nColorBoardMode = m_nColorMode * 2;
         }
 
         myFlow.saveProfile();
@@ -973,10 +1044,10 @@ void factorySet::onSetModeSureBtnClicked()
 
         myFlow.resetFPGAMode();
         myFlow.sleep(10);
-        
-		myFlow.initSerial();            // 初始化串口设备
+
+        myFlow.initSerial();            // 初始化串口设备
         myFlow.initMachineType();		// 初始化机器类型
-		myFlow.initCommunication();
+        myFlow.initCommunication();
         myFlow.initSendAllParams();
         infoWidget->hide();
         stackedWidget->setCurrentIndex(FACTORY_SET_PAGE);
@@ -1014,10 +1085,10 @@ void factorySet::createBacklightPasswordPage()
     setBacklightPasswordWidget = new QWidget;
     setBacklightPasswordWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
 
-    QHBoxLayout *upLay = new QHBoxLayout;
-    QGridLayout *midLay = new QGridLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(setBacklightPasswordWidget);
+    QHBoxLayout* upLay = new QHBoxLayout;
+    QGridLayout* midLay = new QGridLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(setBacklightPasswordWidget);
 
     enablePasswordChx = new myCustomCheckBox(myLan.enable_screensaver, false);
 
@@ -1076,11 +1147,12 @@ void factorySet::onSetNewPasswordClicked()
     tmpPassword.clear();
     QString strPassword = "";
     myInputPanel inputDlg(passwdType, 0, 0, 0);
-    int ret  = inputDlg.exec();
+    int ret = inputDlg.exec();
     if (ret == QDialog::Accepted)
     {
         tmpPassword = inputDlg.getText();
-        for (int i = 0; i < tmpPassword.size(); i++) {
+        for (int i = 0; i < tmpPassword.size(); i++)
+        {
             strPassword += "*";
         }
     }
@@ -1092,11 +1164,12 @@ void factorySet::onSetNewPasswordConfirmClicked()
     tmpPasswordConfirm.clear();
     QString strPassword = "";
     myInputPanel inputDlg(passwdType, 0, 0, 0);
-    int ret  = inputDlg.exec();
+    int ret = inputDlg.exec();
     if (ret == QDialog::Accepted)
     {
         tmpPasswordConfirm = inputDlg.getText();
-        for (int i = 0; i < tmpPasswordConfirm.size(); i++) {
+        for (int i = 0; i < tmpPasswordConfirm.size(); i++)
+        {
             strPassword += "*";
         }
     }
@@ -1107,11 +1180,13 @@ void factorySet::onSetBacklightPasswordBtnClicked()
 {
     tmpEnablePassword = struCnfg.nEnableBacklightPassword;
     enablePasswordChx->setChecked(tmpEnablePassword);
-    if(tmpEnablePassword) {
+    if (tmpEnablePassword)
+    {
         newPasswordLineEdit->setEnabled(true);
         newPasswordConfirmLineEdit->setEnabled(true);
     }
-    else {
+    else
+    {
         newPasswordLineEdit->setEnabled(false);
         newPasswordConfirmLineEdit->setEnabled(false);
     }
@@ -1126,24 +1201,28 @@ void factorySet::onSetBacklightPasswordEnableBtnClicked()
 {
     tmpEnablePassword = !tmpEnablePassword;
 
-    if(tmpEnablePassword) {
+    if (tmpEnablePassword)
+    {
         newPasswordLineEdit->setEnabled(true);
         newPasswordConfirmLineEdit->setEnabled(true);
     }
-    else {
+    else
+    {
         newPasswordLineEdit->setEnabled(false);
         newPasswordConfirmLineEdit->setEnabled(false);
         QString strPassword = "";
 
         tmpPassword.clear();
         tmpPasswordConfirm.clear();
-        for (int i = 0; i < tmpPasswordConfirm.size(); i++) {
+        for (int i = 0; i < tmpPasswordConfirm.size(); i++)
+        {
             strPassword += "*";
         }
         newPasswordConfirmLineEdit->setText(strPassword);
 
         strPassword.clear();
-        for (int i = 0; i < tmpPassword.size(); i++) {
+        for (int i = 0; i < tmpPassword.size(); i++)
+        {
             strPassword += "*";
         }
         newPasswordLineEdit->setText(strPassword);
@@ -1154,7 +1233,8 @@ void factorySet::onSetBacklightPasswordSureBtnClicked()
 {
     QString strPassword = "";
 
-    if(tmpPassword != tmpPasswordConfirm) {
+    if (tmpPassword != tmpPasswordConfirm)
+    {
         infoWidget->setLabelText(myLan.msg_password_error);
         infoWidget->delayShow();
         myFlow.sleep(3);
@@ -1162,22 +1242,26 @@ void factorySet::onSetBacklightPasswordSureBtnClicked()
 
         tmpPassword.clear();
         tmpPasswordConfirm.clear();
-        for (int i = 0; i < tmpPasswordConfirm.size(); i++) {
+        for (int i = 0; i < tmpPasswordConfirm.size(); i++)
+        {
             strPassword += "*";
         }
         newPasswordConfirmLineEdit->setText(strPassword);
 
         strPassword.clear();
-        for (int i = 0; i < tmpPassword.size(); i++) {
+        for (int i = 0; i < tmpPassword.size(); i++)
+        {
             strPassword += "*";
         }
         newPasswordLineEdit->setText(strPassword);
         return;
     }
-    else {
-	if(tmpPassword.size() > 0) {
+    else
+    {
+        if (tmpPassword.size() > 0)
+        {
             sprintf(struCnfg.sBacklightPassword, "%s", tmpPassword.toLatin1().data());
-	}
+        }
         tmpPassword.clear();
         tmpPasswordConfirm.clear();
 
@@ -1197,9 +1281,9 @@ void factorySet::createSetFeederVoltage()
     setFeederVoltageWidget = new QWidget;
     setFeederVoltageWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
 
-    QVBoxLayout *upLay = new QVBoxLayout;
-    QHBoxLayout *downLay = new QHBoxLayout;
-    QVBoxLayout *mainLay = new QVBoxLayout(setFeederVoltageWidget);
+    QVBoxLayout* upLay = new QVBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(setFeederVoltageWidget);
     int groupWid = 400;
     int groupHei = 200;
 
@@ -1212,41 +1296,48 @@ void factorySet::createSetFeederVoltage()
 
     autoFeedEnable = new myPushButton("", QIcon(), setFeederVoltageWidget);
     autoFeedEnable->setFixedSize(config->getBtnSize(SMALL_BTN_SIZE));
-    myLabel *autoFeedLabel = new myLabel(myLan.feeder_AI, setFeederVoltageWidget);
+    myLabel* autoFeedLabel = new myLabel(myLan.feeder_AI, setFeederVoltageWidget);
     autoFeedLabel->setFixedSize(config->getBtnSize(DEFAULT_BTN_SIZE));
-    if (struCnfp.autoFeedEnablePageFlag == 1) {
+    if (struCnfp.autoFeedEnablePageFlag == 1)
+    {
         autoFeedEnable->setIcon(myIcon.Action_Apply);
-    } else {
+    }
+    else
+    {
         autoFeedEnable->setIcon(QIcon());
     }
 
     statisticEnable = new myPushButton("", QIcon(), setFeederVoltageWidget);
     statisticEnable->setFixedSize(config->getBtnSize(SMALL_BTN_SIZE));
-    myLabel *statisticLabel = new myLabel(myLan.bigData, setFeederVoltageWidget);
+    myLabel* statisticLabel = new myLabel(myLan.bigData, setFeederVoltageWidget);
     statisticLabel->setFixedSize(config->getBtnSize(DEFAULT_BTN_SIZE));
-    if (struCnfg.nStatisticEnable == 1) {
+    if (struCnfg.nStatisticEnable == 1)
+    {
         statisticEnable->setIcon(myIcon.Action_Apply);
     }
     statisticLabel->hide();
     statisticEnable->hide();
 
-    QGroupBox *otherGroup = new QGroupBox(myLan.other);
+    QGroupBox* otherGroup = new QGroupBox(myLan.other);
     otherGroup->setFont(config->getFont());
     otherGroup->setMinimumWidth(groupWid);
-    QGridLayout *otherLayout = new QGridLayout(otherGroup);
+    QGridLayout* otherLayout = new QGridLayout(otherGroup);
 
-    if ((struCnfe.nMachine == MACHINE_CF) || (struCnfe.nEnableBeanMachine == 1)) {
-        otherLayout->addWidget(autoFeedEnable,0,0,Qt::AlignHCenter);
-        otherLayout->addWidget(autoFeedLabel,0,1,Qt::AlignHCenter);
+    if ((struCnfe.nMachine == MACHINE_CF) || (struCnfe.nEnableBeanMachine == 1))
+    {
+        otherLayout->addWidget(autoFeedEnable, 0, 0, Qt::AlignHCenter);
+        otherLayout->addWidget(autoFeedLabel, 0, 1, Qt::AlignHCenter);
         autoFeedEnable->show();
         otherGroup->show();
-    } else {
+    }
+    else
+    {
         autoFeedEnable->hide();
         otherGroup->hide();
     }
 
-    otherLayout->addWidget(statisticEnable,1,0,Qt::AlignHCenter);
-    otherLayout->addWidget(statisticLabel,1,1,Qt::AlignHCenter);
+    otherLayout->addWidget(statisticEnable, 1, 0, Qt::AlignHCenter);
+    otherLayout->addWidget(statisticLabel, 1, 1, Qt::AlignHCenter);
 
     setFeederVoltageSureBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);
     setFeederVoltageSureBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -1255,8 +1346,8 @@ void factorySet::createSetFeederVoltage()
 
     /* 功能特点：点击即生效 */
     setFeederVoltageSureBtn->hide();
-    upLay->addWidget(feederVoltageGroup,0,Qt::AlignHCenter);
-    upLay->addWidget(otherGroup,0,Qt::AlignHCenter);
+    upLay->addWidget(feederVoltageGroup, 0, Qt::AlignHCenter);
+    upLay->addWidget(otherGroup, 0, Qt::AlignHCenter);
 
     downLay->addWidget(setFeederVoltageSureBtn, Qt::AlignLeft);
     downLay->addStretch();
@@ -1279,9 +1370,12 @@ void factorySet::createSetFeederVoltage()
 void factorySet::onSetFeederVolatageBtnClicked()
 {
     feederVoltageGroup->setCurrentIndex(struCnfg.nFeederVoltage);
-    if (struCnfp.autoFeedEnablePageFlag == 1) {
+    if (struCnfp.autoFeedEnablePageFlag == 1)
+    {
         autoFeedEnable->setIcon(myIcon.Action_Apply);
-    } else {
+    }
+    else
+    {
         autoFeedEnable->setIcon(QIcon());
     }
     stackedWidget->setCurrentIndex(SET_FEEDER_VOLTAGE);
@@ -1312,10 +1406,13 @@ void factorySet::onSetFeederVoltageChangedSlt(int index)
 /* 智能供料使能按钮 */
 void factorySet::onAutoFeedEnablePressedSlt()
 {
-    if (struCnfp.autoFeedEnablePageFlag == 0) {
+    if (struCnfp.autoFeedEnablePageFlag == 0)
+    {
         struCnfp.autoFeedEnablePageFlag = 1;
         autoFeedEnable->setIcon(myIcon.Action_Apply);
-    } else {
+    }
+    else
+    {
         struCnfp.autoFeedEnablePageFlag = 0;
         autoFeedEnable->setIcon(QIcon());
     }
@@ -1323,10 +1420,13 @@ void factorySet::onAutoFeedEnablePressedSlt()
 
 void factorySet::onStatisticEnablePressedSlt()
 {
-    if (struCnfg.nStatisticEnable == 0) {
+    if (struCnfg.nStatisticEnable == 0)
+    {
         struCnfg.nStatisticEnable = 1;
         statisticEnable->setIcon(myIcon.Action_Apply);
-    } else {
+    }
+    else
+    {
         struCnfg.nStatisticEnable = 0;
         statisticEnable->setIcon(QIcon());
     }
@@ -1379,19 +1479,18 @@ void factorySet::onTickModeBtnPressedSlt()
     m_tickModeWidget->updatePage();
 }
 
-void factorySet::onAiSetBtnPressedSlt(){
+void factorySet::onAiSetBtnPressedSlt()
+{
     stackedWidget->setCurrentIndex(AI_SET_PAGE);
-    aiEnable = struCnfg.aiEnable;
-    aiEnbaleChx->setChecked(aiEnable);
-    imgFetchHeight = struCnfg.imgFetchHeight;
-    imgInferHeight = struCnfg.imgInferHeight;
-    imgPicHeight = struCnfg.imgPicHeight;
-    imgVideoHeight = struCnfg.imgVideoHeight;
-    imgFetchHeightEdit->setText(QString("%1").arg(imgFetchHeight));
-    imgInferHeightEdit->setText(QString("%1").arg(imgInferHeight));
-    imgPicHeightEdit->setText(QString("%1").arg(imgPicHeight));
-    imgVideoHeightEdit->setText(QString("%1").arg(imgVideoHeight));
 
+    AiCfgInfo ai_cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
+
+    aiEnbaleChx->setChecked(ai_cfg_info.enable_ai_);
+    imgFetchHeightEdit->setText(QString("%1").arg(ai_cfg_info.collect_height_));
+    imgInferHeightEdit->setText(QString("%1").arg(ai_cfg_info.infer_height_));
+    imgPicHeightEdit->setText(QString("%1").arg(ai_cfg_info.img_view_height_));
+    imgVideoHeightEdit->setText(QString("%1").arg(ai_cfg_info.video_view_height_));
+    imgSliderHeightEdit->setText(QString("%1").arg(ai_cfg_info.sliding_step_));
 }
 
 /* 页面切至第一页 */
@@ -1405,7 +1504,8 @@ void factorySet::gotoFirstPageSlt()
 void factorySet::onStackedWidgetIndexChangedSlt(int index)
 {
     QString title;
-    switch(index){
+    switch (index)
+    {
     case FACTORY_SET_PAGE:
         title = QString("%1").arg(myLan.factory_set);
         break;
@@ -1443,7 +1543,7 @@ void factorySet::onStackedWidgetIndexChangedSlt(int index)
         title = QString("%1 > %2").arg(myLan.factory_set).arg(myLan.degauss_time);
         break;
     case AUTO_SIG_LIST_PAGE:
-        title = QString("%1 > %2").arg(myLan.factory_set).arg(myLan.auto_set+myLan.init_autoSig);
+        title = QString("%1 > %2").arg(myLan.factory_set).arg(myLan.auto_set + myLan.init_autoSig);
         break;
     case THROUGH_PUT_PAGE:
         title = QString("%1 > %2").arg(myLan.factory_set).arg(myLan.throughput_test);
@@ -1460,11 +1560,12 @@ void factorySet::onStackedWidgetIndexChangedSlt(int index)
 /*!
   * \brief 设备加密模块slt
   */
-void factorySet::onEncryptBtnBtnClickedSlt(){
-//    qDebug()<<"yes"<<flush;
-     setEncryt dlg;
-     int ret = dlg.exec();
-//     if (ret == QDialog::Accepted) {
+void factorySet::onEncryptBtnBtnClickedSlt()
+{
+    //    qDebug()<<"yes"<<flush;
+    setEncryt dlg;
+    int ret = dlg.exec();
+    //     if (ret == QDialog::Accepted) {
 
-//     }
+    //     }
 }

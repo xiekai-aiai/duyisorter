@@ -7,6 +7,7 @@
  */
 #include "mainwidget.h"
 #include "unilog.h"
+#include "configmgr.h"
 
 myApplication::myApplication(int& argc, char** argv) :
     QApplication(argc, argv)
@@ -1405,7 +1406,7 @@ void MainWidget::onOprTypeBtnClickedSlt()
     {
         customOprButton->show();
         highSetOprButton->show();
-        if (struCnfg.aiEnable == 1)
+        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
         {
             aiSetBtn->show();
             aiModelSetBtn->show();
@@ -1430,7 +1431,7 @@ void MainWidget::onOprTypeBtnClickedSlt()
             operateButton[5]->setEnabled(true);
             customOprButton->show();
             highSetOprButton->show();
-            if (struCnfg.aiEnable == 1)
+            if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
             {
                 aiSetBtn->show();
                 aiModelSetBtn->show();
@@ -1451,12 +1452,6 @@ void MainWidget::onOprTypeBtnClickedSlt()
             infoWidget->hide();
         }
     }
-
-    //    if(struCnfg.aiEnable == 1){
-    //        aiSetBtn->show();
-    //    }else{
-    //        aiSetBtn->hide();
-    //    }
 }
 
 void MainWidget::CreatePageOprTypeWidget()
@@ -3401,7 +3396,7 @@ void MainWidget::ejectPageDisplayLcdNumerSlt()
  */
 void MainWidget::ejectPageThreadStartSlt()
 {
-    if (struCnfg.aiEnable != 1)
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         if (threadStart->isRunning())
         {

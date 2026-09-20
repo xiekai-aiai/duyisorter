@@ -1,5 +1,6 @@
 #include "configmgr.h"
 #include "sqlitemgr.h"
+#include "unilog.h"
 
 ConfigMgr::ConfigMgr() {}
 
@@ -76,6 +77,10 @@ AiCfgInfo ConfigMgr::GetAiCfgInfo()
 
 bool ConfigMgr::SetAiCfgInfo(const AiCfgInfo& info)
 {
+    LOG_INFO_STM("enable ai:" << info.enable_ai_ << ", collect height:" << info.collect_height_ << ", infer height:" << info.infer_height_
+        << ", img view height:" << info.img_view_height_ << ", video view height:" << info.video_view_height_
+        << ", sliding step:" << info.sliding_step_);
+
     QVector<ConfigItem> cfg_items;
     // 使能AI
     ConfigItem ci;
@@ -120,6 +125,8 @@ quint16 ConfigMgr::GetCollPicNum()
 
 bool ConfigMgr::SetCollPicNum(quint16 num)
 {
+    LOG_INFO_STM("collect pic num:" << num);
+
     QVector<ConfigItem> cfg_items;
     ConfigItem ci;
     // 采集张数
@@ -156,6 +163,10 @@ TimeCfgInfo ConfigMgr::GetTimeCfgInfo()
 
 bool ConfigMgr::SetTimeCfgInfo(const TimeCfgInfo& info)
 {
+    LOG_INFO_STM("time cfg info, enable spray valve:" << info.enable_spray_valve_ << ", trad blow time:" << info.trad_blow_time_
+        << ", trad delay time:" << info.trad_delay_time_ << ", jets num:" << info.jets_num_ << ", blow time:" << info.blow_time_
+        << ", fixed delay:" << info.fixed_delay_ << ", dynamics delay:" << info.dynamics_delay_);
+
     QVector<ConfigItem> cfg_items;
     // 使能喷阀
     ConfigItem ci;
@@ -259,6 +270,8 @@ bool ConfigMgr::GetEnableAcquisition()
 
 void ConfigMgr::SetEnableAcquisition(bool enable)
 {
+    LOG_INFO_STM("set enable acquisition:" << enable);
+
     // note: 图像采集使能配置不持久化到数据库
     enable_acquisition_ = enable;
 }
