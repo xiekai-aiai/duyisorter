@@ -899,7 +899,7 @@ void communicationList::commuUpdateCamera()
         cameraListLabel[0][3]->setText(myLan.infra+"-"+myLan.front);
         cameraListLabel[0][4]->setText(myLan.infra+"-"+myLan.rear);
 
-        if(struCnfg.aiEnable == 1){
+        if(ConfigMgr::Instance().GetAiCfgInfo().enable_ai_){
             cameraListLabel[0][3]->setText("AI");
             for (int k = 1; k < struCnfg.struLevelInfo[0].nUnitLevelTotal+1; k++) {
                 int nAddr = struCnfg.struLevelInfo[0].nUnitId[k-1];
@@ -931,7 +931,7 @@ void communicationList::commuUpdateCamera()
             }
         }
 
-        if(struCnfg.aiEnable == 1){
+        if(ConfigMgr::Instance().GetAiCfgInfo().enable_ai_){
             cameraListLabel[i][3]->show();
         }
 

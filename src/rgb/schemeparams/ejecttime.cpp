@@ -1,4 +1,5 @@
 #include "ejecttime.h"
+#include "configmgr.h"
 
 /* 构造喷阀时间设置页面 */
 PageEjectTime::PageEjectTime(QWidget *parent)
@@ -389,7 +390,8 @@ void PageEjectTime::updatePage()
     updateTabBar(this->tabBar, false, false);
     refreshEjectSetDisplay();
 
-    if(struCnfg.aiEnable == 1){
+    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    {
             aiEjectorDelayLbl->show();
             aiEjectorDelayEdit->show();
             aiEjectorDynamicDelayLbl->show();

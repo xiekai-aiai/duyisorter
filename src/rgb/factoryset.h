@@ -35,7 +35,8 @@
 #include "tickmodewidget.h"
 #include "setencryt.h"
 
-enum{
+enum
+{
     langMaxNum = 6,
     userModeNum = 3
 };
@@ -47,7 +48,7 @@ class factorySet : public QMainWindow
 {
     Q_OBJECT
 public:
-    factorySet(QWidget *parent = 0);
+    factorySet(QWidget* parent = 0);
     ~factorySet();
     void createFactorySetPage(void);        //! 创建工厂设置界面
     void createSetLanguagePage(void);       //! 创建设置语言界面
@@ -59,7 +60,7 @@ public:
     void createDegaussTimePage(void);       //! 创建消磁时间设置页面
     void setFPGAModeParams();               //! FPGA模式的初始化
     void setAiParams();                     //! ai参数的初始化
-//    void onMachineDecrpt(QString);
+    //    void onMachineDecrpt(QString);
 private slots:
     void backToFactorySet();
     void onFactoryBackBtnClicked();
@@ -153,6 +154,7 @@ private slots:
     void onImgInferHeightEditPressedSlt();
     void onImgPicHeightEditPressedSlt();
     void onImgVideoHeightEditPressedSlt();
+    void onImgSliderHeightEditPressedSlt();
     void onSetAiSureBtnClicked();
     void onSetAiBackBtnClicked();
 
@@ -170,7 +172,8 @@ signals:
 
 private:
     /* 标志厂家设置界面不同页面的索引号 */
-    enum{
+    enum
+    {
         FACTORY_SET_PAGE,           /*!< 厂家设置主界面 */
         SET_COLOR_CAMERA_PAGE,      /*!< 设置彩色相机 */
         SET_LANG_PAGE,              /*!< 设置界面语言 */
@@ -190,145 +193,142 @@ private:
         AI_SET_PAGE,                /*!< ai参数页面*/
     };
 
-    QStackedWidget *stackedWidget;
-    QWidget *factorySetWidget;
-    g_Config *config;
+    QStackedWidget* stackedWidget;
+    QWidget* factorySetWidget;
+    g_Config* config;
 
     //! 厂家设置主界面
-    myPushButton *setColorCameraBtn;
-    myPushButton *setLanguageBtn;
-    myPushButton *setMachineModeBtn;
-    myPushButton *clearRunningTimeBtn;
-    myPushButton *calibrationTSBtn;
-    myPushButton *ageingTestBtn;
-    myPushButton *outPutTestBtn;
-    myPushButton *updateARMBtn;
-    myPushButton *updateFPGABtn;
-    myPushButton *setFPGAStartModeBtn;
-    myPushButton *switchToCFBtn;
-    myPushButton *setBacklightPasswordBtn;
-    myPushButton *setFeederVoltageBtn;
-    myPushButton *factorySetBackBtn;
-    myPushButton *lampCtrlBtn;
-    myPushButton *autoFeedEnable;
-    myPushButton *statisticEnable;
-    myPushButton *degaussTimeBtn;
-    myPushButton *m_feederCtrlBtn;
-    myPushButton *m_througPutBtn;
-    myPushButton *m_tickModeBtn;
+    myPushButton* setColorCameraBtn;
+    myPushButton* setLanguageBtn;
+    myPushButton* setMachineModeBtn;
+    myPushButton* clearRunningTimeBtn;
+    myPushButton* calibrationTSBtn;
+    myPushButton* ageingTestBtn;
+    myPushButton* outPutTestBtn;
+    myPushButton* updateARMBtn;
+    myPushButton* updateFPGABtn;
+    myPushButton* setFPGAStartModeBtn;
+    myPushButton* switchToCFBtn;
+    myPushButton* setBacklightPasswordBtn;
+    myPushButton* setFeederVoltageBtn;
+    myPushButton* factorySetBackBtn;
+    myPushButton* lampCtrlBtn;
+    myPushButton* autoFeedEnable;
+    myPushButton* statisticEnable;
+    myPushButton* degaussTimeBtn;
+    myPushButton* m_feederCtrlBtn;
+    myPushButton* m_througPutBtn;
+    myPushButton* m_tickModeBtn;
 
-    myPushButton *m_encryptBtn;
-    myPushButton *m_setNetWorkBtn;
-    myPushButton *m_sysHelpBtn;
-    myPushButton *m_sysInfoBtn;
+    myPushButton* m_encryptBtn;
+    myPushButton* m_setNetWorkBtn;
+    myPushButton* m_sysHelpBtn;
+    myPushButton* m_sysInfoBtn;
 
-    myPushButton *setAiBtn;
+    myPushButton* setAiBtn;
 
-    QGridLayout *upLay;
-    QHBoxLayout *downLay;
-    QVBoxLayout *mainLay;
+    QGridLayout* upLay;
+    QHBoxLayout* downLay;
+    QVBoxLayout* mainLay;
 
     //! 语言设置界面的控件
-    QWidget *langWidget;
-    QListWidget *langList;
-    myPushButton *langSureBtn;
-    myPushButton *langCancelBtn;
+    QWidget* langWidget;
+    QListWidget* langList;
+    myPushButton* langSureBtn;
+    myPushButton* langCancelBtn;
     quint32 nLangIndex[MAX_LANG];
-    QListWidgetItem *items[MAX_LANG];
+    QListWidgetItem* items[MAX_LANG];
 
     //! 老化测试
-    QWidget *ageingTestWidget;
-    myMutex *runningModeGroup;
-    myValueBar *ageingTestValueBar;
-    myPushButton *ageingTestSureBtn;
-    myPushButton *ageingTestBackBtn;
+    QWidget* ageingTestWidget;
+    myMutex* runningModeGroup;
+    myValueBar* ageingTestValueBar;
+    myPushButton* ageingTestSureBtn;
+    myPushButton* ageingTestBackBtn;
     quint8 m_nDetectFre;
     quint8 m_nMachineTestFlag;
 
     //! 产量测试
-    QWidget *outputTestWidget;
-    myPushButton *outputTestPlusBtn;
-    myPushButton *outputTestMinusBtn;
-    myPushButton *outputTestStartBtn;
-    myPushButton *outputTestBackBtn;
-    QSlider *outputTestSlider;
-    QLCDNumber *outputTestTimeNum;
-    QTimer *outputTestTimer;
+    QWidget* outputTestWidget;
+    myPushButton* outputTestPlusBtn;
+    myPushButton* outputTestMinusBtn;
+    myPushButton* outputTestStartBtn;
+    myPushButton* outputTestBackBtn;
+    QSlider* outputTestSlider;
+    QLCDNumber* outputTestTimeNum;
+    QTimer* outputTestTimer;
     quint8 m_nTestTime;
 
     //! 下位机启动模式
-    QWidget *setFPGAUserModeWidget;
-    myMutex *intModeGroup;
-    myMutex *colorModeGroup;
-    myPushButton *setModeSureBtn;
-    myPushButton *setModeBackbtn;
+    QWidget* setFPGAUserModeWidget;
+    myMutex* intModeGroup;
+    myMutex* colorModeGroup;
+    myPushButton* setModeSureBtn;
+    myPushButton* setModeBackbtn;
     quint8 m_nIntMode;
     quint8 m_nColorMode;
 
     //! 设置使能点亮背光密码
-    QWidget *setBacklightPasswordWidget;
-    myCustomCheckBox *enablePasswordChx;
-    myPushButton *setBacklightPasswordSureBtn;
-    myPushButton *setBacklightPasswordCancelBtn;
+    QWidget* setBacklightPasswordWidget;
+    myCustomCheckBox* enablePasswordChx;
+    myPushButton* setBacklightPasswordSureBtn;
+    myPushButton* setBacklightPasswordCancelBtn;
     bool tmpEnablePassword;
 
-    myLabel *newPasswordLabel;
-    myLabel *newPasswordConfrimLabel;
-    myLineEdit *newPasswordLineEdit;
-    myLineEdit *newPasswordConfirmLineEdit;
+    myLabel* newPasswordLabel;
+    myLabel* newPasswordConfrimLabel;
+    myLineEdit* newPasswordLineEdit;
+    myLineEdit* newPasswordConfirmLineEdit;
 
     QString tmpPassword;
     QString tmpPasswordConfirm;
 
     //! 设置振动器电压
-    QWidget *setFeederVoltageWidget;
-    myMutex *feederVoltageGroup;
-    myPushButton *setFeederVoltageSureBtn;
-    myPushButton *setFeederVoltageBackbtn;
+    QWidget* setFeederVoltageWidget;
+    myMutex* feederVoltageGroup;
+    myPushButton* setFeederVoltageSureBtn;
+    myPushButton* setFeederVoltageBackbtn;
     quint8 m_nFeederVoltage;
 
     //! FPGA升级
-    UpgradeProgramWidget *upgradeFpgaWidget;
+    UpgradeProgramWidget* upgradeFpgaWidget;
 
     //! 灯控设置
-    LampCtrl *pageLampCtrl;
+    LampCtrl* pageLampCtrl;
 
     //! 振动器外接控制
-    FeederRemoteCtrl *m_feederCtrlWidget;
+    FeederRemoteCtrl* m_feederCtrlWidget;
 
     //! 信号校正列表
-    autoSigListWidget *m_autoSigListWidget;
+    autoSigListWidget* m_autoSigListWidget;
 
     //! 消磁时间
-    DegaussTime *m_degaussTimeWidget;
+    DegaussTime* m_degaussTimeWidget;
 
     //! 通过量测试
-    Throughput *m_througPutWidget;
+    Throughput* m_througPutWidget;
 
     //!剔除模式页面
-    tickModeWidget *m_tickModeWidget;
+    tickModeWidget* m_tickModeWidget;
 
-    QWidget *setAiWidget;
-    int imgFetchHeight;
-    int imgInferHeight;
-    int imgPicHeight;
-    int imgVideoHeight;
+    QWidget* setAiWidget;
 
-    myPushButton *setAiSureBtn;
-    myPushButton *setAiBackbtn;
-    bool aiEnable;
-    myCustomCheckBox *aiEnbaleChx;
+    myPushButton* setAiSureBtn;
+    myPushButton* setAiBackbtn;
+    myCustomCheckBox* aiEnbaleChx;
 
     //图像高度页面
-    QWidget           *pageImgHeight;
-    myLabel           *imgFetchHeightLbl;
-    myLineEdit        *imgFetchHeightEdit;
-    myLabel           *imgInferHeightLbl;
-    myLineEdit        *imgInferHeightEdit;
-    myLabel           *imgPicHeightLbl;
-    myLineEdit        *imgPicHeightEdit;
-    myLabel           *imgVideoHeightLbl;
-    myLineEdit        *imgVideoHeightEdit;
+    QWidget* pageImgHeight;
+    myLabel* imgFetchHeightLbl;
+    myLineEdit* imgFetchHeightEdit;
+    myLabel* imgInferHeightLbl;
+    myLineEdit* imgInferHeightEdit;
+    myLabel* imgPicHeightLbl;
+    myLineEdit* imgPicHeightEdit;
+    myLabel* imgVideoHeightLbl;
+    myLineEdit* imgVideoHeightEdit;
+    myLabel* imgSliderHeightLbl;
+    myLineEdit* imgSliderHeightEdit;
 };
 
 #endif // FACTORYSET_H

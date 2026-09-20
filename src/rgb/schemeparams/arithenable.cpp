@@ -1,23 +1,24 @@
 #include "arithenable.h"
+#include "configmgr.h"
 
 /**
  * @brief PageIdentify::PageIdentify
  * 构造识别参数页面
  * @param parent
  */
-PageIdentify::PageIdentify(QWidget *parent)
+PageIdentify::PageIdentify(QWidget* parent)
     : QWidget(parent)
 {
-/* import global params */
+    /* import global params */
     resetIdentifyParams();
 
-/* page init */
+    /* page init */
     createPage();
 
-/* page layout */
+    /* page layout */
     layoutPage();
 
-/* page update */
+    /* page update */
     updatePage();
 }
 
@@ -36,8 +37,8 @@ PageIdentify::~PageIdentify()
  */
 void PageIdentify::setIdentifyParams()
 {
-/* write params to memory */
-    /* material assemble mode */
+    /* write params to memory */
+        /* material assemble mode */
     setMatAssembleMode();
 
     /* arithmetic list enable */
@@ -53,16 +54,18 @@ void PageIdentify::setIdentifyParams()
  */
 void PageIdentify::resetIdentifyParams()
 {
-/* reset identify params */
-    /* mat material mode */
+    /* reset identify params */
+        /* mat material mode */
     m_nMatMode = struCnfp.nMatAssembleMode;
 
     /* arithmetic list count */
 
     /* arithmetic list enable */
     memset(m_nArithmeticEnable, 0, sizeof(m_nArithmeticEnable));
-    for (int i = 0; i < struCnfg.nLevelTotal; i++) {
-        for (int j = 0; j < struCnfe.nArithmeticTotal; j++) {
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
+    {
+        for (int j = 0; j < struCnfe.nArithmeticTotal; j++)
+        {
             m_nArithmeticEnable[i][j] = struCnfp.nArithmeticEnable[j];
         }
     }
@@ -88,7 +91,8 @@ int PageIdentify::getMatAssembleMode()
 void PageIdentify::setMatAssembleMode()
 {
     m_nMatMode = getMatAssembleMode();
-    if (struCnfp.nMatAssembleMode != m_nMatMode) {
+    if (struCnfp.nMatAssembleMode != m_nMatMode)
+    {
         struCnfp.nMatAssembleMode = m_nMatMode;
     }
 }
@@ -103,8 +107,10 @@ int PageIdentify::getArithmeticEnable()
     int i, nArithCount = 0;
 
     /* arithmetic list */
-    for (i = 0; i < arithmeticBox.size(); i++) {
-        if (arithmeticBox[i]->isChecked()) {
+    for (i = 0; i < arithmeticBox.size(); i++)
+    {
+        if (arithmeticBox[i]->isChecked())
+        {
             nArithCount++;
         }
     }
@@ -130,16 +136,17 @@ QList<int> PageIdentify::getMatAssembleModeList()
 {
     QList<int> list;
 
-    switch (struCnfe.nMachine) {
+    switch (struCnfe.nMachine)
+    {
     case MACHINE_CF:
         list << PARAMS_ALL_SEPARATE
-             << PARAMS_ALL_SAME
-             << PARAMS_FRONT_REAR_SAME
-             << PARAMS_FIRST_SECOND_SAME;
+            << PARAMS_ALL_SAME
+            << PARAMS_FRONT_REAR_SAME
+            << PARAMS_FIRST_SECOND_SAME;
         break;
     default:
         list << PARAMS_ALL_SEPARATE
-             << PARAMS_ALL_SAME;
+            << PARAMS_ALL_SAME;
         break;
     }
 
@@ -155,7 +162,8 @@ QList<int> PageIdentify::getMatAssembleModeList()
 QString PageIdentify::getMatAssembleModeName(int mode)
 {
     QString text = "";
-    switch (mode) {
+    switch (mode)
+    {
     case PARAMS_ALL_SAME:
         text = myLan.all_alike;
         break;
@@ -186,7 +194,7 @@ void PageIdentify::setMatModeCombo(int index)
         return;
 
     m_nMatMode = matModeCombo->itemData(index).toInt();
-    struCnfp.nMatAssembleMode =  m_nMatMode;
+    struCnfp.nMatAssembleMode = m_nMatMode;
 
     /*matModeCombo切换时，识别组参数立即修改*/
     myFlow.materialCopyAssemble(0, 0, 1, 0, 0);
@@ -201,11 +209,15 @@ void PageIdentify::setMatModeCombo(int index)
 void PageIdentify::setArithButton(int btnId)
 {
     /* enable arithmetic buttons */
-    if (arithmeticBox[btnId]->isChecked()) {
-        if (arithmeticSeq[btnId] == ARITH_WATERMELON) {
+    if (arithmeticBox[btnId]->isChecked())
+    {
+        if (arithmeticSeq[btnId] == ARITH_WATERMELON)
+        {
             //! 使能西瓜子算法可同时使能智能A
-            for (int i = 0; i < arithmeticSeq.size(); i++) {
-                if (i == btnId || arithmeticSeq[i] == ARITH_INTEL_A) {
+            for (int i = 0; i < arithmeticSeq.size(); i++)
+            {
+                if (i == btnId || arithmeticSeq[i] == ARITH_INTEL_A)
+                {
                     continue;
                 }
                 arithmeticBox[i]->setEnabled(false);
@@ -215,15 +227,22 @@ void PageIdentify::setArithButton(int btnId)
             }
             m_nArithmeticEnable[struGsh.nLevel][arithmeticSeq[btnId]] = 1;
             arithmeticBtn[btnId]->setEnabled(true);
-        } else {
+        }
+        else
+        {
             //! 智能A使能不受西瓜子算法使能影响
             if (m_nArithmeticEnable[struGsh.nLevel][ARITH_WATERMELON] == 0
-                    || arithmeticSeq[btnId] == ARITH_INTEL_A) {
+                || arithmeticSeq[btnId] == ARITH_INTEL_A)
+            {
                 m_nArithmeticEnable[struGsh.nLevel][arithmeticSeq[btnId]] = 1;
                 arithmeticBtn[btnId]->setEnabled(true);
-            } else {
-                for (int i = 0; i < arithmeticSeq.size(); i++) {
-                    if (arithmeticSeq[i] == ARITH_WATERMELON) {
+            }
+            else
+            {
+                for (int i = 0; i < arithmeticSeq.size(); i++)
+                {
+                    if (arithmeticSeq[i] == ARITH_WATERMELON)
+                    {
                         continue;
                     }
                     arithmeticBox[i]->setEnabled(false);
@@ -233,9 +252,13 @@ void PageIdentify::setArithButton(int btnId)
                 }
             }
         }
-    } else {
-        if (arithmeticSeq[btnId] == ARITH_WATERMELON) {
-            for (int i = 0; i < arithmeticSeq.size(); i++) {
+    }
+    else
+    {
+        if (arithmeticSeq[btnId] == ARITH_WATERMELON)
+        {
+            for (int i = 0; i < arithmeticSeq.size(); i++)
+            {
                 arithmeticBox[i]->setEnabled(true);
             }
         }
@@ -300,9 +323,9 @@ void PageIdentify::createPage()
     createArithmeticList();
 
     /* signals to slots */
-    connect(tabBar,         SIGNAL(currentChanged(int)),        this, SLOT(changeCurrentSlt(int)));
-    connect(matModeCombo,   SIGNAL(currentIndexChanged(int)),   this, SLOT(setMatModeCombo(int)));
-    connect(this,           SIGNAL(pageUpdated()),              this, SLOT(updatePage()));
+    connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(changeCurrentSlt(int)));
+    connect(matModeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setMatModeCombo(int)));
+    connect(this, SIGNAL(pageUpdated()), this, SLOT(updatePage()));
 }
 
 /**
@@ -319,14 +342,15 @@ void PageIdentify::createArithmeticList()
     arithmeticSeq.clear();
 
     /* construct arith list */
-    for (int i = 0; i < ARITHMETIC_TOTAL; i++) {
+    for (int i = 0; i < ARITHMETIC_TOTAL; i++)
+    {
         /* skip invalid arith */
         if (struCnfe.nArithmeticSeq[i] == 0)
             continue;
 
         /* skip specific arith */
         bIsHide = (i == ARITH_INTEL_A || i == ARITH_INTEL_B ||
-                   i == ARITH_INTEL_C || i == ARITH_INTEL_D);
+            i == ARITH_INTEL_C || i == ARITH_INTEL_D);
         if (bIsHide)
             continue;
 
@@ -335,12 +359,14 @@ void PageIdentify::createArithmeticList()
         arithmeticBtn.append(new myPushButton("", QIcon(), true, this));
         arithmeticSeq.append(i);
     }
-    if (myFlow.getProductLineNo() == 0) {
-        for(int i = 0; i < 2; i++) {
+    if (myFlow.getProductLineNo() == 0)
+    {
+        for (int i = 0; i < 2; i++)
+        {
             /* append hardcode arith list */
             arithmeticBox.append(new MyCheckBox("", this));
             arithmeticBtn.append(new myPushButton("", QIcon(), true, this));
-            arithmeticSeq.append(ARITH_INTEL_A+i);
+            arithmeticSeq.append(ARITH_INTEL_A + i);
         }
     }
 
@@ -348,7 +374,8 @@ void PageIdentify::createArithmeticList()
     sigBtnMapper = new QSignalMapper(this);
     sigBoxMapper = new QSignalMapper(this);
 
-    for (int i = 0; i < arithmeticBox.size(); i++) {
+    for (int i = 0; i < arithmeticBox.size(); i++)
+    {
         /* size policy */
         arithmeticBox[i]->setMinimumSize(BTN_HEIGHT, BTN_HEIGHT);
         arithmeticBtn[i]->setFocusPolicy(Qt::NoFocus);
@@ -360,7 +387,7 @@ void PageIdentify::createArithmeticList()
 
         sigBtnMapper->setMapping(arithmeticBtn[i], arithmeticSeq[i]);
         connect(arithmeticBtn[i], SIGNAL(pressed()), sigBtnMapper, SLOT(map()));
-     }
+    }
 
     /* signal to slots */
     connect(sigBoxMapper, SIGNAL(mapped(int)), this, SLOT(setArithButton(int)));
@@ -374,7 +401,8 @@ void PageIdentify::createArithmeticList()
 void PageIdentify::updateArithmeticName()
 {
     /* get arithmetic list name from hard code */
-    for (int i = 0; i < arithmeticSeq.size(); i++) {
+    for (int i = 0; i < arithmeticSeq.size(); i++)
+    {
         arithmeticBtn[i]->setText(myString.sArithmeticName[arithmeticSeq[i]]);
     }
 }
@@ -385,41 +413,56 @@ void PageIdentify::updateArithmeticName()
  */
 void PageIdentify::updateArithmeticState()
 {
-    for (int i = 0; i < arithmeticBtn.size(); i++) {
-        if (struCnfe.nArithmeticSeq[arithmeticSeq[i]] == 1 ) {
+    for (int i = 0; i < arithmeticBtn.size(); i++)
+    {
+        if (struCnfe.nArithmeticSeq[arithmeticSeq[i]] == 1)
+        {
             arithmeticBox[i]->show();
             arithmeticBtn[i]->show();
 
-            if (m_nArithmeticEnable[tabBar->currentIndex()][arithmeticSeq[i]] == 1) {
+            if (m_nArithmeticEnable[tabBar->currentIndex()][arithmeticSeq[i]] == 1)
+            {
                 arithmeticBox[i]->setChecked(true);
                 arithmeticBtn[i]->setEnabled(true);
                 //只展示，没法使能，同时置算法使能为否
-                if(struCnfg.aiEnable != 1){
-                    if(arithmeticSeq[i] ==  ARITH_PISTACHIO){
+                if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+                {
+                    if (arithmeticSeq[i] == ARITH_PISTACHIO)
+                    {
                         arithmeticBox[i]->setChecked(false);
                         arithmeticBox[i]->setEnabled(false);
                         arithmeticBtn[i]->setEnabled(false);
                         struCnfp.nArithmeticEnable[ARITH_PISTACHIO] == 0;
                     }
-                }else{
+                }
+                else
+                {
                     arithmeticBox[i]->setEnabled(true);
                 }
-            } else {
+            }
+            else
+            {
                 arithmeticBox[i]->setChecked(false);
                 arithmeticBtn[i]->setEnabled(false);
                 //只展示，没法使能，同时置算法使能为否
-                if(struCnfg.aiEnable != 1){
-                  if(arithmeticSeq[i] ==  ARITH_PISTACHIO){
-                      arithmeticBox[i]->setChecked(false);
-                      arithmeticBox[i]->setEnabled(false);
-                      arithmeticBtn[i]->setEnabled(false);
-                      struCnfp.nArithmeticEnable[ARITH_PISTACHIO] == 0;
-                  }
-                }else{
-                  arithmeticBox[i]->setEnabled(true);
+                if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+                {
+                    if (arithmeticSeq[i] == ARITH_PISTACHIO)
+                    {
+                        arithmeticBox[i]->setChecked(false);
+                        arithmeticBox[i]->setEnabled(false);
+                        arithmeticBtn[i]->setEnabled(false);
+                        struCnfp.nArithmeticEnable[ARITH_PISTACHIO] == 0;
+                    }
+                }
+                else
+                {
+                    arithmeticBox[i]->setEnabled(true);
                 }
             }
-        } else {
+        }
+        else
+        {
             arithmeticBox[i]->setChecked(false);
             arithmeticBtn[i]->setEnabled(false);
             arithmeticBox[i]->hide();
@@ -454,14 +497,16 @@ void PageIdentify::updateMatModeCombo(int mode)
 
     // 动态获取物料参数列表
     QList<int> list = getMatAssembleModeList();
-    for (int i = 0; i < list.count(); i++) {
+    for (int i = 0; i < list.count(); i++)
+    {
         matModeCombo->addItem(getMatAssembleModeName(list.at(i)), list.at(i));
     }
 
     // 匹配当前物料参数组合
     int index = matModeCombo->findData(mode);
-    if (index < 0) {
-        index = matModeCombo->count()-1;
+    if (index < 0)
+    {
+        index = matModeCombo->count() - 1;
     }
     connect(matModeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setMatModeCombo(int)));
     matModeCombo->setCurrentIndex(index);
@@ -477,7 +522,8 @@ void PageIdentify::changeCurrentSlt(int index)
     if (index < 0)
         return;
 
-    switch (struCnfe.nMachine) {
+    switch (struCnfe.nMachine)
+    {
     default:
         struGsh.nLevel = ONE_LEVEL;
         break;
@@ -509,37 +555,41 @@ void PageIdentify::updateArithmeticLayout()
     /* clear arithmetic item layout */
     arithmeticLayout.clear();
 
-    for (int i = 0; i < arithmeticBox.size(); i++) {
+    for (int i = 0; i < arithmeticBox.size(); i++)
+    {
         arithmeticLayout.append(new QFormLayout);
         arithmeticLayout[i]->addRow(arithmeticBox[i], arithmeticBtn[i]);
     }
 
     /* clear arithmetic list layout */
-    for (int i = gridLayout->count()-1; i >= 0; i--) {
+    for (int i = gridLayout->count() - 1; i >= 0; i--)
+    {
         gridLayout->removeItem(gridLayout->itemAt(i));
     }
 
     /* add arithmetic item to grid layout */
 
     gridLayout->addWidget(matModeCombo, 0, 0, 1, 2);
-    for (int i = 0; i < arithmeticBox.size(); i++) {
-        gridLayout->addLayout(arithmeticLayout[i], i/2+1, i%2, Qt::AlignRight);
+    for (int i = 0; i < arithmeticBox.size(); i++)
+    {
+        gridLayout->addLayout(arithmeticLayout[i], i / 2 + 1, i % 2, Qt::AlignRight);
     }
 
 #if 0
-    gridLayout->setColumnStretch(0,4);
-    gridLayout->setColumnStretch(1,1);
-    gridLayout->setColumnStretch(2,4);
+    gridLayout->setColumnStretch(0, 4);
+    gridLayout->setColumnStretch(1, 1);
+    gridLayout->setColumnStretch(2, 4);
 
     gridLayout->addWidget(matModeCombo, 0, 0, 1, 3);
     gridLayout->setSpacing(25);
-    for (int i = 0; i < arithmeticBox.size(); i++) {
-        if(i%2==0)
-            gridLayout->addLayout(arithmeticLayout[i], i/2+1, 0, Qt::AlignRight);
+    for (int i = 0; i < arithmeticBox.size(); i++)
+    {
+        if (i % 2 == 0)
+            gridLayout->addLayout(arithmeticLayout[i], i / 2 + 1, 0, Qt::AlignRight);
         else
-            gridLayout->addLayout(arithmeticLayout[i], i/2+1, 2, Qt::AlignRight);
+            gridLayout->addLayout(arithmeticLayout[i], i / 2 + 1, 2, Qt::AlignRight);
 
-    }
+}
 #endif
 }
 
@@ -553,15 +603,15 @@ void PageIdentify::layoutPage()
     gridLayout = new QGridLayout(arithmeticGroup);
     updateArithmeticLayout();
 
-    QScrollArea *scrollArea = new QScrollArea;
+    QScrollArea* scrollArea = new QScrollArea;
     scrollArea->setWidget(arithmeticGroup);
     scrollArea->setStyleSheet("width: 30");
     scrollArea->setWidgetResizable(true);
 
     /* main layout */
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+    QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->addWidget(tabBar);
     mainLayout->addWidget(scrollArea);
-    mainLayout->setContentsMargins(0,10,5,5);
+    mainLayout->setContentsMargins(0, 10, 5, 5);
     setLayout(mainLayout);
 }

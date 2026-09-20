@@ -10,6 +10,7 @@
 #include <cstring>
 #include <vector>
 #include "unilog.h"
+#include "configmgr.h"
 #ifdef Q_OS_UNIX
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -1204,7 +1205,7 @@ int AIMainWidget::getUnitProtocal(int nUnit)
     {
         proto = PROTOCAL_3;
     }
-    if (struCnfg.aiEnable == 1)
+    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         proto = PROTOCAL_4;
     }
@@ -2250,7 +2251,7 @@ void AIMainWidget::processImageDataFromCamera(CaptureConfig& captureConfig)
     }
     else if (captureConfig.nTransType == 1)
     {
-        if (struCnfg.aiEnable == 1)
+        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
         {
             processImageDataFromCameraByAIEN(captureConfig);
         }

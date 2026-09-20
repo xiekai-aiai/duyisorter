@@ -1393,12 +1393,6 @@ bool GlobalFlow::getGlobalSetting(const QString& fileName)
             struCnfg.nThroughtPut[i]).toULongLong();
     }
 
-    struCnfg.aiEnable = setting.value(QString("%1-%2").arg(1).arg(63), struCnfg.aiEnable).toInt();
-    struCnfg.imgFetchHeight = setting.value(QString("%1-%2").arg(1).arg(64), struCnfg.imgFetchHeight).toInt();
-    struCnfg.imgInferHeight = setting.value(QString("%1-%2").arg(1).arg(65), struCnfg.imgInferHeight).toInt();
-    struCnfg.imgPicHeight = setting.value(QString("%1-%2").arg(1).arg(66), struCnfg.imgPicHeight).toInt();
-    struCnfg.imgVideoHeight = setting.value(QString("%1-%2").arg(1).arg(67), struCnfg.imgVideoHeight).toInt();
-
     /* return value */
     if (setting.status() == QSettings::NoError)
         return true;
@@ -1851,28 +1845,6 @@ bool GlobalFlow::saveGlobalSetting(const QString& fileName)
         setting.setValue(QString("%1-%2").arg(1).arg(62), struCnfg.nPressureAlarmCount);
     }
 
-    /* enable ai */
-    if (struCnfg.aiEnable != _t_struCnfg.aiEnable)
-    {
-        setting.setValue(QString("%1-%2").arg(1).arg(63), struCnfg.aiEnable);
-    }
-    if (struCnfg.imgFetchHeight != _t_struCnfg.imgFetchHeight)
-    {
-        setting.setValue(QString("%1-%2").arg(1).arg(64), struCnfg.imgFetchHeight);
-    }
-    if (struCnfg.imgInferHeight != _t_struCnfg.imgInferHeight)
-    {
-        setting.setValue(QString("%1-%2").arg(1).arg(65), struCnfg.imgInferHeight);
-    }
-    if (struCnfg.imgPicHeight != _t_struCnfg.imgPicHeight)
-    {
-        setting.setValue(QString("%1-%2").arg(1).arg(66), struCnfg.imgPicHeight);
-    }
-    if (struCnfg.imgVideoHeight != _t_struCnfg.imgVideoHeight)
-    {
-        setting.setValue(QString("%1-%2").arg(1).arg(67), struCnfg.imgVideoHeight);
-    }
-
     //总产量
     for (int i = 0; i < MAX_UNIT / 2; i++)
     {
@@ -2004,13 +1976,6 @@ void GlobalFlow::getGlobal()
     struCnfg.bFactor = 0.219758440421461;
 
     struCnfg.bAssitCameraEnable = 0;
-
-    struCnfg.aiEnable = 0;
-    struCnfg.imgFetchHeight = 512;
-    struCnfg.imgInferHeight = 64;
-    struCnfg.imgPicHeight = 500;
-    struCnfg.imgVideoHeight = 500;
-
 
     /* 获取预制方案父节点和子节点名称 */
     getPrefixedName();

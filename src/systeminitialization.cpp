@@ -7,19 +7,20 @@
  * \date        2015.01.14
  */
 #include "systeminitialization.h"
-/**
- * @brief communication::通信自检控件
- * @param parent
- */
-communication::communication(QWidget *parent) :
+#include "configmgr.h"
+ /**
+  * @brief communication::通信自检控件
+  * @param parent
+  */
+communication::communication(QWidget* parent) :
     QWidget(parent)
 {
-    waitCommLabel  = new myLabel(myLan.msg_communicating, this);
+    waitCommLabel = new myLabel(myLan.msg_communicating, this);
 
     /*页面布局*/
-    commVBLayout =new QVBoxLayout(this);
+    commVBLayout = new QVBoxLayout(this);
     commVBLayout->addWidget(waitCommLabel);
-//    setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT-LCD_STATUS_HEIGHT-10);
+    //    setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT-LCD_STATUS_HEIGHT-10);
 }
 /**
  *   自动通信检测功能
@@ -28,45 +29,49 @@ void communication::startComSlt()
 {
     int ret = 0;
     int ret1 = 0;
-//#ifdef Q_OS_UNIX
-    if(myMachineInfo.macEncyCheck()) {
+    //#ifdef Q_OS_UNIX
+    if (myMachineInfo.macEncyCheck())
+    {
         setDccryt dlg;
         ret = dlg.exec();
-        if (ret == QDialog::Accepted) {
+        if (ret == QDialog::Accepted)
+        {
 
         }
     }
-//    if (paramDelayCode.delayCodeGetTime() && struCnfg.nEnableDelayCodeInfo && paramDelayCode.limitCnt == 255) {
-//	    if ((paramDelayCode.m_nDelayCodeTime > 0 && paramDelayCode.m_nDelayCodeTime <= 240*3600)) {
-//		    myMessageBox msgBox(MSG_WARN,"");
-//		    if (paramDelayCode.m_bDelayCodeType) {
-//			QString str = QString("%1%2%3").arg(myLan.dc_limit_info).arg((int)(paramDelayCode.m_nDelayCodeTime/(24*3600))).arg(myLan.day);
-//			msgBox.setText(str);
-//		    }
-//		    else {
-//			QString str = QString("%1%2%3").arg(myLan.dc_limit_info).arg((int)(paramDelayCode.m_nDelayCodeTime/3600)).arg(myLan.hour);
-//			msgBox.setText(str);
-//		    }
-//		    msgBox.exec();
-//	    }
-//    }
-//    if (paramDelayCode.limitCnt < 5) {
+    //    if (paramDelayCode.delayCodeGetTime() && struCnfg.nEnableDelayCodeInfo && paramDelayCode.limitCnt == 255) {
+    //	    if ((paramDelayCode.m_nDelayCodeTime > 0 && paramDelayCode.m_nDelayCodeTime <= 240*3600)) {
+    //		    myMessageBox msgBox(MSG_WARN,"");
+    //		    if (paramDelayCode.m_bDelayCodeType) {
+    //			QString str = QString("%1%2%3").arg(myLan.dc_limit_info).arg((int)(paramDelayCode.m_nDelayCodeTime/(24*3600))).arg(myLan.day);
+    //			msgBox.setText(str);
+    //		    }
+    //		    else {
+    //			QString str = QString("%1%2%3").arg(myLan.dc_limit_info).arg((int)(paramDelayCode.m_nDelayCodeTime/3600)).arg(myLan.hour);
+    //			msgBox.setText(str);
+    //		    }
+    //		    msgBox.exec();
+    //	    }
+    //    }
+    //    if (paramDelayCode.limitCnt < 5) {
 
-//         myMessageBox msgBox(MSG_WARN,"");
-//         QString str = QString("%1\n%2%3%4").arg(myLan.dc_rtc_erro).arg(myLan.dc_limit_info).arg((int)(5-paramDelayCode.limitCnt)).arg(myLan.dc_cnt);
-//         msgBox.setText(str);
-//         msgBox.exec();
-//    }
+    //         myMessageBox msgBox(MSG_WARN,"");
+    //         QString str = QString("%1\n%2%3%4").arg(myLan.dc_rtc_erro).arg(myLan.dc_limit_info).arg((int)(5-paramDelayCode.limitCnt)).arg(myLan.dc_cnt);
+    //         msgBox.setText(str);
+    //         msgBox.exec();
+    //    }
     myFlow.initInterfaceTransMode(0);
     ret = myFlow.initCommunication();
     ret1 = myFlow.initAiCommunication();
 
-//#endif
-    if (ret == 1 || ret1 == 1) {
+    //#endif
+    if (ret == 1 || ret1 == 1)
+    {
         emit updateCommunicationSig();
         emit goToCommListPageSig();     // 自检失败，进入自检列表页面
     }
-    else {
+    else
+    {
         emit goToInitPageSig();         // 自检成功，进入系统初始化页面
     }
 }
@@ -78,70 +83,89 @@ void communicationList::commuUpdateInterface()
 {
     int i, j;
 
-    for (i = 0; i < struCnfg.nInterfaceBoardTotal; i++){
-//        interfaceListLabel[i][0]->setText(QString("%1").arg("接口板"));
+    for (i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
+    {
+        //        interfaceListLabel[i][0]->setText(QString("%1").arg("接口板"));
         interfaceListLabel[i][0]->setText(QString("%1").arg(myLan.interface_board));
 
-//        interfaceListLabel[i][0]->setText(QString("%1").arg(i+1));
-        if (struGsh.nIntBaud[i] == MY_UARTBAUD_115200) {
+        //        interfaceListLabel[i][0]->setText(QString("%1").arg(i+1));
+        if (struGsh.nIntBaud[i] == MY_UARTBAUD_115200)
+        {
             interfaceListLabel[i][1]->setText(myLan.normal);
             interfaceListLabel[i][1]->setStyleSheet("color:black");
-        } else if (struGsh.nIntBaud[i] == MY_UARTBAUD_921600) {
-//            interfaceListLabel[i][1]->setText(myLan.normal+"1");
+        }
+        else if (struGsh.nIntBaud[i] == MY_UARTBAUD_921600)
+        {
+            //            interfaceListLabel[i][1]->setText(myLan.normal+"1");
             interfaceListLabel[i][1]->setText(myLan.normal);
 
             interfaceListLabel[i][1]->setStyleSheet("color:black");
-        } else {
-          interfaceListLabel[i][1]->setText(myLan.abnormal);
-          interfaceListLabel[i][1]->setStyleSheet("color:red");
+        }
+        else
+        {
+            interfaceListLabel[i][1]->setText(myLan.abnormal);
+            interfaceListLabel[i][1]->setStyleSheet("color:red");
         }
     }
 
-    for (i = struCnfg.nInterfaceBoardTotal; i < MAX_INT; i++){
-        for (j = 0; j < 2; j++){
+    for (i = struCnfg.nInterfaceBoardTotal; i < MAX_INT; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
             interfaceListLabel[i][j]->hide();
         }
     }
 
     /** 黑白机型下不显示固件版本 */
         //todo
-        interfaceListLabel[MAX_INT][0]->setText("USB");
-//        interfaceListLabel[MAX_INT][0]->setText("USB接口");
-        if (struGsh.struVer.nUsbFirmware == 255) {
-            interfaceListLabel[MAX_INT][1]->setText(myLan.abnormal);
-            interfaceListLabel[MAX_INT][1]->setStyleSheet("color:red");
-        } else {
-            interfaceListLabel[MAX_INT][1]->setText(myLan.normal);
-            interfaceListLabel[MAX_INT][1]->setStyleSheet("color:black");
-        }
-        interfaceListLabel[MAX_INT][0]->hide();
-        interfaceListLabel[MAX_INT][1]->hide();
+    interfaceListLabel[MAX_INT][0]->setText("USB");
+    //        interfaceListLabel[MAX_INT][0]->setText("USB接口");
+    if (struGsh.struVer.nUsbFirmware == 255)
+    {
+        interfaceListLabel[MAX_INT][1]->setText(myLan.abnormal);
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:red");
+    }
+    else
+    {
+        interfaceListLabel[MAX_INT][1]->setText(myLan.normal);
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:black");
+    }
+    interfaceListLabel[MAX_INT][0]->hide();
+    interfaceListLabel[MAX_INT][1]->hide();
 }
 
 void communicationList::commuUpdateCtrl()
 {
     int i, j;
 
-    for(i = 0; i < struCnfg.nCtrlBoardTotal; i++){
-    controlListLabel[i][0]->setText(QString("%1").arg(myLan.control_board));
-//    controlListLabel[i][0]->setText(QString("%1").arg("主控板"));
+    for (i = 0; i < struCnfg.nCtrlBoardTotal; i++)
+    {
+        controlListLabel[i][0]->setText(QString("%1").arg(myLan.control_board));
+        //    controlListLabel[i][0]->setText(QString("%1").arg("主控板"));
 
-//        controlListLabel[i][0]->setText(QString("%1").arg(i+1));
-        if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_115200) {
+        //        controlListLabel[i][0]->setText(QString("%1").arg(i+1));
+        if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_115200)
+        {
             controlListLabel[i][1]->setText(myLan.normal);
             controlListLabel[i][1]->setStyleSheet("color:black");
-        } else if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_921600) {
-//            controlListLabel[i][1]->setText(myLan.normal+"1");
+        }
+        else if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_921600)
+        {
+            //            controlListLabel[i][1]->setText(myLan.normal+"1");
             controlListLabel[i][1]->setText(myLan.normal);
 
             controlListLabel[i][1]->setStyleSheet("color:black");
-        } else {
-          controlListLabel[i][1]->setText(myLan.abnormal);
-          controlListLabel[i][1]->setStyleSheet("color:red");
+        }
+        else
+        {
+            controlListLabel[i][1]->setText(myLan.abnormal);
+            controlListLabel[i][1]->setStyleSheet("color:red");
         }
     }
-    for(i = struCnfg.nCtrlBoardTotal; i < MAX_CTRL; i++){
-        for(j = 0; j < 2; j++){
+    for (i = struCnfg.nCtrlBoardTotal; i < MAX_CTRL; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
             controlListLabel[i][j]->hide();
         }
     }
@@ -160,8 +184,10 @@ void communicationList::commuUpdateCameraMultiView()
     cameraListLabel[0][3]->setText(myLan.upper_slave_view);
     cameraListLabel[0][4]->setText(myLan.lower_slave_view);
 
-    for (j = 0; j < struCnfg.nLevelTotal; j++) {
-   		for (i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++) {
+    for (j = 0; j < struCnfg.nLevelTotal; j++)
+    {
+        for (i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+        {
 
             nUnitTmp = struCnfg.struLevelInfo[j].nUnitId[i];
             locateTmp = (nUnitTmp % 2) + 1;
@@ -169,10 +195,13 @@ void communicationList::commuUpdateCameraMultiView()
             /*内容行*/
             lineTmp = i / 2 + 1;
             cameraListLabel[lineTmp][0]->setText(QString("%1").arg(lineTmp));//滑槽列
-            if ((struGsh.struVer.sUnit[j][i][0] != 255) && (struGsh.struVer.sUnit[j][i][1] != 255)) {
+            if ((struGsh.struVer.sUnit[j][i][0] != 255) && (struGsh.struVer.sUnit[j][i][1] != 255))
+            {
                 cameraListLabel[lineTmp][locateTmp]->setText(myLan.normal);
                 cameraListLabel[lineTmp][locateTmp]->setStyleSheet("color:black");
-            } else {
+            }
+            else
+            {
                 cameraListLabel[lineTmp][locateTmp]->setText(myLan.abnormal);
                 cameraListLabel[lineTmp][locateTmp]->setStyleSheet("color:red");
             }
@@ -182,8 +211,10 @@ void communicationList::commuUpdateCameraMultiView()
     cameraListLabel[lineTmp + 1][3]->setStyleSheet("color:black");
     cameraListLabel[lineTmp + 1][4]->setText("- -");
     cameraListLabel[lineTmp + 1][4]->setStyleSheet("color:black");
-    for(i = (struCnfg.struLevelInfo[0].nUnitLevelTotal+2)/4+1; i < MAX_UNIT/2+1; i++){
-        for(j = 0; j < MAX_BACKGROUND_GROUP + 3; j++){
+    for (i = (struCnfg.struLevelInfo[0].nUnitLevelTotal + 2) / 4 + 1; i < MAX_UNIT / 2 + 1; i++)
+    {
+        for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
+        {
             cameraListLabel[i][j]->hide();
         }
     }
@@ -198,76 +229,97 @@ void communicationList::commuUpdateCamera()
     hideColumn(7);
 
     hideColumn(5);
-    if(struCnfe.nMachine == MACHINE_CF) {
-        for(i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal+1; i++){
-            cameraListLabel[(i+1)/2][0]->setText(QString("%1").arg(i/2));
-            for (j = 0; j < struCnfg.nLevelTotal; j++) {
-                id = struCnfg.struLevelInfo[j].nUnitId[i-1];
-                front_rear = (id%2 == 0) ? 1 : 2;
+    if (struCnfe.nMachine == MACHINE_CF)
+    {
+        for (i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; i++)
+        {
+            cameraListLabel[(i + 1) / 2][0]->setText(QString("%1").arg(i / 2));
+            for (j = 0; j < struCnfg.nLevelTotal; j++)
+            {
+                id = struCnfg.struLevelInfo[j].nUnitId[i - 1];
+                front_rear = (id % 2 == 0) ? 1 : 2;
 
-                if((struGsh.struVer.sUnit[j][i-1][0] != 255) && (struGsh.struVer.sUnit[j][i-1][1] != 255)) {
-                      cameraListLabel[(i+1)/2][front_rear]->setText(myLan.normal);
-                      cameraListLabel[(i+1)/2][front_rear]->setStyleSheet("color:black");
+                if ((struGsh.struVer.sUnit[j][i - 1][0] != 255) && (struGsh.struVer.sUnit[j][i - 1][1] != 255))
+                {
+                    cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.normal);
+                    cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:black");
                 }
-                else {
-                      cameraListLabel[(i+1)/2][front_rear]->setText(myLan.abnormal);
-                      cameraListLabel[(i+1)/2][front_rear]->setStyleSheet("color:red");
+                else
+                {
+                    cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.abnormal);
+                    cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:red");
                 }
             }
         }
         cameraListLabel[0][0]->setText(myLan.chute);
-//        cameraListLabel[0][0]->setText("通道");
+        //        cameraListLabel[0][0]->setText("通道");
         cameraListLabel[0][1]->setText(myLan.front_view);
         cameraListLabel[0][2]->setText(myLan.rear_view);
 
-        for(i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal+1; i++){
-            cameraListLabel[(i+1)/2][0]->setText(QString("%1").arg(i/2));
-            for (j = 0; j < struCnfg.nLevelTotal; j++) {
-                id = struCnfg.struLevelInfo[j].nUnitId[i-1];
-                front_rear = (id%2 == 0) ? 3 : 4;
+        for (i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; i++)
+        {
+            cameraListLabel[(i + 1) / 2][0]->setText(QString("%1").arg(i / 2));
+            for (j = 0; j < struCnfg.nLevelTotal; j++)
+            {
+                id = struCnfg.struLevelInfo[j].nUnitId[i - 1];
+                front_rear = (id % 2 == 0) ? 3 : 4;
             }
         }
-        cameraListLabel[0][3]->setText(myLan.infra+"-"+myLan.front);
-        cameraListLabel[0][4]->setText(myLan.infra+"-"+myLan.rear);
+        cameraListLabel[0][3]->setText(myLan.infra + "-" + myLan.front);
+        cameraListLabel[0][4]->setText(myLan.infra + "-" + myLan.rear);
 
-        if(struCnfg.aiEnable == 1){
+        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+        {
             cameraListLabel[0][3]->setText("AI");
-            for (int k = 1; k < struCnfg.struLevelInfo[0].nUnitLevelTotal+1; k++) {
-                int nAddr = struCnfg.struLevelInfo[0].nUnitId[k-1];
-                if(nAddr%2 == 0){
-                    if(struGsh.aiResult[(k-1)/2] != QString("")){
-                        cameraListLabel[(k+1)/2][3]->setText(myLan.normal);
-                        cameraListLabel[(k+1)/2][3]->setStyleSheet("color:black");
-                    }else{
-                        cameraListLabel[(k+1)/2][3]->setText(myLan.abnormal);
-                        cameraListLabel[(k+1)/2][3]->setStyleSheet("color:red");
+            for (int k = 1; k < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; k++)
+            {
+                int nAddr = struCnfg.struLevelInfo[0].nUnitId[k - 1];
+                if (nAddr % 2 == 0)
+                {
+                    if (struGsh.aiResult[(k - 1) / 2] != QString(""))
+                    {
+                        cameraListLabel[(k + 1) / 2][3]->setText(myLan.normal);
+                        cameraListLabel[(k + 1) / 2][3]->setStyleSheet("color:black");
+                    }
+                    else
+                    {
+                        cameraListLabel[(k + 1) / 2][3]->setText(myLan.abnormal);
+                        cameraListLabel[(k + 1) / 2][3]->setStyleSheet("color:red");
                     }
                 }
             }
         }
 
         showColumn(5);
-        for(i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal/2+1; i++){
-            if (!(struCnfe.nDerivedDevType & 0x0001)) {
+        for (i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 + 1; i++)
+        {
+            if (!(struCnfe.nDerivedDevType & 0x0001))
+            {
                 cameraListLabel[i][1]->hide();
             }
-            if (!(struCnfe.nDerivedDevType & 0x0002)) {
+            if (!(struCnfe.nDerivedDevType & 0x0002))
+            {
                 cameraListLabel[i][2]->hide();
             }
-            if ((struCnfe.nDerivedDevType & 0x01000100) != 0x01000100) {
+            if ((struCnfe.nDerivedDevType & 0x01000100) != 0x01000100)
+            {
                 cameraListLabel[i][3]->hide();
             }
-            if ((struCnfe.nDerivedDevType & 0x01000200) != 0x01000200) {
+            if ((struCnfe.nDerivedDevType & 0x01000200) != 0x01000200)
+            {
                 cameraListLabel[i][4]->hide();
             }
         }
 
-        if(struCnfg.aiEnable == 1){
+        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+        {
             cameraListLabel[i][3]->show();
         }
 
-        for(i = struCnfg.struLevelInfo[0].nUnitLevelTotal/2+1; i < MAX_UNIT/2+1; i++) {
-            for(j = 0; j < MAX_BACKGROUND_GROUP + 3; j++){
+        for (i = struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 + 1; i < MAX_UNIT / 2 + 1; i++)
+        {
+            for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
+            {
                 cameraListLabel[i][j]->hide();
             }
         }
@@ -281,18 +333,23 @@ void communicationList::commuUpdateCameraRS()
     int id;
 
     /* 主配 */
-    for (int i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal+1; i++) {
-        cameraListLabel[(i+1)/2][0]->setText(QString("%1").arg(i/2));
-        for (int j = 0; j < struCnfg.nLevelTotal; j++) {
-            id = struCnfg.struLevelInfo[0].nUnitId[i-1];
-            front_rear = (id%2 == 0) ? 1 : 2;
+    for (int i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; i++)
+    {
+        cameraListLabel[(i + 1) / 2][0]->setText(QString("%1").arg(i / 2));
+        for (int j = 0; j < struCnfg.nLevelTotal; j++)
+        {
+            id = struCnfg.struLevelInfo[0].nUnitId[i - 1];
+            front_rear = (id % 2 == 0) ? 1 : 2;
 
-            if((struGsh.struVer.sUnit[j][i-1][0] != 255) && (struGsh.struVer.sUnit[j][i-1][1] != 255)) {
-                  cameraListLabel[(i+1)/2][front_rear]->setText(myLan.normal);
-                  cameraListLabel[(i+1)/2][front_rear]->setStyleSheet("color:black");
-            } else {
-                  cameraListLabel[(i+1)/2][front_rear]->setText(myLan.abnormal);
-                  cameraListLabel[(i+1)/2][front_rear]->setStyleSheet("color:red");
+            if ((struGsh.struVer.sUnit[j][i - 1][0] != 255) && (struGsh.struVer.sUnit[j][i - 1][1] != 255))
+            {
+                cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.normal);
+                cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:black");
+            }
+            else
+            {
+                cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.abnormal);
+                cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:red");
             }
         }
     }
@@ -304,8 +361,10 @@ void communicationList::commuUpdateCameraRS()
     hideColumn(4);
     hideColumn(5);
 
-    for(int i = struCnfg.struLevelInfo[0].nUnitLevelTotal/2+1; i < MAX_UNIT/2+1; i++) {
-        for (int j = 0; j < 5; j++) {
+    for (int i = struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 + 1; i < MAX_UNIT / 2 + 1; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
             cameraListLabel[i][j]->hide();
         }
     }
@@ -314,23 +373,30 @@ void communicationList::commuUpdateCameraRS()
 /* 更新恒流源板版本信息 */
 void communicationList::commuUpdateLightSrc()
 {
-    for (int i = 0; i < struCnfg.nLampAINum; i++) {
-        m_lightSrcLabel[i][0]->setText(QString("%1").arg(i+1));
+    for (int i = 0; i < struCnfg.nLampAINum; i++)
+    {
+        m_lightSrcLabel[i][0]->setText(QString("%1").arg(i + 1));
 
         /** 若恒流源板未使用则显示"--" */
-        if (struCnfg.nCurSrcBoradLampNum[i] == 0) {
+        if (struCnfg.nCurSrcBoradLampNum[i] == 0)
+        {
             m_lightSrcLabel[i][1]->setText("--");
             m_lightSrcLabel[i][1]->setStyleSheet("color:black");
-        } else if (struGsh.struVer.sLightSrc[i][0] != 255 && struGsh.struVer.sLightSrc[i][1] != 255) {
+        }
+        else if (struGsh.struVer.sLightSrc[i][0] != 255 && struGsh.struVer.sLightSrc[i][1] != 255)
+        {
             m_lightSrcLabel[i][1]->setText(myLan.normal);
             m_lightSrcLabel[i][1]->setStyleSheet("color:black");
-        } else {
+        }
+        else
+        {
             m_lightSrcLabel[i][1]->setText(myLan.abnormal);
             m_lightSrcLabel[i][1]->setStyleSheet("color:red");
         }
     }
 
-    for (int i = struCnfg.nLampAINum; i < MAX_LIGHT_SOURCE; i++) {
+    for (int i = struCnfg.nLampAINum; i < MAX_LIGHT_SOURCE; i++)
+    {
         m_lightSrcLabel[i][0]->hide();
         m_lightSrcLabel[i][1]->hide();
     }
@@ -339,16 +405,18 @@ void communicationList::commuUpdateLightSrc()
 /* 隐藏某一列 */
 void communicationList::hideColumn(int index)
 {
-    for (int i = 0; i < MAX_UNIT/2+1; i++) {
-        cameraListLabel[i][index-1]->hide();
+    for (int i = 0; i < MAX_UNIT / 2 + 1; i++)
+    {
+        cameraListLabel[i][index - 1]->hide();
     }
 }
 
 /* 显示某一列 */
 void communicationList::showColumn(int index)
 {
-    for (int i = 0; i < MAX_UNIT/2+1; i++) {
-        cameraListLabel[i][index-1]->show();
+    for (int i = 0; i < MAX_UNIT / 2 + 1; i++)
+    {
+        cameraListLabel[i][index - 1]->show();
     }
 }
 
@@ -361,7 +429,7 @@ void communicationList::updateCommunicationResultSlt()
     commuUpdateLightSrc();
 }
 
-communicationList::communicationList(QWidget *parent) :
+communicationList::communicationList(QWidget* parent) :
     QWidget(parent)
 {
     int i, j;
@@ -371,14 +439,14 @@ communicationList::communicationList(QWidget *parent) :
     /* 接口板 */
     commListGridLayout = new QGridLayout();
     commListGridLayout->setSpacing(2);
-    commListGridLayout->setContentsMargins(50,0,50,10);
+    commListGridLayout->setContentsMargins(50, 0, 50, 10);
 
     interfaceBoardListGroup = new myGroupBox("");
     interfaceBoardListGroup->setObjectName("interfaceBoardListGroup");
-//    interfaceBoardListGroup->setStyleSheet("QGroupBox#interfaceBoardListGroup { border: 2px solid black; }");
+    //    interfaceBoardListGroup->setStyleSheet("QGroupBox#interfaceBoardListGroup { border: 2px solid black; }");
     interfaceBoardListGroup->setStyleSheet("QGroupBox#interfaceBoardListGroup { border: none; }");
 
-//    interfaceListLayout = new QGridLayout(interfaceBoardListGroup);
+    //    interfaceListLayout = new QGridLayout(interfaceBoardListGroup);
     interfaceListLayout = new QGridLayout;
     interfaceListLayout->setVerticalSpacing(50);
 
@@ -386,13 +454,13 @@ communicationList::communicationList(QWidget *parent) :
     newInterfaceBoardListGroup = new myGroupBox("");
     newInterfaceListLayout = new QGridLayout(newInterfaceBoardListGroup);
     newInterfaceBoardListGroup->setObjectName("newInterfaceBoardListGroup");
-//    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup title: { padding:0 1px;}");
-//    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup::title { px 0 3 px }");
+    //    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup title: { padding:0 1px;}");
+    //    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup::title { px 0 3 px }");
     newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup { border: 2px solid black; }");
 
-//    newInterfaceBoardListGroup->setAlignment(Qt::AlignHCenter);
+    //    newInterfaceBoardListGroup->setAlignment(Qt::AlignHCenter);
     newInterfaceListLayout->setSpacing(5);
-    newInterfaceListLayout->setContentsMargins(5,0,15,15);
+    newInterfaceListLayout->setContentsMargins(5, 0, 15, 15);
 
     /* 控制板 */
     ctrlBoardListGroup = new myGroupBox(myLan.control_board);
@@ -410,8 +478,10 @@ communicationList::communicationList(QWidget *parent) :
     m_lightSrcListGroup = new myGroupBox(myLan.light_src_board);
     m_lightSrcLay = new QGridLayout(m_lightSrcListGroup);
 
-    for (i = 0; i < MAX_LIGHT_SOURCE; i++) {
-        for (j = 0; j < 2; j++) {
+    for (i = 0; i < MAX_LIGHT_SOURCE; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
             m_lightSrcLabel[i][j] = new QLabel;
             m_lightSrcLabel[i][j]->setFont(config->getFont());
             m_lightSrcLabel[i][j]->setAlignment(Qt::AlignCenter);
@@ -419,46 +489,52 @@ communicationList::communicationList(QWidget *parent) :
         }
     }
 
-    for (i = 0; i < MAX_CTRL; i++) {
-        for (j = 0; j < 2; j++) {
+    for (i = 0; i < MAX_CTRL; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
             controlListLabel[i][j] = new QLabel;
             controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
             controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
-            interfaceListLayout->addWidget(controlListLabel[i][j],j,i);
+            interfaceListLayout->addWidget(controlListLabel[i][j], j, i);
         }
     }
 
-    for (i = 0; i < MAX_INT+1; i++) {
-        for (j = 0; j < 2; j++) {
+    for (i = 0; i < MAX_INT + 1; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
             interfaceListLabel[i][j] = new QLabel;
             interfaceListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             interfaceListLabel[i][j]->setAlignment(Qt::AlignCenter);
-            interfaceListLayout->addWidget(interfaceListLabel[i][j],j,i+MAX_CTRL);
+            interfaceListLayout->addWidget(interfaceListLabel[i][j], j, i + MAX_CTRL);
         }
     }
 
 
-//    for (i = 0; i < MAX_CTRL; i++) {
-//        for (j = 0; j < 2; j++) {
-//            controlListLabel[i][j] = new QLabel;
-//            controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
-//            controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
-////            controlListLayout->addWidget(controlListLabel[i][j],i,j);
-//        }
-//    }
+    //    for (i = 0; i < MAX_CTRL; i++) {
+    //        for (j = 0; j < 2; j++) {
+    //            controlListLabel[i][j] = new QLabel;
+    //            controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
+    //            controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    ////            controlListLayout->addWidget(controlListLabel[i][j],i,j);
+    //        }
+    //    }
 
-    for (i = 0; i < MAX_UNIT / 2 + 1; i++) {
-        for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++) {
+    for (i = 0; i < MAX_UNIT / 2 + 1; i++)
+    {
+        for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
+        {
             cameraListLabel[i][j] = new QLabel;
             cameraListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             cameraListLabel[i][j]->setAlignment(Qt::AlignHCenter);
-            cameraListLayout->addWidget(cameraListLabel[i][j],i,j);
+            cameraListLayout->addWidget(cameraListLabel[i][j], i, j);
         }
     }
 
     cameraStateLbl = new QLabel;
     cameraStateLbl->setText(myLan.cameraList);
-//    cameraStateLbl->setText("相机状态");
+    //    cameraStateLbl->setText("相机状态");
 
     cameraStateLbl->setFont(config->getFont(DEFAULT_FONT_SIZE));
     cameraStateLbl->setAlignment(Qt::AlignHCenter);
@@ -478,47 +554,48 @@ communicationList::communicationList(QWidget *parent) :
 //        commListGridLayout->addWidget(interfaceBoardListGroup, 0, 0, 4, 1);
 //        commListGridLayout->addWidget(ctrlBoardListGroup, 4, 0, 4, 1);
 //        commListGridLayout->addWidget(cameraBoardListGroup, 0, 1, 8, 2);
-        newInterfaceListLayout->addWidget(cameraStateLbl, 0, 3, 1, 2, Qt::AlignCenter);
-//        newInterfaceListLayout->addWidget(cameraBoardListGroup, 1, 0, 7, 6);
-//        newInterfaceListLayout->addWidget(interfaceBoardListGroup, 1, 6, 7, 3);
-        newInterfaceListLayout->addLayout(cameraListLayout, 1, 0, 7, 6);
-        newInterfaceListLayout->addLayout(interfaceListLayout, 1, 6, 1, 3);
+    newInterfaceListLayout->addWidget(cameraStateLbl, 0, 3, 1, 2, Qt::AlignCenter);
+    //        newInterfaceListLayout->addWidget(cameraBoardListGroup, 1, 0, 7, 6);
+    //        newInterfaceListLayout->addWidget(interfaceBoardListGroup, 1, 6, 7, 3);
+    newInterfaceListLayout->addLayout(cameraListLayout, 1, 0, 7, 6);
+    newInterfaceListLayout->addLayout(interfaceListLayout, 1, 6, 1, 3);
 
-//        newInterfaceListLayout->addWidget(ctrlBoardListGroup, 4, 4, 4, 1);
-        commListGridLayout->addWidget(testStateLbl,0,0,1,1);
-        commListGridLayout->addWidget(newInterfaceBoardListGroup,1,0,15,1);
+    //        newInterfaceListLayout->addWidget(ctrlBoardListGroup, 4, 4, 4, 1);
+    commListGridLayout->addWidget(testStateLbl, 0, 0, 1, 1);
+    commListGridLayout->addWidget(newInterfaceBoardListGroup, 1, 0, 15, 1);
 
-//    }
-    /* 按钮 */
-    rechekBtn = new myPushButton(myLan.recheck,  QIcon(), true, true, this);
+    //    }
+        /* 按钮 */
+    rechekBtn = new myPushButton(myLan.recheck, QIcon(), true, true, this);
     nextBtn = new myPushButton(myLan.enter_system, QIcon(), true, true, this);
 
-    if(struCnfg.nLang == LANG_TURKEY){
+    if (struCnfg.nLang == LANG_TURKEY)
+    {
         rechekBtn->setButtonFont(config->getFont(FONT_SIZE_16));
         nextBtn->setButtonFont(config->getFont(FONT_SIZE_16));
     }
 
-    backHBLayout   = new QVBoxLayout();
+    backHBLayout = new QVBoxLayout();
     backHBLayout->addStretch();
     backHBLayout->addWidget(rechekBtn);
-    QSpacerItem *horizontalSpacer = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    QSpacerItem* horizontalSpacer = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Fixed);
     backHBLayout->addItem(horizontalSpacer);
     backHBLayout->addStretch();
     backHBLayout->addWidget(nextBtn);
 
-   /*尺寸限制*/
-    rechekBtn->setFixedSize(QSize(BTN_WIDTH-40,BTN_HEIGHT));
-    nextBtn->setFixedSize(QSize(BTN_WIDTH-40,BTN_HEIGHT));
+    /*尺寸限制*/
+    rechekBtn->setFixedSize(QSize(BTN_WIDTH - 40, BTN_HEIGHT));
+    nextBtn->setFixedSize(QSize(BTN_WIDTH - 40, BTN_HEIGHT));
 
     communicationLayout = new QHBoxLayout(this);
-//    communicationLayout->addStretch();
-    communicationLayout->addLayout(commListGridLayout,9);
-//    communicationLayout->addStretch();
-    communicationLayout->addLayout(backHBLayout,1);
+    //    communicationLayout->addStretch();
+    communicationLayout->addLayout(commListGridLayout, 9);
+    //    communicationLayout->addStretch();
+    communicationLayout->addLayout(backHBLayout, 1);
 
     /*槽函数*/
-    connect(rechekBtn   , SIGNAL(clicked()), this, SLOT(onRecheckBtnClickedSlt()));
-    connect(nextBtn     , SIGNAL(clicked()), this, SLOT(onNextBtnClickedSlt()));
+    connect(rechekBtn, SIGNAL(clicked()), this, SLOT(onRecheckBtnClickedSlt()));
+    connect(nextBtn, SIGNAL(clicked()), this, SLOT(onNextBtnClickedSlt()));
 }
 /**
  * 重新检测
@@ -539,10 +616,10 @@ void communicationList::onNextBtnClickedSlt()
 /***
  *   初始化页面
  */
-initialization::initialization(QWidget *parent) :
+initialization::initialization(QWidget* parent) :
     QWidget(parent)
 {
-    waitCommLabel  = new myLabel(myLan.msg_system_init, this);
+    waitCommLabel = new myLabel(myLan.msg_system_init, this);
     /*页面布局*/
     initVBLayout = new QVBoxLayout(this);
     initVBLayout->addWidget(waitCommLabel);
@@ -560,37 +637,37 @@ void initialization::startInitSlt()
 /***
  *   预热页面控件
  */
-preheat::preheat(QWidget *parent) :
+preheat::preheat(QWidget* parent) :
     QWidget(parent)
 {
     bFlagSkip = false;
-    waitCommLabel  = new myLabel(myLan.preheat, this);
-    waitCommLabel->setGeometry(QRect(20,200,500,40));
-    skipBtn        =  new myPushButton(myLan.skip_preheat, myIcon.Edit_Redo, this);
-    skipBtn->setGeometry(QRect(LCD_WIDTH-BTN_WIDTH-20,LCD_CONTENT_HEIGTH-50,BTN_WIDTH,40));
+    waitCommLabel = new myLabel(myLan.preheat, this);
+    waitCommLabel->setGeometry(QRect(20, 200, 500, 40));
+    skipBtn = new myPushButton(myLan.skip_preheat, myIcon.Edit_Redo, this);
+    skipBtn->setGeometry(QRect(LCD_WIDTH - BTN_WIDTH - 20, LCD_CONTENT_HEIGTH - 50, BTN_WIDTH, 40));
     progressBar = new QProgressBar(this);
-    progressBar->setGeometry(20,260,LCD_WIDTH-40,40);
+    progressBar->setGeometry(20, 260, LCD_WIDTH - 40, 40);
     progressBar->setMaximum(900);
     progressBar->setValue(-1);
     progressBar->setMinimumHeight(BTN_HEIGHT);
 
     /*尺寸限制*/
-    skipBtn->setMaximumSize(QSize(BTN_WIDTH,BTN_HEIGHT));
+    skipBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
     /*布局管理*/
     preheatGridLayout = new QGridLayout(this);
-    preheatGridLayout->setVerticalSpacing((LCD_CONTENT_HEIGTH-3*BTN_HEIGHT)/2);
-    preheatGridLayout->addWidget(waitCommLabel,0,0,1,1);
-    preheatGridLayout->addWidget(progressBar  ,1,0,1,1);
+    preheatGridLayout->setVerticalSpacing((LCD_CONTENT_HEIGTH - 3 * BTN_HEIGHT) / 2);
+    preheatGridLayout->addWidget(waitCommLabel, 0, 0, 1, 1);
+    preheatGridLayout->addWidget(progressBar, 1, 0, 1, 1);
 
     preheatHBLayout = new QHBoxLayout();
     horizontalSpacer = new QSpacerItem(10, BTN_HEIGHT, QSizePolicy::Expanding, QSizePolicy::Fixed);
     preheatHBLayout->addItem(horizontalSpacer);
     preheatHBLayout->addWidget(skipBtn);
-    preheatGridLayout->addLayout(preheatHBLayout,2,0,1,1);
+    preheatGridLayout->addLayout(preheatHBLayout, 2, 0, 1, 1);
 
     /*槽函数*/
-    connect(skipBtn, SIGNAL(pressed()),this,SLOT(onSkipBtnClickSlt()));
+    connect(skipBtn, SIGNAL(pressed()), this, SLOT(onSkipBtnClickSlt()));
 }
 
 /***
@@ -598,7 +675,7 @@ preheat::preheat(QWidget *parent) :
  */
 void preheat::onSkipBtnClickSlt()
 {
-     bFlagSkip = true;
+    bFlagSkip = true;
 }
 
 /***
@@ -606,18 +683,22 @@ void preheat::onSkipBtnClickSlt()
  */
 void preheat::startPreheatSlt()
 {
-    progressBar->setRange(0,900);
-    for (int i = 1; i <= 1; i++) {
+    progressBar->setRange(0, 900);
+    for (int i = 1; i <= 1; i++)
+    {
         progressBar->setValue(i);
-        if (bFlagSkip) {
+        if (bFlagSkip)
+        {
             break;
         }
         QTime dieTime = QTime::currentTime().addSecs(1);
-        while(QTime::currentTime() < dieTime) {
-           QCoreApplication::processEvents(QEventLoop::AllEvents,100);
+        while (QTime::currentTime() < dieTime)
+        {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         }
 
-        if (bFlagSkip) {
+        if (bFlagSkip)
+        {
             break;
         }
     }
