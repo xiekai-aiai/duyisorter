@@ -218,11 +218,8 @@ AiModelSet::AiModelSet(QWidget *parent) :
     m_modelApi->setBaseUrl(baseUrl);
     LOG_INFO_STM("训练服务器配置：" << baseUrl << " SFTP=" << m_trainServerIp << ":" << m_trainSftpPort);
 
-    // 初始化 SFTP Worker（libssh2 封装，moveToThread 到子线程）
-    // 注意：不能传 parent（this），否则 moveToThread 会失败——Qt 规定有 parent 的 QObject 禁止 moveToThread
-    m_sftpWorker = new SftpWorker(m_trainServerIp, m_trainSftpUser, m_trainSftpPass,
-                                  m_trainSftpPort);
     SftpClient::init_sftp_lib();  // libssh2 全局一次
+    // 注意：m_sftpWorker 留空（默认 nullptr），每次训练在 onCreateDirTrainResult 里 new
 
     connect(ui->backPushButton, SIGNAL(pressed()), this, SLOT(onSetBackBtnClicked()));
     connect(ui->modelSelPushButton, SIGNAL(pressed()), this, SLOT(onModelSelPushButtonClicked()));
@@ -233,6 +230,31 @@ AiModelSet::AiModelSet(QWidget *parent) :
 
     // 页码跳转：只允许输入 1-999 的数字，回车触发 gotoPage
     ui->m_curPagelineEdit->setValidator(new QIntValidator(1, 999, this));
+    ui->m_curPagelineEdit->setFocusPolicy(Qt::NoFocus);  // 阻止系统虚拟键盘，只用 myInputPanel
+    ui->m_curPagelineEdit->setText("1");  // 默认值 1
+    {
+        struct KbFilter : QObject {
+            bool eventFilter(QObject *o, QEvent *e) override {
+                if (e->type() == QEvent::MouseButtonPress) {
+                    auto *le = qobject_cast<QLineEdit*>(o);
+                    if (le) {
+                        int minV = 1;
+                        int maxV = 999;
+                        myInputPanel kb(intType, minV, maxV, le->text().toInt());
+                        kb.setTitle("跳转页码");
+                        if (kb.exec() == QDialog::Accepted) {
+                            le->setText(QString::number(kb.getValue()));
+                            le->returnPressed();  // 触发 gotoPage
+                        }
+                        e->accept();
+                        return true;
+                    }
+                }
+                return QObject::eventFilter(o, e);
+            }
+        };
+        ui->m_curPagelineEdit->installEventFilter(new KbFilter());
+    }
     connect(ui->m_curPagelineEdit, &QLineEdit::returnPressed, this, &AiModelSet::gotoPage);
 
     // ── 前景目标按钮（独立 toggle，不参与互斥组）──────────────────
@@ -382,29 +404,6 @@ AiModelSet::AiModelSet(QWidget *parent) :
         LOG_DEBUG_STM("[训练流程] networkError 兜底：m_trainingBusy 已重置");
     });
 
-    // [0.1] SftpWorker 单文件上传进度 → showTip
-    // m_sftpUploadPhase 语义：0=图片上传中，1=标签上传中，2=classes 上传中
-    connect(m_sftpWorker, &SftpWorker::progressChanged, this, [this](int current, int total) {
-        QString phaseLabel = (m_sftpUploadPhase == 0) ? "图片上传"
-                           : (m_sftpUploadPhase == 1) ? "标签上传"
-                           : "classes 上传";
-        showTip(QString("%1 %2|%3").arg(phaseLabel).arg(current).arg(total));
-    });
-    connect(m_sftpWorker, &SftpWorker::fileUploadCompleted, this,
-        [this](const QString& localFile, const QString& remoteFile, bool success) {
-        if (!success) {
-            QFileInfo fi(localFile);
-            showTip(QString("上传失败: %1").arg(fi.fileName()), true);
-        }
-    });
-    connect(m_sftpWorker, &SftpWorker::error, this, [this](const QString& msg) {
-        showTip(QString("SFTP 错误：%1").arg(msg), true);
-    });
-
-    // [0.2] SftpWorker 一批上传完成 → 串联下一个（image → label → classes → startTrain）
-    connect(m_sftpWorker, &SftpWorker::allUploadCompleted, this, &AiModelSet::onSftpUploadCompleted);
-    // [0.3] 上传后验证：remoteList 完成回调
-    connect(m_sftpWorker, &SftpWorker::remoteListCompleted, this, &AiModelSet::onSftpRemoteListCompleted);
 
     // [1] 训练启动成功 → 启动 QTimer 轮询进度（每 5 秒一次）
     connect(m_modelApi, &ModelApi::startTrainResult, this, [this](const TrainStartResponse& response) {
@@ -568,10 +567,38 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
     m_sftpRemoteLblDir  = m_sftpRemoteRootDir + "/label";
     m_sftpUploadPhase = 0;
 
-    // 1. 清理旧 SFTP 线程（worker 保留，在主线程重新 connect）
-    qInfo() << "[SFTP] ⭐ step1: cleanupSftpResources()";
+    // 1. 清理旧 SFTP 线程 + worker（每次训练都用全新的 SFTP session）
+    qInfo() << "[SFTP] ⭐ step1: cleanupSftpResources() + new SftpWorker";
     cleanupSftpResources();
-    
+
+    // ⭐ 创建全新的 SftpWorker（不复用旧的，避免上次 session 半断开导致卡死）
+    m_sftpWorker = new SftpWorker(m_trainServerIp, m_trainSftpUser, m_trainSftpPass,
+                                  m_trainSftpPort);
+
+    // ⭐ 重新 connect 5 个信号槽（因为 worker 每次都 new，之前构造函数里的 connect 已删除）
+    // [0.1] SftpWorker 单文件上传进度 → showTip
+    // m_sftpUploadPhase 语义：0=图片上传中，1=标签上传中，2=classes 上传中
+    connect(m_sftpWorker, &SftpWorker::progressChanged, this, [this](int current, int total) {
+        QString phaseLabel = (m_sftpUploadPhase == 0) ? "图片上传"
+                           : (m_sftpUploadPhase == 1) ? "标签上传"
+                           : "classes 上传";
+        showTip(QString("%1 %2|%3").arg(phaseLabel).arg(current).arg(total));
+    });
+    connect(m_sftpWorker, &SftpWorker::fileUploadCompleted, this,
+        [this](const QString& localFile, const QString& remoteFile, bool success) {
+        if (!success) {
+            QFileInfo fi(localFile);
+            showTip(QString("上传失败: %1").arg(fi.fileName()), true);
+        }
+    });
+    connect(m_sftpWorker, &SftpWorker::error, this, [this](const QString& msg) {
+        showTip(QString("SFTP 错误：%1").arg(msg), true);
+    });
+    // [0.2] SftpWorker 一批上传完成 → 串联下一个（image → label → classes → startTrain）
+    connect(m_sftpWorker, &SftpWorker::allUploadCompleted, this, &AiModelSet::onSftpUploadCompleted);
+    // [0.3] 上传后验证：remoteList 完成回调
+    connect(m_sftpWorker, &SftpWorker::remoteListCompleted, this, &AiModelSet::onSftpRemoteListCompleted);
+
     // 2. 主线程 connect（服务器端会在 startTrain 时自动准备好 /ftp/{taskId}/raw/ 目录结构）
     qInfo() << "[SFTP] ⭐ step2: m_sftpWorker->connect()";
     if (!m_sftpWorker->connect()) {
@@ -726,6 +753,7 @@ void AiModelSet::resetTrainingState()
     LOG_DEBUG_STM("[训练流程] resetTrainingState() 被调用");
     // 1. 标志位
     m_trainingBusy = false;
+    if (ui) ui->modelTrainPushButton->setEnabled(true);  // ⭐ 按钮恢复可用
     m_sftpUploadPhase = 0;
     m_sftpVerifyRetry = 0;
     m_sftpVerifyPhase = 0;
@@ -740,35 +768,46 @@ void AiModelSet::resetTrainingState()
     cleanupSftpResources();
 }
 
-// ⭐ 彻底清理 SFTP 线程（worker 保留，prepareTrain 里复用重连）
+// ⭐ 彻底清理 SFTP 线程 + worker（每次训练都用全新的 SFTP session，避免上次残留状态卡死）
 void AiModelSet::cleanupSftpResources()
 {
-    if (!m_sftpThread) return;
     LOG_DEBUG_STM("[训练流程] cleanupSftpResources()  thread="
-                  << (m_sftpThread ? "running" : "null"));
+                  << (m_sftpThread ? "running" : "null")
+                  << " worker=" << (m_sftpWorker ? "valid" : "null"));
 
-    // ⭐ 先阻塞 disconnect（BlockingQueuedConnection，立即在子线程执行），确保 socket 正常关闭
-    //    如果用 QueuedConnection，disconnect 会投到子线程事件队列，
-    //    紧接着 quit() 把线程退了，disconnect 可能没跑到 → socket 残留 TIME_WAIT
-    if (m_sftpWorker && m_sftpThread->isRunning()) {
-        bool ok = QMetaObject::invokeMethod(m_sftpWorker, "disconnect",
-                                            Qt::BlockingQueuedConnection);
-        LOG_DEBUG_STM("[训练流程] blocking disconnect result=" << ok);
+    // ── 先处理线程（如果还活着）──
+    if (m_sftpThread) {
+        // ⭐ 先阻塞 disconnect（BlockingQueuedConnection，立即在子线程执行），确保 socket 正常关闭
+        if (m_sftpWorker && m_sftpThread->isRunning()) {
+            QMetaObject::invokeMethod(m_sftpWorker, "disconnect",
+                                                Qt::QueuedConnection);
+        }
+
+        // 通知线程退出
+        m_sftpThread->quit();
+        if (!m_sftpThread->wait(500)) {
+            LOG_WARN_STM("[训练流程] cleanupSftpResources 线程未正常退出，terminate");
+            m_sftpThread->terminate();
+            m_sftpThread->wait(200);
+        }
+        // 把 worker 移回主线程（在删除 thread 之前）
+        if (m_sftpWorker) {
+            m_sftpWorker->moveToThread(QThread::currentThread());
+        }
+        delete m_sftpThread;
+        m_sftpThread = nullptr;
     }
 
-    // 通知线程退出（此时 disconnect 已执行完毕）
-    m_sftpThread->quit();
-    if (!m_sftpThread->wait(2000)) {
-        LOG_WARN_STM("[训练流程] cleanupSftpResources 线程未正常退出，terminate");
-        m_sftpThread->terminate();
-        m_sftpThread->wait(500);
-    }
-    // 把 worker 移回主线程（在删除 thread 之前）
+    // ── 重点：delete 旧 worker + 置空。下次 startTrainUpload 里会 new 全新的 ──
+    //    不复用 worker 的原因：SftpWorker 内部持有 SFTP session，上次训练出错/中断后
+    //    session 可能处于半断开状态，再次 connect 会卡死或行为异常
     if (m_sftpWorker) {
-        m_sftpWorker->moveToThread(QThread::currentThread());
+        if (m_sftpWorker->thread() != QThread::currentThread()) {
+            m_sftpWorker->moveToThread(QThread::currentThread());
+        }
+        delete m_sftpWorker;
+        m_sftpWorker = nullptr;
     }
-    delete m_sftpThread;
-    m_sftpThread = nullptr;
 }
 
 // [2] 查询进度结果
@@ -795,6 +834,10 @@ void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
         stateText = QString("排队中（前面还有 %1 个任务）").arg(response.number);
     } else if (response.progress >= 100) {
         stateText = "训练完成";
+    } else if (response.progress == 0) {
+        stateText = "数据准备中";
+    } else if (response.progress == 90) {
+        stateText = "模型转换中";
     } else {
         stateText = "训练中";
     }
@@ -945,7 +988,7 @@ void AiModelSet::onClassButtonClicked()
 
     // QButtonGroup exclusive 模式自动互斥，不需要手动取消其他按钮
     m_currentAnnotType = annotTypeFromClassId(classId);
-    showTip(QString("当前标注类型：%1 %2").arg(className).arg(colorName));
+    showTip(QString("当前标注类型：%1").arg(className));
 }
 
 // 刷新每个类别按钮下的标注计数（统计所有训练图片的标签，非当前图片）
@@ -2663,7 +2706,10 @@ void AiModelSet::loadFirstImage(const QString& path)
 
 void AiModelSet::updatePageInfo()
 {
-    ui->m_pageInfoLabel->setText(QString("第%1页/共%2页").arg(m_currentPage).arg(m_totalPages));
+    ui->m_pageInfoLabel->setText(
+        QString("第%1页/共%2页 | 当前第%3张/共%4张")
+            .arg(m_currentPage).arg(m_totalPages)
+            .arg(m_currentImg).arg(m_totalImg));
     ui->m_curPagelineEdit->setText(QString("%1").arg(m_currentPage));
 
 }
@@ -2676,7 +2722,8 @@ void AiModelSet::updateSelectImgInfo()
         m_totalImg = m_allImagePaths.size()%((m_totalPages-1)*m_pageSize);
     }
 
-    ui->m_curPageInfoLabel->setText(QString("当前第%1张/共%2张").arg(m_currentImg).arg(m_totalImg));
+    // 合并到 m_pageInfoLabel（不再写 m_curPageInfoLabel）
+    updatePageInfo();
 
 }
 
@@ -3880,6 +3927,7 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     ++m_tryTimes;   // 内部计数，不影响 task_id
     m_currentTaskId = modelName;
     m_trainingBusy = true;
+    ui->modelTrainPushButton->setEnabled(false);  // ⭐ 按钮置灰，防止重复提交直到 resetTrainingState 恢复
     m_pollFailCount = 0;
     showTip(QString("正在创建远程训练任务目录... 任务ID：%1").arg(m_currentTaskId));
     m_modelApi->createDirTrain(m_currentTaskId);
@@ -4289,21 +4337,8 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         QString baseUrl = QString("http://%1:%2").arg(m_trainServerIp).arg(m_trainHttpPort);
         m_modelApi->setBaseUrl(baseUrl);
 
-        // 重建 SftpWorker（安全退出旧线程 → delete worker → 用新配置创建）
-        if (m_sftpThread && m_sftpThread->isRunning()) {
-            m_sftpThread->quit();
-            m_sftpThread->wait(2000);
-            delete m_sftpThread;
-            m_sftpThread = nullptr;
-        }
-        if (m_sftpWorker) {
-            if (m_sftpWorker->thread() != QThread::currentThread()) {
-                m_sftpWorker->moveToThread(QThread::currentThread());
-            }
-            delete m_sftpWorker;
-            m_sftpWorker = nullptr;
-        }
-        m_sftpWorker = new SftpWorker(m_trainServerIp, m_trainSftpUser, m_trainSftpPass, m_trainSftpPort);
+        // 清理旧 SFTP 资源（onCreateDirTrainResult 会用新配置统一 new 全新 worker）
+        cleanupSftpResources();
 
         // arm 版本保存到 JSON
         saveTrainServerConfig();
