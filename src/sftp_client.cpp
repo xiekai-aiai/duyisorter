@@ -6,7 +6,7 @@
 #include "unilog.h"
 
 SftpClient::SftpClient(const std::string& host, int port,
-                       const std::string& user, const std::string& passwd)
+    const std::string& user, const std::string& passwd)
     : host_(host), port_(port), user_(user), passwd_(passwd)
 {
     LOG_INFO_STM("SftpClient ctor: " << host_ << ":" << port_ << " user=" << user_);
@@ -29,8 +29,8 @@ bool SftpClient::connect()
     do
     {
         // DNS 解析（支持域名 / IP）
-        struct addrinfo hints{0}, *res{nullptr};
-        hints.ai_family   = AF_INET;
+        struct addrinfo hints { 0 }, * res{ nullptr };
+        hints.ai_family = AF_INET;
         hints.ai_socktype = SOCK_STREAM;
         char portbuf[16]; snprintf(portbuf, sizeof(portbuf), "%d", port_);
         if (getaddrinfo(host_.c_str(), portbuf, &hints, &res) != 0 || !res)
@@ -45,6 +45,17 @@ bool SftpClient::connect()
         {
             socket_fd_ = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
             if (socket_fd_ < 0) continue;
+
+            // 设置超时时间，防止网络不通
+            struct timeval tv;
+            tv.tv_sec = 3;
+            tv.tv_usec = 0;
+            setsockopt(socket_fd_,
+                SOL_SOCKET,
+                SO_SNDTIMEO,
+                &tv,
+                sizeof(tv));
+
             if (::connect(socket_fd_, rp->ai_addr, rp->ai_addrlen) == 0)
             {
                 tcp_ok = true;
@@ -138,7 +149,8 @@ bool SftpClient::mkdir(const std::string& remote_dir, int mode)
     LIBSSH2_SFTP_ATTRIBUTES attrs;
     if (libssh2_sftp_stat(sftp_, remote_dir.c_str(), &attrs) == 0)
     {
-        if (LIBSSH2_SFTP_S_ISDIR(attrs.permissions)) {
+        if (LIBSSH2_SFTP_S_ISDIR(attrs.permissions))
+        {
             LOG_INFO_STM("mkdir: already exists: " << remote_dir);
             return true;
         }
@@ -147,7 +159,8 @@ bool SftpClient::mkdir(const std::string& remote_dir, int mode)
     }
 
     int rc = libssh2_sftp_mkdir(sftp_, remote_dir.c_str(), mode);
-    if (rc < 0) {
+    if (rc < 0)
+    {
         LOG_ERROR_STM("mkdir failed: " << remote_dir << ", rc=" << rc);
         return false;
     }
@@ -163,12 +176,15 @@ bool SftpClient::mkdir_p(const std::string& remote_dir, int mode)
     std::string partial;
     size_t start = (remote_dir[0] == '/') ? 1 : 0;
 
-    for (size_t i = start; i <= remote_dir.size(); ++i) {
-        if (i == remote_dir.size() || remote_dir[i] == '/') {
+    for (size_t i = start; i <= remote_dir.size(); ++i)
+    {
+        if (i == remote_dir.size() || remote_dir[i] == '/')
+        {
             if (i == start) continue;
             partial = remote_dir.substr(0, i);
             if (partial.empty()) continue;
-            if (!mkdir(partial, mode)) {
+            if (!mkdir(partial, mode))
+            {
                 LOG_ERROR_STM("mkdir_p failed at: " << partial);
                 return false;
             }
@@ -229,7 +245,8 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
         libssh2_sftp_close(handle);
     }
 
-    if (!ret) {
+    if (!ret)
+    {
         LOG_ERROR_STM("upload FAILED local:" << local_file << " -> remote:" << remote_file);
     }
     return ret;
@@ -285,7 +302,8 @@ bool SftpClient::download(const std::string& remote_file, const std::string& loc
         libssh2_sftp_close(handle);
     }
 
-    if (!ret) {
+    if (!ret)
+    {
         LOG_ERROR_STM("download FAILED remote:" << remote_file << " -> local:" << local_file);
     }
     return ret;
@@ -404,5 +422,5 @@ std::string SftpClient::exec(const std::string& cmd)
 // 全局 libssh2 初始化（程序启动/退出各一次）
 // ═══════════════════════════════════════════════════════════════════════
 
-void SftpClient::init_sftp_lib()  { libssh2_init(0); }
-void SftpClient::deinit_sftp_lib(){ libssh2_exit(); }
+void SftpClient::init_sftp_lib() { libssh2_init(0); }
+void SftpClient::deinit_sftp_lib() { libssh2_exit(); }
