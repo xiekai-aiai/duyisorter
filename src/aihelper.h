@@ -32,6 +32,13 @@ namespace ai_helper
      */
     QString GetAcqImgRootPath();
 
+    /**
+     * @brief: 获取本地模型的根目录
+     * @return {*}
+     */
+    QString GetModelRootPath();
+
+
 };
 
 #endif // AIHELPER_H

@@ -34,4 +34,15 @@ namespace ai_helper
         QString path = QCoreApplication::applicationDirPath() + "/userdata/image/";
         return path;
     }
+
+    /**
+     * @brief: 获取本地模型的根目录
+     * @return {*}
+     */
+    QString GetModelRootPath()
+    {
+        QString path = QCoreApplication::applicationDirPath() + "/userdata/model/";
+        return path;
+    }
+
 };

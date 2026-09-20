@@ -27,6 +27,7 @@
 #define AI_DEV_USER "root"
 // AI板卡密码
 #define AI_DEV_PWD "linaro"
+
 // AI板卡SFTP采集图片目录
 #define AI_DEV_IMG_ACQ_PATH "/ftp/image/"
 // 下载设备数量

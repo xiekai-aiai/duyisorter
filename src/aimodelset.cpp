@@ -439,7 +439,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
     // 延迟到下一个事件循环 tick，让两个 connect 全部执行完再改 m_currentRequestType。
     connect(m_modelApi, &ModelApi::archResult, this, [this](const QString& arch) {
         m_modelArch = arch;
-        QString savePath = QString(LOCAL_MODEL_PATH) + downLoadModelName + ".json";
+        QString savePath = ai_helper::GetModelRootPath() + downLoadModelName + ".json";
         LOG_DEBUG_STM("[下载流程] archResult 触发：arch=" << arch << "downLoadModelName=" << downLoadModelName << "savePath=" << savePath);
         showTip(QString("硬件架构：%1，先下载 JSON：%2.json").arg(arch).arg(downLoadModelName));
         QTimer::singleShot(0, this, [this, savePath]() {
@@ -457,7 +457,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         }
 
         // 读 JSON 取 md5（模型文件名里写进去，供 .bin 下载完成后校验）
-        QString jsonPath = QString(LOCAL_MODEL_PATH) + downLoadModelName + ".json";
+        QString jsonPath = ai_helper::GetModelRootPath() + downLoadModelName + ".json";
         LOG_DEBUG_STM("[下载流程] 尝试读取 JSON：" << jsonPath << "文件存在=" << QFile::exists(jsonPath) << "文件大小=" << (QFile::exists(jsonPath) ? QFileInfo(jsonPath).size() : 0));
         QFile jsonFile(jsonPath);
         QString expectedMd5;
@@ -485,7 +485,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         // 开始下载模型文件
         QString ext = (m_modelArch == "snpe") ? "dlc" : "bin";
         QString fileName = downLoadModelName + "." + ext;
-        QString savePath = QString(LOCAL_MODEL_PATH) + fileName;
+        QString savePath = ai_helper::GetModelRootPath() + fileName;
         showTip(QString("JSON 已下载，开始下载模型：%1").arg(fileName));
         QTimer::singleShot(0, this, [this, fileName, savePath]() {
             m_modelApi->downloadModel(fileName, savePath);
@@ -502,7 +502,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
 
         // 做 md5 校验
         QString ext = (m_modelArch == "snpe") ? "dlc" : "bin";
-        QString modelPath = QString(LOCAL_MODEL_PATH) + downLoadModelName + "." + ext;
+        QString modelPath = ai_helper::GetModelRootPath() + downLoadModelName + "." + ext;
         QString actualMd5;
         {
             QFile f(modelPath);
@@ -2172,7 +2172,7 @@ void AiModelSet::onModelSelPushButtonClicked()
 {
     // 预加载路径（优先编译宏，否则默认 LOCAL_MODEL_PATH）
 
-    QString dirPath = QString(LOCAL_MODEL_PATH);
+    QString dirPath = ai_helper::GetModelRootPath();
 
     qDebug() << "[MODEL] dirPath=" << dirPath
              << "exists=" << QDir(dirPath).exists();
@@ -2300,7 +2300,7 @@ static void removeDirInFileDialog(QFileDialog *dlg)
         return;
     }
     // 保护图片根目录，避免误删整个数据目录
-    if (QDir(sel) == QDir(QString(LOCAL_IMG_PATH))) {
+    if (QDir(sel) == QDir(ai_helper::GetAcqImgRootPath())) {
         QMessageBox::warning(dlg, "提示", "不能删除图片根目录：\n" + sel);
         return;
     }
@@ -2324,9 +2324,9 @@ void AiModelSet::onImportImgPushButtonClicked(){
     FLOW("import 入口");
     FLOW("import 弹框前");
     // 确保初始目录存在（否则 QFileDialog 会 fallback 到程序工作目录）
-    const QString initDir = QString(LOCAL_IMG_PATH);
+    const QString initDir = ai_helper::GetAcqImgRootPath();
     QDir().mkpath(initDir);
-    qDebug() << "[IMPORT] LOCAL_IMG_PATH=" << initDir
+    qDebug() << "[IMPORT] GetAcqImgRootPath=" << initDir
              << "exists=" << QDir(initDir).exists()
              << "AA_DontUseNativeDialogs="
              << QCoreApplication::testAttribute(Qt::AA_DontUseNativeDialogs);
@@ -2337,7 +2337,7 @@ void AiModelSet::onImportImgPushButtonClicked(){
     dlg.setOption(QFileDialog::DontResolveSymlinks, true);
     // 板卡上 GTK3 原生对话框无 transient parent 会卡死，必须走 Qt 自绘对话框
     dlg.setOption(QFileDialog::DontUseNativeDialog, true);
-    // 默认打开 LOCAL_IMG_PATH（部分平台会忽略构造参数，这里再显式设置一次）
+    // 默认打开 GetAcqImgRootPath()（部分平台会忽略构造参数，这里再显式设置一次）
     dlg.setDirectory(initDir);
 
     // 缩短 Directory 右边的编辑框 + 顶部 Look in 下拉框
@@ -2681,10 +2681,16 @@ void AiModelSet::loadFirstImage(const QString& path)
     ui->annotationInfoEdit->clear();
     updateImgLabelBorder();  // ⭐ 训练集状态切换绿框
 
-    // 仿真状态下，翻页后也需要从 pred txt 加载对应图片的推理框
+    // 仿真状态下，翻页后第一张也需要自动触发仿真（有 pred 读 pred，没有调板卡）
     if (m_emulating) {
         m_emulateObjInfos.clear();
-        loadEmulateResultFromFile(path, m_emulateObjInfos);  // 没有 pred 就保持空
+        if (loadEmulateResultFromFile(path, m_emulateObjInfos)) {
+            update();
+        } else {
+            update();
+            QApplication::processEvents();
+            runEmulateOnce();
+        }
     }
 
     // 前景框：翻页切换图片必须重算，否则 m_fg_rects 保留上一张图的数据
@@ -3331,8 +3337,8 @@ static QString localMd5(const QString& filePath)
 // ═══════════════════════════════════════════════════════════
 bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
 {
-    QString localBin   = QString(LOCAL_MODEL_PATH) + modelName + ".bin";
-    QString localJson  = QString(LOCAL_MODEL_PATH) + modelName + ".json";
+    QString localBin   = ai_helper::GetModelRootPath() + modelName + ".bin";
+    QString localJson  = ai_helper::GetModelRootPath() + modelName + ".json";
     QString boardDir   = "/ftp/model";
     QString remoteBin  = boardDir + "/" + modelName + ".bin";
     QString remoteJson = boardDir + "/" + modelName + ".json";
@@ -3342,20 +3348,20 @@ bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
         showTip(QString("本地模型文件不存在: %1").arg(localBin), true);
         return false;
     }
-
+    
     showTip(QString("连接板卡检查模型 %1 ...").arg(modelName));
     QApplication::processEvents();
 
     // 1. 连接板卡 SFTP
-    SftpClient cli(BOARD_SFTP_HOST.toStdString(), BOARD_SFTP_PORT,
-                   BOARD_SFTP_USER.toStdString(), BOARD_SFTP_PASS.toStdString());
+    QString boardIp = getBoardIp();
+    SftpClient cli(boardIp.toStdString(), 22, AI_DEV_USER, AI_DEV_PWD);
     if (!cli.connect()) {
-        showTip(QString("板卡 SFTP 连接失败 %1:%2").arg(BOARD_SFTP_HOST).arg(BOARD_SFTP_PORT), true);
+        showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
         return false;
     }
-
     // 2. 确保目录存在
     cli.mkdir_p(boardDir.toStdString());
+
 
     // 3. 检查 .bin 是否存在 + 本地 MD5
     QString localMd5Hex = localMd5(localBin);
@@ -3435,15 +3441,16 @@ bool AiModelSet::runEmulateOnce()
     QString modelBinName = modelName + ".bin";
     QFileInfo imgFi(m_currentImagePath);
     QString imgFileName = imgFi.fileName();
+    QString boardIp = getBoardIp();
 
     // ═══ 先把当前图片 SFTP 上传到板卡的仿真目录 ═══
     QString boardImgDir = "/ftp/emulate";
     showTip(QString("上传图片到板卡：%1 → %2 ...").arg(imgFileName).arg(boardImgDir));
     QApplication::processEvents();
     {
-        SftpClient cli(BOARD_HOST.toStdString(), 22, "root", "linaro");
+        SftpClient cli(boardIp.toStdString(), 22, AI_DEV_USER, AI_DEV_PWD);
         if (!cli.connect()) {
-            showTip(QString("板卡 SFTP 连接失败 %1:22").arg(BOARD_HOST), true);
+            showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
             return false;
         }
         cli.mkdir_p(boardImgDir.toStdString());
@@ -3456,6 +3463,7 @@ bool AiModelSet::runEmulateOnce()
         cli.disconnect();
     }
 
+    /*
     // ═══ 先 ModelApply 加载模型到板卡内存 ═══
     {
         ModelApply applyInfo;
@@ -3465,7 +3473,7 @@ bool AiModelSet::runEmulateOnce()
         showTip(QString("加载模型到板卡：%1 ...").arg(modelBinName));
         QApplication::processEvents();
         bool applyOk = CmdUdpManager::instance().onSendCommand(
-            QHostAddress(BOARD_HOST), BOARD_PORT, applyReq, applyResp, 3000);
+            QHostAddress(boardIp), AI_UPD_CMD_PORT, applyReq, applyResp, 3000);
         if (!applyOk) {
             showTip("模型加载 UDP 通信失败", true);
             return false;
@@ -3477,6 +3485,7 @@ bool AiModelSet::runEmulateOnce()
             return false;
         }
     }
+    */
 
     // 发送仿真 UDP 请求（img_name_ 用纯文件名！板卡自己去 /ftp/emulate/ 找）
     EmulateParam info;
@@ -3489,16 +3498,16 @@ bool AiModelSet::runEmulateOnce()
     showTip(QString("仿真中：model=%1, img=%2 ...").arg(modelBinName).arg(imgFileName));
     QApplication::processEvents();
 
-    // UDP 发送到板卡 192.168.0.12:9193（3s 超时）
+    // UDP 发送到板卡 :AI_UPD_CMD_PORT（3s 超时）
     bool ok = CmdUdpManager::instance().onSendCommand(
-        QHostAddress(BOARD_HOST),
-        BOARD_PORT,
+        QHostAddress(boardIp),
+        AI_UPD_CMD_PORT,
         request,
         response,
         3000);
 
     if (!ok) {
-        showTip(QString("仿真通信失败：板卡 %1:%2 无响应").arg(BOARD_HOST).arg(BOARD_PORT), true);
+        showTip(QString("仿真通信失败：板卡 %1:%2 无响应").arg(boardIp).arg(AI_UPD_CMD_PORT), true);
         return false;
     }
 
@@ -3707,9 +3716,10 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     ui->batchValidImgPushButton->setEnabled(true);  // 允许用户再次点击关闭
 
     // ⑤ 单次板卡连接复用（SFTP upload 每张图片）
-    SftpClient cli(BOARD_HOST.toStdString(), 22, "root", "linaro");
+    QString boardIp = getBoardIp();
+    SftpClient cli(boardIp.toStdString(), 22, AI_DEV_USER, AI_DEV_PWD);
     if (!cli.connect()) {
-        showTip(QString("板卡 SFTP 连接失败 %1:22").arg(BOARD_HOST), true);
+        showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
         ui->batchValidImgPushButton->setChecked(false);
         for (auto* b : allBtns) b->setEnabled(true);
         return;
@@ -3725,7 +3735,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         QByteArray applyReq = cmdworker::ModelApplyRequest(applyInfo);
         QByteArray applyResp;
         CmdUdpManager::instance().onSendCommand(
-            QHostAddress(BOARD_HOST), BOARD_PORT, applyReq, applyResp, 3000);
+            QHostAddress(boardIp), AI_UPD_CMD_PORT, applyReq, applyResp, 3000);
     }
 
     int successCount = 0;
@@ -3760,7 +3770,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         QByteArray request  = cmdworker::EmulateParamRequest(info);
         QByteArray response;
         bool ok = CmdUdpManager::instance().onSendCommand(
-            QHostAddress(BOARD_HOST), BOARD_PORT, request, response, 3000);
+            QHostAddress(boardIp), AI_UPD_CMD_PORT, request, response, 3000);
 
         if (!ok) { failCount++; continue; }
 

@@ -12,3 +12,4 @@ app/
 
 # 3rdparty arm 产物
 src/3rdparty/arm/
+.DS_Store

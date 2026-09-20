@@ -36,21 +36,7 @@
 #include "sftpworker.h"
 #include "merge_dialog.h"
 #include "sortertypes.h"
-
-// ══════════════════════════════════════════════════════════════════
-// 路径配置（编译期宏，可用 -D 覆盖；独立工程从 globalparams/aicommunicate 缺省）
-// ══════════════════════════════════════════════════════════════════
-
-// 模型下载保存目录：训练完成后模型文件(.bin/.json)下载到本地的目录，默认 "/opt/app/userdata/model/"
-#ifndef LOCAL_MODEL_PATH
-#define LOCAL_MODEL_PATH "/opt/app/userdata/model/"
-#endif
-
-// 本地图片目录：导入图片时的默认打开目录，默认 "/opt/app/userdata/image/"
-#ifndef LOCAL_IMG_PATH
-#define LOCAL_IMG_PATH  "/opt/app/userdata/image/"
-#endif
-
+#include "aihelper.h"
 
 
 namespace Ui {
@@ -59,21 +45,32 @@ class AiModelSet;
 
 // 接口路径（保留为常量，仅 URL 前缀和 SFTP host/port/user/pass 改为成员变量）
 const QString API_TRAIN_CREATE = "/api/cloud/train/create";   // 创建目录
-
 const QString API_TRAIN_START = "/api/cloud/train/start";    // 训练启动
 const QString API_TRAIN_QUERY = "/api/cloud/train/query";    // 训练查询
 const QString API_MODEL_DOWNLOAD = "/api/cloud/download_file/";                      // 模型下载（路径拼接模型名称）
 const QString API_CONFIG_ARCH = "/api/cloud/config/arch";    // 查询硬件架构（snpe→.dlc，其他→.bin）
 
 // ══════════════════════════════════════════════════════════════════
-// 仿真板卡配置（AI 推理 UDP 通信）
+// 仿真板卡配置（AI 推理 UDP + SFTP 通信）
+//   ARM 目标板：IP 从 ai_helper::GetAiIpByIndex(0) 获取（192.168.4.126）
+//   x86_64 仿真：继续用固定 IP 192.168.0.12
 // ══════════════════════════════════════════════════════════════════
-const QString BOARD_HOST = "192.168.0.12";    // 板卡 AI 仿真目标 IP
-const int     BOARD_PORT = 9193;               // 板卡 AI 仿真目标 UDP 端口
-const QString BOARD_SFTP_HOST = "192.168.0.12"; // 板卡 SFTP 地址（上传模型）
-const QString BOARD_SFTP_USER = "root";
-const QString BOARD_SFTP_PASS = "linaro";
-const int     BOARD_SFTP_PORT = 22;
+#if defined(__aarch64__)
+    #include "aihelper.h"
+    inline QString getBoardIp() {
+        QString ip = ai_helper::GetAiIpByIndex(0);
+        qDebug() << "[SIM] ARM board IP =" << ip;
+        return ip;
+    }
+#else
+    inline QString getBoardIp() {
+        QString ip = QString("192.168.0.12");
+        qDebug() << "[SIM] x86_64 board IP =" << ip;
+        return ip;
+    }
+#endif
+// 这些常量已移到 sortertypes.h： AI_UPD_CMD_PORT / AI_DEV_USER / AI_DEV_PWD
+// SFTP 端口用标准 22（sortertypes.h 未定义，保持原样）
 
 // 响应错误码（根据接口文档扩展）
 const int RESPONSE_SUCCESS_CODE = 0;  // 假设 0 表示成功
