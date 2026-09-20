@@ -4,6 +4,9 @@
 #
 # Build or clean the project
 
+path_cur=$(cd `dirname $0`; pwd)
+lib_base_path="$path_cur/src/3rdparty"
+
 # global param #
 PLATFORM_335X=1
 # machine type
@@ -29,7 +32,6 @@ print_usage()
 	echo "6SXZ-600G_335X            	CG	1024x768(IPC335x Serial TS)"
 	echo "----------------------------------------"
 }
-
 
 print_conf()
 {
@@ -190,78 +192,16 @@ $STRIP $APP_DIR/DuySorter
 # release mode: 打包升级包
 # 包顶层为 tar_app/，供目标机 mystart.sh 解压后 "mv tar_app/* ." 使用
 #
-# 最终 /opt/app 目录结构（与参考 /Users/thinklic/Desktop/opt/app 对齐）:
-#   DuySorter                    ← 可执行文件
-#   DuySorter.conf               ← 运行时配置
-#   env.sh / mystart.sh / myrestart.sh / wifi.sh / check_and_mount_usb.sh
-#   log.properties               ← unilog 日志配置
-#   norm_train                   ← AI 模型
-#   i18n/                        ← 翻译 .qm
-#   OpenVPN/                     ← VPN 证书
-#   lib/
-#     ├── fonts/                 ← 所有 .ttf（DejaVu + HarmonyOS + 文泉驿 + Tahoma）
-#     ├── libts.so -> libts.so.0 -> libts.so.0.10.1   ← 触摸库（符号链接）
-#     ├── libts.so.0.10.1
-#     ├── tun.ko
-#     ├── libopencv_core.so      ← OpenCV 4.5.5
-#     ├── libopencv_core.so.405
-#     ├── libopencv_core.so.4.5.5
-#     ├── libopencv_imgproc.so
-#     ├── libopencv_imgproc.so.405
-#     ├── libopencv_imgproc.so.4.5.5
-#     ├── libopencv_imgcodecs.so
-#     ├── libopencv_imgcodecs.so.405
-#     ├── libopencv_imgcodecs.so.4.5.5
-#     ├── libcrypto.so           ← OpenSSL 1.1
-#     ├── libcrypto.so.1.1
-#     ├── libssl.so
-#     ├── libssl.so.1.1
-#     ├── libunilog.so           ← 自研日志库
-#     ├── libssh2.so             ← SFTP 客户端（符号链接 + 实文件）
-#     └── libssh2.so.1.0.1
-#   userdata/                    ← 运行时数据（不打包，由 mystart.sh 创建）
 
 # ------ 第一步：把所有运行时 .so 统一复制到 $APP_DIR/lib/ ------
-OPENCV_LIB=src/3rdparty/opencv/arm/lib
-OPENSSL_LIB=src/3rdparty/openssl/arm/lib
-SSH2_LIB=src/3rdparty/libssh2/arm/lib
-UNILOG_LIB=src/3rdparty/unilog/arm/lib
 
-cp -f $OPENCV_LIB/libopencv_core.so*      $APP_DIR/lib/
-cp -f $OPENCV_LIB/libopencv_imgproc.so*   $APP_DIR/lib/
-cp -f $OPENCV_LIB/libopencv_imgcodecs.so* $APP_DIR/lib/
-
-cp -f $OPENSSL_LIB/libcrypto.so* $APP_DIR/lib/
-cp -f $OPENSSL_LIB/libssl.so*    $APP_DIR/lib/
-
-cp -f $SSH2_LIB/libssh2.so* $APP_DIR/lib/
-
-cp -f $UNILOG_LIB/libunilog.so $APP_DIR/lib/
-
-# 字体补全（HarmonyOS 系列 + DejaVuSansMono-Bold 从 res/fonts/ 合入 lib/fonts/）
-cp -f res/fonts/*.ttf $APP_DIR/lib/fonts/
-
-# libts 符号链接修复（确保 .so -> .so.0 -> .so.0.10.1 链路完整）
-( cd $APP_DIR/lib && rm -f libts.so libts.so.0 && \
-  ln -s libts.so.0.10.1 libts.so.0 && \
-  ln -s libts.so.0      libts.so )
-
-# 所有 .so 的 SONAME 符号链接必须显式创建
-# 应用加载时用 SONAME（如 libssh2.so.1），cp glob 只拷源文件里已有的链接
-( cd $APP_DIR/lib
-  rm -f libssh2.so.1 && ln -sf libssh2.so.1.0.1 libssh2.so.1
-  rm -f libcrypto.so.1.1 && ln -sf libcrypto.so.1.1 libcrypto.so   # 已存在则无害
-  rm -f libssl.so.1.1    && ln -sf libssl.so.1.1    libssl.so      # 同上
-  rm -f libopencv_core.so.405      && ln -sf libopencv_core.so.4.5.5      libopencv_core.so.405
-  rm -f libopencv_imgproc.so.405   && ln -sf libopencv_imgproc.so.4.5.5   libopencv_imgproc.so.405
-  rm -f libopencv_imgcodecs.so.405 && ln -sf libopencv_imgcodecs.so.4.5.5 libopencv_imgcodecs.so.405
-  rm -f libopencv_core.so          && ln -sf libopencv_core.so.405      libopencv_core.so
-  rm -f libopencv_imgproc.so       && ln -sf libopencv_imgproc.so.405   libopencv_imgproc.so
-  rm -f libopencv_imgcodecs.so     && ln -sf libopencv_imgcodecs.so.405 libopencv_imgcodecs.so
-  rm -f libcrypto.so               && ln -sf libcrypto.so.1.1 libcrypto.so
-  rm -f libssl.so                  && ln -sf libssl.so.1.1    libssl.so
-  rm -f libssh2.so                 && ln -sf libssh2.so.1     libssh2.so
-)
+libdirs=`ls $lib_base_path`
+for lib in $libdirs
+do
+  if [ -d "$lib_base_path/$lib/arm/lib" ]; then
+     cp $lib_base_path/$lib/arm/lib/* $path_cur/$APP_DIR/lib/
+  fi
+done
 
 # ------ 第二步：组装 tar_app/ ------
 rm -rf tar_app
@@ -281,16 +221,10 @@ cp -rf $APP_DIR/lib            tar_app/
 cp -rf $APP_DIR/OpenVPN        tar_app/
 cp -rf $APP_DIR/db/*           tar_app/userdata/db/
 
-# 打包 OpenCV 依赖库（aarch64）到 opencvlib/，库随项目分发在 src/3rdparty/opencv/arm/lib
-mkdir -p tar_app/opencvlib
-cp -rf src/3rdparty/opencv/arm/lib/*.so* tar_app/opencvlib/
 
 # 确保所有启动脚本有可执行权限（源文件权限可能不是 755）
 chmod +x tar_app/DuySorter tar_app/mystart.sh tar_app/myrestart.sh \
          tar_app/env.sh tar_app/wifi.sh tar_app/check_and_mount_usb.sh
-
-# ------ 第三步：打包 tar.xz（文件名带版本号）------
-find tar_app -name .svn -print0 | xargs -0 rm -rf 2>/dev/null
 
 mkdir -p $REL_DIR
 TAR_NAME="duyiSorter_${MYPRDOPT}_${MYVERSION_RELEASE}_${MYSVN_TMP}.tar.xz"
