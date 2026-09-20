@@ -11,7 +11,8 @@ class PageEjectTime : public QWidget
 {
     Q_OBJECT
 
-    enum {
+        enum
+    {
         Index_Eject_Duration,
         Index_Eject_Delay,
         Index_Eject_Bias,
@@ -21,10 +22,11 @@ class PageEjectTime : public QWidget
     };
 
 public:
-    PageEjectTime(QWidget *parent = 0);
+    PageEjectTime(QWidget* parent = 0);
     ~PageEjectTime();
     void initLocalParams(void);         //! 初始化局部参数
     void setEjectTimeParams();
+    void setEjectTimeParamsTmp();
     void resetEjectTimeParams();
     bool checkContainAssist(int nTick); //! 检查是否包含辅配相机
     void showAssistEjectSet(void);      //! 显示辅配吹气设置
@@ -51,24 +53,24 @@ public slots:
     void setEjectorBlowTimeEditSlt();
 
 private:
-    MyTabBar                *tabBar;
-    myGroupBox              *ejectTimeGroup;
-    QGridLayout             *gridLayout;
-    QVector<myLabel *>      ejectTimeLabel;
-    QVector<myLineEdit *>   ejectTimeValue;
-    QSignalMapper           *sigMapper;
-    MyCheckBox              *ejectorOnCheckBox;
+    MyTabBar* tabBar;
+    myGroupBox* ejectTimeGroup;
+    QGridLayout* gridLayout;
+    QVector<myLabel*>      ejectTimeLabel;
+    QVector<myLineEdit*>   ejectTimeValue;
+    QSignalMapper* sigMapper;
+    MyCheckBox* ejectorOnCheckBox;
 
-    myLabel                  *aiEjectorDelayLbl;
-    myLineEdit               *aiEjectorDelayEdit;
-    myLabel                  *aiEjectorDynamicDelayLbl;
-    myLineEdit               *aiEjectorDynamicDelayEdit;
-    myLabel                  *aiEjectorBlowTimeLbl;
-    myLineEdit               *aiEjectorBlowTimeEdit;
+    myLabel* aiEjectorDelayLbl;
+    myLineEdit* aiEjectorDelayEdit;
+    myLabel* aiEjectorDynamicDelayLbl;
+    myLineEdit* aiEjectorDynamicDelayEdit;
+    myLabel* aiEjectorBlowTimeLbl;
+    myLineEdit* aiEjectorBlowTimeEdit;
 
-    int m_nAiEjectTime[MAX_LEVEL*MAX_GROUP_TICK][3];
-    int m_nEjectTime[MAX_LEVEL*MAX_GROUP_TICK][6];
-    int m_nEjectTimeCent[MAX_LEVEL*MAX_GROUP_TICK][6];//时间精度中的百分位
+    int m_nAiEjectTime[MAX_LEVEL * MAX_GROUP_TICK][3];
+    int m_nEjectTime[MAX_LEVEL * MAX_GROUP_TICK][6];
+    int m_nEjectTimeCent[MAX_LEVEL * MAX_GROUP_TICK][6];//时间精度中的百分位
 };
 
 #endif // EJECTTIME_H

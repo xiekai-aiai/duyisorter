@@ -9,8 +9,8 @@
 #include "udpworker.h"
 #include "unilog.h"
 
-CmdUdpManager::CmdUdpManager(QObject *parent)
-    : QObject{parent}
+CmdUdpManager::CmdUdpManager(QObject* parent)
+    : QObject{ parent }
     , thread_(new QThread(this))
     , worker_(new UdpWorker())
 {
@@ -22,15 +22,15 @@ CmdUdpManager::CmdUdpManager(QObject *parent)
 
     // 在线程启动后初始化 Socket
     connect(thread_,
-            &QThread::started,
-            worker_,
-            &UdpWorker::init);
+        &QThread::started,
+        worker_,
+        &UdpWorker::init);
 
     // 停止线程
     connect(thread_,
-            &QThread::finished,
-            worker_,
-            &QObject::deleteLater);
+        &QThread::finished,
+        worker_,
+        &QObject::deleteLater);
 
     thread_->start();
 }
@@ -46,7 +46,7 @@ CmdUdpManager::~CmdUdpManager()
     stop();
 }
 
-bool CmdUdpManager::onSendCommand(const QHostAddress &address, quint16 port, const QByteArray &request)
+bool CmdUdpManager::onSendCommand(const QHostAddress& address, quint16 port, const QByteArray& request)
 {
     if (request.isEmpty())
     {
@@ -54,22 +54,19 @@ bool CmdUdpManager::onSendCommand(const QHostAddress &address, quint16 port, con
         return false;
     }
 
-    // 防止多个界面同时发送
-    QMutexLocker locker(&requestMutex_);
-
     // Qt 5.4+ 支持 QTimer::singleShot(0, context, lambda)，比 lambda invokeMethod 更兼容
     UdpWorker* worker = worker_;
     QTimer::singleShot(0, worker, [worker, address, port, request]() {
         worker->onSendCommand(address, port, request);
-    });
+        });
     return true;
 }
 
 bool CmdUdpManager::onSendCommand(const QHostAddress& address,
-                                  quint16 port,
-                                  const QByteArray& request,
-                                  QByteArray& response,
-                                  int timeoutMs)
+    quint16 port,
+    const QByteArray& request,
+    QByteArray& response,
+    int timeoutMs)
 {
     response.clear();
     if (request.isEmpty())
@@ -78,8 +75,6 @@ bool CmdUdpManager::onSendCommand(const QHostAddress& address,
         return false;
     }
 
-    // 防止多个界面同时发送
-    QMutexLocker locker(&requestMutex_);
 
     bool success = false;
     bool finished = false;
@@ -99,15 +94,14 @@ bool CmdUdpManager::onSendCommand(const QHostAddress& address,
         &loop,
         [&](bool ok,
             const QByteArray& data,
-            const QString& err)
-        {
-            Q_UNUSED(err);
+            const QString& err) {
+                Q_UNUSED(err);
 
-            success = ok;
-            response = data;
-            finished = true;
+                success = ok;
+                response = data;
+                finished = true;
 
-            loop.quit();
+                loop.quit();
         },
         Qt::QueuedConnection);
 
@@ -118,8 +112,7 @@ bool CmdUdpManager::onSendCommand(const QHostAddress& address,
         &timer,
         &QTimer::timeout,
         &loop,
-        [&]()
-        {
+        [&]() {
             loop.quit();
         });
 
@@ -129,15 +122,13 @@ bool CmdUdpManager::onSendCommand(const QHostAddress& address,
     UdpWorker* worker = worker_;
     QTimer::singleShot(0, worker, [worker, address, port, request, timeoutMs]() {
         worker->onSendCommand(address, port, request, timeoutMs);
-    });
+        });
 
     // ------------------------------------------------------------
     // Manager自己的超时保护
     // ------------------------------------------------------------
     timer.start(timeoutMs + 100);
-
     loop.exec();
-
     QObject::disconnect(connection);
 
     if (!finished)

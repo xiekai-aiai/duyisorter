@@ -4652,7 +4652,7 @@ void GlobalFlow::initUdpImagPara()
 
         if (!ok)
         {
-            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
+            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
             continue;
         }
 
@@ -4660,12 +4660,13 @@ void GlobalFlow::initUdpImagPara()
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
         {
-            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
+            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
             continue;
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",image height opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-            << request.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
@@ -4676,33 +4677,46 @@ void GlobalFlow::initPixelImagPara()
         return;
     }
 
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    int i, j, nUnitAddr;
-    for (i = 0; i < struCnfg.nLevelTotal; i++)
+    // 遍历每一层
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {
-        for (j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
+        // 遍历每一层的每个相机 
+        for (int j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
         {
-            LOG_INFO_STM("level total:" << struCnfg.nLevelTotal << ",i:" << i << ",j:" << j
-                << ", nUnitLevelTotal:" << struCnfg.struLevelInfo[i].nUnitLevelTotal
-                << ", cam no:" << struCnfg.struLevelInfo[i].nUnitId[j]);
-            args.clear();
-            nUnitAddr = struCnfg.struLevelInfo[i].nUnitId[j];
-            args[0] = AIUNIT;
-            //ai相机编号，取余
-            args[1] = nUnitAddr % 2;
-            args[2] = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr] / 256;
-            args[3] = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr] % 256;
-            args[4] = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr] / 256;
-            args[5] = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr] % 256;
-            MyUpd.writeDatagram(CMD_AI_PIXEL_SEND, nUnitAddr / 2, 6, args, struGsh.addressList.at(nUnitAddr / 2), AI_UDP_SEND_PORT);
-            data.nCommandAddress = CMD_AI_PIXEL_SEND;
-            ret = MyUpd.readUdpDatagrams(&data, 13);
-            if (ret != 0)
+            LOG_INFO_STM("level total:" << struCnfg.nLevelTotal << ", nUnitLevelTotal:" << struCnfg.struLevelInfo[i].nUnitLevelTotal << ",i:" << i << ",j:" << j
+                << ", cam no:" << struCnfg.struLevelInfo[i].nUnitId[j] << ", start channel:" << struCnfc.struLevelCamera[i].nChannelBegin[struCnfg.struLevelInfo[i].nUnitId[j]]
+                << ", end channel:" << struCnfc.struLevelCamera[i].nChannelEnd[struCnfg.struLevelInfo[i].nUnitId[j]]);
+
+            QString ip = ai_helper::GetAiIpByIndex(j);
+
+            AiPixelInfo info;
+            info.type_ = 1;
+            info.cam_no_ = struCnfg.struLevelInfo[i].nUnitId[j] % 2;
+            info.begin_pixel_ = struCnfc.struLevelCamera[i].nChannelBegin[struCnfg.struLevelInfo[i].nUnitId[j]];
+            info.end_pixel_ = struCnfc.struLevelCamera[i].nChannelEnd[struCnfg.struLevelInfo[i].nUnitId[j]];
+
+            QByteArray request = cmdworker::PixelInfoRequest(info);
+
+            QByteArray response;
+            bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+                response, AI_RESPONSE_TIMEOUT);
+            if (!ok)
             {
-                qDebug("nUnitAddr: %d, ret: %d", nUnitAddr, ret);
+                LOG_ERROR_STM("set pixel index:" << j << " ip:" << ip.toStdString() << " failed, request body:" << request.toHex(' ').toUpper().toStdString());
+                continue;
             }
+
+            CmdPackage cmd_pkg;
+            ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+            if (!ok)
+            {
+                LOG_ERROR_STM("set pixel index:" << j << " ip:" << ip.toStdString() << " parse failed, request body:" << request.toHex(' ').toUpper().toStdString()
+                    << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                continue;
+            }
+
+            LOG_INFO_STM("set pixel index:" << j << " ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
         }
     }
 }
@@ -4714,38 +4728,53 @@ void GlobalFlow::initEjectorDelayPara()
         return;
     }
 
-    int i, j, k;
-    int nUnitAddr = 0;
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    for (i = 0; i < struCnfg.nLevelTotal; i++)
+    // 遍历每一层
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {
-        for (j = 0; j < struCnfg.struLevelInfo[i].nTickGroupTotal; j++)
+        // 遍历每个剔除组
+        for (int j = 0; j < struCnfg.struLevelInfo[i].nTickGroupTotal; j++)
         {
-            for (k = 0; k < struCnfg.struLevelInfo[i].struTickGroupInfo[j].nUnitCount; k++)
+            // 遍历剔除组的每个相机
+            for (int k = 0; k < struCnfg.struLevelInfo[i].struTickGroupInfo[j].nUnitCount; k++)
             {
-                nUnitAddr = getTickGroupAddr(i, j, k);
-                //                qDebug()<<"nUnitAddr:"<<nUnitAddr;
-                args[0] = struCnfg.nEjectorsPerChute;
-                args[1] = struCnfp.struGroupTick[i][j].aiEjectorDelay / 256;
-                args[2] = struCnfp.struGroupTick[i][j].aiEjectorDelay % 256;
-                args[3] = struCnfp.struGroupTick[i][j].aiEjectorDynamicDelay / 256;
-                args[4] = struCnfp.struGroupTick[i][j].aiEjectorDynamicDelay % 256;
-                args[5] = struCnfp.struGroupTick[i][j].aiEjectorBlowTime;
-                //                args[6] = (struCnfp.struGroupTick[i][j].nEjectDelay/10)/256;
-                //                args[7] = (struCnfp.struGroupTick[i][j].nEjectDelay/10)%256;
-                MyUpd.writeDatagram(CMD_AI_EJECTOR_PARA, nUnitAddr / 2, 6, args, struGsh.addressList.at(nUnitAddr / 2), AI_UDP_SEND_PORT);
-                data.nCommandAddress = CMD_AI_EJECTOR_PARA;
-                ret = MyUpd.readUdpDatagrams(&data, 13);
-                if (ret != 0)
+                JetsParam jet_param;
+                jet_param.jets_num_ = struCnfg.nEjectorsPerChute;
+                jet_param.blow_time_ = struCnfp.struGroupTick[i][j].aiEjectorBlowTime;
+                jet_param.fixed_delay_ = struCnfp.struGroupTick[i][j].aiEjectorDelay;
+                jet_param.dynamics_delay_ = struCnfp.struGroupTick[i][j].aiEjectorDynamicDelay;
+
+                int nUnitAddr = getTickGroupAddr(i, j, k);
+
+                LOG_INFO_STM("jet num:" << (int)jet_param.jets_num_ << ", level totol:" << struCnfg.nLevelTotal << ", level i:" << i << ", tick group total:" << struCnfg.struLevelInfo[i].nTickGroupTotal
+                    << ", tick group j:" << j << ", unit count:" << struCnfg.struLevelInfo[i].struTickGroupInfo[j].nUnitCount << ", unit k:" << k
+                    << ", blow time:" << (int)jet_param.blow_time_ << ", fixed delay:" << jet_param.fixed_delay_ << ", dynamic delay:" << jet_param.dynamics_delay_
+                    << ", nUnitAddr:" << nUnitAddr);
+
+                QString ip = ai_helper::GetAiIpByIndex(nUnitAddr);
+                QByteArray request = cmdworker::JetsParamRequest(jet_param);
+                QByteArray response;
+                bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+                    response, AI_RESPONSE_TIMEOUT);
+                if (!ok)
                 {
-                    qDebug("nUnitAddr: %d, ret: %d", nUnitAddr, ret);
+                    LOG_ERROR_STM("blow time  index:" << nUnitAddr << " ip:" << ip.toStdString() << " failed! request body:" << request.toHex(' ').toUpper().toStdString());
+                    continue;
                 }
+
+                CmdPackage cmd_pkg;
+                ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+                if (!ok)
+                {
+                    LOG_ERROR_STM("blow time index:" << nUnitAddr << " ip:" << ip.toStdString() << " parse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                        << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                    continue;
+                }
+
+                LOG_INFO_STM("blow time index::" << nUnitAddr << " ip:" << ip.toStdString() << " code:" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                    << ", response body:" << response.toHex(' ').toUpper().toStdString());
             }
         }
     }
-
 }
 
 
