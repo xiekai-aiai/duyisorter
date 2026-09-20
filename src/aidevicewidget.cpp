@@ -269,8 +269,10 @@ void AiDeviceWidget::onDownloadFinished(int idx, bool success)
 
     QMutexLocker locker(&mutex);
     downProgressArr[idx].finished_ = true;
+    downProgressArr[idx].success_ = success;
 
     bool all_finished = true;
+    bool all_success = false;
     for (int idx = 0; idx < AI_SFTP_DEV_NUM; idx++)
     {
         if (!downProgressArr[idx].finished_)
@@ -278,16 +280,21 @@ void AiDeviceWidget::onDownloadFinished(int idx, bool success)
             all_finished = false;
             break;
         }
+
+        all_success |= downProgressArr[idx].success_;
     }
 
-    LOG_INFO_STM("idx :" << idx << ", success:" << success << ", all finished:" << all_finished);
+    LOG_INFO_STM("idx :" << idx << ", success:" << success << ", all finished:" << all_finished << ", all success:" << all_success);
 
     if (all_finished)
     {
         progressDlg->setValue(100);
+        QString msg = all_success ? "Download Finished!" : "Download Failed!";
+        progressDlg->setLabelText(msg);
 
-        progressDlg->setLabelText("Download Finished!");
-        progressDlg->hide();;
+        QTimer::singleShot(3000, progressDlg, [this]() {
+            progressDlg->hide();
+            });
 
         // 下载按钮可用
         downBtn->setEnabled(true);
@@ -336,14 +343,14 @@ void AiDeviceWidget::onDownBtnPressed()
     LOG_INFO_STM("onDownBtnPressed start download image...");
 
     progressDlg->setValue(0);
-    // progressDlg->show();   // 调试时屏蔽下载进度弹窗，后台下载仍进行
+    progressDlg->show();   // 调试时屏蔽下载进度弹窗，后台下载仍进行
     QString downDir = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
     QString downPath = ai_helper::GetAcqImgRootPath() + "/" + downDir;
     if (!QDir().mkpath(downPath))
     {
         LOG_ERROR_STM("mkdir downPath:" << downPath.toStdString() << " failed!");
     }
-    
+
     for (int idx = 0; idx < sftpWorkers.size(); idx++)
     {
         QMetaObject::invokeMethod(

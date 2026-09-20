@@ -269,6 +269,7 @@ typedef struct __down_progress_item_
     int current_num_;                         // 当前下载数量
     int total_num_;                           // 总体下载数量
     bool finished_{ false };                  // 下载是否完成
+    bool success_{ false };                   // 下载是否成功
 } DownProgressItem;
 
 
