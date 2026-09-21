@@ -171,201 +171,77 @@ void communicationList::commuUpdateCtrl()
         }
     }
 }
-void communicationList::commuUpdateCameraMultiView()
-{
-    int i, j;
-    int nUnitTmp = 0;
-    int locateTmp = 0;
-    int lineTmp = 0;
-    /*标题行*/
-    cameraListLabel[0][0]->setText(myLan.chute);
-
-    cameraListLabel[0][1]->setText(myLan.upper_master_view);
-    cameraListLabel[0][2]->setText(myLan.lower_master_view);
-    cameraListLabel[0][3]->setText(myLan.upper_slave_view);
-    cameraListLabel[0][4]->setText(myLan.lower_slave_view);
-
-    for (j = 0; j < struCnfg.nLevelTotal; j++)
-    {
-        for (i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
-        {
-
-            nUnitTmp = struCnfg.struLevelInfo[j].nUnitId[i];
-            locateTmp = (nUnitTmp % 2) + 1;
-
-            /*内容行*/
-            lineTmp = i / 2 + 1;
-            cameraListLabel[lineTmp][0]->setText(QString("%1").arg(lineTmp));//滑槽列
-            if ((struGsh.struVer.sUnit[j][i][0] != 255) && (struGsh.struVer.sUnit[j][i][1] != 255))
-            {
-                cameraListLabel[lineTmp][locateTmp]->setText(myLan.normal);
-                cameraListLabel[lineTmp][locateTmp]->setStyleSheet("color:black");
-            }
-            else
-            {
-                cameraListLabel[lineTmp][locateTmp]->setText(myLan.abnormal);
-                cameraListLabel[lineTmp][locateTmp]->setStyleSheet("color:red");
-            }
-        }
-    }
-    cameraListLabel[lineTmp + 1][3]->setText("- -");
-    cameraListLabel[lineTmp + 1][3]->setStyleSheet("color:black");
-    cameraListLabel[lineTmp + 1][4]->setText("- -");
-    cameraListLabel[lineTmp + 1][4]->setStyleSheet("color:black");
-    for (i = (struCnfg.struLevelInfo[0].nUnitLevelTotal + 2) / 4 + 1; i < MAX_UNIT / 2 + 1; i++)
-    {
-        for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
-        {
-            cameraListLabel[i][j]->hide();
-        }
-    }
-}
 
 void communicationList::commuUpdateCamera()
 {
-    int i, j;
-    int id = 0;
-    int front_rear = 0;
-    hideColumn(6);
-    hideColumn(7);
+    /*
+    *******************************************************
+    0:   通道  前视       后视        AI前视  AI后视
+    1:   1     V1.00_1    V1.00_2
+    2:   2     V1.00_1    V1.00_2
+    *******************************************************
+    */
 
-    hideColumn(5);
-    if (struCnfe.nMachine == MACHINE_CF)
+    for (int i = AIDEV_BEGIN_COL_NO; i < SUM_SHOW_COLUMN_NUM; i++)
     {
-        for (i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; i++)
-        {
-            cameraListLabel[(i + 1) / 2][0]->setText(QString("%1").arg(i / 2));
-            for (j = 0; j < struCnfg.nLevelTotal; j++)
-            {
-                id = struCnfg.struLevelInfo[j].nUnitId[i - 1];
-                front_rear = (id % 2 == 0) ? 1 : 2;
-
-                if ((struGsh.struVer.sUnit[j][i - 1][0] != 255) && (struGsh.struVer.sUnit[j][i - 1][1] != 255))
-                {
-                    cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.normal);
-                    cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:black");
-                }
-                else
-                {
-                    cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.abnormal);
-                    cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:red");
-                }
-            }
-        }
-        cameraListLabel[0][0]->setText(myLan.chute);
-        //        cameraListLabel[0][0]->setText("通道");
-        cameraListLabel[0][1]->setText(myLan.front_view);
-        cameraListLabel[0][2]->setText(myLan.rear_view);
-
-        for (i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; i++)
-        {
-            cameraListLabel[(i + 1) / 2][0]->setText(QString("%1").arg(i / 2));
-            for (j = 0; j < struCnfg.nLevelTotal; j++)
-            {
-                id = struCnfg.struLevelInfo[j].nUnitId[i - 1];
-                front_rear = (id % 2 == 0) ? 3 : 4;
-            }
-        }
-        cameraListLabel[0][3]->setText(myLan.infra + "-" + myLan.front);
-        cameraListLabel[0][4]->setText(myLan.infra + "-" + myLan.rear);
-
-        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
-        {
-            cameraListLabel[0][3]->setText("AI");
-            for (int k = 1; k < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; k++)
-            {
-                int nAddr = struCnfg.struLevelInfo[0].nUnitId[k - 1];
-                LOG_INFO_STM("k:" << k << ", nAddr:" << nAddr << ", aiResult:" << struGsh.aiResult[(k - 1) / 2].toStdString());
-                if (nAddr % 2 == 0)
-                {
-                    if (struGsh.aiResult[(k - 1) / 2] != QString(""))
-                    {
-                        cameraListLabel[(k + 1) / 2][3]->setText(myLan.normal);
-                        cameraListLabel[(k + 1) / 2][3]->setStyleSheet("color:black");
-                    }
-                    else
-                    {
-                        cameraListLabel[(k + 1) / 2][3]->setText(myLan.abnormal);
-                        cameraListLabel[(k + 1) / 2][3]->setStyleSheet("color:red");
-                    }
-                }
-            }
-        }
-
-        showColumn(5);
-        for (i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 + 1; i++)
-        {
-            if (!(struCnfe.nDerivedDevType & 0x0001))
-            {
-                cameraListLabel[i][1]->hide();
-            }
-            if (!(struCnfe.nDerivedDevType & 0x0002))
-            {
-                cameraListLabel[i][2]->hide();
-            }
-            if ((struCnfe.nDerivedDevType & 0x01000100) != 0x01000100)
-            {
-                cameraListLabel[i][3]->hide();
-            }
-            if ((struCnfe.nDerivedDevType & 0x01000200) != 0x01000200)
-            {
-                cameraListLabel[i][4]->hide();
-            }
-        }
-
-        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
-        {
-            cameraListLabel[i][3]->show();
-        }
-
-        for (i = struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 + 1; i < MAX_UNIT / 2 + 1; i++)
-        {
-            for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
-            {
-                cameraListLabel[i][j]->hide();
-            }
-        }
+        hideColumn(i);
     }
-}
 
-/* RS机型下刷新前置板通信自检页面 */
-void communicationList::commuUpdateCameraRS()
-{
-    int front_rear;
-    int id;
-
-    /* 主配 */
-    for (int i = 1; i < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; i++)
-    {
-        cameraListLabel[(i + 1) / 2][0]->setText(QString("%1").arg(i / 2));
-        for (int j = 0; j < struCnfg.nLevelTotal; j++)
-        {
-            id = struCnfg.struLevelInfo[0].nUnitId[i - 1];
-            front_rear = (id % 2 == 0) ? 1 : 2;
-
-            if ((struGsh.struVer.sUnit[j][i - 1][0] != 255) && (struGsh.struVer.sUnit[j][i - 1][1] != 255))
-            {
-                cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.normal);
-                cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:black");
-            }
-            else
-            {
-                cameraListLabel[(i + 1) / 2][front_rear]->setText(myLan.abnormal);
-                cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:red");
-            }
-        }
-    }
     cameraListLabel[0][0]->setText(myLan.chute);
     cameraListLabel[0][1]->setText(myLan.front_view);
     cameraListLabel[0][2]->setText(myLan.rear_view);
-
-    /* 辅配 */
-    hideColumn(4);
-    hideColumn(5);
-
-    for (int i = struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 + 1; i < MAX_UNIT / 2 + 1; i++)
+    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
-        for (int j = 0; j < 5; j++)
+        cameraListLabel[0][3]->setText("AI" + myLan.front_view);
+        cameraListLabel[0][4]->setText("AI" + myLan.rear_view);
+    }
+
+    // 行号
+    int row_no = 0;
+    for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+    {
+        // 一行显示前后视相机 
+        row_no = i / 2 + 1;
+        // 通道列
+        cameraListLabel[row_no][0]->setText(QString("%1").arg(row_no));
+        for (int j = 0; j < struCnfg.nLevelTotal; j++)
+        {
+            int cam_no = struCnfg.struLevelInfo[j].nUnitId[i];
+            // 相机前视对应列号1， 后视对应列号2 
+            int col_no = ((cam_no % 2) == 0) ? 1 : 2;
+            if ((struGsh.struVer.sUnit[j][i][0] != 255) && (struGsh.struVer.sUnit[j][i][1] != 255))
+            {
+                cameraListLabel[row_no][col_no]->setText(myLan.normal);
+                cameraListLabel[row_no][col_no]->setStyleSheet("color:black");
+            }
+            else
+            {
+                cameraListLabel[row_no][col_no]->setText(myLan.abnormal);
+                cameraListLabel[row_no][col_no]->setStyleSheet("color:red");
+            }
+
+            if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+            {
+                // AI前视对应列号3， AI后视对应列号4
+                col_no = ((cam_no % 2) == 0) ? 3 : 4;
+                if (struGsh.aiResult[j] != QString(""))
+                {
+                    cameraListLabel[row_no][col_no]->setText(myLan.normal);
+                    cameraListLabel[row_no][col_no]->setStyleSheet("color:black");
+                }
+                else
+                {
+                    cameraListLabel[row_no][col_no]->setText(myLan.abnormal);
+                    cameraListLabel[row_no][col_no]->setStyleSheet("color:red");
+                }
+            }
+        }
+    }
+
+    row_no += 1;
+    for (int i = row_no; i < SUM_SHOW_ROW_NUM; i++)
+    {
+        for (int j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
         {
             cameraListLabel[i][j]->hide();
         }
@@ -407,18 +283,18 @@ void communicationList::commuUpdateLightSrc()
 /* 隐藏某一列 */
 void communicationList::hideColumn(int index)
 {
-    for (int i = 0; i < MAX_UNIT / 2 + 1; i++)
+    for (int i = 0; i < SUM_SHOW_ROW_NUM; i++)
     {
-        cameraListLabel[i][index - 1]->hide();
+        cameraListLabel[i][index]->hide();
     }
 }
 
 /* 显示某一列 */
 void communicationList::showColumn(int index)
 {
-    for (int i = 0; i < MAX_UNIT / 2 + 1; i++)
+    for (int i = 0; i < SUM_SHOW_ROW_NUM; i++)
     {
-        cameraListLabel[i][index - 1]->show();
+        cameraListLabel[i][index]->show();
     }
 }
 
@@ -513,19 +389,9 @@ communicationList::communicationList(QWidget* parent) :
         }
     }
 
-
-    //    for (i = 0; i < MAX_CTRL; i++) {
-    //        for (j = 0; j < 2; j++) {
-    //            controlListLabel[i][j] = new QLabel;
-    //            controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
-    //            controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
-    ////            controlListLayout->addWidget(controlListLabel[i][j],i,j);
-    //        }
-    //    }
-
-    for (i = 0; i < MAX_UNIT / 2 + 1; i++)
+    for (i = 0; i < SUM_SHOW_ROW_NUM; i++)
     {
-        for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
+        for (j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
         {
             cameraListLabel[i][j] = new QLabel;
             cameraListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));

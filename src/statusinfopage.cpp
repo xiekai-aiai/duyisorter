@@ -1352,9 +1352,9 @@ void StatusInfoPage::CreateSoftwareVersionPage()
     m_textEdit->setFrameStyle(QFrame::NoFrame);
     cameraListLayout->addWidget(m_textEdit);
 
-    for (i = 0; i < MAX_UNIT / 2 + 1; i++)
+    for (i = 0; i < SUM_SHOW_ROW_NUM; i++)
     {
-        for (j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
+        for (j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
         {
             cameraListLabel[i][j] = new QLabel;
             cameraListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
@@ -1370,7 +1370,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
 /* 隐藏某一列 */
 void StatusInfoPage::hideColumn(int index)
 {
-    for (int i = 0; i < MAX_UNIT / 2 + 1; i++)
+    for (int i = 0; i < SUM_SHOW_ROW_NUM; i++)
     {
         cameraListLabel[i][index - 1]->hide();
     }
@@ -1379,7 +1379,7 @@ void StatusInfoPage::hideColumn(int index)
 /* 显示某一列 */
 void StatusInfoPage::showColumn(int index)
 {
-    for (int i = 0; i < MAX_UNIT / 2 + 1; i++)
+    for (int i = 0; i < SUM_SHOW_ROW_NUM; i++)
     {
         cameraListLabel[i][index - 1]->show();
     }
@@ -2836,27 +2836,36 @@ void StatusInfoPage::versionUpdateCameraCF()
 {
     QString str;
 
-    str.sprintf("%-s", qPrintable(myLan.chute));
+    constexpr int WIDTH_MIN_IDX = 6;
+    constexpr int WIDTH_MAX_IDX = 24;
+    str = myLan.chute.leftJustified(WIDTH_MIN_IDX, QChar(' '));
+
     if (struCnfe.nDerivedDevType & 0x0001)
     {
-        str.sprintf("%s\t%-22s", qPrintable(str), qPrintable(myLan.front_view));
+        str += myLan.front_view.leftJustified(WIDTH_MAX_IDX, QChar(' '));
     }
     if (struCnfe.nDerivedDevType & 0x0002)
     {
-        str.sprintf("%s\t%-22s", qPrintable(str), qPrintable(myLan.rear_view));
+        str += myLan.rear_view.leftJustified(WIDTH_MAX_IDX, QChar(' '));
     }
+
     if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
-        str.sprintf("%s\t%-20s", qPrintable(str), qPrintable("AI"));
+        QString tmp1 = "AI" + myLan.front_view;
+        str += tmp1.leftJustified(WIDTH_MAX_IDX, QChar(' '));
+        QString tmp2 = "AI" + myLan.rear_view;
+        str += tmp2.leftJustified(WIDTH_MAX_IDX, QChar(' '));
     }
 
     if ((struCnfe.nDerivedDevType & 0x01000100) == 0x01000100)
     {
-        str.sprintf("%s\t%-22s", qPrintable(str), qPrintable(myLan.infra + "-" + myLan.front));
+        QString tmp1 = myLan.infra + "-" + myLan.front;
+        str += tmp1.leftJustified(WIDTH_MAX_IDX, QChar(' '));
     }
     if ((struCnfe.nDerivedDevType & 0x01000200) == 0x01000200)
     {
-        str.sprintf("%s\t%-22s", qPrintable(str), qPrintable(myLan.infra + "-" + myLan.rear));
+        QString tmp1 = myLan.infra + "-" + myLan.rear;
+        str += tmp1.leftJustified(WIDTH_MAX_IDX, QChar(' '));
     }
     str += "\n";
 
@@ -2875,32 +2884,25 @@ void StatusInfoPage::versionUpdateCameraCF()
     for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2; i++)
     {
         char materialType[8] = "\0";
-        QString strChuteVerTmp[4];// 前视、后视、红外-前、红外-后
+        QString strChuteVerTmp[4];   // 前视、后视、红外-前、红外-后
 
         getVersionMaterialType(struGsh.struVer.sUnit[ONE_LEVEL][i * 2][1],
             struGsh.struVer.sUnit[ONE_LEVEL][i * 2][2],
             materialType);
         if (struGsh.struVer.sUnit[ONE_LEVEL][i * 2][1] == 255)
         {
-            strChuteVerTmp[0].sprintf("\t%s", "NULL                        ");
+            strChuteVerTmp[0] = QString("NULL").leftJustified(WIDTH_MAX_IDX, QChar(' '));
 
         }
         else
         {
-            //            strChuteVerTmp[0].sprintf("\t50%02d%02d%02d_V%d.%02d_%s",//前视
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2][5],
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2][4],
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2][3],
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2][1]&0x0F,
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2][0],
-            //                                      materialType);
             if (versionFlag == 0)
             {
-                strChuteVerTmp[0].sprintf("\t%s", "V1.00_1                     ");
+                strChuteVerTmp[0] = QString("V1.00_1").leftJustified(WIDTH_MAX_IDX, QChar(' '));
             }
             if (versionFlag == 1)
             {
-                strChuteVerTmp[0].sprintf("\t%s", "V1.00_2                     ");
+                strChuteVerTmp[0] = QString("V1.00_2").leftJustified(WIDTH_MAX_IDX, QChar(' '));
             }
 
         }
@@ -2910,28 +2912,19 @@ void StatusInfoPage::versionUpdateCameraCF()
             materialType);
         if (struGsh.struVer.sUnit[ONE_LEVEL][i * 2 + 1][1] == 255)
         {
-            strChuteVerTmp[1].sprintf("\t%s", "NULL                        ");
+            strChuteVerTmp[1] = QString("NULL").leftJustified(WIDTH_MAX_IDX, QChar(' '));
 
         }
         else
         {
-            //            strChuteVerTmp[1].sprintf("\t50%02d%02d%02d_V%d.%02d_%s",//后视
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2+1][5],
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2+1][4],
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2+1][3],
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2+1][1]&0x0F,
-            //                                      struGsh.struVer.sUnit[ONE_LEVEL][i*2+1][0],
-            //                                      materialType);
             if (versionFlag == 0)
             {
-                strChuteVerTmp[1].sprintf("\t%s", "V1.00_1                     ");
+                strChuteVerTmp[1] = QString("V1.00_1").leftJustified(WIDTH_MAX_IDX, QChar(' '));
             }
             if (versionFlag == 1)
             {
-                strChuteVerTmp[1].sprintf("\t%s", "V1.00_2                     ");
+                strChuteVerTmp[1] = QString("V1.00_2").leftJustified(WIDTH_MAX_IDX, QChar(' '));
             }
-            //            strChuteVerTmp[1].sprintf("\t%s","V1.00                       ");
-
         }
 
 
@@ -2939,41 +2932,52 @@ void StatusInfoPage::versionUpdateCameraCF()
         QString strTmp;
         if (!(struCnfe.nDerivedDevType & 0x0001))
         {
-            strChuteVerTmp[0] = "";
+            strChuteVerTmp[0] = QString("").leftJustified(WIDTH_MAX_IDX, QChar(' '));
         }
         if (!(struCnfe.nDerivedDevType & 0x0002))
         {
-            strChuteVerTmp[1] = "";
+            strChuteVerTmp[1] = QString("").leftJustified(WIDTH_MAX_IDX, QChar(' '));
         }
         if ((struCnfe.nDerivedDevType & 0x01000100) != 0x01000100)
         {
-            strChuteVerTmp[2] = "";
+            strChuteVerTmp[2] = QString("").leftJustified(WIDTH_MAX_IDX, QChar(' '));
         }
         if ((struCnfe.nDerivedDevType & 0x01000200) != 0x01000200)
         {
-            strChuteVerTmp[3] = "";
+            strChuteVerTmp[3] = QString("").leftJustified(WIDTH_MAX_IDX, QChar(' '));
         }
 
         if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
         {
-            LOG_INFO_STM("i:" << i << ", ai version:" << struGsh.aiResult[i].toStdString());
-            if (struGsh.aiResult[i] == QString(""))
+            int ai_idx = i * 2;
+            LOG_INFO_STM("i:" << ai_idx << ", ai version:" << struGsh.aiResult[ai_idx].toStdString()
+                << ", i + 1:" << ai_idx + 1 << ", ai version:" << struGsh.aiResult[ai_idx + 1].toStdString());
+            if (struGsh.aiResult[ai_idx] == QString(""))
             {
-                strChuteVerTmp[2].sprintf("\t%s", "NULL");
+                strChuteVerTmp[2] = QString("NULL").leftJustified(WIDTH_MAX_IDX, QChar(' '));
             }
             else
             {
-                strChuteVerTmp[2] = struGsh.aiResult[i] + QString("               ");
+                strChuteVerTmp[2] = struGsh.aiResult[ai_idx].leftJustified(WIDTH_MAX_IDX, QChar(' '));
+            }
+
+            if (struGsh.aiResult[ai_idx + 1] == QString(""))
+            {
+                strChuteVerTmp[3] = QString("NULL").leftJustified(WIDTH_MAX_IDX, QChar(' '));
+            }
+            else
+            {
+                strChuteVerTmp[3] = struGsh.aiResult[ai_idx + 1].leftJustified(WIDTH_MAX_IDX, QChar(' '));
             }
         }
 
-        strTmp.sprintf("   %d%s%s%s%s\n",
-            i + 1,//通道从1计数
-            qPrintable(strChuteVerTmp[0]),
-            qPrintable(strChuteVerTmp[1]),
-            qPrintable(strChuteVerTmp[2]),
-            qPrintable(strChuteVerTmp[3]));
-        str += strTmp;
+        str += QString("   %1 %2%3%4%5\n")
+            .arg(QString::number(i + 1).leftJustified(WIDTH_MIN_IDX, ' '))
+            .arg(strChuteVerTmp[0])     // 前视
+            .arg(strChuteVerTmp[1])     // 后视
+            .arg(strChuteVerTmp[2])     // AI前
+            .arg(strChuteVerTmp[3]);    // AI后
+
     }
     m_textEdit->setText(str);
 }
@@ -3041,93 +3045,6 @@ void StatusInfoPage::versionUpdateCameraLD2()
 void StatusInfoPage::versionUpdateCamera()
 {
     versionUpdateCameraCF();
-}
-
-/* 更新RS机型前置板版本 */
-void StatusInfoPage::versionUpdateCameraRS()
-{
-    int nUnitTmp = 0;
-    int front_rear = 0;
-
-    //! 主配前置板
-    for (int i = 1; i < struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal + 1; i++)
-    {
-        cameraListLabel[(i + 1) / 2][0]->setText(QString("%1").arg(i / 2));
-        for (int j = 0; j < struCnfg.nLevelTotal; j++)
-        {
-            nUnitTmp = struCnfg.struLevelInfo[j].nUnitId[i - 1];
-            front_rear = (nUnitTmp % 2 == 0) ? 1 : 2;
-            if ((struGsh.struVer.sUnit[j][nUnitTmp][0] != 255) && (struGsh.struVer.sUnit[j][nUnitTmp][1] != 255))
-            {
-                cameraListLabel[(i + 1) / 2][front_rear]->setText(QString("V%1.0%2").arg(struGsh.struVer.sUnit[j][nUnitTmp][1])
-                    .arg(struGsh.struVer.sUnit[j][nUnitTmp][0]));
-                cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:black");
-            }
-            else
-            {
-                cameraListLabel[(i + 1) / 2][front_rear]->setText("NULL");
-                cameraListLabel[(i + 1) / 2][front_rear]->setStyleSheet("color:red");
-            }
-        }
-    }
-    cameraListLabel[0][0]->setText(myLan.chute);
-    cameraListLabel[0][1]->setText(myLan.front_view);
-    cameraListLabel[0][2]->setText(myLan.rear_view);
-
-    //! 辅配前置板
-    bool bAssistExist = false;
-    int nUnitTotal = struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal;
-    for (int i = 0; i < nUnitTotal; i++)
-    {
-        if (struCnfg.nAssistCamEn[i] == 1)
-        {
-            bAssistExist = true;
-            break;
-        }
-    }
-    if (bAssistExist)
-    {
-        cameraListLabel[0][3]->setText(myLan.front_view + myLan.config_assist);
-        cameraListLabel[0][4]->setText(myLan.rear_view + myLan.config_assist);
-        for (int i = 1; i < nUnitTotal / 2 + 1; i++)
-        {
-            cameraListLabel[i][3]->setText("--");
-            cameraListLabel[i][3]->setStyleSheet("color: black");
-
-            cameraListLabel[i][4]->setText("--");
-            cameraListLabel[i][4]->setStyleSheet("color: black");
-        }
-
-        for (int i = 0; i < nUnitTotal / 2 + 1; i++)
-        {
-            cameraListLabel[i][3]->show();
-            cameraListLabel[i][4]->show();
-        }
-    }
-    else
-    {
-        for (int i = 0; i < nUnitTotal / 2 + 1; i++)
-        {
-            cameraListLabel[i][3]->hide();
-            cameraListLabel[i][4]->hide();
-        }
-    }
-
-    /* 根据当前通道数隐藏多余前置板 */
-    for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2 + 1; i++)
-    {
-        for (int j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
-        {
-            cameraListLabel[i][j]->show();
-        }
-    }
-    for (int i = struCnfg.struLevelInfo[0].nUnitLevelTotal / 2 + 1; i < MAX_UNIT / 2 + 1; i++)
-    {
-        for (int j = 0; j < MAX_BACKGROUND_GROUP + 3; j++)
-        {
-            cameraListLabel[i][j]->hide();
-        }
-    }
 }
 
 /* 恒流源板版本信息 */
