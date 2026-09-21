@@ -4,7 +4,6 @@
 #include "ui_aimodelset.h"
 #include "cmdudpmanager.h"
 #include "cmdworker.h"
-#include "sftp_client.h"
 #include "unilog.h"
 #include <queue>
 #include <iostream>
@@ -514,17 +513,42 @@ AiModelSet::AiModelSet(QWidget *parent) :
         LOG_DEBUG_STM("[下载流程] md5 校验：expected=" << m_expectedModelMd5 << "actual=" << actualMd5);
 
         if (!m_expectedModelMd5.isEmpty() && !actualMd5.isEmpty()
-            && !m_expectedModelMd5.compare(actualMd5, Qt::CaseInsensitive)) {
-            showTip(QString("模型下载完成且校验通过（MD5=%1）").arg(actualMd5));
-        } else if (!m_expectedModelMd5.isEmpty()) {
+            && m_expectedModelMd5.compare(actualMd5, Qt::CaseInsensitive)) {
+            // MD5 不一致 → 红字报错 + 终止（不要回写 JSON）
             showTip(QString("✗ 模型 MD5 校验失败！expected=%1 actual=%2")
                     .arg(m_expectedModelMd5).arg(actualMd5), true);
             resetTrainingState();
             return;
-        } else {
-            // JSON 里没 md5 字段，跳过校验（正常，先让流程走通）
-            LOG_DEBUG_STM("[下载流程] JSON 里没 md5 字段，跳过校验");
-            showTip(QString("模型下载完成（JSON 无 md5 字段，跳过校验）"));
+        }
+
+        // md5 一致或 JSON 无 md5 字段 → 视为下载成功
+        showTip(QString("模型下载完成"));
+
+        // ⭐ 把用户在"新建模型"里设置的类别名写回下载下来的 JSON
+        //    这样下次切模型 → 加载 JSON 时就能读到真实名称（不再是 "1"/"2"）
+        if (!m_classNames.isEmpty()) {
+            QString jsonPath = ai_helper::GetModelRootPath() + downLoadModelName + ".json";
+            QFile jf(jsonPath);
+            if (jf.open(QIODevice::ReadOnly)) {
+                QJsonDocument doc = QJsonDocument::fromJson(jf.readAll());
+                jf.close();
+                if (doc.isObject()) {
+                    QJsonObject obj = doc.object();
+                    QJsonArray arr = obj.value("class").toArray();
+                    for (int i = 0; i < arr.size() && i < m_classNames.size(); ++i) {
+                        QJsonObject cls = arr[i].toObject();
+                        cls["name"] = m_classNames[i];   // 替换成用户设的名字
+                        arr[i] = cls;
+                    }
+                    obj["class"] = arr;
+                    QFile wf(jsonPath);
+                    if (wf.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                        wf.write(QJsonDocument(obj).toJson());
+                        wf.close();
+                        LOG_DEBUG_STM("[下载流程] 已把类别名写回 JSON:" << m_classNames);
+                    }
+                }
+            }
         }
 
         resetTrainingState();
@@ -753,7 +777,12 @@ void AiModelSet::resetTrainingState()
     LOG_DEBUG_STM("[训练流程] resetTrainingState() 被调用");
     // 1. 标志位
     m_trainingBusy = false;
-    if (ui) ui->modelTrainPushButton->setEnabled(true);  // ⭐ 按钮恢复可用
+    if (ui) {
+        ui->modelTrainPushButton->setEnabled(true);   // 训练按钮恢复
+        ui->validImgPushButton->setEnabled(true);     // 仿真按钮恢复
+        ui->batchValidImgPushButton->setEnabled(true);
+        ui->validvsAnnoImgPushButton->setEnabled(true);
+    }
     m_sftpUploadPhase = 0;
     m_sftpVerifyRetry = 0;
     m_sftpVerifyPhase = 0;
@@ -895,7 +924,7 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
     }
 
     const int AREA_X = 30, AREA_Y = 35, AREA_W = 640, AREA_H = 60;  // ⭐ 垂直中心对齐 trainServerCfgPushButton(y=30,h=41 → 中心50.5)
-    const int BTN_FIXED_W = 48;
+    const int BTN_FIXED_W = 80;   // ⭐ 加宽到 80px 显示中文类别名（原来 48 太窄）
     const int BTN_FIXED_H = 24;
     const int FIXED_SPACING = 6;  // 按钮间水平间距
     const int BTN_LABEL_GAP = 5;  // 按钮行和计数行之间的垂直间距
@@ -943,7 +972,7 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
 
         QString colorStr = QString("rgb(%1,%2,%3)").arg(color.red()).arg(color.green()).arg(color.blue());
         btn->setStyleSheet(QString(
-            "QPushButton { background-color: %1; color: white; border: 2px solid transparent; border-radius: 3px; }"
+            "QPushButton { background-color: %1; color: black; border: 2px solid transparent; border-radius: 3px; }"
             "QPushButton:checked { border: 2px solid #333333; }"
         ).arg(colorStr));
 
@@ -2261,9 +2290,11 @@ void AiModelSet::onModelSelPushButtonClicked()
                 if (err.error == QJsonParseError::NoError && doc.isObject()) {
                     QJsonArray arr = doc.object().value("class").toArray();
                     classCount = arr.size();
-                    // 统一用 0..N-1 作为标签，忽略 json 里的 name（保持和新建模型一致）
+                    // 读 json 里每个 class 的 name 字段（服务器可能填 "1"/"2" 也可能是真实名称）
                     for (int i = 0; i < classCount; ++i) {
-                        classNames.append(QString("%1").arg(i));
+                        QString n = arr[i].toObject().value("name").toString();
+                        if (n.isEmpty()) n = QString("%1").arg(i);
+                        classNames.append(n);
                     }
                     jsonOk = true;
                     LOG_DEBUG_STM("🟡 从 json 读到 class:" << classCount << "names:" << classNames);
@@ -2903,7 +2934,7 @@ void AiModelSet::onImageItemClicked(QListWidgetItem* item)
         return;
     }
 
-    showTip(m_currentImagePath);
+    showTip(QFileInfo(m_currentImagePath).fileName());
 
     // 3. 优化显示：让图片适应 previewLabel 大小，保持比例（不拉伸）
     QPixmap pixmap = QPixmap::fromImage(image);
@@ -3320,115 +3351,61 @@ void AiModelSet::computeFgPixelCounts()
 }
 
 // ═══════════════════════════════════════════════════════════
-// 本地 MD5 计算（文件级）
-// ═══════════════════════════════════════════════════════════
-static QString localMd5(const QString& filePath)
-{
-    QFile f(filePath);
-    if (!f.open(QIODevice::ReadOnly)) return "";
-    QCryptographicHash h(QCryptographicHash::Md5);
-    h.addData(&f);
-    return QString(h.result().toHex());
-}
-
-// ═══════════════════════════════════════════════════════════
-// 板卡模型检查 + 自动上传（SFTP stat + SSH exec md5sum）
+// 板卡模型检查 + 自动上传（SftpWorker 实现，复用训练流程那套）
+// 简化策略：直接覆盖上传 .bin/.json（不做 stat + md5sum 校验）
+//   · 板卡模型文件一般几 MB，每次仿真都覆盖上传开销可接受
+//   · 避免远程 ssh md5sum 命令需要 SftpClient::exec 接口
 // 返回 true 表示板卡已有匹配模型，可以进入仿真
 // ═══════════════════════════════════════════════════════════
 bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
 {
-    QString localBin   = ai_helper::GetModelRootPath() + modelName + ".bin";
-    QString localJson  = ai_helper::GetModelRootPath() + modelName + ".json";
-    QString boardDir   = "/ftp/model";
-    QString remoteBin  = boardDir + "/" + modelName + ".bin";
-    QString remoteJson = boardDir + "/" + modelName + ".json";
+    QString localBin  = ai_helper::GetModelRootPath() + modelName + ".bin";
+    QString localJson = ai_helper::GetModelRootPath() + modelName + ".json";
+    QString boardDir  = "/ftp/model";
 
     // 前置：本地必须有 .bin
     if (!QFile::exists(localBin)) {
         showTip(QString("本地模型文件不存在: %1").arg(localBin), true);
         return false;
     }
-    
-    showTip(QString("连接板卡检查模型 %1 ...").arg(modelName));
+
+    showTip(QString("连接板卡上传模型 %1 ...").arg(modelName));
     QApplication::processEvents();
 
-    // 1. 连接板卡 SFTP
+    // 1. 连接板卡
     QString boardIp = getBoardIp();
-    SftpClient cli(boardIp.toStdString(), 22, AI_DEV_USER, AI_DEV_PWD);
-    if (!cli.connect()) {
+    SftpWorker w(boardIp, AI_DEV_USER, AI_DEV_PWD, 22);
+    if (!w.connect()) {
         showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
         return false;
     }
     // 2. 确保目录存在
-    cli.mkdir_p(boardDir.toStdString());
-
-
-    // 3. 检查 .bin 是否存在 + 本地 MD5
-    QString localMd5Hex = localMd5(localBin);
-    bool binNeedUpload = false;
-
-    LIBSSH2_SFTP_ATTRIBUTES attrs;
-    if (!cli.stat_file(remoteBin.toStdString(), attrs)) {
-        // 板卡没有 .bin → 必须上传
-        binNeedUpload = true;
-        LOG_DEBUG_STM("[板卡模型] 板卡不存在:" << remoteBin);
-    } else {
-        // 存在 → 跑 md5sum 比对
-        QString boardMd5 = QString::fromStdString(cli.exec(
-            QString("md5sum %1").arg(remoteBin).toStdString()));
-        // md5sum 输出格式: "abc123...  /path/to/file"  取前 32 字符
-        boardMd5 = boardMd5.left(32);
-        if (boardMd5.compare(localMd5Hex, Qt::CaseInsensitive) != 0) {
-            binNeedUpload = true;
-            LOG_DEBUG_STM("[板卡模型] .bin MD5 不一致 local=" << localMd5Hex << "board=" << boardMd5);
-        } else {
-            LOG_DEBUG_STM("[板卡模型] .bin MD5 一致:" << localMd5Hex);
-        }
+    if (!w.mkdir_p(boardDir)) {
+        showTip(QString("板卡创建目录失败 %1").arg(boardDir), true);
+        w.disconnect();
+        return false;
     }
 
-    // 4. .json 处理（可选，存在则也比对/上传）
-    bool localHasJson = QFile::exists(localJson);
-    bool jsonNeedUpload = false;
-    if (localHasJson) {
-        if (!cli.stat_file(remoteJson.toStdString(), attrs)) {
-            jsonNeedUpload = true;
-        } else {
-            QString localJsonMd5 = localMd5(localJson);
-            QString boardJsonMd5 = QString::fromStdString(cli.exec(
-                QString("md5sum %1").arg(remoteJson).toStdString())).left(32);
-            if (boardJsonMd5.compare(localJsonMd5, Qt::CaseInsensitive) != 0) {
-                jsonNeedUpload = true;
-            }
-        }
+    // 3. 收集要上传的文件列表（.bin 必传，.json 可选）
+    QStringList uploadFiles;
+    uploadFiles << localBin;
+    if (QFile::exists(localJson)) uploadFiles << localJson;
+
+    // 4. 直接调 onUploadFiles 上传到 /ftp/model/（仿真不 moveToThread，slot 当普通函数调）
+    bool uploadOk = false;
+    connect(&w, &SftpWorker::allUploadCompleted, &w,
+            [&](bool success) { uploadOk = success; }, Qt::DirectConnection);
+    w.onUploadFiles(uploadFiles, boardDir);
+
+    w.disconnect();
+
+    if (!uploadOk) {
+        showTip(QString("板卡模型 %1 上传失败").arg(modelName), true);
+        return false;
     }
 
-    // 5. 按需上传
-    if (binNeedUpload || jsonNeedUpload) {
-        showTip(QString("板卡模型不匹配，上传中 %1 ...").arg(modelName));
-        QApplication::processEvents();
-
-        if (binNeedUpload) {
-            if (!cli.upload(localBin.toStdString(), remoteBin.toStdString())) {
-                showTip(QString("板卡上传 .bin 失败: %1").arg(localBin), true);
-                cli.disconnect();
-                return false;
-            }
-            LOG_DEBUG_STM("[板卡模型] .bin 上传成功");
-        }
-        if (jsonNeedUpload && localHasJson) {
-            if (!cli.upload(localJson.toStdString(), remoteJson.toStdString())) {
-                showTip(QString("板卡上传 .json 失败: %1").arg(localJson), true);
-                cli.disconnect();
-                return false;
-            }
-            LOG_DEBUG_STM("[板卡模型] .json 上传成功");
-        }
-        showTip(QString("板卡模型 %1 上传完成").arg(modelName));
-    } else {
-        showTip(QString("板卡已有匹配模型 %1").arg(modelName));
-    }
-
-    cli.disconnect();
+    LOG_DEBUG_STM("[板卡模型] 覆盖上传完成:" << uploadFiles);
+    showTip(QString("板卡模型 %1 上传完成").arg(modelName));
     return true;
 }
 
@@ -3443,24 +3420,26 @@ bool AiModelSet::runEmulateOnce()
     QString imgFileName = imgFi.fileName();
     QString boardIp = getBoardIp();
 
-    // ═══ 先把当前图片 SFTP 上传到板卡的仿真目录 ═══
+    // ═══ 先把当前图片 SFTP 上传到板卡的仿真目录（用 SftpWorker 临时对象） ═══
     QString boardImgDir = "/ftp/emulate";
     showTip(QString("上传图片到板卡：%1 → %2 ...").arg(imgFileName).arg(boardImgDir));
     QApplication::processEvents();
     {
-        SftpClient cli(boardIp.toStdString(), 22, AI_DEV_USER, AI_DEV_PWD);
-        if (!cli.connect()) {
+        SftpWorker w(boardIp, AI_DEV_USER, AI_DEV_PWD, 22);
+        if (!w.connect()) {
             showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
             return false;
         }
-        cli.mkdir_p(boardImgDir.toStdString());
-        QString remotePath = boardImgDir + "/" + imgFileName;
-        if (!cli.upload(m_currentImagePath.toStdString(), remotePath.toStdString())) {
-            showTip(QString("图片上传到板卡失败：%1").arg(remotePath), true);
-            cli.disconnect();
+        w.mkdir_p(boardImgDir);
+        bool uploadOk = false;
+        connect(&w, &SftpWorker::allUploadCompleted, &w,
+                [&](bool success) { uploadOk = success; }, Qt::DirectConnection);
+        w.onUploadFiles(QStringList{m_currentImagePath}, boardImgDir);
+        w.disconnect();
+        if (!uploadOk) {
+            showTip(QString("图片上传到板卡失败：%1").arg(imgFileName), true);
             return false;
         }
-        cli.disconnect();
     }
 
     /*
@@ -3715,17 +3694,17 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     for (auto* b : allBtns) b->setEnabled(false);
     ui->batchValidImgPushButton->setEnabled(true);  // 允许用户再次点击关闭
 
-    // ⑤ 单次板卡连接复用（SFTP upload 每张图片）
+    // ⑤ 单次板卡连接复用（SftpWorker 临时对象，跨循环复用同一个 session）
     QString boardIp = getBoardIp();
-    SftpClient cli(boardIp.toStdString(), 22, AI_DEV_USER, AI_DEV_PWD);
-    if (!cli.connect()) {
+    SftpWorker w(boardIp, AI_DEV_USER, AI_DEV_PWD, 22);
+    if (!w.connect()) {
         showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
         ui->batchValidImgPushButton->setChecked(false);
         for (auto* b : allBtns) b->setEnabled(true);
         return;
     }
     QString boardImgDir = "/ftp/emulate";
-    cli.mkdir_p(boardImgDir.toStdString());
+    w.mkdir_p(boardImgDir);
 
     // ⑥ ModelApply（只做一次，加载模型到板卡内存）
     QString modelBinName = modelName + ".bin";
@@ -3756,13 +3735,16 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
                     .arg(imgFileName));
         QApplication::processEvents();
 
-        // 7a. SFTP upload 图片
-        QString remotePath = boardImgDir + "/" + imgFileName;
-        if (!cli.upload(imgPath.toStdString(), remotePath.toStdString())) {
+        // 7a. SFTP upload 图片（复用同一个 SftpWorker 连接，不 moveToThread，直接调 slot）
+        bool uploadOk = false;
+        connect(&w, &SftpWorker::allUploadCompleted, &w,
+                [&](bool success) { uploadOk = success; }, Qt::DirectConnection);
+        w.onUploadFiles(QStringList{imgPath}, boardImgDir);
+        if (!uploadOk) {
             LOG_WARN_STM("批量仿真 SFTP 上传失败：" << imgFileName);
             failCount++; continue;
         }
-
+        
         // 7b. Emulate UDP 请求（img_name 用纯文件名！）
         EmulateParam info;
         info.model_name_ = modelBinName;
@@ -3791,7 +3773,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         }
     }
 
-    cli.disconnect();
+    w.disconnect();
 
     // ⑧ 恢复 UI + 自动进入仿真查看态（从 pred txt 读）
     ui->batchValidImgPushButton->setChecked(true);   // 批量按钮保持选中
@@ -3937,7 +3919,11 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     ++m_tryTimes;   // 内部计数，不影响 task_id
     m_currentTaskId = modelName;
     m_trainingBusy = true;
-    ui->modelTrainPushButton->setEnabled(false);  // ⭐ 按钮置灰，防止重复提交直到 resetTrainingState 恢复
+    ui->modelTrainPushButton->setEnabled(false);   // 训练按钮置灰
+    // 仿真相关按钮全部禁用，直到训练结束/异常退出 → resetTrainingState 统一恢复
+    ui->validImgPushButton->setEnabled(false);
+    ui->batchValidImgPushButton->setEnabled(false);
+    ui->validvsAnnoImgPushButton->setEnabled(false);
     m_pollFailCount = 0;
     showTip(QString("正在创建远程训练任务目录... 任务ID：%1").arg(m_currentTaskId));
     m_modelApi->createDirTrain(m_currentTaskId);
@@ -3987,29 +3973,97 @@ void AiModelSet::onModelNewPushButtonClicked()
     nameRow->addWidget(nameEdit, 1);
     mainLayout->addLayout(nameRow);
 
-    // ── 第二栏: 模型类别数量 (9 个 checkbox, 单选) ──
-    QLabel *countLabel = new QLabel("类别数量:", &dlg);
-    QHBoxLayout *countRow = new QHBoxLayout();
-    countRow->addWidget(countLabel);
+    // ── 第二栏: 类别名称列表（动态增删，可编辑名称，最多 9 类） ──
+    QLabel *clsTitle = new QLabel("类别列表:", &dlg);
+    mainLayout->addWidget(clsTitle);
 
-    QButtonGroup *countGroup = new QButtonGroup(&dlg);
-    countGroup->setExclusive(true);  // 单选
+    QScrollArea *clsScroll = new QScrollArea(&dlg);
+    clsScroll->setWidgetResizable(true);
+    clsScroll->setFixedHeight(180);
+    clsScroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    QWidget *clsContainer = new QWidget(clsScroll);
+    QVBoxLayout *clsLayout = new QVBoxLayout(clsContainer);
+    clsLayout->setContentsMargins(0, 4, 0, 0);   // 顶部 4px 小间距，其余 0
+    clsLayout->setSpacing(4);
+    clsLayout->setAlignment(Qt::AlignTop);   // ⭐ 所有行顶对齐（去掉之前的 stretch）
+    clsScroll->setWidget(clsContainer);
+    mainLayout->addWidget(clsScroll);
 
-    for (int i = 1; i <= 9; i++) {
-        QCheckBox *cb = new QCheckBox(QString::number(i), &dlg);
-        cb->setProperty("value", i);
-        countGroup->addButton(cb, i);
-        countRow->addWidget(cb);
+    // 行结构：{ idLabel(只读) | nameEdit(可编辑) | delBtn }
+    struct ClassRow {
+        QWidget   *row;
+        QLabel    *idLbl;
+        QLineEdit *nameEdit;
+        QPushButton *delBtn;
+    };
+    QVector<ClassRow> clsRows;
+
+    auto refreshRowIds = [&]() {
+        for (int i = 0; i < clsRows.size(); ++i) {
+            clsRows[i].idLbl->setText(QString("%1").arg(i));
+        }
+    };
+
+    auto addRow = [&](const QString &initialName) {
+        if (clsRows.size() >= 9) return;   // 最多 9 类
+        ClassRow r;
+        r.row = new QWidget(clsContainer);
+        auto *rowLay = new QHBoxLayout(r.row);
+        rowLay->setContentsMargins(0, 0, 0, 0);
+        rowLay->setSpacing(6);
+
+        r.idLbl = new QLabel(QString("%1").arg(clsRows.size()), r.row);
+        r.idLbl->setFixedWidth(24);
+        r.idLbl->setAlignment(Qt::AlignCenter);
+        r.idLbl->setStyleSheet("QLabel { color: #666; font-weight: bold; }");
+        rowLay->addWidget(r.idLbl);
+
+        r.nameEdit = new QLineEdit(initialName, r.row);
+        r.nameEdit->setPlaceholderText(QString("类别%1").arg(clsRows.size() + 1));
+        r.nameEdit->setFocusPolicy(Qt::NoFocus);   // ⭐ 阻止系统键盘，只用 myInputMethod
+        r.nameEdit->installEventFilter(new KbFilter(QString("类别%1").arg(clsRows.size() + 1), r.row));
+        rowLay->addWidget(r.nameEdit, 1);
+
+        r.delBtn = new QPushButton("-", r.row);
+        r.delBtn->setFixedSize(26, 24);
+        r.delBtn->setToolTip("删除此类");
+        rowLay->addWidget(r.delBtn);
+
+        connect(r.delBtn, &QPushButton::clicked, &dlg, [&, r]() {
+            if (clsRows.size() <= 1) return;   // 至少保留 1 类
+            // 从 clsRows 里删掉
+            for (int i = 0; i < clsRows.size(); ++i) {
+                if (clsRows[i].row == r.row) {
+                    clsRows.removeAt(i);
+                    break;
+                }
+            }
+            r.row->deleteLater();
+            refreshRowIds();
+        });
+
+        clsLayout->addWidget(r.row);
+        clsRows.append(r);
+    };
+
+    // 默认从当前 m_classNames 恢复（编辑已有模型时保留名字），空则给 2 行模板
+    QStringList initNames = m_classNames;
+    if (initNames.isEmpty() || initNames.size() < modelCategoryNum) {
+        initNames.clear();
+        for (int i = 0; i < qMax(1, modelCategoryNum); ++i) {
+            initNames.append(QString());   // placeholder 会显示 "类别N"
+        }
     }
-    // 默认选中当前 modelCategoryNum (范围 1~9)
-    if (modelCategoryNum >= 1 && modelCategoryNum <= 9) {
-        QAbstractButton *btn = countGroup->button(modelCategoryNum);
-        if (btn) btn->setChecked(true);
-    } else {
-        countGroup->button(1)->setChecked(true);
-    }
-    countRow->addStretch(1);
-    mainLayout->addLayout(countRow);
+    for (const QString &n : initNames) addRow(n);
+    refreshRowIds();
+
+    QPushButton *addClsBtn = new QPushButton("+ 新增类别", &dlg);
+    addClsBtn->setEnabled(clsRows.size() < 9);
+    mainLayout->addWidget(addClsBtn);
+    connect(addClsBtn, &QPushButton::clicked, &dlg, [&]() {
+        addRow(QString());
+        addClsBtn->setEnabled(clsRows.size() < 9);
+    });
 
     // ── 确定 / 取消 ──
     QHBoxLayout *btnRow = new QHBoxLayout();
@@ -4033,20 +4087,24 @@ void AiModelSet::onModelNewPushButtonClicked()
 
     // 执行对话框
     if (dlg.exec() == QDialog::Accepted) {
-        // 赋值
+        // 收集类别名（从 QLineEdit 读）
+        QStringList newNames;
+        for (const auto &r : clsRows) {
+            QString n = r.nameEdit->text().trimmed();
+            if (n.isEmpty()) n = QString("类别%1").arg(newNames.size() + 1);
+            newNames.append(n);
+        }
+
         modelName = nameEdit->text().trimmed();
-        modelCategoryNum = countGroup->checkedId();
+        modelCategoryNum = newNames.size();
+        m_classNames = newNames;
 
         // 更新 UI 上的 modelNameLabel
         ui->modelNameLabel->setText(modelName);
 
-        // 更新 tipLabel 提示
         showTip(QString("新建模型: %1, 类别数: %2").arg(modelName).arg(modelCategoryNum));
 
-        // 🔧 新建模型 → 清空 json 残留的类别名，让 setupClassCheckBoxes 自动按 0..N-1 生成
-        m_classNames.clear();
-
-        // 🔧 关键：重建动态 checkbox，数量跟 modelCategoryNum 对齐
+        // 重建类别按钮（用真实名字）
         updateCategoryChenkBox();
     }
 }
@@ -4303,9 +4361,9 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         testResultLabel->setText(QString("正在测试 SFTP 连接 %1:%2 ...").arg(ip).arg(port));
         QApplication::processEvents();
 
-        SftpClient cli(ip.toStdString(), port, user.toStdString(), pass.toStdString());
-        if (cli.connect()) {
-            cli.disconnect();
+        SftpWorker w(ip, user, pass, port);
+        if (w.connect()) {
+            w.disconnect();
             testResultLabel->setStyleSheet("color: green; font-size: 8pt;");
             testResultLabel->setText(QString("SFTP 连接成功（%1@%2:%3）").arg(user).arg(ip).arg(port));
         } else {
@@ -4701,7 +4759,7 @@ TrainQueryResponse ModelApi::parseQueryTrainResponse(const QByteArray& data)
     response.number = obj.contains("number") ? obj["number"].toInt() : -1;
     response.model_name = obj.contains("model_name") ? obj["model_name"].toString() : "";
     response.model_dir = obj.contains("model_dir") ? obj["model_dir"].toString() : "";
-
+    
     return response;
 }
 
