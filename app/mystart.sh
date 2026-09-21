@@ -56,6 +56,14 @@ else
 	echo "tun.ko加载成功"
 fi
 
+# 拉起 WiFi 网卡
+if ip link show wlan0 &>/dev/null; then
+	ifconfig wlan0 up 2>/dev/null
+	echo "wlan0 已拉起"
+else
+	echo "wlan0 不存在，跳过"
+fi
+
 
 
 #if [ -s /opt/app/lib/tun.ko ] ; then

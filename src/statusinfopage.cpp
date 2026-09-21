@@ -3471,7 +3471,7 @@ void StatusInfoPage::onWifiScanBtnPressed()
     system(cmdStr);
 
     memset(cmdStr, 0, 1024);
-    sprintf(cmdStr, "iwlist mlan0 scan | grep 'ESSID:' | cut -d'\"' -f2 > /tmp/wifi.txt");
+    sprintf(cmdStr, "ip link set wlan0 up && iwlist wlan0 scan | grep 'ESSID:' | cut -d'\"' -f2 > /tmp/wifi.txt");
     system(cmdStr);
 
     memset(cmdStr, 0, 256);
@@ -3561,7 +3561,7 @@ void StatusInfoPage::onWifiConnectBtnPressed()
         char cmdStr[256];
         memset(cmdStr, 0, 256);
         connectResultEdit->clear();
-        sprintf(cmdStr, "./wifi.sh -i mlan0 -s %s -p %s", ssidComboBox->currentText().toLocal8Bit().data(), passWordLineEdit->text().toLocal8Bit().data());//Get "auto eth1" line number
+        sprintf(cmdStr, "./wifi.sh -i wlan0 -s %s -p %s", ssidComboBox->currentText().toLocal8Bit().data(), passWordLineEdit->text().toLocal8Bit().data());//Get "auto eth1" line number
         ycprocess->start(cmdStr);
         wifiDisconnectBtn->setEnabled(true);
         struGsh.wifiSsid = ssidComboBox->currentText();
@@ -3646,7 +3646,7 @@ QString StatusInfoPage::getVpnIpAddress()
 {
     QProcess process;
     // 使用 sh -c 来执行包含管道的命令
-    process.start("sh", QStringList() << "-c" << "ip addr show mlan0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1");
+    process.start("sh", QStringList() << "-c" << "ip addr show wlan0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1");
     process.waitForFinished();
 
     if (process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0)
