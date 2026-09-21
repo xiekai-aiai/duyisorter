@@ -8,6 +8,9 @@
 #include "mainwidget.h"
 #include "unilog.h"
 #include "configmgr.h"
+#include "aihelper.h"
+#include "cmdworker.h"
+#include "cmdudpmanager.h"
 
 myApplication::myApplication(int& argc, char** argv) :
     QApplication(argc, argv)
@@ -3464,24 +3467,34 @@ void MainWidget::ejectPageThreadStartSlt()
         {
             ejectorSlider->setValue(nDisplayNum);
             lcdNumber->display(nDisplayNum);
-            QByteArray args;
-            AI_Data_Protocol_D data;
-            int ejectorIndex = (nDisplayNum - 1) / struCnfg.nEjectorsPerChute;
-            args[0] = 0;
-            args[1] = (nDisplayNum - 1) % struCnfg.nEjectorsPerChute;
-            args[2] = aiEjectDelayTime / 256;
-            args[3] = aiEjectDelayTime % 256;
-            MyUpd.writeDatagram(CMD_AI_EJECTOR_FIXED_BGN, ejectorIndex, 4, args, struGsh.addressList.at(ejectorIndex), AI_UDP_SEND_PORT);
-            data.nCommandAddress = CMD_AI_EJECTOR_FIXED_BGN;
-            MyUpd.readUdpDatagrams(&data, 13);
-            args.clear();
-            //            myFlow.msleep(100);
-            args[0] = 0;
-            args[1] = (nDisplayNum - 1) % struCnfg.nEjectorsPerChute;
-            MyUpd.writeDatagram(CMD_AI_EJECTOR_FIXED_END, ejectorIndex, 2, args, struGsh.addressList.at(ejectorIndex), AI_UDP_SEND_PORT);
-            data.nCommandAddress = CMD_AI_EJECTOR_FIXED_END;
-            MyUpd.readUdpDatagrams(&data, 13);
+
+            int dev_no = (nDisplayNum - 1) / struCnfg.nEjectorsPerChute;
+            // 一个通道对应2个AI板卡，分前后视 
+            QString ip = ai_helper::GetAiIpByIndex(dev_no * 2);
+
+            FixedCheckParam info;
+            info.valve_no_ = 0;
+            info.injector_no_ = (nDisplayNum - 1) % struCnfg.nEjectorsPerChute;
+            info.interval_ = aiEjectDelayTime;
+
+            // 开始检测 
+            QByteArray start_rep;
+            QByteArray start_req = cmdworker::StartFixCheckRequest(info);
+            CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, start_req,
+                start_rep, AI_RESPONSE_TIMEOUT);
+
+            // 停止检测
+            QByteArray stop_rep;
+            QByteArray stop_req = cmdworker::StopFixCheckRequest(info);
+            CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, stop_req,
+                stop_rep, AI_RESPONSE_TIMEOUT);
+
+            LOG_INFO_STM("sum jet num:" << nMaxEjector << ", jet num by dev:" << struCnfg.nEjectorsPerChute << ", display jet no:" << nDisplayNum
+                << ", jet no:" << (int)info.injector_no_ << ", interval:" << info.interval_ << ", dev no:" << dev_no << ", ip:" << ip.toStdString()
+                << ", bFlagLoop:" << bFlagLoop << ", start request body:" << start_req.toHex(' ').toUpper().toStdString()
+                << ", stop request body:" << stop_req.toHex(' ').toUpper().toStdString());
             myFlow.msleep(aiEjectDelayTime / 10);
+
             if (!bFlagLoop)
             {
                 nDisplayNum++;

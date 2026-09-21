@@ -4780,34 +4780,54 @@ void GlobalFlow::initEjectorDelayPara()
 
 void GlobalFlow::initEjectorModePara()
 {
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    int nArithmeticEnable[ARITHMETIC_TOTAL];
-    memset(nArithmeticEnable, 0, sizeof(nArithmeticEnable));
+    int model = 0;
+
+    // 开启AI模式
+    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    {
+        model |= MODEL_VAVLE_AI;
+    }
 
     for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
     {
-        nArithmeticEnable[i] = struCnfp.nArithmeticEnable[i];
-    }
-    //ai模式且算法使能
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_ && nArithmeticEnable[ARITH_PISTACHIO] == 1)
-    {
-        args[0] = 3;
-    }
-    else
-    {
-        args[0] = 2;
-    }
-    for (int i = 0; i < struGsh.aiDeviceNum; i++)
-    {
-        MyUpd.writeDatagram(CMD_AI_EJECTOR_MODE, i, 1, args, struGsh.addressList.at(i), AI_UDP_SEND_PORT);
-        data.nCommandAddress = CMD_AI_EJECTOR_MODE;
-        ret = MyUpd.readUdpDatagrams(&data, 13);
-        if (ret != 0)
+        if (struCnfp.nArithmeticEnable[i] == 1)
         {
-            qDebug("aiDevice: %d, img ret: %d", i, ret);
+            model |= MODEL_VALVE_TRADITIONAL;
+            break;
         }
+    }
+
+    LOG_INFO_STM("model:" << model << ", enable_ai:" << ConfigMgr::Instance().GetAiCfgInfo().enable_ai_
+        << ", arithmetic total:" << struCnfe.nArithmeticTotal << ", level total:" << struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal);
+
+    ValveModeParam info;
+    info.mode_ = model;
+    QByteArray request = cmdworker::ValveModeParamRequest(info);
+
+    for (int idx = 0; idx < struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            LOG_ERROR_STM("valve model index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            continue;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            LOG_ERROR_STM("valve model index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            continue;
+        }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",valve model index: send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
