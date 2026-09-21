@@ -2956,6 +2956,7 @@ void StatusInfoPage::versionUpdateCameraCF()
 
         if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
         {
+            LOG_INFO_STM("i:" << i << ", ai version:" << struGsh.aiResult[i].toStdString());
             if (struGsh.aiResult[i] == QString(""))
             {
                 strChuteVerTmp[2].sprintf("\t%s", "NULL");

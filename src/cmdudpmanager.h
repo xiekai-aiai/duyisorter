@@ -30,10 +30,10 @@ public:
      * @return false        超时或通信失败
      */
     bool onSendCommand(const QHostAddress& address,
-                     quint16 port,
-                     const QByteArray& request,
-                     QByteArray& response,
-                     int timeoutMs = 1000);
+        quint16 port,
+        const QByteArray& request,
+        QByteArray& response,
+        int timeoutMs = 1000);
 
     /**
      * @brief 发送 UDP 数据并等待响应
@@ -46,7 +46,7 @@ public:
      * @return true         发送成功
      * @return false        发送失败
      */
-    bool onSendCommand(const QHostAddress& address,quint16 port,const QByteArray& request);
+    bool onSendCommand(const QHostAddress& address, quint16 port, const QByteArray& request);
 
     /**
      * @brief 停止 UDP 管理器
@@ -63,9 +63,6 @@ private:
 private:
     QThread* thread_;
     UdpWorker* worker_;
-
-    // 防止多个界面同时调用 sendCommand
-    QMutex requestMutex_;
 };
 
 #endif // CMDUDPMANAGER_H

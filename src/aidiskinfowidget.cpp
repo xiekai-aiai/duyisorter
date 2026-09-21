@@ -62,7 +62,7 @@ QMap<int, quint32> AiDiskInfoWidget::GetDiskInfo()
             response, AI_RESPONSE_TIMEOUT);
         if (!ok)
         {
-            LOG_ERROR_STM("Get Ai device index:" << idx << " ip:" << ip.toStdString() << " disk space failed");
+            LOG_ERROR_STM("Get Ai device index:" << idx << " ip:" << ip.toStdString() << " disk space failed! request body:" << request.toHex(' ').toUpper().toStdString());
             disk_map.insert(idx + 1, 0);
             continue;
         }
@@ -71,7 +71,8 @@ QMap<int, quint32> AiDiskInfoWidget::GetDiskInfo()
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
         {
-            LOG_ERROR_STM("Get AI device index:" << idx << " ip:" << ip.toStdString() << " disk space parse failed");
+            LOG_ERROR_STM("Get AI device index:" << idx << " ip:" << ip.toStdString() << " disk space parse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
             disk_map.insert(idx + 1, 0);
             continue;
         }

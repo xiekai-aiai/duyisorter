@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-17 17:28:56
+ * @LastEditTime: 2026-09-21 10:54:51
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -40,6 +40,10 @@
 #define PKGA_TAIL1 0xFF
 // 最小A类包长度
 #define MIN_PKGA_LEN 12
+
+// 喷阀模型
+#define MODEL_VAVLE_AI 0x01                    // AI模式
+#define MODEL_VALVE_TRADITIONAL 0x02           // 传统喷阀模型
 
 // A类包编码
 // 命令编码
@@ -233,6 +237,13 @@ typedef struct __area_param_
     quint16 min_area_;                        // 最小面积
     quint16 bg_distance_;                     // 背景距离阈值
 } AreaParam;
+
+// 喷阀模式
+typedef struct __valve_mode_param_
+{
+    quint8 mode_;                             // 喷阀模式 1: AI 2: 传统 3: AI+传统
+} ValveModeParam;
+
 
 typedef struct __ai_cfg_info_
 {

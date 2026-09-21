@@ -3,6 +3,7 @@
 #include <QUdpSocket>
 #include <QElapsedTimer>
 #include <QThread>
+#include <QMutexLocker>
 #include "unilog.h"
 #include "sortertypes.h"
 
@@ -45,6 +46,7 @@ void UdpWorker::init()
 
 void UdpWorker::onSendCommand(const QHostAddress& address, quint16 port, const QByteArray& request)
 {
+    QMutexLocker lock(&requestMutex_);
     if (!socket_)
     {
         LOG_ERROR_STM("UDP socket is not initialized, host address:" << address.toString().toStdString() << ", port:" << port);
@@ -81,6 +83,8 @@ void UdpWorker::onSendCommand(const QHostAddress& address,
     const QByteArray& request,
     int timeoutMs)
 {
+    QMutexLocker lock(&requestMutex_);
+
     if (!socket_)
     {
         LOG_ERROR_STM("UDP socket is not initialized, host address:" << address.toString().toStdString() << ", port:" << port);

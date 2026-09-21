@@ -2,6 +2,7 @@
 #define UDPWORKER_H
 
 #include <QObject>
+#include <QMutex>
 #include <QByteArray>
 #include <QHostAddress>
 
@@ -11,7 +12,7 @@ class UdpWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit UdpWorker(QObject *parent = nullptr);
+    explicit UdpWorker(QObject* parent = nullptr);
     ~UdpWorker();
 
 public slots:
@@ -25,7 +26,7 @@ public slots:
      *
      * 这个函数运行在 UdpWorker 所在线程。
      */
-    void onSendCommand(const QHostAddress& address,quint16 port,const QByteArray& request, int timeoutMs);
+    void onSendCommand(const QHostAddress& address, quint16 port, const QByteArray& request, int timeoutMs);
 
     /**
      * @brief 发送数据不等待响应
@@ -44,11 +45,14 @@ signals:
      * @brief 命令处理完成
      */
     void commandFinished(bool success,
-                         const QByteArray& response,
-                         const QString& error);
+        const QByteArray& response,
+        const QString& error);
 
 private:
     QUdpSocket* socket_;
+
+    // 防止多个界面同时调用 sendCommand
+    QMutex requestMutex_;
 };
 
 #endif // UDPWORKER_H

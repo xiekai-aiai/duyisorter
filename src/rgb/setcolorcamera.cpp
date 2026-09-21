@@ -7,6 +7,11 @@
  */
 #include "setcolorcamera.h"
 #include "configmgr.h"
+#include "unilog.h"
+#include "aihelper.h"
+#include "cmdworker.h"
+#include "cmdudpmanager.h"
+#include "sortertypes.h"
 
 setColorCamera::setColorCamera(QWidget* parent)
     : QWidget(parent)
@@ -1575,22 +1580,39 @@ void setColorCamera::calDivChannelParams(int beginCh, int endCh)
 
     if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
-        QByteArray args;
-        AI_Data_Protocol_D data;
-        int ret;
-        args[0] = AIUNIT;
-        //ai相机编号，取余
-        args[1] = struGsh.nUnit % 2;
-        args[2] = struCnfc.struLevelCamera[struGsh.nLevel].nChannelBegin[struGsh.nUnit] / 256;
-        args[3] = struCnfc.struLevelCamera[struGsh.nLevel].nChannelBegin[struGsh.nUnit] % 256;
-        args[4] = struCnfc.struLevelCamera[struGsh.nLevel].nChannelEnd[struGsh.nUnit] / 256;
-        args[5] = struCnfc.struLevelCamera[struGsh.nLevel].nChannelEnd[struGsh.nUnit] % 256;
-        MyUpd.writeDatagram(CMD_AI_PIXEL_SEND, struGsh.nUnit / 2, 6, args, struGsh.addressList.at(struGsh.nUnit / 2), AI_UDP_SEND_PORT);
-        data.nCommandAddress = CMD_AI_PIXEL_SEND;
-        ret = MyUpd.readUdpDatagrams(&data, 13);
-        if (ret != 0)
+        LOG_INFO_STM("Set pix info, cam no:" << struGsh.nUnit << ", begin pix :" << struCnfc.struLevelCamera[struGsh.nLevel].nChannelBegin[struGsh.nUnit]
+            << ", end pix:" << struCnfc.struLevelCamera[struGsh.nLevel].nChannelEnd[struGsh.nUnit]);
+
+        AiPixelInfo info;
+        info.type_ = 1;
+        info.cam_no_ = struGsh.nUnit % 2;
+        info.begin_pixel_ = struCnfc.struLevelCamera[struGsh.nLevel].nChannelBegin[struGsh.nUnit];
+        info.end_pixel_ = struCnfc.struLevelCamera[struGsh.nLevel].nChannelEnd[struGsh.nUnit];
+
+        QString ip = ai_helper::GetAiIpByIndex(struGsh.nUnit);
+        QByteArray request = cmdworker::PixelInfoRequest(info);
+
+        QByteArray response;
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+        if (!ok)
         {
-            qDebug("aiDevice: %d, ret: %d", struGsh.nUnit / 2, ret);
+            LOG_ERROR_STM("set pixel  ip:" << ip.toStdString() << " failed, request body:" << request.toHex(' ').toUpper().toStdString());
+        }
+        else
+        {
+            CmdPackage cmd_pkg;
+            ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+            if (!ok)
+            {
+                LOG_ERROR_STM("set pixel  ip:" << ip.toStdString() << " parse failed, request body:" << request.toHex(' ').toUpper().toStdString()
+                    << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            }
+            else
+            {
+                LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                    << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            }
         }
     }
 
@@ -3857,10 +3879,6 @@ void setColorCamera::onDivChannelListBackBtnClicked()
 /* 响应象元列表界面的象元重置按钮 */
 void setColorCamera::onDivChannelListResetBtnClicked(int type)
 {
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-
     infoWidget->setLabelText(myLan.msg_divide_channel);
     infoWidget->delayShow();
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
@@ -3885,20 +3903,39 @@ void setColorCamera::onDivChannelListResetBtnClicked(int type)
             }
             if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
             {
-                args.clear();
-                args[0] = AIUNIT;
-                //ai相机编号，取余
-                args[1] = nUnitAddr % 2;
-                args[2] = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr] / 256;
-                args[3] = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr] % 256;
-                args[4] = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr] / 256;
-                args[5] = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr] % 256;
-                MyUpd.writeDatagram(CMD_AI_PIXEL_SEND, nUnitAddr / 2, 6, args, struGsh.addressList.at(nUnitAddr / 2), AI_UDP_SEND_PORT);
-                data.nCommandAddress = CMD_AI_PIXEL_SEND;
-                ret = MyUpd.readUdpDatagrams(&data, 13);
-                if (ret != 0)
+                LOG_INFO_STM("Set pix info, cam no:" << nUnitAddr << ", begin pix :" << struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr]
+                    << ", end pix:" << struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr]);
+
+                AiPixelInfo info;
+                info.type_ = 1;
+                info.cam_no_ = nUnitAddr % 2;
+                info.begin_pixel_ = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr];
+                info.end_pixel_ = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr];
+
+                QString ip = ai_helper::GetAiIpByIndex(nUnitAddr);
+                QByteArray request = cmdworker::PixelInfoRequest(info);
+
+                QByteArray response;
+                bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+                    response, AI_RESPONSE_TIMEOUT);
+                if (!ok)
                 {
-                    qDebug("aiDevice: %d, ret: %d", i, ret);
+                    LOG_ERROR_STM("set pixel  ip:" << ip.toStdString() << " failed, request body:" << request.toHex(' ').toUpper().toStdString());
+                }
+                else
+                {
+                    CmdPackage cmd_pkg;
+                    ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+                    if (!ok)
+                    {
+                        LOG_ERROR_STM("set pixel  ip:" << ip.toStdString() << " parse failed, request body:" << request.toHex(' ').toUpper().toStdString()
+                            << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                    }
+                    else
+                    {
+                        LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                            << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                    }
                 }
             }
         }
@@ -3910,9 +3947,6 @@ void setColorCamera::onDivChannelListResetBtnClicked(int type)
 /* 响应象元列表界面的象元重置按钮 */
 void setColorCamera::onDivChannelListResetBtnClicked2(int type)
 {
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
     infoWidget->setLabelText(myLan.msg_divide_channel);
     infoWidget->delayShow();
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
@@ -3937,20 +3971,39 @@ void setColorCamera::onDivChannelListResetBtnClicked2(int type)
             }
             if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
             {
-                args.clear();
-                args[0] = AIUNIT;
-                //ai相机编号，取余
-                args[1] = nUnitAddr % 2;
-                args[2] = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr] / 256;
-                args[3] = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr] % 256;
-                args[4] = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr] / 256;
-                args[5] = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr] % 256;
-                MyUpd.writeDatagram(CMD_AI_PIXEL_SEND, nUnitAddr / 2, 6, args, struGsh.addressList.at(nUnitAddr / 2), AI_UDP_SEND_PORT);
-                data.nCommandAddress = CMD_AI_PIXEL_SEND;
-                ret = MyUpd.readUdpDatagrams(&data, 13);
-                if (ret != 0)
+                LOG_INFO_STM("Set pix info, cam no:" << nUnitAddr << ", begin pix :" << struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr]
+                    << ", end pix:" << struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr]);
+
+                AiPixelInfo info;
+                info.type_ = 1;
+                info.cam_no_ = nUnitAddr % 2;
+                info.begin_pixel_ = struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr];
+                info.end_pixel_ = struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr];
+
+                QString ip = ai_helper::GetAiIpByIndex(nUnitAddr);
+                QByteArray request = cmdworker::PixelInfoRequest(info);
+
+                QByteArray response;
+                bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+                    response, AI_RESPONSE_TIMEOUT);
+                if (!ok)
                 {
-                    qDebug("aiDevice: %d, ret: %d", i, ret);
+                    LOG_ERROR_STM("set pixel  ip:" << ip.toStdString() << " failed, request body:" << request.toHex(' ').toUpper().toStdString());
+                }
+                else
+                {
+                    CmdPackage cmd_pkg;
+                    ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+                    if (!ok)
+                    {
+                        LOG_ERROR_STM("set pixel  ip:" << ip.toStdString() << " parse failed, request body:" << request.toHex(' ').toUpper().toStdString()
+                            << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                    }
+                    else
+                    {
+                        LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                            << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                    }
                 }
             }
         }

@@ -8,6 +8,7 @@
  */
 #include "systeminitialization.h"
 #include "configmgr.h"
+#include "unilog.h"
  /**
   * @brief communication::通信自检控件
   * @param parent
@@ -274,6 +275,7 @@ void communicationList::commuUpdateCamera()
             for (int k = 1; k < struCnfg.struLevelInfo[0].nUnitLevelTotal + 1; k++)
             {
                 int nAddr = struCnfg.struLevelInfo[0].nUnitId[k - 1];
+                LOG_INFO_STM("k:" << k << ", nAddr:" << nAddr << ", aiResult:" << struGsh.aiResult[(k - 1) / 2].toStdString());
                 if (nAddr % 2 == 0)
                 {
                     if (struGsh.aiResult[(k - 1) / 2] != QString(""))
