@@ -406,7 +406,7 @@ private:
     // ── 仿真（AI 推理板卡） ──────────────────────────────────────────
     bool m_emulating = false;                      // 仿真状态（从 pred txt 读推理框显示）
     QVector<ObjInfo> m_emulateObjInfos;            // 仿真返回的目标列表（cls_id/x/y/w/h）
-    QString m_lastModelApplied;                // 上次对板卡做 ModelApply 的模型名（防重复加载崩溃）
+    QString m_lastModelApplied;                    // 上次对板卡做 ModelApply 的模型名（防重复加载崩溃）
     bool m_vsAnnoMode = false;                     // 仿真vs标注对比模式
     QStringList m_origAllImagePaths;               // vsAnno 筛选前的原始列表（用于 toggle off 恢复）
 
