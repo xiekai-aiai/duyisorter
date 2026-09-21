@@ -75,16 +75,17 @@ static double calcIoU(const QRect& a, const QRect& b)
 }
 
 // ── 辅助：判断一张图片是否存在"标注和仿真 cls_id 不一致"的情况 ──
-// 读取 {imgDir}/pred/pred_{name}.txt + {imgDir}/{name}.txt（人工标注）
+// 读取 {imgDir}/.pred/{modelName}_pred/pred_{name}.txt + {imgDir}/{name}.txt（人工标注）
 // 返回 true 表示有错标
-static bool hasMismatch(const QString& imgPath)
+static bool hasMismatch(const QString& imgPath, const QString& modelName)
 {
     QFileInfo fi(imgPath);
     QString baseDir = fi.absolutePath();
     QString baseName = fi.completeBaseName();
 
-    // 1. pred txt
-    QFile predFile(baseDir + "/pred/pred_" + baseName + ".txt");
+    // 1. pred txt（按模型隔离在 .pred/{modelName}_pred/）
+    QString predDir = baseDir + "/.pred/" + modelName + "_pred";
+    QFile predFile(predDir + "/pred_" + baseName + ".txt");
     if (!predFile.exists()) return false;
     QVector<ObjInfo> predObjs;
     {
@@ -1411,7 +1412,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
         }
         // ② 没点中 annotation → 找前景框变成新标注
         if (!m_show_fg_rects || m_fg_rects.isEmpty()) {
-            showTip("请先点「前景目标」显示前景", true);
+            showTip("请先点「前景目标」显示自动标注框", true);
             return;
         }
         int hitIdx = -1;
@@ -2220,9 +2221,7 @@ void AiModelSet::onModelSelPushButtonClicked()
 
     QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
 
-    QLabel *tip = new QLabel(QString("模型目录: %1").arg(dirPath), &dlg);
-    tip->setStyleSheet("color: gray; font-size: 8pt;");
-    mainLayout->addWidget(tip);
+    // 不显示模型目录路径（用户不需要看见）
 
     QListWidget *listWidget = new QListWidget(&dlg);
     listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -2897,7 +2896,7 @@ void AiModelSet::LoadMyAnnotation(const QString& imgPath)
     }
 
     txtFile.close();
-    showTip(QString("标注已加载：%1").arg(txtPath));
+    showTip(QString("标注已加载：%1").arg(QFileInfo(txtPath).fileName()));
     updateClassAnnotCounts();
 
 }
@@ -3518,8 +3517,9 @@ bool AiModelSet::runEmulateOnce()
 // ═══════════════════════════════════════════════════════════
 void AiModelSet::saveEmulateResultToFile(const QString& imgPath, const QVector<ObjInfo>& objs)
 {
+    if (modelName.isEmpty()) return;   // 没模型名不存（新目录需要）
     QFileInfo fi(imgPath);
-    QString predDir  = fi.absolutePath() + "/pred";
+    QString predDir  = fi.absolutePath() + "/.pred/" + modelName + "_pred";
     QString predFile = predDir + "/pred_" + fi.completeBaseName() + ".txt";
 
     QDir().mkpath(predDir);
@@ -3538,8 +3538,10 @@ void AiModelSet::saveEmulateResultToFile(const QString& imgPath, const QVector<O
 
 bool AiModelSet::loadEmulateResultFromFile(const QString& imgPath, QVector<ObjInfo>& outObjs)
 {
+    if (modelName.isEmpty()) return false;   // 没模型名不读
     QFileInfo fi(imgPath);
-    QString predFile = fi.absolutePath() + "/pred/pred_" + fi.completeBaseName() + ".txt";
+    QString predFile = fi.absolutePath() + "/.pred/" + modelName + "_pred/pred_"
+                     + fi.completeBaseName() + ".txt";
     QFile f(predFile);
     if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
 
@@ -3607,29 +3609,24 @@ void AiModelSet::onValidImgPushButtonClicked()
         return;
     }
 
-    // ③ 板卡模型 MD5 校验 + 自动上传（只做一次）
-    if (!ensureBoardModelUploaded(modelName)) {
-        ui->validImgPushButton->setChecked(false);
+    // ③ 先查本地 pred 缓存（.pred/{modelName}_pred/），有就直接用，不连接板卡
+    m_emulating = true;
+    m_emulateObjInfos.clear();
+    if (loadEmulateResultFromFile(m_currentImagePath, m_emulateObjInfos)) {
+        showTip(QString("仿真查看（从缓存加载，%1 个目标）").arg(m_emulateObjInfos.size()));
+        update();
         return;
     }
 
-    // ④ 切换模型后先清掉旧 pred 目录（避免旧模型的缓存结果）
-    if (modelName != m_lastEmulateModelName) {
-        QFileInfo fi(m_currentImagePath);
-        QString predDir = fi.absolutePath() + "/pred";
-        QDir(predDir).removeRecursively();
-        m_lastEmulateModelName = modelName;
+    // ④ 板卡模型 MD5 校验 + 自动上传（只在 pred 不存在、需要远程推理时才做）
+    if (!ensureBoardModelUploaded(modelName)) {
+        ui->validImgPushButton->setChecked(false);
+        m_emulating = false;
+        return;
     }
 
-    // ⑤ 进入仿真态
-    m_emulating = true;
-    m_emulateObjInfos.clear();
-
-    // ⑤ 当前图：有 pred 读 pred；无 pred 远程推理一次 + 保存 pred
-    if (!loadEmulateResultFromFile(m_currentImagePath, m_emulateObjInfos)) {
-        runEmulateOnce();  // 内部会保存 pred txt
-    }
-    update();
+    // ⑤ 远程推理一次 + 保存 pred + 显示
+    runEmulateOnce();  // 内部会保存 pred txt + update()
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3675,18 +3672,41 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         return;
     }
 
-    // ③ 板卡模型 MD5 校验 + 自动上传（只做一次）
-    if (!ensureBoardModelUploaded(modelName)) {
-        ui->batchValidImgPushButton->setChecked(false);
+    // ③ 先扫 pred 缓存覆盖率（.pred/{modelName}_pred/ 按模型隔离）
+    // 全有缓存 → 直接返回，零板卡通信（不会触发 ensureBoardModelUploaded）
+    QSet<QString> cachedSet;
+    if (!m_allImagePaths.isEmpty()) {
+        QFileInfo fi(m_allImagePaths.first());
+        QString predDir = fi.absolutePath() + "/.pred/" + modelName + "_pred";
+        QDir d(predDir);
+        if (d.exists()) {
+            for (const QString& name : d.entryList(QStringList{"pred_*.txt"}, QDir::Files))
+                cachedSet.insert(name);
+        }
+    }
+    int cachedCount = 0;
+    for (const QString& imgPath : m_allImagePaths) {
+        QFileInfo fi(imgPath);
+        if (cachedSet.contains("pred_" + fi.completeBaseName() + ".txt")) cachedCount++;
+    }
+    bool allCached = (cachedCount == total && cachedCount > 0);
+
+    if (allCached) {
+        showTip(QString("批量仿真已完成（从缓存加载，共 %1 张）").arg(cachedCount));
+        ui->batchValidImgPushButton->setChecked(true);
+        ui->batchValidImgPushButton->setEnabled(true);
+        ui->validImgPushButton->setChecked(false);
+        m_emulating = true;
+        m_emulateObjInfos.clear();
+        loadEmulateResultFromFile(m_currentImagePath, m_emulateObjInfos);
+        update();
         return;
     }
 
-    // ④ 切换模型后先清掉旧 pred 目录（避免旧模型的缓存结果）
-    if (modelName != m_lastEmulateModelName && !m_allImagePaths.isEmpty()) {
-        QFileInfo fi(m_allImagePaths.first());
-        QString predDir = fi.absolutePath() + "/pred";
-        QDir(predDir).removeRecursively();
-        m_lastEmulateModelName = modelName;
+    // ④ 板卡模型 MD5 校验 + 自动上传（只在有图片需要远程推理时才做）
+    if (!ensureBoardModelUploaded(modelName)) {
+        ui->batchValidImgPushButton->setChecked(false);
+        return;
     }
 
     // ⑤ 禁用所有按钮（UI 阻塞），保存 enable 状态在 finally 里恢复
@@ -3708,13 +3728,15 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
 
     // ⑥ ModelApply（只做一次，加载模型到板卡内存）
     QString modelBinName = modelName + ".bin";
-    {
+    // ⭐ 如果之前刚对同一模型做过 ModelApply，跳过（板卡 RKNN runtime 双重加载会崩溃）
+    if (modelName != m_lastModelApplied) {
         ModelApply applyInfo;
         applyInfo.model_name_ = modelBinName;
         QByteArray applyReq = cmdworker::ModelApplyRequest(applyInfo);
         QByteArray applyResp;
         CmdUdpManager::instance().onSendCommand(
             QHostAddress(boardIp), AI_UPD_CMD_PORT, applyReq, applyResp, 3000);
+        m_lastModelApplied = modelName;
     }
 
     int successCount = 0;
@@ -3727,6 +3749,19 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
 
         QFileInfo fi(imgPath);
         QString imgFileName = fi.fileName();
+
+        // ⭐ 单图已有 pred 缓存 → 跳过 SFTP + EmulateParam，直接算成功
+        if (cachedSet.contains("pred_" + fi.completeBaseName() + ".txt")) {
+            successCount++;
+            if (m_currentImagePath == imgPath) {
+                loadEmulateResultFromFile(imgPath, m_emulateObjInfos);
+                update();
+            }
+            showTip(QString("批量仿真 %1/%2（%3%）%4 [已缓存]")
+                        .arg(i+1).arg(total).arg(int((i+1)*100.0/total)).arg(imgFileName));
+            QApplication::processEvents();
+            continue;
+        }
 
         // 进度显示
         showTip(QString("批量仿真 %1/%2（%3%） %4")
@@ -3827,7 +3862,7 @@ void AiModelSet::onValidvsAnnoImgPushButtonClicked()
     int total = m_allImagePaths.size();
     for (const QString& path : m_allImagePaths) {
         checked++;
-        if (hasMismatch(path)) mismatchList.append(path);
+        if (hasMismatch(path, modelName)) mismatchList.append(path);
         if (checked % 20 == 0) {
             showTip(QString("筛选错标图片中... %1/%2（%3 张错标）")
                         .arg(checked).arg(total).arg(mismatchList.size()));
