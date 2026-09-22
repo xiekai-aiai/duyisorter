@@ -1361,7 +1361,7 @@ void MainWidget::CreateHomeWidget()
 
         /* 槽函数 */
     connect(operateButton[0], SIGNAL(pressed()), this, SLOT(onManageSchemeBtnClickedSlt()));
-    connect(operateButton[1], SIGNAL(pressed()), this, SLOT(onSetSensBtnClickedSlt()));
+    connect(operateButton[1], SIGNAL(pressed()), this, SLOT(onSetSensBtnClickedSlt()));    // 感度调节按钮 
     connect(operateButton[2], SIGNAL(pressed()), this, SLOT(onSetFeedBtnClickedSlt()));
 
     connect(operateButton[3], SIGNAL(pressed()), this, SLOT(onTestEjectBtnClickedSlt()));
@@ -1404,6 +1404,8 @@ void MainWidget::GoToOprTypePageSlt()
  */
 void MainWidget::onOprTypeBtnClickedSlt()
 {
+    LOG_INFO_STM("xk77777777777");
+
     myInputPanel inputDlg(passwdType, 0, 0, 0);
     if (struGsh.nAuthenticationLevel != 0)
     {
@@ -1797,6 +1799,7 @@ void MainWidget::onSelectSchemeBtnClickedSlt()
  */
 void MainWidget::onSetFeedBtnClickedSlt()
 {
+    LOG_INFO_STM("xk333333333333");
     this->homePageStackedWidget->setCurrentIndex(HOME_FEED_PAGE_INDEX);
     if (struCnfe.nEnableCGMachine == 1)
     {
@@ -1809,10 +1812,11 @@ void MainWidget::onSetFeedBtnClickedSlt()
 }
 /**
  * @brief MainWidget::onSetSensBtnClickedSlt
- * 转到物料灵敏度设置页面
+ * 感度调节设置页面
  */
 void MainWidget::onSetSensBtnClickedSlt()
 {
+    LOG_INFO_STM("xk2222222222222222");
     /*自更新状态页面*/
     pageSens->updateAll();
     this->homePageStackedWidget->setCurrentIndex(HOME_SENS_PAGE_INDEX);
@@ -1830,6 +1834,7 @@ void MainWidget::onCameraSignalBtnClicked()
  */
 void MainWidget::onSetWipeBtnClickedSlt()
 {
+    LOG_INFO_STM("xk555555555555555");
     updateWipePage();   //! 更新页面
     this->homePageStackedWidget->setCurrentIndex(HOME_WIPE_PAGE_INDEX);
 }
@@ -1839,6 +1844,8 @@ void MainWidget::onSetWipeBtnClickedSlt()
  */
 void MainWidget::onTestEjectBtnClickedSlt()
 {
+    LOG_INFO_STM("xk4444444444444444");
+
     if (struGsh.bStatFeed == 1)
     {
         infoWidget->setLabelText(myLan.msg_turn_off_first);
@@ -1873,6 +1880,8 @@ void MainWidget::onAIComputeBtnClickedSlt(int nIndex)
  */
 void MainWidget::onManageSchemeBtnClickedSlt()
 {
+    LOG_INFO_STM("xk1111111111111111111");
+
     if (struGsh.bStatFeed == 1)
     {
         infoWidget->setLabelText(myLan.msg_turn_off_first);
@@ -1904,6 +1913,8 @@ void MainWidget::onManageSchemeBtnClickedSlt1()
  */
 void MainWidget::onEnterFactoryBtnClickedSlt()
 {
+    LOG_INFO_STM("xk777777777777");
+
     if (struGsh.bStatFeed == 1)
     {
         infoWidget->setLabelText(myLan.msg_turn_off_first);
@@ -1921,6 +1932,7 @@ void MainWidget::onEnterFactoryBtnClickedSlt()
  */
 void MainWidget::onSchemeParamBtnClickedSlt()
 {
+    LOG_INFO_STM("xk666666666666666");
     //    qDebug()<<"test1"<<endl;
     homePageStackedWidget->setCurrentIndex(HOME_ALGO_PAGE_INDEX);
 
@@ -3039,6 +3051,7 @@ void MainWidget::onGoToSensBiasPageSlt()
 /* 响应跳转至设置灵敏度页面信号 */
 void MainWidget::onGoToSetSensPageSlot()
 {
+    LOG_INFO_STM("+++++++++++++set sens page slot+++++++++++++");
     this->stackedWidget->setCurrentIndex(SM_HOME_PAGE);
 }
 
@@ -3756,6 +3769,7 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
  */
 void MainWidget::onAutoSetBtnClickedSlt()
 {
+    LOG_INFO_STM("xk888888888888888");
     this->stackedWidget->setCurrentIndex(SM_UNSUPERVISED_AI);
     pageUnsupervisedAIWidget->updateAIMainWidget();
     //    backToHomeBtn->setHidden(true);
@@ -3781,6 +3795,7 @@ void MainWidget::onAiSetBtnClickedSlt()
  */
 void MainWidget::onThroughputBtnClickedSlt()
 {
+    LOG_INFO_STM("xk99999999999999");
     pageThroughput->updatePage();
     this->stackedWidget->setCurrentIndex(SM_THROUGHPUT_PAGE);
 }

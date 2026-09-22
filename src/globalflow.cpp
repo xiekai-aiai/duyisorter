@@ -751,7 +751,7 @@ void  GlobalFlow::getArithmeticName()
     myString.sArithmeticName[ARITH_MAIZE] = myLan.material_maize_param;
     myString.sArithmeticName[ARITH_RESERVED] = myLan.material_reserved;
     myString.sArithmeticName[ARITH_CANDY] = "糖果算法";
-    myString.sArithmeticName[ARITH_PISTACHIO] = "AI算法";
+    myString.sArithmeticName[ARITH_PISTACHIO] = "AI智能算法";
 
 
     if (struCnfe.nEnableMaizeDoubleView == 1)
@@ -4831,48 +4831,9 @@ void GlobalFlow::initEjectorModePara()
     }
 }
 
-void GlobalFlow::initModelType()
-{
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
-    {
-        return;
-    }
-
-    int i, j, k;
-    int nUnitAddr = 0;
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int ret;
-    for (i = 0; i < struCnfg.nLevelTotal; i++)
-    {
-        for (j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++)
-        {
-            for (k = 0; k < struCnfg.struLevelInfo[i].struIdentifyGroupInfo[j].nUnitCount; k++)
-            {
-                nUnitAddr = getIdentifyGroupAddr(i, j, k);
-                QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[i][j].struAi.modelId);
-                if (modelId == QString("default"))
-                {
-                    break;
-                }
-                //                qDebug()<<modelId;
-                args = (modelId + ".dlc").toLatin1();
-                if (nUnitAddr % 2 == 0)
-                {
-                    MyUpd.writeDatagram(CMD_AI_MODEL_UPDATE, nUnitAddr / 2, (modelId + ".dlc").length(), args, struGsh.addressList.at(nUnitAddr / 2), AI_UDP_SEND_PORT);
-                    ret = MyUpd.readUdpDatagrams(&data, 13);
-                    if (ret != 0)
-                    {
-                        qDebug("nUnitAddr/2: %d, ret: %d", nUnitAddr / 2, ret);
-                    }
-                }
-            }
-        }
-    }
-}
-
 void GlobalFlow::initModelPara()
 {
+    LOG_INFO_STM("init model param, enable ai" << ConfigMgr::Instance().GetAiCfgInfo().enable_ai_);
     if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
     {
         return;

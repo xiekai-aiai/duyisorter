@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-15 14:45:14
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-22 10:58:52
+ * @LastEditTime: 2026-09-22 15:56:28
  */
 #ifndef SQLITEMGR_H
 #define SQLITEMGR_H
@@ -82,6 +82,14 @@ public:
     bool LoadAllModeInfo(QVector<ModelInfo>& model_infos);
 
     /**
+     * @brief: 根据模型id获取模型信息
+     * @param {QString&} model_id
+     * @param {ModelInfo&} info
+     * @return {*}
+     */
+    bool LoadModelInfoById(const QString& model_id, ModelInfo& info);
+
+    /**
      * @brief: 插入记录到模型参数表中
      * @param {ModelClsParam& info} 模型参数
      * @return {*}
@@ -102,6 +110,12 @@ public:
      * @return {*}
      */
     bool LoadModelClsParam(const QString& model_id, QVector<ModelClsParam>& infos);
+
+    /**
+     * @brief: 更新模型的是否应用、面积模型、面积阈值等参数
+     * @return {*}
+     */
+    bool UpdateModelClsParam(const QVector<ModelClsParam>& infos);
 
 private:
     SQLiteMgr();

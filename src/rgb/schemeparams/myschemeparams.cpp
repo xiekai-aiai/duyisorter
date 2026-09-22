@@ -9,20 +9,21 @@
 #include <QtGui>
 
 #include "myschemeparams.h"
+#include "unilog.h"
 
-/**
-  * @brief MySchemeParams::MySchemeParams
-  * @param parent
-  * 构造方案参数管理页面
-  */
-MySchemeParams::MySchemeParams(QWidget *parent)
+ /**
+   * @brief MySchemeParams::MySchemeParams
+   * @param parent
+   * 构造方案参数管理页面
+   */
+MySchemeParams::MySchemeParams(QWidget* parent)
     :QWidget(parent)
 {
-    setFixedSize(LCD_WIDTH-30, LCD_HEIGHT-125);
+    setFixedSize(LCD_WIDTH - 30, LCD_HEIGHT - 125);
 
     config = g_Config::getInstance();
-/* page init */
-    /* the stacked widget to hold pages */
+    /* page init */
+        /* the stacked widget to hold pages */
     pagesWidget = new QStackedWidget(this);
 
     /* Page_Params */
@@ -44,39 +45,39 @@ MySchemeParams::MySchemeParams(QWidget *parent)
     pageAi = new PageAi;
     pagesWidget->insertWidget(Page_ID_Ai, pageAi);
 
-    /* page buttons */   
+    /* page buttons */
     okButton = new myPushButton(myLan.apply, myIcon.Action_Apply, true, true, this);
     okButton->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     cancelButton = new myPushButton(myLan.back, myIcon.Action_Back, true, true, this);
     cancelButton->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
-/* page update */
-    /* signals to slots */
-    connect(pagesWidget,   SIGNAL(currentChanged(int)), this, SLOT(onCurrentChanged(int)));
+    /* page update */
+        /* signals to slots */
+    connect(pagesWidget, SIGNAL(currentChanged(int)), this, SLOT(onCurrentChanged(int)));
 
-    connect(okButton,      SIGNAL(pressed()), this, SLOT(onOkBtnClicked()));
-    connect(cancelButton,  SIGNAL(pressed()), this, SLOT(onCancelBtnClicked()));
+    connect(okButton, SIGNAL(pressed()), this, SLOT(onOkBtnClicked()));
+    connect(cancelButton, SIGNAL(pressed()), this, SLOT(onCancelBtnClicked()));
 
-    connect(this,          SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
-    connect(pageParams,    SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
-    connect(pageArith,     SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
-    connect(pageParams,    SIGNAL(setOkBtnHiddenSig(bool)), okButton, SLOT(setHidden(bool)));
-    connect(this,          SIGNAL(pageIndexChanged(int)),    pageParams, SLOT(refreshPageParams()));
-    connect(this,          SIGNAL(shutDownBg()),    pageParams, SLOT(shutdownBg()));
+    connect(this, SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
+    connect(pageParams, SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
+    connect(pageArith, SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
+    connect(pageParams, SIGNAL(setOkBtnHiddenSig(bool)), okButton, SLOT(setHidden(bool)));
+    connect(this, SIGNAL(pageIndexChanged(int)), pageParams, SLOT(refreshPageParams()));
+    connect(this, SIGNAL(shutDownBg()), pageParams, SLOT(shutdownBg()));
 
 
-/* page layout */
-    /* btn layout */
-    QHBoxLayout *btnLayout = new QHBoxLayout;
+    /* page layout */
+        /* btn layout */
+    QHBoxLayout* btnLayout = new QHBoxLayout;
     btnLayout->addStretch(1);
     btnLayout->addWidget(okButton);
     btnLayout->addWidget(cancelButton);
     cancelButton->hide();
 
     /* main page layout */
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(pagesWidget,Qt::AlignTop);
-    mainLayout->addLayout(btnLayout,Qt::AlignBottom);
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(pagesWidget, Qt::AlignTop);
+    mainLayout->addLayout(btnLayout, Qt::AlignBottom);
     mainLayout->setSpacing(5);
     setLayout(mainLayout);
 }
@@ -88,7 +89,8 @@ MySchemeParams::MySchemeParams(QWidget *parent)
   */
 void MySchemeParams::displayPageButton(int index)
 {
-    switch (index) {
+    switch (index)
+    {
     case Page_ID_Intel:
         okButton->hide();
         cancelButton->setIcon(myIcon.Action_Back);
@@ -106,7 +108,7 @@ void MySchemeParams::displayPageButton(int index)
     case Page_ID_Reserved:
         okButton->setText(myLan.ok);
         okButton->show();
-//        cancelButton->setIcon(myIcon.Action_Cancel);
+        //        cancelButton->setIcon(myIcon.Action_Cancel);
         cancelButton->setIcon(QIcon(""));
 
         cancelButton->setText(myLan.cancel);
@@ -126,13 +128,15 @@ void MySchemeParams::displayPageButton(int index)
 
 /**
   * @brief MySchemeParams::setSchemeParams
-  * @param pageId 
-  * 应用当前方案参数页面设置 
+  * @param pageId
+  * 应用当前方案参数页面设置
   */
 void MySchemeParams::setSchemeParams(int pageId)
 {
     /* apply scheme parameters */
-    switch (pageId) {
+    LOG_INFO_STM("setSchemeParams pageId:" << pageId);
+    switch (pageId)
+    {
     case Page_ID_Params:
         pageParams->setParams();
         break;
@@ -155,13 +159,15 @@ void MySchemeParams::setSchemeParams(int pageId)
 
 /**
   * @brief MySchemeParams::resetSchemeParams
-  * @param pageId 
-  * 重置当前方案参数页面设置 
+  * @param pageId
+  * 重置当前方案参数页面设置
   */
 void MySchemeParams::resetSchemeParams(int pageId)
 {
- /* apply scheme parameters */
-    switch (pageId) {
+    /* apply scheme parameters */
+    LOG_INFO_STM("resetSchemeParams pageId:" << pageId);
+    switch (pageId)
+    {
     case Page_ID_Params:
         pageParams->resetParams();
         break;
@@ -184,19 +190,22 @@ void MySchemeParams::resetSchemeParams(int pageId)
 
 /**
   * @brief MySchemeParams::onOkBtnClicked
-  * 响应方案参数页面确定按钮 
+  * 响应方案参数页面确定按钮
   */
 void MySchemeParams::onOkBtnClicked()
 {
     int pageId = pagesWidget->currentIndex();
 
+    LOG_INFO_STM("onOkBtnClicked pageId:" << pageId);
+
     /* applay scheme parameters */
     setSchemeParams(pageId);
 
     /* trigger signals to return the parent page */
-    switch (pageId) {
+    switch (pageId)
+    {
     case Page_Params:
-//      emit goToHomePage();
+        //      emit goToHomePage();
         break;
     case Page_ID_Intel:
         break;
@@ -206,9 +215,12 @@ void MySchemeParams::onOkBtnClicked()
         emit pageChanged(Page_Params);
         break;
     case Page_ID_Reserved:
-        if (pageReserved->getArithIndex() == ARITH_RESERVED) {
+        if (pageReserved->getArithIndex() == ARITH_RESERVED)
+        {
             emit pageChanged(Page_Params);
-        } else {
+        }
+        else
+        {
             emit pageChanged(getPageIndex(pageReserved->getArithIndex()));
         }
         break;
@@ -219,17 +231,20 @@ void MySchemeParams::onOkBtnClicked()
 
 /**
   * @brief MySchemeParams::onCancelBtnClicked
-  * 响应方案参数页面取消按钮 
+  * 响应方案参数页面取消按钮
   */
 void MySchemeParams::onCancelBtnClicked()
 {
     int pageId = pagesWidget->currentIndex();
 
+    LOG_INFO_STM("onCancelBtnClicked pageId:" << pageId);
+
     /* reset scheme parameters */
     resetSchemeParams(pageId);
 
     /* trigger signals to return the parent page */
-    switch (pageId) {
+    switch (pageId)
+    {
     case Page_ID_Params:
         emit goToHomePage();
         break;
@@ -239,9 +254,12 @@ void MySchemeParams::onCancelBtnClicked()
         emit pageChanged(Page_Params);
         break;
     case Page_ID_Reserved:
-        if (pageReserved->getArithIndex() == ARITH_RESERVED) {
+        if (pageReserved->getArithIndex() == ARITH_RESERVED)
+        {
             emit pageChanged(Page_Params);
-        } else {
+        }
+        else
+        {
             emit pageChanged(getPageIndex(pageReserved->getArithIndex()));
         }
         break;
@@ -275,7 +293,8 @@ void MySchemeParams::onCurrentChanged(int index)
 void MySchemeParams::onPageChanged(int pageId)
 {
     /* change to page by pageId index */
-    switch (pageId) {
+    switch (pageId)
+    {
     case Page_Params:
         pagesWidget->setCurrentIndex(Page_ID_Params);
         break;
@@ -320,29 +339,35 @@ void MySchemeParams::onPageChanged(int pageId)
         pagesWidget->setCurrentIndex(Page_ID_Reserved);
         break;
     case Page_Intel_A:
-        case Page_Intel_B:
-        case Page_Intel_C:
-        case Page_Intel_D:
-            pageArith->setArithIndex(getArithIndex(pageId));
-            if(myFlow.getProductLineNo() == 0) {
-                emit goToAIMainWidgetSig(pageId-Page_Intel_A);
-                break;
-            } else {
-                myInputPanel inputDlg(passwdType, 0, 0, 0);
-                if (inputDlg.exec() == QDialog::Accepted) {
-                    QString str = inputDlg.getText();
-                    if (str == "19850218") {
-                        pagesWidget->setCurrentIndex(Page_ID_Intel);
-                        break;
-                    }
+    case Page_Intel_B:
+    case Page_Intel_C:
+    case Page_Intel_D:
+        pageArith->setArithIndex(getArithIndex(pageId));
+        if (myFlow.getProductLineNo() == 0)
+        {
+            emit goToAIMainWidgetSig(pageId - Page_Intel_A);
+            break;
+        }
+        else
+        {
+            myInputPanel inputDlg(passwdType, 0, 0, 0);
+            if (inputDlg.exec() == QDialog::Accepted)
+            {
+                QString str = inputDlg.getText();
+                if (str == "19850218")
+                {
+                    pagesWidget->setCurrentIndex(Page_ID_Intel);
+                    break;
                 }
-                pagesWidget->setCurrentIndex(Page_ID_Params);
-                break;
             }
+            pagesWidget->setCurrentIndex(Page_ID_Params);
+            break;
+        }
     }
 
     /* trigger Page to first index */
-    switch (pageId) {
+    switch (pageId)
+    {
     case Page_ID_Params:
         emit pageIndexChanged(FIRST_UNIT);
         break;
@@ -360,6 +385,7 @@ void MySchemeParams::refreshSchemeParams()
 }
 
 
-void MySchemeParams::shutdownCurveBackGround(){
+void MySchemeParams::shutdownCurveBackGround()
+{
     emit shutDownBg();
 }

@@ -37,12 +37,12 @@
 
 struct MODEL_PARA_INFO
 {
-    QString id;        // id
+    QString id;             // id
     int levelTotal;
     int unit;
-    QString name;      // name
-    QString threshold; // threshold
-    QString isApply;   // isApply
+    QString name;       // name
+    QString threshold;      // threshold
+    QString isApply;       // isApply
 };
 
 /*!
@@ -102,7 +102,6 @@ public:
     void initEjectorDelayPara();                        //初始化udp ejector delay协议
     void initEjectorModePara();                         //初始化udp ejector mode协议
 
-    void initModelType();                               //初始化udp ejector mode协议
     void initModelPara();                               //初始化udp ejector para协议
 
     int  initAiCommunication();

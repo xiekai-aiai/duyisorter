@@ -294,6 +294,41 @@ bool SQLiteMgr::LoadAllModeInfo(QVector<ModelInfo>& model_infos)
     return true;
 }
 
+bool SQLiteMgr::LoadModelInfoById(const QString& model_id, ModelInfo& info)
+{
+    if (!db_.isOpen())
+    {
+        LOG_ERROR_STM("open sqlite db[" << db_path_.toStdString() << "] failed! ");
+        return false;
+    }
+
+    QSqlQuery query(db_);
+    QString cmd("select id, modelId, modelName, isApply, isUpload from model_info where modelId = ? LIMIT 1");
+
+    // 1. 准备sql
+    if (!query.prepare(cmd))
+    {
+        LOG_ERROR_STM("[prepare Failed]" << query.lastError().text().toStdString());
+        return false;
+    }
+
+    query.addBindValue(model_id);
+
+    // 2. 执行sql
+    if (!query.exec() || !query.next())
+    {
+        LOG_ERROR_STM("[exec Failed]" << query.lastError().text().toStdString());
+        return false;
+    }
+
+    info.id_ = query.value(0).toInt();
+    info.model_id_ = query.value(1).toString();
+    info.model_name_ = query.value(2).toString();
+    info.is_apply_ = query.value(3).toInt();
+    info.is_upload_ = query.value(4).toInt();
+    return true;
+}
+
 bool SQLiteMgr::InsertModelClsParam(const ModelClsParam& info)
 {
     return InsertModelClsParams(QVector<ModelClsParam>{info});
@@ -403,6 +438,72 @@ bool SQLiteMgr::LoadModelClsParam(const QString& model_id, QVector<ModelClsParam
         item.area_threshold_ = query.value("areaThreshold").toUInt();
 
         infos.append(item);
+    }
+
+    return true;
+}
+
+bool SQLiteMgr::UpdateModelClsParam(const QVector<ModelClsParam>& infos)
+{
+    if (!db_.isOpen())
+    {
+        LOG_ERROR_STM("open sqlite db[" << db_path_.toStdString() << "] failed!");
+        return false;
+    }
+
+    if (!db_.transaction())
+    {
+        LOG_ERROR_STM("open sqlite db[" << db_path_.toStdString() << "] Transaction start failed!");
+        return false;
+    }
+
+    QSqlQuery query(db_);
+    // 预编译 UPDATE 语句（复用提升性能）
+    query.prepare(R"(
+            UPDATE model_params
+            SET threshold = ?, isApply = ?, areaModel = ?, areaThreshold = ?
+            WHERE modelId = ? AND clsId = ? AND level = ? AND identifyGroup = ?
+    )");
+
+    bool success = true;
+    int updatedCount = 0;
+
+    for (int i = 0; i < infos.size(); ++i)
+    {
+        const auto& p = infos.at(i);
+
+        // 按 '?' 占位符顺序绑定值
+        query.bindValue(0, p.threshold_);
+        query.bindValue(1, p.is_apply_);
+        query.bindValue(2, p.area_model_);
+        query.bindValue(3, p.area_threshold_);
+        query.bindValue(4, p.model_id_);
+        query.bindValue(5, p.cls_id_);
+        query.bindValue(6, p.level_);
+        query.bindValue(7, p.identify_grp_);
+
+        if (!query.exec())
+        {
+            LOG_ERROR_STM("BatchUpdate failed, modelId:" << p.model_id_.toStdString() << ", cls id:" << p.cls_id_
+                << ", level:" << p.level_ << ", identify grp:" << p.identify_grp_ << ",error:"
+                << query.lastError().text().toStdString());
+            success = false;
+            break;  // 遇到错误立即中断，保证原子性
+        }
+    }
+
+    if (!success)
+    {
+        db_.rollback();
+        LOG_ERROR_STM("[BatchUpdate] Rolled back due to execution error!");
+        return false;
+    }
+
+    if (!db_.commit())
+    {
+        LOG_ERROR_STM("[BatchUpdate] Commit failed:" << db_.lastError().text().toStdString());
+        db_.rollback();
+        return false;
     }
 
     return true;

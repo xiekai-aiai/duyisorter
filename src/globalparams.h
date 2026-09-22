@@ -327,7 +327,7 @@ enum
     ARITH_SCALE_B,          //27 茶叶选芽算法
     ARITH_RESERVED,         //28 保留算法，独立与其他算法
     ARITH_CANDY,            //29 糖果算法
-    ARITH_PISTACHIO         //29 开心果算法
+    ARITH_PISTACHIO         //29 开心果算法, 现调整为AI算法
 };
 
 /*!

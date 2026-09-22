@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-22 10:58:32
+ * @LastEditTime: 2026-09-22 16:20:47
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -28,10 +28,18 @@
 // AI板卡密码
 #define AI_DEV_PWD "linaro"
 
+// AI板卡响应失败
+#define AI_RESPONSE_FAILED 0
+// AI板卡响应成功
+#define AI_RESPONSE_SUCCESS 1
+
 // AI板卡SFTP采集图片目录
 #define AI_DEV_IMG_ACQ_PATH "/ftp/image/"
 // 下载设备数量
 #define AI_SFTP_DEV_NUM 2
+
+// 模型最大类别数量
+#define MODEL_MAX_CLS_NUM 10
 
  // A类包包头和包尾
 #define PKGA_HEAD0 0xA5
