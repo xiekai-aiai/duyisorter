@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-21 10:54:51
+ * @LastEditTime: 2026-09-22 10:58:32
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -284,5 +284,28 @@ typedef struct __down_progress_item_
     bool success_{ false };                   // 下载是否成功
 } DownProgressItem;
 
+// 模型信息
+typedef struct __model_info__
+{
+    quint32 id_;                            // 数据库自增id
+    QString model_id_;                      // 模型id
+    QString model_name_;                    // 模型名称
+    bool is_apply_;                         // 是否应用
+    bool is_upload_;                        // 是否已经上传
+} ModelInfo;
+
+// 模型的类别参数
+typedef struct __model_cls_param_
+{
+    QString model_id_;                      // 模型id
+    quint8 cls_id_;                         // 类别id
+    QString cls_name_;                      // 类别名称
+    quint16 level_;                         // 层
+    quint16 identify_grp_;                  // 识别分组
+    quint8 threshold_;                      // 类别阈值
+    bool is_apply_;                         // 是否应用
+    quint8 area_model_;                     // 面积模型(0: 不开启 1: 选大 2: 选小)
+    quint16 area_threshold_;                // 面积阈值
+} ModelClsParam;
 
 #endif // SORTERTYPES_H
