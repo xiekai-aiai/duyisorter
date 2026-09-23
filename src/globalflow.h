@@ -102,8 +102,6 @@ public:
     void initEjectorDelayPara();                        //初始化udp ejector delay协议
     void initEjectorModePara();                         //初始化udp ejector mode协议
 
-    void initModelPara();                               //初始化udp ejector para协议
-
     int  initAiCommunication();
 
     /**

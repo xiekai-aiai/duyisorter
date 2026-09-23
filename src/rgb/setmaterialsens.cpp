@@ -8,6 +8,9 @@
 #include "setmaterialsens.h"
 #include "unilog.h"
 #include "sqlitemgr.h"
+#include "aihelper.h"
+#include "cmdworker.h"
+#include "cmdudpmanager.h"
 
 setMaterialSens::setMaterialSens(QWidget* parent) :
     QWidget(parent)
@@ -224,6 +227,11 @@ void setMaterialSens::updateModeParaInfo()
         return;
     }
 
+    std::sort(cls_vec.begin(), cls_vec.end(),
+        [](const ModelClsParam& a, const ModelClsParam& b) {
+            return a.cls_id_ < b.cls_id_;  // 从小到大
+        });
+
     modeParaCount = cls_vec.size();
     for (int i = 0; i < cls_vec.size(); i++)
     {
@@ -270,13 +278,65 @@ void setMaterialSens::setModeParaInfo()
 
     // 应用模型参数
     QVector<ModelClsParam> cls_vec;
+    QVector<ModelParam> param_vec;
     for (int i = 0; i < modeParaCount; i++)
     {
         cls_vec.append(modeParaArr[i]);
+
+        if(modeParaArr[i].is_apply_) {
+            ModelParam item;
+            item.cls_id_ = modeParaArr[i].cls_id_;
+            item.threshold_ = modeParaArr[i].threshold_;
+            param_vec.append(item);
+        }
+    }
+
+    bool success = true;
+    QByteArray request = cmdworker::ModelParamRequest(param_vec);
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+                response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            success = false;
+            LOG_ERROR_STM("model cls threshold opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            break;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            success = false;
+            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                    << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            break;
+        }
+
+        int code = cmdworker::CommResponse(cmd_pkg).code_;
+        if(AI_RESPONSE_SUCCESS != code) {
+            LOG_ERROR_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+                    << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+            success = false;
+            break;
+        }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+                << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+    }
+
+    if(!success) {
+        QMessageBox::warning(this, "应用警告", "模型阈值配置失败！");
+        return;
     }
 
     if (!SQLiteMgr::Instance().UpdateModelClsParam(cls_vec))
     {
+        QMessageBox::warning(this, "应用警告", "模型阈值配置失败！");
         return;
     }
 

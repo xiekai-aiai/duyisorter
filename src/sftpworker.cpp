@@ -115,6 +115,46 @@ void SftpWorker::onRemoteList(const QString& remoteDir)
     emit remoteListCompleted(result);
 }
 
+bool SftpWorker::onDeleteFilesSync(const QStringList& files)
+{
+    if(!connect()) {
+        return false;
+    }
+
+    for (const QString& localFile : files)
+    {
+        bool ret = client_.deleteFiles(localFile.toStdString());
+        if (!ret) {
+            LOG_ERROR_STM("删除文件[" << localFile.toStdString() << "] failed!");
+            return false;
+        }
+    }
+
+    return true;
+
+}
+
+bool SftpWorker::onUploadFilesSync(const QStringList& files, const QString& remoteDir)
+{
+    if(!connect()) {
+        return false;
+    }
+
+    for (const QString& localFile : files)
+    {
+        QString remoteFile = remoteDir + "/" + QFileInfo(localFile).fileName();
+
+        bool ret = client_.upload(localFile.toStdString(), remoteFile.toStdString());
+        if (!ret) {
+            LOG_ERROR_STM("上传文件[" << localFile.toStdString() << "] -> [" << remoteFile.toStdString()
+                          << "] failed!");
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // ──────────────────────────────────────────────────────────────────
 // 上传
 // ──────────────────────────────────────────────────────────────────

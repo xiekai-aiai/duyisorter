@@ -117,6 +117,13 @@ public:
      */
     bool UpdateModelClsParam(const QVector<ModelClsParam>& infos);
 
+    /**
+     * @brief: 从模型参数表中删除记录
+     * @param {QString& model_id} 模型id
+     * @return {*}
+     */
+    bool DelModelClsParam(const QString& model_id);
+
 private:
     SQLiteMgr();
     ~SQLiteMgr();

@@ -35,6 +35,11 @@
 
 // AI板卡SFTP采集图片目录
 #define AI_DEV_IMG_ACQ_PATH "/ftp/image/"
+
+// AI模型上传路径
+#define AI_DEV_MODEL_PATH "/ftp/model/"
+
+
 // 下载设备数量
 #define AI_SFTP_DEV_NUM 2
 

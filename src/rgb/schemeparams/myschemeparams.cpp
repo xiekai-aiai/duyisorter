@@ -50,6 +50,10 @@ MySchemeParams::MySchemeParams(QWidget* parent)
     okButton->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     cancelButton = new myPushButton(myLan.back, myIcon.Action_Back, true, true, this);
     cancelButton->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    uploadBtn = new myPushButton("上传", myIcon.Action_Apply, true, true, this);
+    uploadBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    deleteBtn = new myPushButton("删除", myIcon.Action_Apply, true, true, this);
+    deleteBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
     /* page update */
         /* signals to slots */
@@ -57,6 +61,8 @@ MySchemeParams::MySchemeParams(QWidget* parent)
 
     connect(okButton, SIGNAL(pressed()), this, SLOT(onOkBtnClicked()));
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(onCancelBtnClicked()));
+    connect(uploadBtn, SIGNAL(pressed()), this, SLOT(onUploadBtnClicked()));
+    connect(deleteBtn, SIGNAL(pressed()), this, SLOT(onDeleteBtnClicked()));
 
     connect(this, SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
     connect(pageParams, SIGNAL(pageChanged(int)), this, SLOT(onPageChanged(int)));
@@ -71,6 +77,8 @@ MySchemeParams::MySchemeParams(QWidget* parent)
     QHBoxLayout* btnLayout = new QHBoxLayout;
     btnLayout->addStretch(1);
     btnLayout->addWidget(okButton);
+    btnLayout->addWidget(uploadBtn);
+    btnLayout->addWidget(deleteBtn);
     btnLayout->addWidget(cancelButton);
     cancelButton->hide();
 
@@ -89,6 +97,10 @@ MySchemeParams::MySchemeParams(QWidget* parent)
   */
 void MySchemeParams::displayPageButton(int index)
 {
+    LOG_INFO_STM("displayPageButton: index:" << index);
+    deleteBtn->hide();
+    uploadBtn->hide();
+
     switch (index)
     {
     case Page_ID_Intel:
@@ -120,6 +132,8 @@ void MySchemeParams::displayPageButton(int index)
         cancelButton->setIcon(myIcon.Action_Back);
         cancelButton->setText(myLan.back);
         cancelButton->show();
+        deleteBtn->show();
+        uploadBtn->show();
     default:
         break;
     }
@@ -188,6 +202,30 @@ void MySchemeParams::resetSchemeParams(int pageId)
     }
 }
 
+void MySchemeParams::onUploadBtnClicked()
+{
+    int pageId = pagesWidget->currentIndex();
+    LOG_INFO_STM("onUploadBtnClicked ++++++++++, pageId:" << pageId);
+    switch (pageId)
+    {
+    case Page_ID_Ai:
+        pageAi->onUploadModel();
+        break;
+    }
+}
+
+void MySchemeParams::onDeleteBtnClicked()
+{
+    int pageId = pagesWidget->currentIndex();
+    LOG_INFO_STM("onDeleteBtnClicked ------------, pageId:" << pageId);
+    switch (pageId)
+    {
+    case Page_ID_Ai:
+        pageAi->onDeleteModel();
+        break;
+    }
+}
+
 /**
   * @brief MySchemeParams::onOkBtnClicked
   * 响应方案参数页面确定按钮
@@ -210,7 +248,8 @@ void MySchemeParams::onOkBtnClicked()
     case Page_ID_Intel:
         break;
     case Page_ID_Ai:
-        emit pageChanged(Page_Params);
+        //emit pageChanged(Page_Params);
+        break;
     case Page_ID_Arith:
         emit pageChanged(Page_Params);
         break;
