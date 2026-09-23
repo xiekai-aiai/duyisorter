@@ -129,9 +129,9 @@ typedef struct __ai_space_
 // AI状态信息
 typedef struct __ai_status_info_
 {
-    quint32 discard_num_;                      // 丢包数量
-    quint16 ai_cost_;                          // AI耗时，单位微秒
-    quint32 timeout_num_;                      // 超时数量
+    quint32 discard_num_{ 0 };                 // 丢包数量
+    quint16 ai_cost_{ 0 };                     // AI耗时，单位微秒
+    quint32 timeout_num_{ 0 };                 // 超时数量
 } AiStatusInfo;
 
 // 图像采集参数

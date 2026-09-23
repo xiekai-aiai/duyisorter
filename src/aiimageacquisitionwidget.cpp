@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-17 15:50:40
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-17 18:19:02
+ * @LastEditTime: 2026-09-23 18:08:49
  */
 #include "aiimageacquisitionwidget.h"
 #include <QVBoxLayout>
@@ -23,6 +23,7 @@ AiImageAcquisitionWidget::AiImageAcquisitionWidget(QWidget* parent) : QWidget(pa
     QHBoxLayout* hLayout = new QHBoxLayout();
     myLabel* picNumLbl = new myLabel(myLan.ai_pic_num);
     acqPicNumLineEdt = new myLineEdit();
+    acqPicNumLineEdt->setReadOnly(true);
     acqPicNumLineEdt->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
     quint16 pic_num = ConfigMgr::Instance().GetCollPicNum();
     acqPicNumLineEdt->setText(QString::number(pic_num));
@@ -38,6 +39,7 @@ AiImageAcquisitionWidget::AiImageAcquisitionWidget(QWidget* parent) : QWidget(pa
     mainLayout->addLayout(hLayout);
 
     connect(enabelAcquComBox, SIGNAL(pressed()), this, SLOT(onEnableAcquComBoxClicked()));
+    connect(acqPicNumLineEdt, SIGNAL(pressed()), this, SLOT(onAcqPicNumLineEdtClicked()));
 }
 
 void AiImageAcquisitionWidget::onRefresh()
@@ -54,6 +56,17 @@ void AiImageAcquisitionWidget::onEnableAcquComBoxClicked()
 {
     LOG_INFO_STM("enable acquisition checkbox clicked, enable acquisition:" << enabelAcquComBox->getChecked());
     ConfigMgr::Instance().SetEnableAcquisition(enabelAcquComBox->getChecked());
+}
+
+void AiImageAcquisitionWidget::onAcqPicNumLineEdtClicked()
+{
+    myInputPanel inputDlg(intType, 0, 65535, ConfigMgr::Instance().GetCollPicNum());
+    int ret = inputDlg.exec();
+    if (ret == QDialog::Accepted)
+    {
+        quint16 pic_num = inputDlg.getValue();
+        acqPicNumLineEdt->setText(QString::number(pic_num));
+    }
 }
 
 

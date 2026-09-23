@@ -3496,6 +3496,8 @@ void MainWidget::ejectPageThreadStartSlt()
             CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, start_req,
                 start_rep, AI_RESPONSE_TIMEOUT);
 
+            myFlow.msleep(aiEjectDelayTime / 2);
+
             // 停止检测
             QByteArray stop_rep;
             QByteArray stop_req = cmdworker::StopFixCheckRequest(info);
@@ -3506,7 +3508,7 @@ void MainWidget::ejectPageThreadStartSlt()
                 << ", jet no:" << (int)info.injector_no_ << ", interval:" << info.interval_ << ", dev no:" << dev_no << ", ip:" << ip.toStdString()
                 << ", bFlagLoop:" << bFlagLoop << ", start request body:" << start_req.toHex(' ').toUpper().toStdString()
                 << ", stop request body:" << stop_req.toHex(' ').toUpper().toStdString());
-            myFlow.msleep(aiEjectDelayTime / 10);
+            myFlow.msleep(aiEjectDelayTime / 2);
 
             if (!bFlagLoop)
             {
