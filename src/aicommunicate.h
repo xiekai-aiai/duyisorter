@@ -151,11 +151,6 @@ private:
     bool    isLocalIP(QHostAddress address, QAbstractSocket::NetworkLayerProtocol protocol = QAbstractSocket::IPv4Protocol);
     unsigned int crcCheck(char* sData, int nLen);    // CRC check
 
-    //    int aiDeviceNum;
-    //    QList<QHostAddress>     addressList;
-    //    QList<QString>         ftpIpAddressList;
-    //    QHostAddress     address;
-    //    QString          ftpIpAddress;
 
 #ifdef Q_OS_UNIX
     int sockfd;

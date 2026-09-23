@@ -6,68 +6,76 @@
  * \date        2015.01.14
  */
 #include "setmaterialsens.h"
+#include "unilog.h"
+#include "sqlitemgr.h"
 
-setMaterialSens::setMaterialSens(QWidget *parent) :
+setMaterialSens::setMaterialSens(QWidget* parent) :
     QWidget(parent)
 {
     currentChan = 0;
     currentPage = 0;
     algorithmType = 0;
-    setFixedSize(LCD_WIDTH-20, LCD_HEIGHT-LCD_TITLE_HEIGHT-LCD_TITLE_HEIGHT-20);
+    setFixedSize(LCD_WIDTH - 20, LCD_HEIGHT - LCD_TITLE_HEIGHT - LCD_TITLE_HEIGHT - 20);
 
     // 状态列表
     listWidget = new myListWidget;
-    listWidget->setFixedWidth(BTN_WIDTH-5);
+    listWidget->setFixedWidth(BTN_WIDTH - 5);
 
     listWidget->setViewMode(QListView::IconMode);
     listWidget->setMovement(QListView::Static);
-    listWidget->setIconSize(QSize(ICON_WID,ICON_HEI));
+    listWidget->setIconSize(QSize(ICON_WID, ICON_HEI));
 
-//    statusListItem[0] = new myListWidgetItem(myLan.material_general, myIcon.Sorter_RGB, QSize(BTN_WIDTH,80));
-    statusListItem[0] = new myListWidgetItem(myLan.material_general, QIcon(":/res/png/Al_General.png"), QSize(BTN_WIDTH-20,80));
-
+    // 0: 常规算法
+    statusListItem[0] = new myListWidgetItem(myLan.material_general, QIcon(":/res/png/Al_General.png"), QSize(BTN_WIDTH - 20, 80));
     listWidget->addItem(statusListItem[0]);
 
-//    statusListItem[1] = new myListWidgetItem(myLan.material_shape, myIcon.Sorter_Shape, QSize(BTN_WIDTH,80));
-    statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(BTN_WIDTH-20,80));
+    // 1: 形选算法
+    statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(BTN_WIDTH - 20, 80));
     listWidget->addItem(statusListItem[1]);
 
-    statusListItem[2] = new myListWidgetItem(myLan.ai_analysis, QIcon(":/res/png/Al_Ai.png"), QSize(BTN_WIDTH-20,80));
+    // 2: 传统智能算法
+    statusListItem[2] = new myListWidgetItem(myLan.ai_analysis, QIcon(":/res/png/Al_Ai.png"), QSize(BTN_WIDTH - 20, 80));
     listWidget->addItem(statusListItem[2]);
 
-    statusListItem[4] = new myListWidgetItem("Ai"+myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH-20,80));
+    // 4： AI智能算法
+    statusListItem[4] = new myListWidgetItem("Ai" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
     listWidget->addItem(statusListItem[4]);
 
     // 默认选中第一列
     listWidget->setCurrentRow(0);
 
     QFont font;
-    if (LCD_WIDTH == 1024){
-       font.setPixelSize(24);
-    } else {
-       font.setPixelSize(16);
+    if (LCD_WIDTH == 1024)
+    {
+        font.setPixelSize(24);
+    }
+    else
+    {
+        font.setPixelSize(16);
     }
     myFlow.getArithmeticName();
 
     tabBar = new QTabBar(this);
     tabBar->setFont(font);
-    for (int i = 0; i < struCnfg.nLevelTotal; i++) {
-       for (int j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++) {
-           tabBar->insertTab(i*struCnfg.struLevelInfo[i].nIdentifyGroupTotal+j, myString.sIdentifyGroupName[i][j]);
-       }
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
+    {
+        for (int j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++)
+        {
+            tabBar->insertTab(i * struCnfg.struLevelInfo[i].nIdentifyGroupTotal + j, myString.sIdentifyGroupName[i][j]);
+        }
     }
     tabBar->setStyleSheet("QTabBar::tab{""min-height:40;min-width:100;}::scroller{""width:30;}");
     stackedWidget = new QStackedWidget(this);
 
-    // 颜色识别算法参数页面
+    // 0: 常规算法
     pageGeneral = new QWidget();
     createGeneralPage();
 
-    // 形状识别算法参数页面
+    // 1: 形选算法
     pageShape = new QWidget();
     createShapePage();
 
-    // 智能识别算法参数页面
+    // 2: 传统智能
     pageAI = new QWidget();
     createAIPage();
 
@@ -75,7 +83,7 @@ setMaterialSens::setMaterialSens(QWidget *parent) :
     pagePeanut = new QWidget();
     createPeanutPage();
 
-     // 西瓜籽定制算法页面
+    // 西瓜籽定制算法页面
     pageWatermelon = new QWidget();
     createWatermelonPage();
 
@@ -83,8 +91,7 @@ setMaterialSens::setMaterialSens(QWidget *parent) :
     pageTea = new QWidget();
     createTeaPage();
 
-    // 玉米定制算法参数页面
-
+    // 4: AI智能
     pageAi = new QWidget();
     createAiPage();
 
@@ -102,12 +109,12 @@ setMaterialSens::setMaterialSens(QWidget *parent) :
 
     // 取消
     cancelBtn = new myPushButton(myLan.back, myIcon.Action_Back);
-    cancelBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT-3));
+    cancelBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT - 3));
     cancelBtn->hide();
 
     // 灵敏度偏置
 //    m_sensBiasBtn  = new myPushButton("",myIcon.Action_Configure, true, true, this);
-    m_sensBiasBtn  = new myPushButton("",QIcon(":/res/png/setup.png"), true, true, this);
+    m_sensBiasBtn = new myPushButton("", QIcon(":/res/png/setup.png"), true, true, this);
     m_sensBiasBtn->hide();
 
     // 页面布局
@@ -121,14 +128,15 @@ setMaterialSens::setMaterialSens(QWidget *parent) :
     sensPageHBLayout2->addWidget(stackedWidget);
     sensPageGridLayout->addLayout(sensPageHBLayout2, 1, 0, 1, 1);
 
-    sensPageHBLayout3  = new QHBoxLayout();
+    sensPageHBLayout3 = new QHBoxLayout();
     sensPageHBLayout3->addWidget(cancelBtn);
     horizontalSpacer = new QSpacerItem(10, BTN_HEIGHT, QSizePolicy::Expanding, QSizePolicy::Fixed);
     sensPageHBLayout3->addItem(horizontalSpacer);
     sensPageHBLayout3->addWidget(m_sensBiasBtn);
     sensPageGridLayout->addLayout(sensPageHBLayout3, 2, 0, 1, 1);
 
-    if (LCD_WIDTH == 640) {
+    if (LCD_WIDTH == 640)
+    {
         sensPageHBLayout1->setMargin(0);
         sensPageHBLayout2->setMargin(0);
         sensPageHBLayout3->setMargin(0);
@@ -136,41 +144,43 @@ setMaterialSens::setMaterialSens(QWidget *parent) :
     }
 
     // 槽函数
-    connect(cancelBtn   , SIGNAL(pressed()), this, SLOT(onCancelBtnClickedSlt()));
-    connect(listWidget  , SIGNAL(currentRowChanged(int)), stackedWidget, SLOT(setCurrentIndex(int)));
-    connect(listWidget  , SIGNAL(currentRowChanged(int)), this, SLOT(upTabBar()));
-    connect(tabBar      , SIGNAL(currentChanged(int)),this,SLOT(updateStackWidget(int)));
+    connect(cancelBtn, SIGNAL(pressed()), this, SLOT(onCancelBtnClickedSlt()));
+    connect(listWidget, SIGNAL(currentRowChanged(int)), stackedWidget, SLOT(setCurrentIndex(int)));
+    connect(listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(upTabBar()));
+    connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(updateStackWidget(int)));
     connect(m_sensBiasBtn, SIGNAL(pressed()), this, SLOT(onSensBiasBtnPressed()));
 }
 
-void setMaterialSens::createAiPage (){
+void setMaterialSens::createAiPage()
+{
     pageModelParaLayout = new QVBoxLayout(pageAi);
 
     m_sigMapper = new QSignalMapper(this);
     m_sigCheckMapper = new QSignalMapper(this);
 
-    for(int i=0; i< 10 ; i++){
-       modelNameCbx[i] =  new myCustomCheckBox("",  true,
-                                               CB_STYLE_APPLY,pageAi);
-        modelNameCbx[i]->setFixedSize(BTN_WIDTH+5,BTN_HEIGHT+10);
+    for (int i = 0; i < MODEL_MAX_CLS_NUM; i++)
+    {
+        modelNameCbx[i] = new myCustomCheckBox("", true,
+            CB_STYLE_APPLY, pageAi);
+        modelNameCbx[i]->setFixedSize(BTN_WIDTH + 5, BTN_HEIGHT + 10);
 
-       thresholdLbl[i] = new myLabel(myLan.sensitivity, pageAi);
-       thresholdLineEdit[i] = new myLineEdit(QString("%1").arg(""), pageAi);
-       thresholdLineEdit[i]->setReadOnly(true);
-       thresholdLineEdit[i]->setFixedSize(BTN_WIDTH+20,BTN_HEIGHT);
-       paraModelHLayout[i] = new QHBoxLayout();
-       paraModelHLayout[i]->addWidget(modelNameCbx[i]);
-       paraModelHLayout[i]->addStretch(1);
-       paraModelHLayout[i]->addWidget(thresholdLbl[i]);
-       paraModelHLayout[i]->addWidget(thresholdLineEdit[i]);
-       paraModelHLayout[i]->addSpacing(120);
-       pageModelParaLayout->addLayout(paraModelHLayout[i]);
+        thresholdLbl[i] = new myLabel(myLan.sensitivity, pageAi);
+        thresholdLineEdit[i] = new myLineEdit(QString("%1").arg(""), pageAi);
+        thresholdLineEdit[i]->setReadOnly(true);
+        thresholdLineEdit[i]->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
+        paraModelHLayout[i] = new QHBoxLayout();
+        paraModelHLayout[i]->addWidget(modelNameCbx[i]);
+        paraModelHLayout[i]->addStretch(1);
+        paraModelHLayout[i]->addWidget(thresholdLbl[i]);
+        paraModelHLayout[i]->addWidget(thresholdLineEdit[i]);
+        paraModelHLayout[i]->addSpacing(120);
+        pageModelParaLayout->addLayout(paraModelHLayout[i]);
 
-       m_sigCheckMapper->setMapping(modelNameCbx[i], i);
-       connect(modelNameCbx[i], SIGNAL(pressed()), m_sigCheckMapper, SLOT(map()));
+        m_sigCheckMapper->setMapping(modelNameCbx[i], i);
+        connect(modelNameCbx[i], SIGNAL(pressed()), m_sigCheckMapper, SLOT(map()));
 
-       m_sigMapper->setMapping(thresholdLineEdit[i], i);
-       connect(thresholdLineEdit[i], SIGNAL(pressed()), m_sigMapper, SLOT(map()));
+        m_sigMapper->setMapping(thresholdLineEdit[i], i);
+        connect(thresholdLineEdit[i], SIGNAL(pressed()), m_sigMapper, SLOT(map()));
     }
 
     connect(m_sigMapper, SIGNAL(mapped(int)), this, SLOT(setThresholdLineEdit(int)));
@@ -180,98 +190,97 @@ void setMaterialSens::createAiPage (){
     updateModeParaInfo();
 }
 
-void setMaterialSens::updateModeParaInfo(){
+void setMaterialSens::updateModeParaInfo()
+{
     int levelTotal = struGsh.nLevel;
     int identifyGroupTotal = currentChan;
-    QString modelId =  QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.modelId);
-//    modelId  = QString("model_best_128x1024_v68");
-//    qDebug()<<"456"<<levelTotal <<identifyGroupTotal<<modelId;
-    QSqlQuery query;
-    query.prepare("SELECT modelId, id, zhName, enName, threshold, isApply, chgTime FROM modelParaInfo  "
-                        "where modelId = ?  and levelTotal = ? and identifyGroupTotal = ? order by id asc");
+    QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.modelId);
+    LOG_INFO_STM("current level:" << levelTotal << ",identify total:" << identifyGroupTotal << ", modelId:" << modelId.toStdString());
 
-    query.bindValue(0,modelId);
-    query.bindValue(1,levelTotal);
-    query.bindValue(2,identifyGroupTotal);
     modeParaCount = 0;
-    for(int i=modeParaCount; i<10; i++){
-       modelNameCbx[i]->show();
-       thresholdLbl[i]->show();
-       thresholdLineEdit[i]->show();
+    for (int i = 0; i < MODEL_MAX_CLS_NUM; i++)
+    {
+        modelNameCbx[i]->hide();
+        thresholdLbl[i]->hide();
+        thresholdLineEdit[i]->hide();
     }
 
-    if (!query.exec()) {
-        qDebug() << "查询失败：" << query.lastError();
-    } else {
-        while (query.next()) {
-            QString modelId = query.value(0).toString();
-            QString id = query.value(1).toString();
-            QString zhName = query.value(2).toString();
-            QString enName = query.value(3).toString();
-            QString threshold = query.value(4).toString();
-            QString isApply = query.value(5).toString();
-
-            modeParaStr[modeParaCount].id = id;
-            modeParaStr[modeParaCount].isApply = isApply;
-            modeParaStr[modeParaCount].name = zhName;
-            modeParaStr[modeParaCount].threshold = threshold;
-
-            modelNameCbx[modeParaCount]->setCheckBoxName(zhName);
-            modelNameCbx[modeParaCount]->setChecked(isApply.toInt());
-            thresholdLineEdit[modeParaCount]->setText(threshold);
-            modeParaCount++;
-        }
+    QVector<ModelClsParam> cls_vec;
+    if (!SQLiteMgr::Instance().LoadModelClsParam(modelId, cls_vec))
+    {
+        LOG_ERROR_STM("failed to load cls param, model id:" << modelId.toStdString());
+        return;
     }
-    for(int i=modeParaCount; i<10; i++){
-       modelNameCbx[i]->hide();
-       thresholdLbl[i]->hide();
-       thresholdLineEdit[i]->hide();
+
+    if (cls_vec.empty())
+    {
+        LOG_ERROR_STM("model id:" << modelId.toStdString() << " have no cls!");
+        return;
+    }
+
+    if (cls_vec.size() > MODEL_MAX_CLS_NUM)
+    {
+        LOG_ERROR_STM("model id:" << modelId.toStdString() << " cls num:" << cls_vec.size() << " > " << MODEL_MAX_CLS_NUM);
+        return;
+    }
+
+    modeParaCount = cls_vec.size();
+    for (int i = 0; i < cls_vec.size(); i++)
+    {
+        ModelClsParam item = cls_vec.at(i);
+        modeParaArr[i] = item;
+
+        modelNameCbx[i]->setCheckBoxName(item.cls_name_);
+        modelNameCbx[i]->setChecked(item.is_apply_);
+        thresholdLineEdit[i]->setText(QString::number(item.threshold_));
+        modelNameCbx[i]->show();
+        thresholdLbl[i]->show();
+        thresholdLineEdit[i]->show();
     }
 }
 
-void setMaterialSens::setModelNameCbx(int index){
-    if( modelNameCbx[index]->getChecked()){
-        modeParaStr[index].isApply = "1";
-    }else{
-        modeParaStr[index].isApply = "0";
-    }
+void setMaterialSens::setModelNameCbx(int index)
+{
+    LOG_TRACE_STM("index:" << index << ", check:" << modelNameCbx[index]->getChecked());
+    modeParaArr[index].is_apply_ = modelNameCbx[index]->getChecked();
     setModeParaInfo();
-//    qDebug()<<modeParaStr[index].isApply ;
 }
 
-void setMaterialSens::setThresholdLineEdit(int index){
+void setMaterialSens::setThresholdLineEdit(int index)
+{
     myInputPanel inputDlg(intType, 0, 100, thresholdLineEdit[index]->text().toInt());
     int ret = inputDlg.exec();
-    if (ret == QDialog::Accepted) {
+    if (ret == QDialog::Accepted)
+    {
         int thresholdNum = inputDlg.getValue();
         QString str = QString("%1").arg(thresholdNum);
         thresholdLineEdit[index]->setText(str);
-        modeParaStr[index].threshold = str;
-        if(modelNameCbx[index]->getChecked()){
-            setModeParaInfo();
-        }
+        modeParaArr[index].threshold_ = thresholdNum;
+        setModeParaInfo();
     }
 }
 
-void setMaterialSens::setModeParaInfo(){
+void setMaterialSens::setModeParaInfo()
+{
     int levelTotal = struGsh.nLevel;
     int identifyGroupTotal = currentChan;
-    QString modelId =  QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.modelId);
-    QSqlQuery sql_update;
-    sql_update.prepare("update  modelParaInfo  set threshold = ? , isApply = ? WHERE modelId = ? and id =? and levelTotal = ? and identifyGroupTotal = ? ");
-    sql_update.bindValue(2, modelId);
-    sql_update.bindValue(4, levelTotal);
-    sql_update.bindValue(5, identifyGroupTotal);
-    for(int i=0 ; i<modeParaCount; i++){
-        sql_update.bindValue(0, modeParaStr[i].threshold);
-        sql_update.bindValue(1, modeParaStr[i].isApply);
-        sql_update.bindValue(3, modeParaStr[i].id);
-        if(!sql_update.exec()){
-            qDebug() << "update modelParaInfo 失败"<<modeParaStr[i].id<<":"<<modeParaStr[i].threshold;
-            return;
-        }
+    QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.modelId);
+    LOG_INFO_STM("current level:" << levelTotal << ", identifyGroupTotal:" << identifyGroupTotal << ",modeId:"
+        << modelId.toStdString() << ", modeParaCount:" << modeParaCount);
+
+    // 应用模型参数
+    QVector<ModelClsParam> cls_vec;
+    for (int i = 0; i < modeParaCount; i++)
+    {
+        cls_vec.append(modeParaArr[i]);
     }
-    myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_PISTACHIO, 0);
+
+    if (!SQLiteMgr::Instance().UpdateModelClsParam(cls_vec))
+    {
+        return;
+    }
+
+    myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
     myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
 }
 
@@ -281,7 +290,8 @@ void setMaterialSens::setModeParaInfo(){
 void setMaterialSens::onCancelBtnClickedSlt()
 {
     //! 智能保留界面返回
-    if (stackedWidget->currentWidget() == m_pageAIRsv) {
+    if (stackedWidget->currentWidget() == m_pageAIRsv)
+    {
         stackedWidget->setCurrentIndex(listWidget->currentRow());
         return;
     }
@@ -316,48 +326,71 @@ void setMaterialSens::updateAll()
  */
 void setMaterialSens::upTabBar()
 {
-    for (int i = tabBar->count()-1; i > -1;i--) {
+    for (int i = tabBar->count() - 1; i > -1;i--)
+    {
         tabBar->removeTab(i);
     }
 
     algorithmType = 0;
 
-    for (int j = 0; j < struCnfg.struLevelInfo[0].nIdentifyGroupTotal; j++) {
+    for (int j = 0; j < struCnfg.struLevelInfo[0].nIdentifyGroupTotal; j++)
+    {
         tabBar->insertTab(j, myString.sIdentifyGroupName[0][j]);
     }
 
     int caseValue = struCnfp.nMatAssembleMode;
 
-    if (caseValue == PARAMS_ALL_SEPARATE) {             // 单独设置
-        for (int i = 0; i < tabBar->count(); i++) {
+    if (caseValue == PARAMS_ALL_SEPARATE)
+    {             // 单独设置
+        for (int i = 0; i < tabBar->count(); i++)
+        {
             tabBar->setTabEnabled(i, true);
-		}
-    } else if (caseValue == PARAMS_FRONT_REAR_SAME){    // 前后视相同
-        for (int i = 0; i < tabBar->count(); i++) {
-            if (i%2 == 0) {
-				tabBar->setTabEnabled(i,true);
-            } else {
-				tabBar->setTabEnabled(i,false);
+        }
+    }
+    else if (caseValue == PARAMS_FRONT_REAR_SAME)
+    {    // 前后视相同
+        for (int i = 0; i < tabBar->count(); i++)
+        {
+            if (i % 2 == 0)
+            {
+                tabBar->setTabEnabled(i, true);
             }
-		}
-    } else if (caseValue == PARAMS_FIRST_SECOND_SAME) { // 一二三次相同
-        for (int j = 0; j < struCnfg.nLevelTotal; j++) {
-            for (int i = 0;i < tabBar->count()/struCnfg.nLevelTotal;i++) {
-                if (i < 2) {
-                    tabBar->setTabEnabled(i+j*(tabBar->count()/struCnfg.nLevelTotal), true);
-                } else {
-                    tabBar->setTabEnabled(i+j*(tabBar->count()/struCnfg.nLevelTotal), false);
+            else
+            {
+                tabBar->setTabEnabled(i, false);
+            }
+        }
+    }
+    else if (caseValue == PARAMS_FIRST_SECOND_SAME)
+    { // 一二三次相同
+        for (int j = 0; j < struCnfg.nLevelTotal; j++)
+        {
+            for (int i = 0;i < tabBar->count() / struCnfg.nLevelTotal;i++)
+            {
+                if (i < 2)
+                {
+                    tabBar->setTabEnabled(i + j * (tabBar->count() / struCnfg.nLevelTotal), true);
+                }
+                else
+                {
+                    tabBar->setTabEnabled(i + j * (tabBar->count() / struCnfg.nLevelTotal), false);
                 }
             }
         }
-    } else if (caseValue == PARAMS_ALL_SAME) {          // 所有相同
-		for (int i = 0;i < tabBar->count();i++) {
-            if (i == 0) {
-				tabBar->setTabEnabled(i,true);
-            } else {
-				tabBar->setTabEnabled(i,false);
+    }
+    else if (caseValue == PARAMS_ALL_SAME)
+    {          // 所有相同
+        for (int i = 0;i < tabBar->count();i++)
+        {
+            if (i == 0)
+            {
+                tabBar->setTabEnabled(i, true);
             }
-		}
+            else
+            {
+                tabBar->setTabEnabled(i, false);
+            }
+        }
     }
 }
 
@@ -369,6 +402,9 @@ void setMaterialSens::updateListWidget()
 {
     int i;
     bool bFlag = false;
+
+    LOG_INFO_STM("stackedWidget size:" << stackedWidget->count() << ", list widget count:"
+        << listWidget->count() << ", ai enable:" << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]);
 
     listWidget->clear();
     stackedWidget->removeWidget(pageGeneral);
@@ -382,32 +418,49 @@ void setMaterialSens::updateListWidget()
 
     listWidget->setSpacing(10);
 
-    for (i = 0; i < MAX_GENERAL;i++){
-        if (struCnfp.nArithmeticEnable[i]) {
-            if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS)) {
-                statusListItem[0] = new myListWidgetItem("深霉算法", myIcon.Sorter_RGB, QSize(BTN_WIDTH-20,ICON_WID*2));
-            } else {
-                statusListItem[0] = new myListWidgetItem(myLan.material_general, QIcon(":/res/png/Al_General.png") , QSize(BTN_WIDTH-20,ICON_WID*2));
+    for (i = 0; i < MAX_GENERAL;i++)
+    {
+        LOG_TRACE_STM("general i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i] << ", struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
+        if (struCnfp.nArithmeticEnable[i])
+        {
+            if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS))
+            {
+                statusListItem[0] = new myListWidgetItem("深霉算法", myIcon.Sorter_RGB, QSize(BTN_WIDTH - 20, ICON_WID * 2));
+            }
+            else
+            {
+                statusListItem[0] = new myListWidgetItem(myLan.material_general, QIcon(":/res/png/Al_General.png"), QSize(BTN_WIDTH - 20, ICON_WID * 2));
             }
             listWidget->addItem(statusListItem[0]);
             stackedWidget->addWidget(pageGeneral);
             break;
         }
     }
-    for (i = MAX_GENERAL; i< MAX_GENERAL+MAX_SHAPE;i++){
-        if (struCnfp.nArithmeticEnable[i] == 1 || struCnfp.nArithmeticEnable[ARITH_SCALE_B] == 1) {
-            statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(BTN_WIDTH-20,ICON_WID*2));
+    for (i = MAX_GENERAL; i < MAX_GENERAL + MAX_SHAPE;i++)
+    {
+        LOG_TRACE_STM("shape i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i]
+            << ", ARITH_SCALE_B:" << struCnfp.nArithmeticEnable[ARITH_SCALE_B]);
+        if (struCnfp.nArithmeticEnable[i] == 1 || struCnfp.nArithmeticEnable[ARITH_SCALE_B] == 1)
+        {
+            statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(BTN_WIDTH - 20, ICON_WID * 2));
             listWidget->addItem(statusListItem[1]);
             stackedWidget->addWidget(pageShape);
             break;
         }
     }
-    for (i = ARITH_INTEL_A; i< ARITH_INTEL_A+MAX_AI;i++){
-        if (struCnfp.nArithmeticEnable[i]) {
-            if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS)) {
-                statusListItem[2] = new myListWidgetItem("浅霉算法", myIcon.Sorter_RGB, QSize(BTN_WIDTH-20,ICON_WID*2));
-            } else {
-                statusListItem[2] = new myListWidgetItem(myLan.ai_analysis,  QIcon(":/res/png/Al_Ai.png"), QSize(BTN_WIDTH-20,ICON_WID*2));
+    for (i = ARITH_INTEL_A; i < ARITH_INTEL_A + MAX_AI;i++)
+    {
+        LOG_TRACE_STM("智能 i:" << i << ",alg enable:" << struCnfp.nArithmeticEnable[i] << ",struCnfg.nLang:" << struCnfg.nLang
+            << ",struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
+        if (struCnfp.nArithmeticEnable[i])
+        {
+            if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS))
+            {
+                statusListItem[2] = new myListWidgetItem("浅霉算法", myIcon.Sorter_RGB, QSize(BTN_WIDTH - 20, ICON_WID * 2));
+            }
+            else
+            {
+                statusListItem[2] = new myListWidgetItem(myLan.ai_analysis, QIcon(":/res/png/Al_Ai.png"), QSize(BTN_WIDTH - 20, ICON_WID * 2));
             }
             listWidget->addItem(statusListItem[2]);
             stackedWidget->addWidget(pageAI);
@@ -416,18 +469,30 @@ void setMaterialSens::updateListWidget()
     }
 
     //! 仅玉米双视图机型增加智能保留参数
-    if (struCnfe.nEnableMaizeDoubleView == 1) {
-        if (struCnfp.nArithmeticEnable[ARITH_RESERVED]) {
-            statusListItem[6] = new myListWidgetItem(myLan.material_reserved, myIcon.Sorter_RGB, QSize(BTN_WIDTH-20,ICON_WID*2));
+    if (struCnfe.nEnableMaizeDoubleView == 1)
+    {
+        if (struCnfp.nArithmeticEnable[ARITH_RESERVED])
+        {
+            statusListItem[6] = new myListWidgetItem(myLan.material_reserved, myIcon.Sorter_RGB, QSize(BTN_WIDTH - 20, ICON_WID * 2));
             listWidget->addItem(statusListItem[6]);
             stackedWidget->addWidget(m_pageGeneralRsv);
         }
-        if (struCnfp.nArithmeticEnable[ARITH_INTEL_A]) {
+        if (struCnfp.nArithmeticEnable[ARITH_INTEL_A])
+        {
             stackedWidget->addWidget(m_pageAIRsv);
         }
     }
 
-    if (listWidget->count() > 0) {
+    // 实现AI智能
+    if (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] == 1)
+    {
+        statusListItem[4] = new myListWidgetItem("Ai" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
+        listWidget->addItem(statusListItem[4]);
+        stackedWidget->addWidget(pageAi);
+    }
+
+    if (listWidget->count() > 0)
+    {
         listWidget->setCurrentRow(0);
     }
 }
@@ -438,8 +503,9 @@ void setMaterialSens::updateListWidget()
  */
 void setMaterialSens::updateStackWidget(int indexOfUnit)
 {
+    LOG_TRACE_STM("index of unit:" << indexOfUnit);
     struGsh.nLevel = ONE_LEVEL;
-    currentChan    = indexOfUnit;
+    currentChan = indexOfUnit;
 
     updateGeneralList();
     updateAIList();
@@ -449,7 +515,8 @@ void setMaterialSens::updateStackWidget(int indexOfUnit)
     updateTeaList();
     updateRsvList();
 
-    if (stackedWidget->currentWidget() == m_pageAIRsv) {
+    if (stackedWidget->currentWidget() == m_pageAIRsv)
+    {
         m_pageAIRsv->setTabBarIndex(indexOfUnit);
     }
 }
@@ -466,37 +533,47 @@ void setMaterialSens::updateSensBiasBtn()
     /* 灵敏度偏置按钮的显示开关 */
     bool bNoArith = true;
     /* 若算法列表为空则不显示该按钮 */
-    for(int i=0; i<ARITHMETIC_TOTAL; i++) {
-        if(struCnfp.nArithmeticEnable[i] == 1) {
-			switch(i) {
-			case ARITH_GREY_A:
-			case ARITH_GREY_B:
-			case ARITH_DISCOLOR_A:
-			case ARITH_DISCOLOR_B:
+    for (int i = 0; i < ARITHMETIC_TOTAL; i++)
+    {
+        if (struCnfp.nArithmeticEnable[i] == 1)
+        {
+            switch (i)
+            {
+            case ARITH_GREY_A:
+            case ARITH_GREY_B:
+            case ARITH_DISCOLOR_A:
+            case ARITH_DISCOLOR_B:
             case ARITH_INTEL_A:
             case ARITH_INTEL_B:
-			case ARITH_MAIZE:
-            	bNoArith = false;
-				break;
-			default:
-				break;
-			}
-            if(!bNoArith) {
-            	break;
-			}
+            case ARITH_MAIZE:
+                bNoArith = false;
+                break;
+            default:
+                break;
+            }
+            if (!bNoArith)
+            {
+                break;
+            }
         }
     }
-    if(bNoArith) {
+    if (bNoArith)
+    {
         m_sensBiasBtn->hide();
-    } else {
+    }
+    else
+    {
         m_sensBiasBtn->show();
     }
 
-	if(struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_OPERATOR) {
-	    m_sensBiasBtn->setEnabled(false);
-	} else {
-		m_sensBiasBtn->setEnabled(true);
-	}
+    if (struGsh.nAuthenticationLevel == AUTHENTICATION_LEVEL_OPERATOR)
+    {
+        m_sensBiasBtn->setEnabled(false);
+    }
+    else
+    {
+        m_sensBiasBtn->setEnabled(true);
+    }
 }
 
 /**
@@ -511,44 +588,47 @@ void setMaterialSens::createGeneralPage()
 
     generalSignalMapper = new QSignalMapper(pageGeneral);
 
-    for (int i = 0; i < MAX_GENERAL;i++) {
-        generalSensListCbx[i] = new myGroupBox(myString.sArithmeticName[i],pageGeneral);
-        generalSensListCbx[i]->setMaximumHeight(380/MAX_GENERAL+15);
-        if (struCnfe.nEnableMaizeDoubleView == 1) {
-            if (i == 0) {   //玉米定制深霉加焦糊保留功能，需要增加布局长度
-                generalSensListCbx[i]->setMaximumHeight(380/MAX_GENERAL*2);
+    for (int i = 0; i < MAX_GENERAL;i++)
+    {
+        generalSensListCbx[i] = new myGroupBox(myString.sArithmeticName[i], pageGeneral);
+        generalSensListCbx[i]->setMaximumHeight(380 / MAX_GENERAL + 15);
+        if (struCnfe.nEnableMaizeDoubleView == 1)
+        {
+            if (i == 0)
+            {   //玉米定制深霉加焦糊保留功能，需要增加布局长度
+                generalSensListCbx[i]->setMaximumHeight(380 / MAX_GENERAL * 2);
             }
         }
 
-        generalSensLabel[i]   = new myLabel(myLan.sensitivity, pageGeneral);
+        generalSensLabel[i] = new myLabel(myLan.sensitivity, pageGeneral);
         generalSensLabel[i]->setFixedHeight(30);
 
         strGeneralSens = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nSensMin);
-        generalSensLbe[i]     = new myLineEdit(strGeneralSens, pageGeneral);
+        generalSensLbe[i] = new myLineEdit(strGeneralSens, pageGeneral);
         generalSensLbe[i]->setFixedHeight(30);
 
 
-        generalRowLabel[i]    = new myLabel(myLan.scale, pageGeneral);
+        generalRowLabel[i] = new myLabel(myLan.scale, pageGeneral);
         generalRowLabel[i]->setFixedHeight(30);
 
 
         strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nRow);
-        generalRowLbe[i]      = new myLineEdit(strGeneralRow, pageGeneral);
+        generalRowLbe[i] = new myLineEdit(strGeneralRow, pageGeneral);
         generalRowLbe[i]->setFixedHeight(30);
 
 
-        generalPercentLabel[i]   = new myLabel(myLan.purity, pageGeneral);
+        generalPercentLabel[i] = new myLabel(myLan.purity, pageGeneral);
         generalPercentLabel[i]->setFixedHeight(30);
 
 
         strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nPercent);
-        generalPercentLbe[i]            = new myLineEdit(strGeneralPercent, pageGeneral);
+        generalPercentLbe[i] = new myLineEdit(strGeneralPercent, pageGeneral);
         generalPercentLbe[i]->setFixedHeight(30);
 
         reservedCheckBox[i] = new MyCheckBox(myLan.reserved_burnt);
 
         /*单个布局*/
-        generalHBoxLayout[i]    = new QHBoxLayout();
+        generalHBoxLayout[i] = new QHBoxLayout();
         generalHBoxLayout[i]->addWidget(generalSensLabel[i]);
         generalHBoxLayout[i]->addWidget(generalSensLbe[i]);
         generalHBoxLayout[i]->addSpacing(50);
@@ -557,28 +637,29 @@ void setMaterialSens::createGeneralPage()
         generalHBoxLayout[i]->addSpacing(50);
         generalHBoxLayout[i]->addWidget(generalPercentLabel[i]);
         generalHBoxLayout[i]->addWidget(generalPercentLbe[i]);
-        generalHBoxLayout[i]->setContentsMargins(2,2,2,2);
+        generalHBoxLayout[i]->setContentsMargins(2, 2, 2, 2);
         generalHBoxLayout[i]->setSpacing(10);
         generalRowLabel[i]->hide();
         generalRowLbe[i]->hide();
-        generalVBoxLayout[i]    = new QVBoxLayout(generalSensListCbx[i]);
+        generalVBoxLayout[i] = new QVBoxLayout(generalSensListCbx[i]);
         generalVBoxLayout[i]->addLayout(generalHBoxLayout[i]);
         generalVBoxLayout[i]->addWidget(reservedCheckBox[i]);
 
         /*信号栈*/
-        generalSignalMapper->setMapping(generalSensLbe[i], i*generalSensNum);
+        generalSignalMapper->setMapping(generalSensLbe[i], i * generalSensNum);
         connect(generalSensLbe[i], SIGNAL(pressed()), generalSignalMapper, SLOT(map()));
-        generalSignalMapper->setMapping(generalRowLbe[i], i*generalSensNum+1);
+        generalSignalMapper->setMapping(generalRowLbe[i], i * generalSensNum + 1);
         connect(generalRowLbe[i], SIGNAL(pressed()), generalSignalMapper, SLOT(map()));
-        generalSignalMapper->setMapping(generalPercentLbe[i], i*generalSensNum+2);
+        generalSignalMapper->setMapping(generalPercentLbe[i], i * generalSensNum + 2);
         connect(generalPercentLbe[i], SIGNAL(pressed()), generalSignalMapper, SLOT(map()));
-        generalSignalMapper->setMapping(reservedCheckBox[i], i*generalSensNum+3);
+        generalSignalMapper->setMapping(reservedCheckBox[i], i * generalSensNum + 3);
         connect(reservedCheckBox[i], SIGNAL(pressed()), generalSignalMapper, SLOT(map()));
     }
 
     /*整体页面布局*/
     generalMainLayout = new QVBoxLayout(pageGeneral);
-    for (int i = 0; i < MAX_GENERAL;i++) {
+    for (int i = 0; i < MAX_GENERAL;i++)
+    {
         generalMainLayout->addWidget(generalSensListCbx[i]);
     }
     updateGeneralList();
@@ -587,44 +668,46 @@ void setMaterialSens::createGeneralPage()
     connect(generalSignalMapper, SIGNAL(mapped(int)), this, SLOT(getGeneralIndex(int)));
 }
 
-QString setMaterialSens:: getColorModeText(int colorMode){
+QString setMaterialSens::getColorModeText(int colorMode)
+{
     QString text("");
-    switch (colorMode) {
-//    case 0:
-//        text = "红低";
-//        break;
-//    case 1:
-//        text = "红高";
-//        break;
-//    case 2:
-//        text = "绿低";
-//        break;
-//    case 3:
-//        text = "绿高";
-//        break;
-//    case 4:
-//        text = "蓝低";
-//        break;
-//    case 5:
-//        text = "蓝高";
-//        break;
+    switch (colorMode)
+    {
+        //    case 0:
+        //        text = "红低";
+        //        break;
+        //    case 1:
+        //        text = "红高";
+        //        break;
+        //    case 2:
+        //        text = "绿低";
+        //        break;
+        //    case 3:
+        //        text = "绿高";
+        //        break;
+        //    case 4:
+        //        text = "蓝低";
+        //        break;
+        //    case 5:
+        //        text = "蓝高";
+        //        break;
     case 0:
-        text = myLan.red+myLan.lower;
+        text = myLan.red + myLan.lower;
         break;
     case 1:
-        text = myLan.red+myLan.upper;
+        text = myLan.red + myLan.upper;
         break;
     case 2:
-        text = myLan.green+myLan.lower;
+        text = myLan.green + myLan.lower;
         break;
     case 3:
-        text = myLan.green+myLan.upper;
+        text = myLan.green + myLan.upper;
         break;
     case 4:
-        text = myLan.blue+myLan.lower;
+        text = myLan.blue + myLan.lower;
         break;
     case 5:
-        text = myLan.blue+myLan.upper;
+        text = myLan.blue + myLan.upper;
         break;
     default:
         text = myLan.unknown;
@@ -633,44 +716,46 @@ QString setMaterialSens:: getColorModeText(int colorMode){
     return text;
 }
 
-QString setMaterialSens:: getColorModeText2(int colorMode){
+QString setMaterialSens::getColorModeText2(int colorMode)
+{
     QString text("");
-    switch (colorMode) {
-//    case 0:
-//        text = "红<绿";
-//        break;
-//    case 1:
-//        text = "红>绿";
-//        break;
-//    case 2:
-//        text = "红<蓝";
-//        break;
-//    case 3:
-//        text = "红>蓝";
-//        break;
-//    case 4:
-//        text = "绿<蓝";
-//        break;
-//    case 5:
-//        text = "绿>蓝";
-//        break;
+    switch (colorMode)
+    {
+        //    case 0:
+        //        text = "红<绿";
+        //        break;
+        //    case 1:
+        //        text = "红>绿";
+        //        break;
+        //    case 2:
+        //        text = "红<蓝";
+        //        break;
+        //    case 3:
+        //        text = "红>蓝";
+        //        break;
+        //    case 4:
+        //        text = "绿<蓝";
+        //        break;
+        //    case 5:
+        //        text = "绿>蓝";
+        //        break;
     case 0:
-        text = myLan.red+"<"+myLan.green;
+        text = myLan.red + "<" + myLan.green;
         break;
     case 1:
-        text = myLan.red+">"+myLan.green;
+        text = myLan.red + ">" + myLan.green;
         break;
     case 2:
-        text = myLan.red+"<"+myLan.blue;
+        text = myLan.red + "<" + myLan.blue;
         break;
     case 3:
-        text = myLan.red+">"+myLan.blue;
+        text = myLan.red + ">" + myLan.blue;
         break;
     case 4:
-        text = myLan.green+"<"+myLan.blue;
+        text = myLan.green + "<" + myLan.blue;
         break;
     case 5:
-        text = myLan.green+">"+myLan.blue;
+        text = myLan.green + ">" + myLan.blue;
         break;
     default:
         text = myLan.unknown;
@@ -693,120 +778,137 @@ void setMaterialSens::updateGeneralList()
     int color;
     int mode;
 
-    for (int i = 0; i < MAX_GENERAL;i++) {
+    for (int i = 0; i < MAX_GENERAL;i++)
+    {
         generalSensListCbx[i]->hide();
         reservedCheckBox[i]->hide();
     }
-    for (int i = 0; i < MAX_GENERAL;i++) {
-        if (struCnfp.nArithmeticEnable[i] == 1) {
+    for (int i = 0; i < MAX_GENERAL;i++)
+    {
+        if (struCnfp.nArithmeticEnable[i] == 1)
+        {
             /*杂质名称*/
-            switch(i) {
+            switch (i)
+            {
             case 0:
-                if (struCnfe.nEnableMaizeDoubleView == 1) {
-                    if (i == 0) {   //玉米定制深霉加焦糊保留功能
+                if (struCnfe.nEnableMaizeDoubleView == 1)
+                {
+                    if (i == 0)
+                    {   //玉米定制深霉加焦糊保留功能
                         reservedCheckBox[i]->show();
                         reservedCheckBox[i]->setChecked(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nBurntReservedFlag);
                     }
                 }
             case 1:
-                color = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nColor/2;
+                color = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nColor / 2;
                 mode = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode;
                 strGeneralList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].sName);
-//                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode) {//选亮
-//                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorText(color) + myLan.light + " )";
-//                } else {
-//                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorText(color) + myLan.dark + " )";
-//                }
-                strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorModeText(2*color+mode) + " )";
+                //                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode) {//选亮
+                //                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorText(color) + myLan.light + " )";
+                //                } else {
+                //                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorText(color) + myLan.dark + " )";
+                //                }
+                strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorModeText(2 * color + mode) + " )";
                 break;
             case 2:
             case 3:
-                color =	struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nDiscolor;
+                color = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nDiscolor;
                 mode = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode;
 
-//                switch (color) {
-//                case 0:
-//                    strName = myLan.red_green;
-//                    break;
-//                case 1:
-//                    strName = myLan.red_blue;
-//                    break;
-//                case 2:
-//                    strName = myLan.green_blue;
-//                    break;
-//                default:
-//                    strName = "";
-//                    break;
-//                }
+                //                switch (color) {
+                //                case 0:
+                //                    strName = myLan.red_green;
+                //                    break;
+                //                case 1:
+                //                    strName = myLan.red_blue;
+                //                    break;
+                //                case 2:
+                //                    strName = myLan.green_blue;
+                //                    break;
+                //                default:
+                //                    strName = "";
+                //                    break;
+                //                }
                 strGeneralList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode) {//选亮
-                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorModeText2(2*color+mode)  + " )";
-                } else {
-                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorModeText2(2*color+mode) + " )";
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode)
+                {//选亮
+                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorModeText2(2 * color + mode) + " )";
+                }
+                else
+                {
+                    strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorModeText2(2 * color + mode) + " )";
                 }
                 break;
             case 4:
                 color = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColor;
-                        strGeneralList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.sName);
-                strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorText(color)+ " )";
+                strGeneralList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.sName);
+                strGeneralList += " ( " + myString.sArithmeticName[i] + " - " + getColorText(color) + " )";
                 break;
             default:
                 break;
             }
 
-            if (struCnfe.nEnableMaizeDoubleView == 1) {
-                if (struCnfg.nLang == LANG_CHS) {
+            if (struCnfe.nEnableMaizeDoubleView == 1)
+            {
+                if (struCnfg.nLang == LANG_CHS)
+                {
                     strGeneralList = QString("%1 (%2)").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[0].sName).arg(myString.sArithmeticName[i]);
                 }
             }
             generalSensListCbx[i]->setTitle(strGeneralList);
 
             /*灵敏度*/
-             switch(i) {
-             case 0://灰度AB
-             case 1:
-                 if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode) {//选亮
-                     strGeneralSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMax*0.1);
-                 }
-                 else {
-                     strGeneralSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMin*0.1);
-                 }
-                 break;
-             case 2://色差AB
-             case 3:
-                 if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode) {//选亮
-                     strGeneralSens.sprintf("%.2f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMax*0.01);
-                 }
-                 else {
-                     strGeneralSens.sprintf("%.2f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMin*0.01);
-                 }
-                 break;
-              case 4://差分
-                 strGeneralSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens*0.1);
-                 break;
-             }
-             generalSensLbe[i]->setText(strGeneralSens);
+            switch (i)
+            {
+            case 0://灰度AB
+            case 1:
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode)
+                {//选亮
+                    strGeneralSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMax * 0.1);
+                }
+                else
+                {
+                    strGeneralSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMin * 0.1);
+                }
+                break;
+            case 2://色差AB
+            case 3:
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nMode)
+                {//选亮
+                    strGeneralSens.sprintf("%.2f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMax * 0.01);
+                }
+                else
+                {
+                    strGeneralSens.sprintf("%.2f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nSensMin * 0.01);
+                }
+                break;
+            case 4://差分
+                strGeneralSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens * 0.1);
+                break;
+            }
+            generalSensLbe[i]->setText(strGeneralSens);
 
-             /*行列尺寸及纯度*/
-             switch(i) {
-             case 0://灰度AB
-             case 1:
-             case 2://色差AB
-             case 3:
-                 strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nRow);
-                 generalRowLbe[i]->setText(strGeneralRow);
+            /*行列尺寸及纯度*/
+            switch (i)
+            {
+            case 0://灰度AB
+            case 1:
+            case 2://色差AB
+            case 3:
+                strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nRow);
+                generalRowLbe[i]->setText(strGeneralRow);
 
-                 strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nPercent);
-                 generalPercentLbe[i]->setText(strGeneralPercent);
-                 break;
-              case 4://差分
-                 strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow);
-                 generalRowLbe[i]->setText(strGeneralRow);
+                strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i].nPercent);
+                generalPercentLbe[i]->setText(strGeneralPercent);
+                break;
+            case 4://差分
+                strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow);
+                generalRowLbe[i]->setText(strGeneralRow);
 
-                 strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nPercent);
-                 generalPercentLbe[i]->setText(strGeneralPercent);
-                 break;
-             }
+                strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nPercent);
+                generalPercentLbe[i]->setText(strGeneralPercent);
+                break;
+            }
             generalSensListCbx[i]->show();
         }
     }
@@ -826,189 +928,203 @@ void setMaterialSens::getGeneralIndex(int index)
     QString str;
 
     //灵敏度设置
-    if (index%generalSensNum == 0) {
+    if (index % generalSensNum == 0)
+    {
         /*灵敏度*/
-        switch(index/generalSensNum) {
+        switch (index / generalSensNum)
+        {
         case 0://灰度AB
         case 1:
             nMin = 0;
             nMax = 100;
             type = floatType;
 
-             if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nMode) {//选亮
-                   nSens[index/generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMax;
-             }
-             else {
-                   nSens[index/generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMin;
-             }
-             nSens[index/generalSensNum] = nSens[index/generalSensNum]*0.1;
-             break;
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nMode)
+            {//选亮
+                nSens[index / generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMax;
+            }
+            else
+            {
+                nSens[index / generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMin;
+            }
+            nSens[index / generalSensNum] = nSens[index / generalSensNum] * 0.1;
+            break;
         case 2://色差AB
         case 3:
             nMin = 0;
             nMax = 100;
             type = floatType;
 
-             if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nMode) {//选亮
-                   nSens[index/generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMax;
-             }
-             else {
-                   nSens[index/generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMin;
-             }
-             nSens[index/generalSensNum] = nSens[index/generalSensNum]*0.01;
-             break;
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nMode)
+            {//选亮
+                nSens[index / generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMax;
+            }
+            else
+            {
+                nSens[index / generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMin;
+            }
+            nSens[index / generalSensNum] = nSens[index / generalSensNum] * 0.01;
+            break;
         case 4://差分
-             nMin = 0;
-             nMax = 100;
-             type = floatType;
+            nMin = 0;
+            nMax = 100;
+            type = floatType;
 
-             nSens[index/generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens*0.1;
-             break;
+            nSens[index / generalSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens * 0.1;
+            break;
         default:
             break;
         }
 
-        myInputPanel inputDlg1(type,nMin,nMax,nSens[index/generalSensNum]);
-        ret  = inputDlg1.exec();
-        if (ret == QDialog::Accepted) {
-            nSens[index/generalSensNum] = inputDlg1.getValue();
+        myInputPanel inputDlg1(type, nMin, nMax, nSens[index / generalSensNum]);
+        ret = inputDlg1.exec();
+        if (ret == QDialog::Accepted)
+        {
+            nSens[index / generalSensNum] = inputDlg1.getValue();
 
-            switch(index/generalSensNum) {
+            switch (index / generalSensNum)
+            {
             case 0:
             case 1://灰度AB
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nMode) {//选亮
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMax= nSens[index/generalSensNum]*10.0+0.5;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nMode)
+                {//选亮
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMax = nSens[index / generalSensNum] * 10.0 + 0.5;
 
-                    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMax*0.1);
+                    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMax * 0.1);
                 }
-                else {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMin = nSens[index/generalSensNum]*10.0+0.5;
-                    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMin*0.1);
+                else
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMin = nSens[index / generalSensNum] * 10.0 + 0.5;
+                    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMin * 0.1);
                 }
                 break;
             case 2://色差AB
             case 3:
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nMode) {//选亮
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMax= nSens[index/generalSensNum]*100.0+0.5;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nMode)
+                {//选亮
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMax = nSens[index / generalSensNum] * 100.0 + 0.5;
 
-                    str.sprintf("%.2f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMax*0.01);
+                    str.sprintf("%.2f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMax * 0.01);
                 }
-                else {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMin = nSens[index/generalSensNum]*100.0+0.5;
-                    str.sprintf("%.2f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nSensMin*0.01);
+                else
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMin = nSens[index / generalSensNum] * 100.0 + 0.5;
+                    str.sprintf("%.2f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nSensMin * 0.01);
                 }
                 break;
             case 4://差分算法
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens= nSens[index/generalSensNum]*10;
-                str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens*0.1);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens = nSens[index / generalSensNum] * 10;
+                str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nSens * 0.1);
                 break;
             default:
                 break;
             }
 
-            generalSensLbe[index/generalSensNum]->setText(str);
+            generalSensLbe[index / generalSensNum]->setText(str);
 
-             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/generalSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/generalSensNum, 0);
+            //参数发送
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
         }
     }
-   //行数设置
-   if (index%generalSensNum == 1)
-   {
+    //行数设置
+    if (index % generalSensNum == 1)
+    {
         double nRow[MAX_GENERAL];
-        nRow[index/generalSensNum] = generalRowLbe[index/generalSensNum]->text().toDouble();
-        myInputPanel inputDlg2(intType,1,struGsh.maxRowNumber,nRow[index/generalSensNum]);
-        ret  = inputDlg2.exec();
+        nRow[index / generalSensNum] = generalRowLbe[index / generalSensNum]->text().toDouble();
+        myInputPanel inputDlg2(intType, 1, struGsh.maxRowNumber, nRow[index / generalSensNum]);
+        ret = inputDlg2.exec();
         if (ret == QDialog::Accepted)
         {
-            nRow[index/generalSensNum] = inputDlg2.getValue();
-            switch(index/generalSensNum) {
+            nRow[index / generalSensNum] = inputDlg2.getValue();
+            switch (index / generalSensNum)
+            {
             case 0:
             case 1://灰度AB
             case 2://色差AB
             case 3:
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nRow    = nRow[index/generalSensNum];
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nColumn = nRow[index/generalSensNum]*struGsh.rowColumnRelation;
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nRow = nRow[index / generalSensNum];
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn = nRow[index / generalSensNum] * struGsh.rowColumnRelation;
 
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nPercent >
-                        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nRow*
-                        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nColumn)
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nPercent >
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nRow *
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn)
                 {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nPercent
-                            = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nRow
-                            *struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nColumn;
-                    str= QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nPercent);
-                    generalPercentLbe[index/generalSensNum]->setText(str);
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nPercent
+                        = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nRow
+                        * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn;
+                    str = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nPercent);
+                    generalPercentLbe[index / generalSensNum]->setText(str);
                 }
                 break;
             case 4://差分算法
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow              = nRow[index/generalSensNum];
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn           = nRow[index/generalSensNum]*struGsh.rowColumnRelation;
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow = nRow[index / generalSensNum];
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn = nRow[index / generalSensNum] * struGsh.rowColumnRelation;
 
                 if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nPercent >
-                        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow*
-                        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn)
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow *
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn)
                 {
                     struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nPercent
-                            = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow
-                            *struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn;
+                        = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow
+                        * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn;
                     str = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nPercent);
-                    generalPercentLbe[index/generalSensNum]->setText(str);
+                    generalPercentLbe[index / generalSensNum]->setText(str);
                 }
                 break;
             }
 
-            QString str = QString("%1").arg(nRow[index/generalSensNum]);
-            generalRowLbe[index/generalSensNum]->setText(str);
+            QString str = QString("%1").arg(nRow[index / generalSensNum]);
+            generalRowLbe[index / generalSensNum]->setText(str);
 
             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/generalSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/generalSensNum, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
         }
-   }
-   //纯度设置
-   if (index%generalSensNum == 2)
-   {
+    }
+    //纯度设置
+    if (index % generalSensNum == 2)
+    {
         double nPercent[MAX_GENERAL];
-        nPercent[index/generalSensNum] = generalPercentLbe[index/generalSensNum]->text().toDouble();
-        myInputPanel inputDlg3(intType,1,struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nRow
-                *struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nColumn,nPercent[index/generalSensNum]);
-        ret  = inputDlg3.exec();
+        nPercent[index / generalSensNum] = generalPercentLbe[index / generalSensNum]->text().toDouble();
+        myInputPanel inputDlg3(intType, 1, struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nRow
+            * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn, nPercent[index / generalSensNum]);
+        ret = inputDlg3.exec();
         if (ret == QDialog::Accepted)
         {
-            nPercent[index/generalSensNum] = inputDlg3.getValue();
+            nPercent[index / generalSensNum] = inputDlg3.getValue();
 
-            switch(index/generalSensNum) {
+            switch (index / generalSensNum)
+            {
             case 0:
             case 1://灰度AB
             case 2://色差AB
             case 3:
-                 struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nPercent = nPercent[index/generalSensNum];
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nPercent = nPercent[index / generalSensNum];
                 break;
             case 4://差分算法
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nPercent               = nPercent[index/generalSensNum];
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nPercent = nPercent[index / generalSensNum];
                 break;
             }
-            QString str = QString("%1").arg(nPercent[index/generalSensNum]);
-            generalPercentLbe[index/generalSensNum]->setText(str);
+            QString str = QString("%1").arg(nPercent[index / generalSensNum]);
+            generalPercentLbe[index / generalSensNum]->setText(str);
 
             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index/generalSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel       , currentChan, 0, index/generalSensNum, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
         }
     }
 
-   //保留焦糊设置，玉米专用
-   if (index%generalSensNum == 3)
-   {
-        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/generalSensNum].nBurntReservedFlag
-                = reservedCheckBox[index/generalSensNum]->isChecked();
-        myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index/generalSensNum, 0);
-        myFlow.materialResetGroupAssemble(struGsh.nLevel       , currentChan, 0, index/generalSensNum, 0);
+    //保留焦糊设置，玉米专用
+    if (index % generalSensNum == 3)
+    {
+        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nBurntReservedFlag
+            = reservedCheckBox[index / generalSensNum]->isChecked();
+        myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
+        myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
     }
-   /* 重置延迟时间 */
-   myFlow.resetEjectTime();
+    /* 重置延迟时间 */
+    myFlow.resetEjectTime();
 }
 
 /**
@@ -1019,51 +1135,56 @@ void setMaterialSens::createShapePage()
 {
     shapeSignalMapper = new QSignalMapper(pageShape);
 
-    for (int i = 0; i < MAX_SHAPE+2;i++) {
-        if (i == MAX_SHAPE) {
+    for (int i = 0; i < MAX_SHAPE + 2;i++)
+    {
+        if (i == MAX_SHAPE)
+        {
             shapeSensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_SCALE_B], pageShape);
         }
-        else if (i == MAX_SHAPE+1)  {
+        else if (i == MAX_SHAPE + 1)
+        {
             shapeSensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_CANDY], pageShape);
-//        } else if(i == MAX_SHAPE+2){
-//            shapeSensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_PISTACHIO], pageShape);
+            //        } else if(i == MAX_SHAPE+2){
+            //            shapeSensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_PISTACHIO], pageShape);
         }
-        else {
-            shapeSensListCbx[i] = new myGroupBox(myString.sArithmeticName[MAX_GENERAL+i], pageShape);
+        else
+        {
+            shapeSensListCbx[i] = new myGroupBox(myString.sArithmeticName[MAX_GENERAL + i], pageShape);
         }
-        shapeSensListCbx[i]->setMaximumHeight(380/(MAX_SHAPE));
+        shapeSensListCbx[i]->setMaximumHeight(380 / (MAX_SHAPE));
 
-        shapeSensLabel[i]   = new myLabel(myLan.sensitivity, pageShape);
-        shapeSensLbe[i]     = new myLineEdit("", pageShape);
+        shapeSensLabel[i] = new myLabel(myLan.sensitivity, pageShape);
+        shapeSensLbe[i] = new myLineEdit("", pageShape);
 
-        shapeRowLabel[i]    = new myLabel(myLan.scale, pageShape);
-        shapeRowLbe[i]      = new myLineEdit("", pageShape);
+        shapeRowLabel[i] = new myLabel(myLan.scale, pageShape);
+        shapeRowLbe[i] = new myLineEdit("", pageShape);
 
-        shapePercentLabel[i]   = new myLabel(myLan.purity, pageShape);
-        shapePercentLbe[i]     = new myLineEdit("", pageShape);
+        shapePercentLabel[i] = new myLabel(myLan.purity, pageShape);
+        shapePercentLbe[i] = new myLineEdit("", pageShape);
 
         /*页面布局*/
-        shapeBoxLayout[i]    = new QHBoxLayout(shapeSensListCbx[i]);
+        shapeBoxLayout[i] = new QHBoxLayout(shapeSensListCbx[i]);
         shapeBoxLayout[i]->addWidget(shapeSensLabel[i]);
         shapeBoxLayout[i]->addWidget(shapeSensLbe[i]);
         shapeBoxLayout[i]->addWidget(shapeRowLabel[i]);
         shapeBoxLayout[i]->addWidget(shapeRowLbe[i]);
         shapeBoxLayout[i]->addWidget(shapePercentLabel[i]);
         shapeBoxLayout[i]->addWidget(shapePercentLbe[i]);
-        shapeBoxLayout[i]->setContentsMargins(2,2,2,2);
+        shapeBoxLayout[i]->setContentsMargins(2, 2, 2, 2);
         shapeBoxLayout[i]->setSpacing(10);
 
         /*消息栈*/
-        shapeSignalMapper->setMapping(shapeSensLbe[i], i*3);
+        shapeSignalMapper->setMapping(shapeSensLbe[i], i * 3);
         connect(shapeSensLbe[i], SIGNAL(pressed()), shapeSignalMapper, SLOT(map()));
-        shapeSignalMapper->setMapping(shapeRowLbe[i], i*3+1);
+        shapeSignalMapper->setMapping(shapeRowLbe[i], i * 3 + 1);
         connect(shapeRowLbe[i], SIGNAL(pressed()), shapeSignalMapper, SLOT(map()));
-        shapeSignalMapper->setMapping(shapePercentLbe[i], i*3+2);
+        shapeSignalMapper->setMapping(shapePercentLbe[i], i * 3 + 2);
         connect(shapePercentLbe[i], SIGNAL(pressed()), shapeSignalMapper, SLOT(map()));
     }
     /*整个页面布局*/
     shapeMainLayout = new QVBoxLayout(pageShape);
-    for (int i = 0; i < MAX_SHAPE+2;i++) {
+    for (int i = 0; i < MAX_SHAPE + 2;i++)
+    {
         shapeMainLayout->addWidget(shapeSensListCbx[i]);
     }
     /*更新形状算法列表*/
@@ -1081,25 +1202,35 @@ void setMaterialSens::updateShapeList()
     QString strShapeSens;
     QString strShapeRow;
     QString strShapePercent;
-    for (int i = 0; i < MAX_SHAPE+2;i++) {
+    for (int i = 0; i < MAX_SHAPE + 2;i++)
+    {
         shapeSensListCbx[i]->hide();
     }
-    for (int i = 0; i < MAX_SHAPE; i++) {
-        if (struCnfp.nArithmeticEnable[MAX_GENERAL+i]) {
-            switch(i){
+    for (int i = 0; i < MAX_SHAPE; i++)
+    {
+        if (struCnfp.nArithmeticEnable[MAX_GENERAL + i])
+        {
+            switch (i)
+            {
             case 0:    //! 形状算法
                 strShapeList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0) {
-                   strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL+i] + " - " + myLan.sort_circular + " )";
-                } else {
-                   strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL+i] + " - " + myLan.sort_long + " )";
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0)
+                {
+                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL + i] + " - " + myLan.sort_circular + " )";
+                }
+                else
+                {
+                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL + i] + " - " + myLan.sort_long + " )";
                 }
                 shapeSensListCbx[i]->setTitle(strShapeList);
 
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0) {
-                    strShapeSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax*0.1);
-                } else {
-                    strShapeSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin*0.1);
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0)
+                {
+                    strShapeSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax * 0.1);
+                }
+                else
+                {
+                    strShapeSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin * 0.1);
                 }
                 shapeSensLbe[i]->setText(strShapeSens);
 
@@ -1117,18 +1248,23 @@ void setMaterialSens::updateShapeList()
                 break;
             case 1:    //! 长度算法
                 strShapeList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.sLengthName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0) {
-                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL+i] + " - " + myLan.sort_short + " )";
-                } else {
-                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL+i] + " - " + myLan.sort_long + " )";
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0)
+                {
+                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL + i] + " - " + myLan.sort_short + " )";
+                }
+                else
+                {
+                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL + i] + " - " + myLan.sort_long + " )";
                 }
                 shapeSensListCbx[i]->setTitle(strShapeList);
 
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0) {
-                    strShapeSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin*0.1);
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0)
+                {
+                    strShapeSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin * 0.1);
                 }
-                else {
-                    strShapeSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax*0.1);
+                else
+                {
+                    strShapeSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax * 0.1);
                 }
                 shapeSensLbe[i]->setText(strShapeSens);
 
@@ -1146,10 +1282,13 @@ void setMaterialSens::updateShapeList()
                 break;
             case 2:     //! 大小算法
                 strShapeList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nMode == 0) {
-                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL+i] + " - " + myLan.sort_small + " )";
-                } else {
-                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL+i] + " - " + myLan.sort_big + " )";
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nMode == 0)
+                {
+                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL + i] + " - " + myLan.sort_small + " )";
+                }
+                else
+                {
+                    strShapeList += " ( " + myString.sArithmeticName[MAX_GENERAL + i] + " - " + myLan.sort_big + " )";
                 }
                 shapeSensListCbx[i]->setTitle(strShapeList);
 
@@ -1168,19 +1307,19 @@ void setMaterialSens::updateShapeList()
                 shapePercentLabel[i]->hide();
                 shapePercentLbe[i]->hide();
                 break;
-             case 3:
-             case 4:     //! 选芽AB
-                strName = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i-(ARITH_BUD_1-ARITH_SHAPE)].sName);
-                strShapeList = QString("%1 (%2)").arg(strName).arg(myString.sArithmeticName[MAX_GENERAL+i]);
+            case 3:
+            case 4:     //! 选芽AB
+                strName = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i - (ARITH_BUD_1 - ARITH_SHAPE)].sName);
+                strShapeList = QString("%1 (%2)").arg(strName).arg(myString.sArithmeticName[MAX_GENERAL + i]);
                 shapeSensListCbx[i]->setTitle(strShapeList);
 
-                strShapeSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i-(ARITH_BUD_1-ARITH_SHAPE)].nArea*1.0);
+                strShapeSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i - (ARITH_BUD_1 - ARITH_SHAPE)].nArea * 1.0);
                 shapeSensLbe[i]->setText(strShapeSens);
 
-                strShapeRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i-(ARITH_BUD_1-ARITH_SHAPE)].nRow);
+                strShapeRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i - (ARITH_BUD_1 - ARITH_SHAPE)].nRow);
                 shapeRowLbe[i]->setText(strShapeRow);
 
-                strShapePercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i-(ARITH_BUD_1-ARITH_SHAPE)].nArea);
+                strShapePercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i - (ARITH_BUD_1 - ARITH_SHAPE)].nArea);
                 shapePercentLbe[i]->setText(strShapePercent);
 
                 /*显示后面按钮*/
@@ -1199,11 +1338,15 @@ void setMaterialSens::updateShapeList()
             shapeSensListCbx[i]->show();
         }
     }
-    if (struCnfp.nArithmeticEnable[ARITH_SCALE_B]) {
+    if (struCnfp.nArithmeticEnable[ARITH_SCALE_B])
+    {
         strShapeList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].sName);
-        if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nMode == 0) {
+        if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nMode == 0)
+        {
             strShapeList += " ( " + myString.sArithmeticName[ARITH_SCALE_B] + " - " + myLan.sort_small + " )";
-        } else {
+        }
+        else
+        {
             strShapeList += " ( " + myString.sArithmeticName[ARITH_SCALE_B] + " - " + myLan.sort_big + " )";
         }
         shapeSensListCbx[5]->setTitle(strShapeList);
@@ -1225,15 +1368,15 @@ void setMaterialSens::updateShapeList()
         shapeSensListCbx[5]->show();
     }
 
-    if(struCnfp.nArithmeticEnable[ARITH_CANDY])
+    if (struCnfp.nArithmeticEnable[ARITH_CANDY])
     {
-        strShapeSens.sprintf("%.1f%%",(255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1)*0.392);
+        strShapeSens.sprintf("%.1f%%", (255 - struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1) * 0.392);
         shapeSensLbe[6]->setText(strShapeSens);
-        shapeSensLabel[6]->setText(myLan.sensitivity+"1");
+        shapeSensLabel[6]->setText(myLan.sensitivity + "1");
 
-        strShapeRow.sprintf("%.1f%%",(255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2)*0.392);
+        strShapeRow.sprintf("%.1f%%", (255 - struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2) * 0.392);
         shapeRowLbe[6]->setText(strShapeRow);
-        shapeRowLabel[6]->setText(myLan.sensitivity+"2");
+        shapeRowLabel[6]->setText(myLan.sensitivity + "2");
 
         strShapePercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nCycles);
         shapePercentLbe[6]->setText(strShapePercent);
@@ -1242,22 +1385,22 @@ void setMaterialSens::updateShapeList()
         shapeSensListCbx[6]->show();
     }
 
-//    if(struCnfp.nArithmeticEnable[ARITH_PISTACHIO])
-//    {
-//        strShapeSens = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin);
-//        shapeSensLbe[7]->setText(strShapeSens);
-//        shapeSensLabel[7]->setText(myLan.area+myLan.min_limit);
+    //    if(struCnfp.nArithmeticEnable[ARITH_PISTACHIO])
+    //    {
+    //        strShapeSens = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin);
+    //        shapeSensLbe[7]->setText(strShapeSens);
+    //        shapeSensLabel[7]->setText(myLan.area+myLan.min_limit);
 
-//        strShapeRow = QString("%2").arg(255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_1);
-//        shapeRowLbe[7]->setText(strShapeRow);
-//        shapeRowLabel[7]->setText(myLan.grey+myLan.threshold+"1");
+    //        strShapeRow = QString("%2").arg(255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_1);
+    //        shapeRowLbe[7]->setText(strShapeRow);
+    //        shapeRowLabel[7]->setText(myLan.grey+myLan.threshold+"1");
 
-//        strShapePercent = QString("%2").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_2);
-//        shapePercentLbe[7]->setText(strShapePercent);
-//        shapePercentLabel[7]->setText(myLan.grey+myLan.threshold+"2");
+    //        strShapePercent = QString("%2").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_2);
+    //        shapePercentLbe[7]->setText(strShapePercent);
+    //        shapePercentLabel[7]->setText(myLan.grey+myLan.threshold+"2");
 
-//        shapeSensListCbx[7]->show();
-//    }
+    //        shapeSensListCbx[7]->show();
+    //    }
 }
 
 
@@ -1268,32 +1411,37 @@ void setMaterialSens::updateShapeList()
  */
 void setMaterialSens::getShapeIndex(int index)
 {
-   int ret;
-   QString str;
-   inputType type;
-   int nMin,nMax;
+    int ret;
+    QString str;
+    inputType type;
+    int nMin, nMax;
 
-   if (index%3 == 0)
+    if (index % 3 == 0)
     {
-       double nSens[MAX_SHAPE+2];
-        switch(index/3){
+        double nSens[MAX_SHAPE + 2];
+        switch (index / 3)
+        {
         case 0://形状算法
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0) {
-                nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax*0.1;
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0)
+            {
+                nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax * 0.1;
             }
-            else {
-                nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin*0.1;
+            else
+            {
+                nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin * 0.1;
             }
             nMin = 0;
             nMax = 100;
             type = floatType;
             break;
         case 1://长度算法
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0) {
-                nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin*0.1;
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0)
+            {
+                nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin * 0.1;
             }
-            else {
-                nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax*0.1;
+            else
+            {
+                nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax * 0.1;
             }
             nMin = 0;
             nMax = 100;
@@ -1301,260 +1449,274 @@ void setMaterialSens::getShapeIndex(int index)
             break;
         case 2:
             nMin = 0;
-            if (struCnfc.nSensorType == SENSOR_T_2566) {
+            if (struCnfc.nSensorType == SENSOR_T_2566)
+            {
                 nMax = 4095;
-            } else {
+            }
+            else
+            {
                 nMax = 65535;
             }
             type = intType;
-            nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nValue;
+            nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nValue;
             break;
         case 3: //选芽
         case 4:
             nMin = 0;
             nMax = 100;
             type = floatType;
-            nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index/3-(ARITH_BUD_1-ARITH_SHAPE)].nArea;
+            nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index / 3 - (ARITH_BUD_1 - ARITH_SHAPE)].nArea;
             break;
         case 5:
             nMin = 0;
-            if (struCnfc.nSensorType == SENSOR_T_2566) {
+            if (struCnfc.nSensorType == SENSOR_T_2566)
+            {
                 nMax = 4095;
-            } else {
+            }
+            else
+            {
                 nMax = 65535;
             }
             type = intType;
-            nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nValue;
+            nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nValue;
             break;
         case 6:   //糖果
             nMin = 0;
             nMax = 100;
             type = floatType;
-            nSens[index/3] = QString().sprintf("%.1f",(255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1)/2.55).toDouble();
+            nSens[index / 3] = QString().sprintf("%.1f", (255 - struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1) / 2.55).toDouble();
             break;
-//        case 7:   //开心果
-//            nMin = 0;
-//            nMax = 255;
-//            type = intType;
-//            nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin;
-//            break;
+            //        case 7:   //开心果
+            //            nMin = 0;
+            //            nMax = 255;
+            //            type = intType;
+            //            nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin;
+            //            break;
         }
 
-        myInputPanel inputDlg1(type,nMin,nMax,nSens[index/3]);
-        ret  = inputDlg1.exec();
+        myInputPanel inputDlg1(type, nMin, nMax, nSens[index / 3]);
+        ret = inputDlg1.exec();
 
         if (ret == QDialog::Accepted)
         {
-            nSens[index/3] = inputDlg1.getValue();
-            switch(index/3){
+            nSens[index / 3] = inputDlg1.getValue();
+            switch (index / 3)
+            {
             case 0://形状算法
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0) {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax = nSens[index/3]*10;
-                    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax*0.1);
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0)
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax = nSens[index / 3] * 10;
+                    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax * 0.1);
                 }
-                else {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin= nSens[index/3]*10;
-                    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin*0.1);
+                else
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin = nSens[index / 3] * 10;
+                    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin * 0.1);
                 }
                 break;
             case 1://长度算法
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0) {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin = nSens[index/3]*10;
-                    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin*0.1);
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0)
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin = nSens[index / 3] * 10;
+                    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin * 0.1);
                 }
-                else {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax= nSens[index/3]*10;
-                    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax*0.1);
+                else
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax = nSens[index / 3] * 10;
+                    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax * 0.1);
                 }
                 break;
             case 2://大小算法
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nValue= nSens[index/3];
-                str = QString("%1").arg(nSens[index/3]);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nValue = nSens[index / 3];
+                str = QString("%1").arg(nSens[index / 3]);
                 break;
             case 3://花生选芽1
             case 4://花生选芽2
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index/3-(ARITH_BUD_1-ARITH_SHAPE)].nArea= nSens[index/3];
-                str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index/3-(ARITH_BUD_1-ARITH_SHAPE)].nArea*1.0);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index / 3 - (ARITH_BUD_1 - ARITH_SHAPE)].nArea = nSens[index / 3];
+                str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index / 3 - (ARITH_BUD_1 - ARITH_SHAPE)].nArea * 1.0);
                 break;
             case 5://大小算法B
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nValue= nSens[index/3];
-                str = QString("%1").arg(nSens[index/3]);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nValue = nSens[index / 3];
+                str = QString("%1").arg(nSens[index / 3]);
                 break;
             case 6://糖果算法
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1 = (100-nSens[index/3])*2.55+0.5;
-                str.sprintf("%.1f%%", (255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1)*0.392);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1 = (100 - nSens[index / 3]) * 2.55 + 0.5;
+                str.sprintf("%.1f%%", (255 - struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1) * 0.392);
                 break;
-//            case 7://开心果算法
-//                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin = nSens[index/3];
-//                str = QString("%1").arg(nSens[index/3]);
-//                break;
+                //            case 7://开心果算法
+                //                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin = nSens[index/3];
+                //                str = QString("%1").arg(nSens[index/3]);
+                //                break;
             }
-            shapeSensLbe[index/3]->setText(str);
+            shapeSensLbe[index / 3]->setText(str);
 
             //参数发送
-            switch(index/3)
+            switch (index / 3)
             {
             case 0:
             case 1:
             case 2:
             case 3:
             case 4:
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, MAX_GENERAL+index/3, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL+index/3, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL + index / 3, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL + index / 3, 0);
                 break;
             case 5:
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_SCALE_B, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_SCALE_B, 0);
                 myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_SCALE_B, 0);
                 break;
             case 6:
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_CANDY, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_CANDY, 0);
                 myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_CANDY, 0);
                 break;
-//            case 7:
-//                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_PISTACHIO, 0);
-//                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
-//                break;
+                //            case 7:
+                //                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_PISTACHIO, 0);
+                //                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
+                //                break;
             }
         }
     }
-   if (index%3 ==1) {
-        double nRow[MAX_SHAPE+2]; // 仅选芽参数A、B使用
-        switch(index/3)
+    if (index % 3 == 1)
+    {
+        double nRow[MAX_SHAPE + 2]; // 仅选芽参数A、B使用
+        switch (index / 3)
         {
         case 3:
         case 4:
             nMin = 1;
             nMax = struGsh.maxRowNumber;
             type = intType;
-            nRow[index/3] = shapeRowLbe[index/3]->text().toDouble();
+            nRow[index / 3] = shapeRowLbe[index / 3]->text().toDouble();
             break;
         case 6:
             nMin = 0;
             nMax = 100;
             type = floatType;
-            nRow[index/3] = QString().sprintf("%.1f",(255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2)/2.55).toDouble();
+            nRow[index / 3] = QString().sprintf("%.1f", (255 - struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2) / 2.55).toDouble();
             break;
-//        case 7:
-//            nMin = 0;
-//            nMax = 255;
-//            type = intType;
-//            nRow[index/3] = 255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_1;
-//            break;
+            //        case 7:
+            //            nMin = 0;
+            //            nMax = 255;
+            //            type = intType;
+            //            nRow[index/3] = 255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_1;
+            //            break;
         }
-        myInputPanel inputDlg2(type,nMin,nMax,nRow[index/3]);
-        ret  = inputDlg2.exec();
+        myInputPanel inputDlg2(type, nMin, nMax, nRow[index / 3]);
+        ret = inputDlg2.exec();
         if (ret == QDialog::Accepted)
         {
-            nRow[index/3] = inputDlg2.getValue();
-            switch(index/3)
+            nRow[index / 3] = inputDlg2.getValue();
+            switch (index / 3)
             {
             case 3:
             case 4:
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index/3-(ARITH_BUD_1-ARITH_SHAPE)].nRow = nRow[index/3];
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index/3-(ARITH_BUD_1-ARITH_SHAPE)].nColumn
-                        = nRow[index/3]*struGsh.rowColumnRelation;
-                str = QString("%1").arg(nRow[index/3]);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index / 3 - (ARITH_BUD_1 - ARITH_SHAPE)].nRow = nRow[index / 3];
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index / 3 - (ARITH_BUD_1 - ARITH_SHAPE)].nColumn
+                    = nRow[index / 3] * struGsh.rowColumnRelation;
+                str = QString("%1").arg(nRow[index / 3]);
                 break;
             case 6:
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2 = (100-nRow[index/3])*2.55+0.5;
-                str.sprintf("%.1f%%", (255-struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2)*0.392);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2 = (100 - nRow[index / 3]) * 2.55 + 0.5;
+                str.sprintf("%.1f%%", (255 - struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation2) * 0.392);
                 break;
-//            case 7:
-//                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_1 = 255-nRow[index/3];
-//                str = QString("%1").arg(nRow[index/3]);
-//                break;
+                //            case 7:
+                //                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_1 = 255-nRow[index/3];
+                //                str = QString("%1").arg(nRow[index/3]);
+                //                break;
             }
 
-            shapeRowLbe[index/3]->setText(str);
+            shapeRowLbe[index / 3]->setText(str);
 
             //参数发送
-            switch(index/3)
+            switch (index / 3)
             {
             case 3:
             case 4:
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, MAX_GENERAL+index/3, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL+index/3, 0);
-                break;
-            case 6:
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_CANDY, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_CANDY, 0);
-                break;
-//            case 7:
-//                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_PISTACHIO, 0);
-//                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
-//                break;
-            }
-        }
-   }
-   if (index%3 == 2) { // 仅选芽参数A、B使用
-        double nArea[MAX_SHAPE+2];
-        switch(index/3)
-        {
-        case 3:
-        case 4:
-            nMin = 1;
-            nMax = struGsh.maxRowNumber*struGsh.maxRowNumber*struGsh.rowColumnRelation;
-            type = intType;
-            nArea[index/3] = shapePercentLbe[index/3]->text().toDouble();
-            break;
-        case 6:
-            nMin = 0;
-            nMax = 32;
-            type = intType;
-            nArea[index/3] = shapePercentLbe[index/3]->text().toDouble();
-            break;
-//        case 7:
-//            nMin = 0;
-//            nMax = 255;
-//            type = intType;
-//            nArea[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_2;
-//            break;
-        }
-        myInputPanel inputDlg3(type,nMin,nMax,nArea[index/3]);
-        ret  = inputDlg3.exec();
-        if (ret == QDialog::Accepted){
-            nArea[index/3] = inputDlg3.getValue();
-            switch(index/3)
-            {
-            case 3:
-            case 4:
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index/3-(ARITH_BUD_1-ARITH_SHAPE)].nArea = nArea[index/3];
-                str = QString("%1").arg(nArea[index/3]);
-                break;
-            case 6:
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nCycles = nArea[index/3];
-                str = QString("%1").arg(nArea[index/3]);
-                break;
-//            case 7:
-//                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_2 = nArea[index/3];
-//                str = QString("%1").arg(nArea[index/3]);
-//                break;
-            }
-
-            shapePercentLbe[index/3]->setText(str);
-
-            //参数发送
-            switch(index/3)
-            {
-            case 3:
-            case 4:
-                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL+index/3, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL+index/3, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL + index / 3, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL + index / 3, 0);
                 break;
             case 6:
                 myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_CANDY, 0);
                 myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_CANDY, 0);
                 break;
-//            case 7:
-//                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
-//                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
-//                break;
+                //            case 7:
+                //                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_PISTACHIO, 0);
+                //                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
+                //                break;
+            }
+        }
+    }
+    if (index % 3 == 2)
+    { // 仅选芽参数A、B使用
+        double nArea[MAX_SHAPE + 2];
+        switch (index / 3)
+        {
+        case 3:
+        case 4:
+            nMin = 1;
+            nMax = struGsh.maxRowNumber * struGsh.maxRowNumber * struGsh.rowColumnRelation;
+            type = intType;
+            nArea[index / 3] = shapePercentLbe[index / 3]->text().toDouble();
+            break;
+        case 6:
+            nMin = 0;
+            nMax = 32;
+            type = intType;
+            nArea[index / 3] = shapePercentLbe[index / 3]->text().toDouble();
+            break;
+            //        case 7:
+            //            nMin = 0;
+            //            nMax = 255;
+            //            type = intType;
+            //            nArea[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_2;
+            //            break;
+        }
+        myInputPanel inputDlg3(type, nMin, nMax, nArea[index / 3]);
+        ret = inputDlg3.exec();
+        if (ret == QDialog::Accepted)
+        {
+            nArea[index / 3] = inputDlg3.getValue();
+            switch (index / 3)
+            {
+            case 3:
+            case 4:
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[index / 3 - (ARITH_BUD_1 - ARITH_SHAPE)].nArea = nArea[index / 3];
+                str = QString("%1").arg(nArea[index / 3]);
+                break;
+            case 6:
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nCycles = nArea[index / 3];
+                str = QString("%1").arg(nArea[index / 3]);
+                break;
+                //            case 7:
+                //                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nGrayThreshold_2 = nArea[index/3];
+                //                str = QString("%1").arg(nArea[index/3]);
+                //                break;
+            }
+
+            shapePercentLbe[index / 3]->setText(str);
+
+            //参数发送
+            switch (index / 3)
+            {
+            case 3:
+            case 4:
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL + index / 3, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, MAX_GENERAL + index / 3, 0);
+                break;
+            case 6:
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_CANDY, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_CANDY, 0);
+                break;
+                //            case 7:
+                //                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
+                //                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
+                //                break;
             }
 
         }
-   }
-   /* 重置延迟时间 */
-   myFlow.resetEjectTime();
+    }
+    /* 重置延迟时间 */
+    myFlow.resetEjectTime();
 }
 
 /**
@@ -1569,48 +1731,50 @@ void setMaterialSens::createPeanutPage()
 
     peanutSignalMapper = new QSignalMapper(pagePeanut);
 
-    for (int i = 0; i < MAX_PEANUT;i++) {
-        peanutSensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_PEANUT_A+i],pagePeanut);
-        peanutSensListCbx[i]->setMaximumHeight(380/MAX_PEANUT);
+    for (int i = 0; i < MAX_PEANUT;i++)
+    {
+        peanutSensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_PEANUT_A + i], pagePeanut);
+        peanutSensListCbx[i]->setMaximumHeight(380 / MAX_PEANUT);
 
-        peanutSensLabel[i]   = new myLabel(myLan.sensitivity, pagePeanut);
+        peanutSensLabel[i] = new myLabel(myLan.sensitivity, pagePeanut);
 
         strPeanutSens = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struPeanutAbcd[i].nSensMin);
-        peanutSensLbe[i]     = new myLineEdit(strPeanutSens, pagePeanut);
+        peanutSensLbe[i] = new myLineEdit(strPeanutSens, pagePeanut);
 
-        peanutRowLabel[i]    = new myLabel(myLan.scale, pagePeanut);
+        peanutRowLabel[i] = new myLabel(myLan.scale, pagePeanut);
 
         strPeanutRow = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struPeanutAbcd[i].nRow);
-        peanutRowLbe[i]      = new myLineEdit(strPeanutRow, pagePeanut);
+        peanutRowLbe[i] = new myLineEdit(strPeanutRow, pagePeanut);
 
-        peanutPercentLabel[i]   = new myLabel(myLan.purity, pagePeanut);
+        peanutPercentLabel[i] = new myLabel(myLan.purity, pagePeanut);
 
         strPeanutPercent = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struPeanutAbcd[i].nPercent);
-        peanutPercentLbe[i]            = new myLineEdit(strPeanutPercent, pagePeanut);
+        peanutPercentLbe[i] = new myLineEdit(strPeanutPercent, pagePeanut);
 
         /*单个布局*/
-        peanutBoxLayout[i]    = new QHBoxLayout(peanutSensListCbx[i]);
+        peanutBoxLayout[i] = new QHBoxLayout(peanutSensListCbx[i]);
         peanutBoxLayout[i]->addWidget(peanutSensLabel[i]);
         peanutBoxLayout[i]->addWidget(peanutSensLbe[i]);
         peanutBoxLayout[i]->addWidget(peanutRowLabel[i]);
         peanutBoxLayout[i]->addWidget(peanutRowLbe[i]);
         peanutBoxLayout[i]->addWidget(peanutPercentLabel[i]);
         peanutBoxLayout[i]->addWidget(peanutPercentLbe[i]);
-        peanutBoxLayout[i]->setContentsMargins(2,2,2,2);
+        peanutBoxLayout[i]->setContentsMargins(2, 2, 2, 2);
         peanutBoxLayout[i]->setSpacing(10);
 
         /*信号栈*/
-        peanutSignalMapper->setMapping(peanutSensLbe[i], i*3);
+        peanutSignalMapper->setMapping(peanutSensLbe[i], i * 3);
         connect(peanutSensLbe[i], SIGNAL(pressed()), peanutSignalMapper, SLOT(map()));
-        peanutSignalMapper->setMapping(peanutRowLbe[i], i*3+1);
+        peanutSignalMapper->setMapping(peanutRowLbe[i], i * 3 + 1);
         connect(peanutRowLbe[i], SIGNAL(pressed()), peanutSignalMapper, SLOT(map()));
-        peanutSignalMapper->setMapping(peanutPercentLbe[i], i*3+2);
+        peanutSignalMapper->setMapping(peanutPercentLbe[i], i * 3 + 2);
         connect(peanutPercentLbe[i], SIGNAL(pressed()), peanutSignalMapper, SLOT(map()));
     }
 
     /*整体页面布局*/
     peanutMainLayout = new QVBoxLayout(pagePeanut);
-    for (int i = 0; i < MAX_PEANUT;i++) {
+    for (int i = 0; i < MAX_PEANUT;i++)
+    {
         peanutMainLayout->addWidget(peanutSensListCbx[i]);
     }
     updatePeanutList();
@@ -1625,49 +1789,59 @@ void setMaterialSens::createPeanutPage()
  */
 void setMaterialSens::updatePeanutList()
 {
-//    QString strName;
+    //    QString strName;
     QString strPeanutList;
     QString strPeanutSens;
     QString strPeanutRow;
     QString strPeanutPercent;
 
-    for (int i = 0; i < MAX_PEANUT;i++) {
+    for (int i = 0; i < MAX_PEANUT;i++)
+    {
         peanutSensListCbx[i]->hide();
     }
-    for (int i = 0; i < MAX_PEANUT;i++) {
-        if (struCnfp.nArithmeticEnable[ARITH_PEANUT_A+i] == 1) {
+    for (int i = 0; i < MAX_PEANUT;i++)
+    {
+        if (struCnfp.nArithmeticEnable[ARITH_PEANUT_A + i] == 1)
+        {
             /*杂质名称*/
             strPeanutList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].sName);
-            if (i == ARITH_PEANUT_B-ARITH_PEANUT_A) {
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nMode) {//选亮
-                    strPeanutList += " ( " + myString.sArithmeticName[ARITH_PEANUT_A+i] + " - " + myLan.light + " )";
-                } else {
-                    strPeanutList += " ( " + myString.sArithmeticName[ARITH_PEANUT_A+i] + " - " + myLan.dark + " )";
+            if (i == ARITH_PEANUT_B - ARITH_PEANUT_A)
+            {
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nMode)
+                {//选亮
+                    strPeanutList += " ( " + myString.sArithmeticName[ARITH_PEANUT_A + i] + " - " + myLan.light + " )";
+                }
+                else
+                {
+                    strPeanutList += " ( " + myString.sArithmeticName[ARITH_PEANUT_A + i] + " - " + myLan.dark + " )";
                 }
             }
-            else {
-                strPeanutList += " ( " + myString.sArithmeticName[ARITH_PEANUT_A+i] + " )";
+            else
+            {
+                strPeanutList += " ( " + myString.sArithmeticName[ARITH_PEANUT_A + i] + " )";
             }
             peanutSensListCbx[i]->setTitle(strPeanutList);
 
             /*灵敏度*/
-             if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nMode) {//选亮
-                 strPeanutSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nSensMax*0.1);
-             }
-             else {
-                 strPeanutSens.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nSensMin*0.1);
-             }
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nMode)
+            {//选亮
+                strPeanutSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nSensMax * 0.1);
+            }
+            else
+            {
+                strPeanutSens.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nSensMin * 0.1);
+            }
 
-             peanutSensLbe[i]->setText(strPeanutSens);
+            peanutSensLbe[i]->setText(strPeanutSens);
 
-             /*行列尺寸及纯度*/
-             strPeanutRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nRow);
-             peanutRowLbe[i]->setText(strPeanutRow);
+            /*行列尺寸及纯度*/
+            strPeanutRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nRow);
+            peanutRowLbe[i]->setText(strPeanutRow);
 
-             strPeanutPercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nPercent);
-             peanutPercentLbe[i]->setText(strPeanutPercent);
+            strPeanutPercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].nPercent);
+            peanutPercentLbe[i]->setText(strPeanutPercent);
 
-             peanutSensListCbx[i]->show();
+            peanutSensListCbx[i]->show();
         }
     }
 }
@@ -1681,106 +1855,110 @@ void setMaterialSens::getPeanutIndex(int index)
 {
     int ret;
     inputType type;
-    int nMin,nMax;
+    int nMin, nMax;
     double nSens[MAX_PEANUT];
     QString str;
 
     //灵敏度设置
-   if (index%3 == 0)
+    if (index % 3 == 0)
     {
         /*灵敏度*/
-         nMin = 0;
-         nMax = 100;
-         type = floatType;
+        nMin = 0;
+        nMax = 100;
+        type = floatType;
 
-         if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nMode) {//选亮
-               nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nSensMax;
-         }
-         else {
-               nSens[index/3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nSensMin;
-         }
-         nSens[index/3] = nSens[index/3]*0.1;
-
-        qDebug("nsens = %f", nSens[index/3]);
-        myInputPanel inputDlg1(type,nMin,nMax,nSens[index/3]);
-
-        ret  = inputDlg1.exec();
-
-        if (ret == QDialog::Accepted)
-        {
-            nSens[index/3] = inputDlg1.getValue();
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nMode) {//选亮
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nSensMax= nSens[index/3]*10.0+0.5;
-
-                str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nSensMax*0.1);
-            }
-            else {
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nSensMin = nSens[index/3]*10.0;
-                str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nSensMin*0.1);
-            }
-
-            peanutSensLbe[index/3]->setText(str);
-
-             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_PEANUT_A+index/3, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A+index/3, 0);
+        if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nMode)
+        {//选亮
+            nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nSensMax;
         }
-    }
-   //行数设置
-   if (index%3 == 1)
-   {
-        double nRow[MAX_PEANUT];
-        nRow[index/3] = peanutRowLbe[index/3]->text().toDouble();
-        myInputPanel inputDlg2(intType,1,struGsh.maxRowNumber,nRow[index/3]);
-        ret  = inputDlg2.exec();
+        else
+        {
+            nSens[index / 3] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nSensMin;
+        }
+        nSens[index / 3] = nSens[index / 3] * 0.1;
+
+        qDebug("nsens = %f", nSens[index / 3]);
+        myInputPanel inputDlg1(type, nMin, nMax, nSens[index / 3]);
+
+        ret = inputDlg1.exec();
+
         if (ret == QDialog::Accepted)
         {
-            nRow[index/3] = inputDlg2.getValue();
+            nSens[index / 3] = inputDlg1.getValue();
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nMode)
+            {//选亮
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nSensMax = nSens[index / 3] * 10.0 + 0.5;
 
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nRow    = nRow[index/3];
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nColumn = nRow[index/3]*struGsh.rowColumnRelation;
-
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nPercent >
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nRow*
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nColumn)
+                str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nSensMax * 0.1);
+            }
+            else
             {
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nPercent
-                        = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nRow
-                        *struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nColumn;
-                str= QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nPercent);
-                peanutPercentLbe[index/3]->setText(str);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nSensMin = nSens[index / 3] * 10.0;
+                str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nSensMin * 0.1);
             }
 
-            peanutRowLbe[index/3]->setText(QString("%1").arg(nRow[index/3]));
+            peanutSensLbe[index / 3]->setText(str);
 
             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_PEANUT_A+index/3, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A+index/3, 0);
-        }
-   }
-   //纯度设置
-   if (index%3 == 2)
-   {
-        double nPercent[MAX_PEANUT];
-        nPercent[index/3] = peanutPercentLbe[index/3]->text().toDouble();
-        myInputPanel inputDlg3(intType,1,struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nRow
-                *struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nColumn,nPercent[index/3]);
-        ret  = inputDlg3.exec();
-        if (ret == QDialog::Accepted)
-        {
-            nPercent[index/3] = inputDlg3.getValue();
-
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index/3].nPercent = nPercent[index/3];
-
-            peanutPercentLbe[index/3]->setText(QString("%1").arg(nPercent[index/3]));
-
-            //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A+index/3, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel       , currentChan, 0, ARITH_PEANUT_A+index/3, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A + index / 3, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A + index / 3, 0);
         }
     }
-   /* 重置延迟时间 */
-   myFlow.resetEjectTime();
+    //行数设置
+    if (index % 3 == 1)
+    {
+        double nRow[MAX_PEANUT];
+        nRow[index / 3] = peanutRowLbe[index / 3]->text().toDouble();
+        myInputPanel inputDlg2(intType, 1, struGsh.maxRowNumber, nRow[index / 3]);
+        ret = inputDlg2.exec();
+        if (ret == QDialog::Accepted)
+        {
+            nRow[index / 3] = inputDlg2.getValue();
+
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nRow = nRow[index / 3];
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nColumn = nRow[index / 3] * struGsh.rowColumnRelation;
+
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nPercent >
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nRow *
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nColumn)
+            {
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nPercent
+                    = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nRow
+                    * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nColumn;
+                str = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nPercent);
+                peanutPercentLbe[index / 3]->setText(str);
+            }
+
+            peanutRowLbe[index / 3]->setText(QString("%1").arg(nRow[index / 3]));
+
+            //参数发送
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A + index / 3, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A + index / 3, 0);
+        }
+    }
+    //纯度设置
+    if (index % 3 == 2)
+    {
+        double nPercent[MAX_PEANUT];
+        nPercent[index / 3] = peanutPercentLbe[index / 3]->text().toDouble();
+        myInputPanel inputDlg3(intType, 1, struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nRow
+            * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nColumn, nPercent[index / 3]);
+        ret = inputDlg3.exec();
+        if (ret == QDialog::Accepted)
+        {
+            nPercent[index / 3] = inputDlg3.getValue();
+
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[index / 3].nPercent = nPercent[index / 3];
+
+            peanutPercentLbe[index / 3]->setText(QString("%1").arg(nPercent[index / 3]));
+
+            //参数发送
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A + index / 3, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_PEANUT_A + index / 3, 0);
+        }
+    }
+    /* 重置延迟时间 */
+    myFlow.resetEjectTime();
 }
 
 /**
@@ -1797,82 +1975,88 @@ void setMaterialSens::createAIPage()
     QString strAIPercent;
     QString strAIBalance;
     QString strAIWaterWhite;
-    QHBoxLayout *AIHBoxLayout1[MAX_AI] = {NULL};//杂粮智能、比例公用的灵敏度
-    QHBoxLayout *AIHBoxLayout[MAX_AI] = {NULL};
-    QHBoxLayout *AIRatioHBoxLayout[MAX_AI] = {NULL};
+    QHBoxLayout* AIHBoxLayout1[MAX_AI] = { NULL };//杂粮智能、比例公用的灵敏度
+    QHBoxLayout* AIHBoxLayout[MAX_AI] = { NULL };
+    QHBoxLayout* AIRatioHBoxLayout[MAX_AI] = { NULL };
 
-    for (int i = 0; i < MAX_AI;i++) {
-        AISensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_INTEL_A+i], pageAI);
+    for (int i = 0; i < MAX_AI;i++)
+    {
+        AISensListCbx[i] = new myGroupBox(myString.sArithmeticName[ARITH_INTEL_A + i], pageAI);
 
         AISensLabel[i] = new myLabel(myLan.sensitivity, pageAI);
 
         strAISens = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struIntel[i].nSens);
-        AISensLbe[i]     = new myLineEdit(strAISens, pageAI);
+        AISensLbe[i] = new myLineEdit(strAISens, pageAI);
 
         AISensRatioLabel[i] = new myLabel(myLan.sensitivity, pageAI);
 
         strAISens = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struIntel[i].nSensRatio);
-        AISensRatioLbe[i]     = new myLineEdit(strAISens, pageAI);
+        AISensRatioLbe[i] = new myLineEdit(strAISens, pageAI);
 
-        AIRowLabel[i]    = new myLabel("   "+myLan.scale, pageAI);
+        AIRowLabel[i] = new myLabel("   " + myLan.scale, pageAI);
         strAIRow = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struIntel[i].nRow);
-        AIRowLbe[i]      = new myLineEdit(strAIRow, pageAI);
+        AIRowLbe[i] = new myLineEdit(strAIRow, pageAI);
 
-        AIPercentLabel[i]   = new myLabel(myLan.purity, pageAI);
+        AIPercentLabel[i] = new myLabel(myLan.purity, pageAI);
         strAIPercent = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struIntel[i].nPercent);
-        AIPercentLbe[i]            = new myLineEdit(strAIPercent, pageAI);
+        AIPercentLbe[i] = new myLineEdit(strAIPercent, pageAI);
         AIBalanceLabel[i] = new myLabel(myLan.balance, pageAI);
 
         strAIBalance = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struIntel[i].nEnable);
-        AIBalanceLbe[i]   = new myLineEdit(strAIBalance, pageAI);
+        AIBalanceLbe[i] = new myLineEdit(strAIBalance, pageAI);
 
-        AIModeBtn[i]  = new myPushButton(myLan.sort, QIcon(), pageAI);
-        AIModeTypeBtn[i]  = new myPushButton(myLan.general, QIcon(), pageAI);
-        AIMelonWhiteLbe[i]   = new myLineEdit(strAIWaterWhite, pageAI);
+        AIModeBtn[i] = new myPushButton(myLan.sort, QIcon(), pageAI);
+        AIModeTypeBtn[i] = new myPushButton(myLan.general, QIcon(), pageAI);
+        AIMelonWhiteLbe[i] = new myLineEdit(strAIWaterWhite, pageAI);
         AIMelonWhiteLabel[i] = new myLabel(myLan.material_watermelon_white_small, pageAI);
         strAIWaterWhite = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nWhitePropMin);
 
         AIModeGeneralTypeBtnLabel[i] = new myLabel(myLan.general);
         AIModeRatioTypeBtnLabel[i] = new myLabel(myLan.proportion);
         AIModeGeneralTypeBtn[i] = new myPushButton("", QIcon());
-        AIModeRatioTypeBtn[i]   = new myPushButton("", QIcon());
+        AIModeRatioTypeBtn[i] = new myPushButton("", QIcon());
         m_AIRsvBtn[i] = new myPushButton(myLan.reserved, QIcon());
         m_AIRsvBtn[i]->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
 
-        if (LCD_WIDTH == 640) {
+        if (LCD_WIDTH == 640)
+        {
             AISensLbe[i]->setMaximumWidth(80);
             AIRowLbe[i]->setMaximumWidth(80);
             AIPercentLbe[i]->setMaximumWidth(80);
             AIBalanceLbe[i]->setMaximumWidth(80);
             AIMelonWhiteLbe[i]->setMaximumWidth(80);
             AIModeTypeBtn[i]->setMinimumWidth(30);
-            AIModeBtn[i]->setFixedSize(QSize(BTN_HEIGHT,BTN_HEIGHT-5));
-            AIModeGeneralTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT,BTN_HEIGHT-3));
-            AIModeRatioTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT,BTN_HEIGHT-3));
+            AIModeBtn[i]->setFixedSize(QSize(BTN_HEIGHT, BTN_HEIGHT - 5));
+            AIModeGeneralTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT, BTN_HEIGHT - 3));
+            AIModeRatioTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT, BTN_HEIGHT - 3));
             AISensRatioLbe[i]->setMaximumWidth(80);
-        } else {
-            AISensLabel[i]->setFixedSize(BTN_WIDTH-29,BTN_HEIGHT-10);
-            AISensLbe[i]->setFixedSize(BTN_WIDTH-22,BTN_HEIGHT-10);
+        }
+        else
+        {
+            AISensLabel[i]->setFixedSize(BTN_WIDTH - 29, BTN_HEIGHT - 10);
+            AISensLbe[i]->setFixedSize(BTN_WIDTH - 22, BTN_HEIGHT - 10);
             AIModeBtn[i]->setMinimumWidth(85);
             AIModeTypeBtn[i]->setMinimumWidth(85);
             AIMelonWhiteLbe[i]->setMinimumWidth(100);
-            AIModeGeneralTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT,BTN_HEIGHT-2));
-            AIModeRatioTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT,BTN_HEIGHT-3));
+            AIModeGeneralTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT, BTN_HEIGHT - 2));
+            AIModeRatioTypeBtn[i]->setFixedSize(QSize(BTN_HEIGHT, BTN_HEIGHT - 3));
         }
 
         //! 页面布局
         AIHBoxLayout1[i] = new QHBoxLayout();
-        if (myFlow.getProductLineNo() == 0) {
-            AIHBoxLayout1[i]->addWidget(AISensLabel[i],0,Qt::AlignLeft);
-            AIHBoxLayout1[i]->addWidget(AISensLbe[i],0,Qt::AlignLeft);
+        if (myFlow.getProductLineNo() == 0)
+        {
+            AIHBoxLayout1[i]->addWidget(AISensLabel[i], 0, Qt::AlignLeft);
+            AIHBoxLayout1[i]->addWidget(AISensLbe[i], 0, Qt::AlignLeft);
             AIHBoxLayout1[i]->addStretch(0);
         }
 
         AIHBoxLayout[i] = new QHBoxLayout();
-        AIHBoxLayout[i]->addWidget(AIModeGeneralTypeBtn[i],0,Qt::AlignLeft);
-        AIHBoxLayout[i]->addWidget(AIModeGeneralTypeBtnLabel[i],0,Qt::AlignLeft);
+        AIHBoxLayout[i]->addWidget(AIModeGeneralTypeBtn[i], 0, Qt::AlignLeft);
+        AIHBoxLayout[i]->addWidget(AIModeGeneralTypeBtnLabel[i], 0, Qt::AlignLeft);
 
-        if (myFlow.getProductLineNo() != 0) {
+        if (myFlow.getProductLineNo() != 0)
+        {
             AIHBoxLayout[i]->addWidget(AISensLabel[i]);
             AIHBoxLayout[i]->addWidget(AISensLbe[i]);
         }
@@ -1884,15 +2068,15 @@ void setMaterialSens::createAIPage()
         AIHBoxLayout[i]->addWidget(AIBalanceLabel[i]);
         AIHBoxLayout[i]->addWidget(AIBalanceLbe[i]);
         AIHBoxLayout[i]->addWidget(AIMelonWhiteLabel[i]);
-        AIHBoxLayout[i]->addWidget(AIMelonWhiteLbe[i],1,Qt::AlignLeft);
-        AIHBoxLayout[i]->addWidget(AIModeBtn[i],0,Qt::AlignRight);
+        AIHBoxLayout[i]->addWidget(AIMelonWhiteLbe[i], 1, Qt::AlignLeft);
+        AIHBoxLayout[i]->addWidget(AIModeBtn[i], 0, Qt::AlignRight);
         AIHBoxLayout[i]->addWidget(AIModeTypeBtn[i]);
-        AIHBoxLayout[i]->setContentsMargins(2,2,2,2);
+        AIHBoxLayout[i]->setContentsMargins(2, 2, 2, 2);
         AIHBoxLayout[i]->setSpacing(10);
 
         AIRatioHBoxLayout[i] = new QHBoxLayout();
-        AIRatioHBoxLayout[i]->addWidget(AIModeRatioTypeBtn[i],0,Qt::AlignLeft);
-        AIRatioHBoxLayout[i]->addWidget(AIModeRatioTypeBtnLabel[i],0,Qt::AlignLeft);
+        AIRatioHBoxLayout[i]->addWidget(AIModeRatioTypeBtn[i], 0, Qt::AlignLeft);
+        AIRatioHBoxLayout[i]->addWidget(AIModeRatioTypeBtnLabel[i], 0, Qt::AlignLeft);
         AIRatioHBoxLayout[i]->addSpacing(10);
         AIRatioHBoxLayout[i]->addWidget(AISensRatioLabel[i]);
         AIRatioHBoxLayout[i]->addWidget(AISensRatioLbe[i]);
@@ -1900,11 +2084,12 @@ void setMaterialSens::createAIPage()
         AIRatioHBoxLayout[i]->addWidget(m_AIRsvBtn[i]);
 
         AIBoxLayout[i] = new QVBoxLayout(AISensListCbx[i]);
-        AIBoxLayout[i]->addLayout(AIHBoxLayout1[i],0);
-        AIBoxLayout[i]->addLayout(AIHBoxLayout[i],0);
+        AIBoxLayout[i]->addLayout(AIHBoxLayout1[i], 0);
+        AIBoxLayout[i]->addLayout(AIHBoxLayout[i], 0);
         AIBoxLayout[i]->addLayout(AIRatioHBoxLayout[i]);
 
-        if (myFlow.getProductLineNo() != 0) {   //非杂粮机型不显示
+        if (myFlow.getProductLineNo() != 0)
+        {   //非杂粮机型不显示
             AIModeRatioTypeBtn[i]->hide();
             AIModeRatioTypeBtnLabel[i]->hide();
             AIModeGeneralTypeBtn[i]->hide();
@@ -1914,26 +2099,26 @@ void setMaterialSens::createAIPage()
         AISensRatioLabel[i]->hide();
 
         /* 消息栈 */
-        AISignalMapper->setMapping(AISensLbe[i], i*aiSensNum);
+        AISignalMapper->setMapping(AISensLbe[i], i * aiSensNum);
         connect(AISensLbe[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AIRowLbe[i], i*aiSensNum+1);
+        AISignalMapper->setMapping(AIRowLbe[i], i * aiSensNum + 1);
         connect(AIRowLbe[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AIPercentLbe[i], i*aiSensNum+2);
+        AISignalMapper->setMapping(AIPercentLbe[i], i * aiSensNum + 2);
         connect(AIPercentLbe[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AIBalanceLbe[i], i*aiSensNum+3);
+        AISignalMapper->setMapping(AIBalanceLbe[i], i * aiSensNum + 3);
         connect(AIBalanceLbe[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AIMelonWhiteLbe[i], i*aiSensNum+4);
+        AISignalMapper->setMapping(AIMelonWhiteLbe[i], i * aiSensNum + 4);
         connect(AIMelonWhiteLbe[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AIModeBtn[i], i*aiSensNum+5);
+        AISignalMapper->setMapping(AIModeBtn[i], i * aiSensNum + 5);
         connect(AIModeBtn[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AIModeTypeBtn[i], i*aiSensNum+6);
+        AISignalMapper->setMapping(AIModeTypeBtn[i], i * aiSensNum + 6);
         connect(AIModeTypeBtn[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
 
-        AISignalMapper->setMapping(AIModeGeneralTypeBtn[i], i*aiSensNum+7);
+        AISignalMapper->setMapping(AIModeGeneralTypeBtn[i], i * aiSensNum + 7);
         connect(AIModeGeneralTypeBtn[i], SIGNAL(clicked()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AIModeRatioTypeBtn[i], i*aiSensNum+8);
+        AISignalMapper->setMapping(AIModeRatioTypeBtn[i], i * aiSensNum + 8);
         connect(AIModeRatioTypeBtn[i], SIGNAL(clicked()), AISignalMapper, SLOT(map()));
-        AISignalMapper->setMapping(AISensRatioLbe[i], i*aiSensNum+9);
+        AISignalMapper->setMapping(AISensRatioLbe[i], i * aiSensNum + 9);
         connect(AISensRatioLbe[i], SIGNAL(pressed()), AISignalMapper, SLOT(map()));
         m_AIRsvSigMap->setMapping(m_AIRsvBtn[i], i);
         connect(m_AIRsvBtn[i], SIGNAL(pressed()), m_AIRsvSigMap, SLOT(map()));
@@ -1943,7 +2128,8 @@ void setMaterialSens::createAIPage()
 
     //! 整个页面布局
     AIMainLayout = new QVBoxLayout(pageAI);
-    for (int i = 0; i < MAX_AI;i++) {
+    for (int i = 0; i < MAX_AI;i++)
+    {
         AIMainLayout->addWidget(AISensListCbx[i]);
     }
     /* 更新智能算法列表 */
@@ -1965,25 +2151,32 @@ void setMaterialSens::updateAIList()
     QString strAIWaterWhite;
     int type = 0;
 
-    for (int i = 0; i < MAX_AI; i++) {
+    for (int i = 0; i < MAX_AI; i++)
+    {
         AISensListCbx[i]->hide();
     }
 
-    for (int i = 0; i < MAX_AI; i++) {
-        if (struCnfp.nArithmeticEnable[ARITH_INTEL_A+i]) {
-            if (myFlow.getProductLineNo() == 0) {
-                AISensListCbx[i]->setMinimumHeight(380/MAX_GENERAL+75);
-                AISensListCbx[i]->setMaximumHeight(380/MAX_GENERAL+120);
-                if (struCnfp.nArithmeticEnable[ARITH_WATERMELON] == 1) {
-                    AISensListCbx[i]->setMaximumHeight(380/MAX_GENERAL+85);
+    for (int i = 0; i < MAX_AI; i++)
+    {
+        if (struCnfp.nArithmeticEnable[ARITH_INTEL_A + i])
+        {
+            if (myFlow.getProductLineNo() == 0)
+            {
+                AISensListCbx[i]->setMinimumHeight(380 / MAX_GENERAL + 75);
+                AISensListCbx[i]->setMaximumHeight(380 / MAX_GENERAL + 120);
+                if (struCnfp.nArithmeticEnable[ARITH_WATERMELON] == 1)
+                {
+                    AISensListCbx[i]->setMaximumHeight(380 / MAX_GENERAL + 85);
                 }
-            } else {
-                AISensListCbx[i]->setMaximumHeight(380/MAX_GENERAL+15);
+            }
+            else
+            {
+                AISensListCbx[i]->setMaximumHeight(380 / MAX_GENERAL + 15);
             }
 
             AISensListCbx[i]->setTitle(QString("%1%2%3%4")
-                                       .arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].sName)
-                                       .arg(" ( ").arg(myString.sArithmeticName[ARITH_INTEL_A+i]).arg(" )"));
+                .arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].sName)
+                .arg(" ( ").arg(myString.sArithmeticName[ARITH_INTEL_A + i]).arg(" )"));
 
             strAIRow = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nRow);
             AIRowLbe[i]->setText(strAIRow);
@@ -1999,29 +2192,33 @@ void setMaterialSens::updateAIList()
             QString str;
             str = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nSens);
             AISensLbe[i]->setText(str);
-            str = QString("%1%").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nSensRatio/10.0);
+            str = QString("%1%").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nSensRatio / 10.0);
             AISensRatioLbe[i]->setText(str);
             type = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nIntelType;
-            if (type == 0) {
+            if (type == 0)
+            {
                 AIModeGeneralTypeBtn[i]->setIcon(myIcon.Action_Apply_Icon);
                 AIModeRatioTypeBtn[i]->setIcon(QIcon());
                 AIRowLabel[i]->setEnabled(true);
-				AIRowLbe[i]->setEnabled(true);
-				AIPercentLabel[i]->setEnabled(true);
-				AIPercentLbe[i]->setEnabled(true);
-				AISensRatioLbe[i]->setEnabled(false);
-				AISensRatioLabel[i]->setEnabled(false);
-            } else if (type == 1){
+                AIRowLbe[i]->setEnabled(true);
+                AIPercentLabel[i]->setEnabled(true);
+                AIPercentLbe[i]->setEnabled(true);
+                AISensRatioLbe[i]->setEnabled(false);
+                AISensRatioLabel[i]->setEnabled(false);
+            }
+            else if (type == 1)
+            {
                 AIModeGeneralTypeBtn[i]->setIcon(QIcon());
                 AIModeRatioTypeBtn[i]->setIcon(myIcon.Action_Apply_Icon);
-				AIRowLabel[i]->setEnabled(false);
-				AIRowLbe[i]->setEnabled(false);
-				AIPercentLabel[i]->setEnabled(false);
-				AIPercentLbe[i]->setEnabled(false);
-				AISensRatioLbe[i]->setEnabled(true);
-				AISensRatioLabel[i]->setEnabled(true);
+                AIRowLabel[i]->setEnabled(false);
+                AIRowLbe[i]->setEnabled(false);
+                AIPercentLabel[i]->setEnabled(false);
+                AIPercentLbe[i]->setEnabled(false);
+                AISensRatioLbe[i]->setEnabled(true);
+                AISensRatioLabel[i]->setEnabled(true);
             }
-            switch(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nModeDfl) {
+            switch (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nModeDfl)
+            {
             case 0:
                 AIModeBtn[i]->setText(myLan.sort);
                 break;
@@ -2036,7 +2233,7 @@ void setMaterialSens::updateAIList()
                 break;
             }
 
-            strAIWaterWhite.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin*0.1);
+            strAIWaterWhite.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin * 0.1);
             AIMelonWhiteLbe[i]->setText(strAIWaterWhite);
 
             AIMelonWhiteLabel[i]->hide();
@@ -2044,7 +2241,8 @@ void setMaterialSens::updateAIList()
             AIBalanceLabel[i]->hide();
             AIBalanceLbe[i]->hide();
 
-            if (myFlow.getProductLineNo() == 0) {
+            if (myFlow.getProductLineNo() == 0)
+            {
                 AIModeRatioTypeBtn[i]->show();
                 AIModeRatioTypeBtnLabel[i]->show();
                 AIModeGeneralTypeBtn[i]->show();
@@ -2057,24 +2255,31 @@ void setMaterialSens::updateAIList()
             AIPercentLabel[i]->show();
             AIPercentLbe[i]->show();
 
-            if ((struCnfp.nIntelMode == 1) && (myFlow.getProductLineNo() == 0)) {
+            if ((struCnfp.nIntelMode == 1) && (myFlow.getProductLineNo() == 0))
+            {
                 AIModeBtn[i]->show();
-            } else {
+            }
+            else
+            {
                 AIModeBtn[i]->hide();
             }
 
-            if (struCnfe.nEnableMaizeDoubleView == 1) {
+            if (struCnfe.nEnableMaizeDoubleView == 1)
+            {
                 m_AIRsvBtn[i]->show();
-            } else {
+            }
+            else
+            {
                 m_AIRsvBtn[i]->hide();
             }
-            if (myFlow.getProductLineNo() == 0) {
+            if (myFlow.getProductLineNo() == 0)
+            {
                 AISensListCbx[0]->setTitle(QString("%1%2%3%4")
-                                           .arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[0].sName)
-                                           .arg(" ( ").arg(myString.sArithmeticName[ARITH_INTEL_A]).arg(" )"));
+                    .arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[0].sName)
+                    .arg(" ( ").arg(myString.sArithmeticName[ARITH_INTEL_A]).arg(" )"));
                 AISensListCbx[1]->setTitle(QString("%1%2%3%4")
-                                           .arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[1].sName)
-                                           .arg(" ( ").arg(myString.sArithmeticName[ARITH_INTEL_B]).arg(" )"));
+                    .arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[1].sName)
+                    .arg(" ( ").arg(myString.sArithmeticName[ARITH_INTEL_B]).arg(" )"));
             }
             AISensListCbx[i]->show();
 
@@ -2093,225 +2298,242 @@ void setMaterialSens::getAIIndex(int index)
     int ret, row, col, per, bal;
 
     //灵敏度设置
-   if (index%aiSensNum == 0) {
-        double nSens[MAX_AI] = {0};
-        myInputPanel inputDlg1(intType,1,200,AISensLbe[index/aiSensNum]->text().toInt());
-        nSens[index/aiSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nSens;
-        inputDlg1.setValue(nSens[index/aiSensNum]);
+    if (index % aiSensNum == 0)
+    {
+        double nSens[MAX_AI] = { 0 };
+        myInputPanel inputDlg1(intType, 1, 200, AISensLbe[index / aiSensNum]->text().toInt());
+        nSens[index / aiSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nSens;
+        inputDlg1.setValue(nSens[index / aiSensNum]);
 
-        ret  = inputDlg1.exec();
+        ret = inputDlg1.exec();
         if (ret == QDialog::Accepted)
         {
-            nSens[index/aiSensNum] = inputDlg1.getValue();
+            nSens[index / aiSensNum] = inputDlg1.getValue();
             QString str;
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nSens = nSens[index/aiSensNum];
-            str = QString("%1").arg(nSens[index/aiSensNum]);
-            AISensLbe[index/aiSensNum]->setText(str);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nSens = nSens[index / aiSensNum];
+            str = QString("%1").arg(nSens[index / aiSensNum]);
+            AISensLbe[index / aiSensNum]->setText(str);
 
             /*参数发送*/
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
         }
     }
-   //行数设置
-   if (index%aiSensNum == 1) {
+    //行数设置
+    if (index % aiSensNum == 1)
+    {
         double nRow[MAX_AI];
-        nRow[index/aiSensNum] = AIRowLbe[index/aiSensNum]->text().toDouble();
-        myInputPanel inputDlg2(intType,1,struGsh.maxRowNumber,nRow[index/aiSensNum]);
-        ret  = inputDlg2.exec();
+        nRow[index / aiSensNum] = AIRowLbe[index / aiSensNum]->text().toDouble();
+        myInputPanel inputDlg2(intType, 1, struGsh.maxRowNumber, nRow[index / aiSensNum]);
+        ret = inputDlg2.exec();
         if (ret == QDialog::Accepted)
         {
-            nRow[index/aiSensNum] = inputDlg2.getValue();
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nRow    = row = nRow[index/aiSensNum];
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nColumn = col = nRow[index/aiSensNum]*struGsh.rowColumnRelation;
-            per = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nPercent;
-            bal = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nEnable;
-            if (per > row * col) {
+            nRow[index / aiSensNum] = inputDlg2.getValue();
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nRow = row = nRow[index / aiSensNum];
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nColumn = col = nRow[index / aiSensNum] * struGsh.rowColumnRelation;
+            per = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nPercent;
+            bal = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nEnable;
+            if (per > row * col)
+            {
                 per = row * col;
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nPercent = per;
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nPercent = per;
             }
 
-            if (bal > row * col) {
+            if (bal > row * col)
+            {
                 bal = row * col;
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nEnable = bal;
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nEnable = bal;
             }
 
-            QString str = QString("%1").arg(nRow[index/aiSensNum]);
-            AIRowLbe[index/aiSensNum]->setText(str);
+            QString str = QString("%1").arg(nRow[index / aiSensNum]);
+            AIRowLbe[index / aiSensNum]->setText(str);
 
             str = QString("%1").arg(per);
-            AIPercentLbe[index/aiSensNum]->setText(str);
+            AIPercentLbe[index / aiSensNum]->setText(str);
 
             str = QString("%1").arg(bal);
-            AIBalanceLbe[index/aiSensNum]->setText(str);
+            AIBalanceLbe[index / aiSensNum]->setText(str);
 
             /*参数发送*/
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
         }
-   }
-   //纯度设置
-   if (index%aiSensNum == 2) {
+    }
+    //纯度设置
+    if (index % aiSensNum == 2)
+    {
         double nPercent[MAX_AI];
-        nPercent[index/aiSensNum] = AIPercentLbe[index/aiSensNum]->text().toDouble();
-        row = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nRow;
-        col = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nColumn;
-        myInputPanel inputDlg3(intType,1,row*col,nPercent[index/aiSensNum]);
-        ret  = inputDlg3.exec();
+        nPercent[index / aiSensNum] = AIPercentLbe[index / aiSensNum]->text().toDouble();
+        row = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nRow;
+        col = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nColumn;
+        myInputPanel inputDlg3(intType, 1, row * col, nPercent[index / aiSensNum]);
+        ret = inputDlg3.exec();
         if (ret == QDialog::Accepted)
         {
-            nPercent[index/aiSensNum] = inputDlg3.getValue();
-            QString str = QString("%1").arg(nPercent[index/aiSensNum]);
-            AIPercentLbe[index/aiSensNum]->setText(str);
+            nPercent[index / aiSensNum] = inputDlg3.getValue();
+            QString str = QString("%1").arg(nPercent[index / aiSensNum]);
+            AIPercentLbe[index / aiSensNum]->setText(str);
 
             /*参数发送*/
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nPercent = nPercent[index/aiSensNum];
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nPercent = nPercent[index / aiSensNum];
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
         }
     }
 
-   // 平衡病斑设置
-   if (index%aiSensNum == 3) {
+    // 平衡病斑设置
+    if (index % aiSensNum == 3)
+    {
         double nBalance[MAX_AI];
-        nBalance[index/aiSensNum] = AIBalanceLbe[index/aiSensNum]->text().toDouble();
-        row = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nRow;
-        col = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nColumn;
+        nBalance[index / aiSensNum] = AIBalanceLbe[index / aiSensNum]->text().toDouble();
+        row = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nRow;
+        col = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nColumn;
 
         {
-            myInputPanel inputDlg4(intType,1,row*col,nBalance[index/aiSensNum]);
-            ret  = inputDlg4.exec();
-            if (ret == QDialog::Accepted) {
-                nBalance[index/aiSensNum] = inputDlg4.getValue();
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nEnable = nBalance[index/aiSensNum];
-                QString str = QString("%1").arg(nBalance[index/aiSensNum]);
-                AIBalanceLbe[index/aiSensNum]->setText(str);
+            myInputPanel inputDlg4(intType, 1, row * col, nBalance[index / aiSensNum]);
+            ret = inputDlg4.exec();
+            if (ret == QDialog::Accepted)
+            {
+                nBalance[index / aiSensNum] = inputDlg4.getValue();
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nEnable = nBalance[index / aiSensNum];
+                QString str = QString("%1").arg(nBalance[index / aiSensNum]);
+                AIBalanceLbe[index / aiSensNum]->setText(str);
 
                 /*参数发送*/
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
             }
         }
     }
 
-   // 白区偏小粒灵敏度设置，仅西瓜子机型使用
-   if (index%aiSensNum == 4) {
+    // 白区偏小粒灵敏度设置，仅西瓜子机型使用
+    if (index % aiSensNum == 4)
+    {
         double nPorp[MAX_AI];
-        nPorp[index/aiSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin*0.1;
+        nPorp[index / aiSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin * 0.1;
 
-        myInputPanel inputDlg5(floatType,0,100,nPorp[index/aiSensNum]);
-        ret  = inputDlg5.exec();
-        if (ret == QDialog::Accepted) {
-            nPorp[index/aiSensNum] = inputDlg5.getValue();
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin = nPorp[index/aiSensNum]*10;
+        myInputPanel inputDlg5(floatType, 0, 100, nPorp[index / aiSensNum]);
+        ret = inputDlg5.exec();
+        if (ret == QDialog::Accepted)
+        {
+            nPorp[index / aiSensNum] = inputDlg5.getValue();
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin = nPorp[index / aiSensNum] * 10;
             QString str;
-            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin*0.1);
-            AIMelonWhiteLbe[index/aiSensNum]->setText(str);
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhitePropMin * 0.1);
+            AIMelonWhiteLbe[index / aiSensNum]->setText(str);
 
             /*参数发送*/
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_WATERMELON, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_WATERMELON, 0);
             myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_WATERMELON, 0);
         }
     }
 
-   // 正反选设置（多分类下）
-   if (index%aiSensNum == 5) {
-        switch(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nModeDfl) {
+    // 正反选设置（多分类下）
+    if (index % aiSensNum == 5)
+    {
+        switch (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nModeDfl)
+        {
         case -1:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nModeDfl = 0;//禁用-->正选
-            AIModeBtn[index/aiSensNum]->setText(myLan.sort);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nModeDfl = 0;//禁用-->正选
+            AIModeBtn[index / aiSensNum]->setText(myLan.sort);
             break;
         case 0:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nModeDfl = 1;//正选-->反选
-            AIModeBtn[index/aiSensNum]->setText(myLan.reverse);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nModeDfl = 1;//正选-->反选
+            AIModeBtn[index / aiSensNum]->setText(myLan.reverse);
             break;
         case 1:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nModeDfl = -1;//反选-->禁用
-            AIModeBtn[index/aiSensNum]->setText(myLan.unused);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nModeDfl = -1;//反选-->禁用
+            AIModeBtn[index / aiSensNum]->setText(myLan.unused);
             break;
         default:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nModeDfl = 0;//正选
-            AIModeBtn[index/aiSensNum]->setText(myLan.sort);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nModeDfl = 0;//正选
+            AIModeBtn[index / aiSensNum]->setText(myLan.sort);
             break;
         }
 
         /*参数发送*/
-        myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-        myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+        myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+        myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
         myFlow.resetArithmeticEnable();
     }
 
-   // 通用、比例智能设置（多分类下）
-   if (index%aiSensNum == 6) {
-        int type = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nIntelType;
-        type = (type==1)?0:1;
-        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nIntelType = type;
-          
+    // 通用、比例智能设置（多分类下）
+    if (index % aiSensNum == 6)
+    {
+        int type = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType;
+        type = (type == 1) ? 0 : 1;
+        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType = type;
+
         QString str;
-        if (type == 0) {
-            str = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nSens);
-            AIModeTypeBtn[index/aiSensNum]->setText(myLan.general);
-            switch(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nModeDfl) {
+        if (type == 0)
+        {
+            str = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nSens);
+            AIModeTypeBtn[index / aiSensNum]->setText(myLan.general);
+            switch (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nModeDfl)
+            {
             case 0:
-                AIModeBtn[index/aiSensNum]->setText(myLan.sort);
+                AIModeBtn[index / aiSensNum]->setText(myLan.sort);
                 break;
             case 1:
-                AIModeBtn[index/aiSensNum]->setText(myLan.reverse);
+                AIModeBtn[index / aiSensNum]->setText(myLan.reverse);
                 break;
             case -1:
-                AIModeBtn[index/aiSensNum]->setText(myLan.unused);
+                AIModeBtn[index / aiSensNum]->setText(myLan.unused);
                 break;
             default:
-                AIModeBtn[index/aiSensNum]->setText(myLan.sort);
+                AIModeBtn[index / aiSensNum]->setText(myLan.sort);
                 break;
             }
-			AIModeBtn[index/aiSensNum]->show();
-            AISensRatioLbe[index/aiSensNum]->setEnabled(false);
-            AISensRatioLabel[index/aiSensNum]->setEnabled(false);
+            AIModeBtn[index / aiSensNum]->show();
+            AISensRatioLbe[index / aiSensNum]->setEnabled(false);
+            AISensRatioLabel[index / aiSensNum]->setEnabled(false);
 
             /*参数发送*/
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
         }
     }
 
-    if (index%aiSensNum == 8) {
-        if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nIntelType != 1) {
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nIntelType = 1;
-            AIModeGeneralTypeBtn[index/aiSensNum]->setIcon(QIcon());
-            AIModeRatioTypeBtn[index/aiSensNum]->setIcon(myIcon.Action_Apply_Icon);
+    if (index % aiSensNum == 8)
+    {
+        if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType != 1)
+        {
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType = 1;
+            AIModeGeneralTypeBtn[index / aiSensNum]->setIcon(QIcon());
+            AIModeRatioTypeBtn[index / aiSensNum]->setIcon(myIcon.Action_Apply_Icon);
 
-            AIRowLabel[index/aiSensNum]->setEnabled(false);
-            AIRowLbe[index/aiSensNum]->setEnabled(false);
-            AIPercentLabel[index/aiSensNum]->setEnabled(false);
-            AIPercentLbe[index/aiSensNum]->setEnabled(false);
-            AISensRatioLbe[index/aiSensNum]->setEnabled(true);
-            AISensRatioLabel[index/aiSensNum]->setEnabled(true);
+            AIRowLabel[index / aiSensNum]->setEnabled(false);
+            AIRowLbe[index / aiSensNum]->setEnabled(false);
+            AIPercentLabel[index / aiSensNum]->setEnabled(false);
+            AIPercentLbe[index / aiSensNum]->setEnabled(false);
+            AISensRatioLbe[index / aiSensNum]->setEnabled(true);
+            AISensRatioLabel[index / aiSensNum]->setEnabled(true);
             /*参数发送*/
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
         }
     }
 
-    if (index%aiSensNum == 9) {
-        double nSens[MAX_AI] = {0};
-        myInputPanel inputDlg1(floatType,0,100,struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nSensRatio/10);
-        ret  = inputDlg1.exec();
+    if (index % aiSensNum == 9)
+    {
+        double nSens[MAX_AI] = { 0 };
+        myInputPanel inputDlg1(floatType, 0, 100, struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nSensRatio / 10);
+        ret = inputDlg1.exec();
         if (ret == QDialog::Accepted)
         {
-            nSens[index/aiSensNum] = inputDlg1.getValue();
+            nSens[index / aiSensNum] = inputDlg1.getValue();
             QString str;
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/aiSensNum].nSensRatio = nSens[index/aiSensNum]*10;
-            str = QString("%1%").arg(nSens[index/aiSensNum]);
-            AISensRatioLbe[index/aiSensNum]->setText(str);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nSensRatio = nSens[index / aiSensNum] * 10;
+            str = QString("%1%").arg(nSens[index / aiSensNum]);
+            AISensRatioLbe[index / aiSensNum]->setText(str);
             /*参数发送*/
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+index/aiSensNum, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
         }
 
     }
 
-   /* 重置延迟时间 */
+    /* 重置延迟时间 */
     myFlow.resetEjectTime();
 }
 
@@ -2332,10 +2554,13 @@ void setMaterialSens::onAIRsvBtnsPressed(int index)
  */
 void setMaterialSens::setWidgetVisible(bool bEn)
 {
-    if (bEn) {
+    if (bEn)
+    {
         tabBar->show();
         listWidget->show();
-    } else {
+    }
+    else
+    {
         tabBar->hide();
         listWidget->hide();
     }
@@ -2350,8 +2575,9 @@ void setMaterialSens::createWatermelonPage()
     watermelonSignalMapper = new QSignalMapper(pageWatermelon);
     watermelonLayout = new QGridLayout(pageWatermelon);
 
-    for (int i = 0; i < MAX_WATERMELON; i++) {
-        watermelonLabel[i]   = new myLabel("");
+    for (int i = 0; i < MAX_WATERMELON; i++)
+    {
+        watermelonLabel[i] = new myLabel("");
         watermelonLabel[i]->setMaximumHeight(BTN_HEIGHT);
         watermelonLineEdit[i] = new myLineEdit("");
         watermelonLineEdit[i]->setMaximumHeight(BTN_HEIGHT);
@@ -2374,7 +2600,7 @@ void setMaterialSens::createWatermelonPage()
     watermelonLineEdit[1]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nEdgeRedSens));
     watermelonLineEdit[2]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nEdgeDamagedRatio));
     watermelonLineEdit[3]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nEdgeDamagedSens));
-    watermelonLineEdit[4]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nRugged1Sens)) ;
+    watermelonLineEdit[4]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nRugged1Sens));
     watermelonLineEdit[5]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nRugged1Save));
     watermelonLineEdit[6]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nWhiteSens));
     watermelonLineEdit[7]->setText(QString("%1").arg(struCnfp.struGroupIdentify[0][0].struMatMelon.nRugged2Sens));
@@ -2395,8 +2621,8 @@ void setMaterialSens::createWatermelonPage()
     watermelonLayout->addWidget(watermelonLineEdit[4], 2, 1, 1, 1, Qt::AlignLeft);
     watermelonLayout->addWidget(watermelonLabel[5], 2, 2, 1, 1, Qt::AlignRight);
     watermelonLayout->addWidget(watermelonLineEdit[5], 2, 3, 1, 1, Qt::AlignLeft);
-//    watermelonLayout->addWidget(watermelonLabel[6], 2, 4, 1, 1, Qt::AlignRight);
-//    watermelonLayout->addWidget(watermelonLineEdit[6], 2, 5, 1, 1, Qt::AlignLeft);
+    //    watermelonLayout->addWidget(watermelonLabel[6], 2, 4, 1, 1, Qt::AlignRight);
+    //    watermelonLayout->addWidget(watermelonLineEdit[6], 2, 5, 1, 1, Qt::AlignLeft);
 
     watermelonLayout->addWidget(watermelonLabel[7], 3, 0, 1, 1, Qt::AlignRight);
     watermelonLayout->addWidget(watermelonLineEdit[7], 3, 1, 1, 1, Qt::AlignLeft);
@@ -2418,23 +2644,23 @@ void setMaterialSens::updateWatermelonList()
 {
     QString str;
 
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio * 0.1);
     watermelonLineEdit[0]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens * 0.1);
     watermelonLineEdit[1]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio * 0.1);
     watermelonLineEdit[2]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens * 0.1);
     watermelonLineEdit[3]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens * 0.1);
     watermelonLineEdit[4]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save * 0.1);
     watermelonLineEdit[5]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens * 0.1);
     watermelonLineEdit[6]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens * 0.1);
     watermelonLineEdit[7]->setText(str);
-    str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save*0.1);
+    str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save * 0.1);
     watermelonLineEdit[8]->setText(str);
 }
 
@@ -2450,33 +2676,34 @@ void setMaterialSens::changeWatermelonValue(int index)
     QString str;
 
 
-    switch (index) {
+    switch (index)
+    {
     case 0:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio * 0.1;
         break;
     case 1:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens * 0.1;
         break;
     case 2:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio * 0.1;
         break;
     case 3:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens * 0.1;
         break;
     case 4:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens * 0.1;
         break;
     case 5:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save * 0.1;
         break;
     case 6:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens * 0.1;
         break;
     case 7:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens * 0.1;
         break;
     case 8:
-        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save*0.1;
+        nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save * 0.1;
         break;
     default:
         break;
@@ -2484,48 +2711,49 @@ void setMaterialSens::changeWatermelonValue(int index)
 
     myInputPanel inputDlg(floatType, 0, 100, nValue);
 
-    ret  = inputDlg.exec();
+    ret = inputDlg.exec();
 
     if (ret == QDialog::Accepted)
     {
         nValue = inputDlg.getValue();
 
-        switch (index) {
+        switch (index)
+        {
         case 0:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedRatio * 0.1);
             break;
         case 1:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeRedSens * 0.1);
             break;
         case 2:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedRatio * 0.1);
             break;
         case 3:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nEdgeDamagedSens * 0.1);
             break;
         case 4:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Sens * 0.1);
             break;
         case 5:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged1Save * 0.1);
             break;
         case 6:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nWhiteSens * 0.1);
             break;
         case 7:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Sens * 0.1);
             break;
         case 8:
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save = nValue*10.0;
-            str.sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save*0.1);
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save = nValue * 10.0;
+            str.sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struMatMelon.nRugged2Save * 0.1);
             break;
         default:
             break;
@@ -2534,11 +2762,11 @@ void setMaterialSens::changeWatermelonValue(int index)
         watermelonLineEdit[index]->setText(str);
     }
 
-    myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_WATERMELON, 0);
+    myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_WATERMELON, 0);
     myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_WATERMELON, 0);
 
     /* 重置延迟时间 */
-   myFlow.resetEjectTime();
+    myFlow.resetEjectTime();
 }
 
 /**
@@ -2549,35 +2777,36 @@ void setMaterialSens::createTeaPage()
 {
     TeaSignalMapper = new QSignalMapper(pageTea);
 
-    for (int i = 0; i < ARITHMETIC_TOTAL; i++) {
+    for (int i = 0; i < ARITHMETIC_TOTAL; i++)
+    {
         TeaSensListCbx[i] = new myGroupBox(myString.sArithmeticName[i], pageTea);
-        TeaSensListCbx[i]->setMaximumHeight(LCD_HEIGHT ==  768 ? 600/MAX_GENERAL : 380/MAX_GENERAL);
+        TeaSensListCbx[i]->setMaximumHeight(LCD_HEIGHT == 768 ? 600 / MAX_GENERAL : 380 / MAX_GENERAL);
 
-        TeaSensLabel[i]   = new myLabel(myLan.sensitivity, pageTea);
-        TeaSensLbe[i]     = new myLineEdit("", pageTea);
+        TeaSensLabel[i] = new myLabel(myLan.sensitivity, pageTea);
+        TeaSensLbe[i] = new myLineEdit("", pageTea);
         TeaSensLbe[i]->setMaximumSize(BTN_WIDTH, BTN_HEIGHT);
 
-        TeaPercentLabel[i]   = new myLabel(myLan.purity, pageTea);
-        TeaPercentLbe[i]     = new myLineEdit("", pageTea);
+        TeaPercentLabel[i] = new myLabel(myLan.purity, pageTea);
+        TeaPercentLbe[i] = new myLineEdit("", pageTea);
         TeaPercentLbe[i]->setMaximumSize(BTN_WIDTH, BTN_HEIGHT);
 
         TeaBalanceLabel[i] = new myLabel(myLan.balance, pageTea);
-        TeaBalanceLbe[i]   = new myLineEdit("", pageTea);
+        TeaBalanceLbe[i] = new myLineEdit("", pageTea);
         TeaBalanceLbe[i]->setMaximumSize(BTN_WIDTH, BTN_HEIGHT);
 
         TeaWidthLabel[i] = new myLabel(myLan.mat_width, pageTea);
-        TeaWidthLbe[i]   = new myLineEdit("", pageTea);
+        TeaWidthLbe[i] = new myLineEdit("", pageTea);
         TeaWidthLbe[i]->setMaximumSize(BTN_WIDTH, BTN_HEIGHT);
 
         TeaAreaLabel[i] = new myLabel(myLan.area, pageTea);
-        TeaAreaLbe[i]   = new myLineEdit("", pageTea);
+        TeaAreaLbe[i] = new myLineEdit("", pageTea);
         TeaAreaLbe[i]->setMaximumSize(BTN_WIDTH, BTN_HEIGHT);
 
         TeaModeBtn[i] = new myPushButton(myLan.sort, QIcon(), pageTea);
         TeaModeBtn[i]->setMaximumSize(BTN_WIDTH, BTN_HEIGHT);
 
         // 页面布局
-        TeaBoxLayout[i]    = new QHBoxLayout(TeaSensListCbx[i]);
+        TeaBoxLayout[i] = new QHBoxLayout(TeaSensListCbx[i]);
 
         TeaBoxLayout[i]->addWidget(TeaSensLabel[i]);
         TeaBoxLayout[i]->addWidget(TeaSensLbe[i]);
@@ -2595,26 +2824,27 @@ void setMaterialSens::createTeaPage()
         TeaBoxLayout[i]->addWidget(TeaAreaLbe[i]);
         TeaBoxLayout[i]->addStretch();
         TeaBoxLayout[i]->addWidget(TeaModeBtn[i]);
-        TeaBoxLayout[i]->setContentsMargins(10,5,10,5);
+        TeaBoxLayout[i]->setContentsMargins(10, 5, 10, 5);
 
         /* 消息栈 */
-        TeaSignalMapper->setMapping(TeaSensLbe[i], i*MAX_TEA);
+        TeaSignalMapper->setMapping(TeaSensLbe[i], i * MAX_TEA);
         connect(TeaSensLbe[i], SIGNAL(pressed()), TeaSignalMapper, SLOT(map()));
-        TeaSignalMapper->setMapping(TeaPercentLbe[i], i*MAX_TEA+1);
+        TeaSignalMapper->setMapping(TeaPercentLbe[i], i * MAX_TEA + 1);
         connect(TeaPercentLbe[i], SIGNAL(pressed()), TeaSignalMapper, SLOT(map()));
-        TeaSignalMapper->setMapping(TeaBalanceLbe[i], i*MAX_TEA+2);
+        TeaSignalMapper->setMapping(TeaBalanceLbe[i], i * MAX_TEA + 2);
         connect(TeaBalanceLbe[i], SIGNAL(pressed()), TeaSignalMapper, SLOT(map()));
-        TeaSignalMapper->setMapping(TeaWidthLbe[i], i*MAX_TEA+3);
+        TeaSignalMapper->setMapping(TeaWidthLbe[i], i * MAX_TEA + 3);
         connect(TeaWidthLbe[i], SIGNAL(pressed()), TeaSignalMapper, SLOT(map()));
-        TeaSignalMapper->setMapping(TeaAreaLbe[i], i*MAX_TEA+4);
+        TeaSignalMapper->setMapping(TeaAreaLbe[i], i * MAX_TEA + 4);
         connect(TeaAreaLbe[i], SIGNAL(pressed()), TeaSignalMapper, SLOT(map()));
-        TeaSignalMapper->setMapping(TeaModeBtn[i], i*MAX_TEA+5);
+        TeaSignalMapper->setMapping(TeaModeBtn[i], i * MAX_TEA + 5);
         connect(TeaModeBtn[i], SIGNAL(pressed()), TeaSignalMapper, SLOT(map()));
     }
 
     // 整个页面布局
     TeaMainLayout = new QVBoxLayout(pageTea);
-    for (int i = 0; i <  ARITHMETIC_TOTAL;i++) {
+    for (int i = 0; i < ARITHMETIC_TOTAL;i++)
+    {
         TeaMainLayout->addWidget(TeaSensListCbx[i]);
     }
 
@@ -2636,7 +2866,8 @@ void setMaterialSens::updateTeaList()
     QString text;
     int color;
 
-    for (int i = 0; i < ARITHMETIC_TOTAL; i++) {
+    for (int i = 0; i < ARITHMETIC_TOTAL; i++)
+    {
         TeaPercentLabel[i]->hide();
         TeaPercentLbe[i]->hide();
         TeaBalanceLabel[i]->hide();
@@ -2649,31 +2880,37 @@ void setMaterialSens::updateTeaList()
         TeaSensListCbx[i]->hide();
     }
 
-    for (int i = 0; i < struCnfe.nArithmeticTotal; i++) {
-        if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i]) {
+    for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
+    {
+        if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i])
+        {
             if (i == ARITH_INTEL_B || i == ARITH_INTEL_C || i == ARITH_INTEL_D)
                 continue;
 
-            switch (i) {
+            switch (i)
+            {
             case ARITH_GREY_A:
             case ARITH_GREY_B:
-		/* title */
-                color = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nColor;
-                title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nMode) { //选亮
+                /* title */
+                color = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nColor;
+                title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].sName);
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nMode)
+                { //选亮
                     title += " ( " + getColorText(color) + " - " + myLan.light + " )";
-                    text = QString().sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nSensMax*0.1);
-                } else {
-                    title += " ( " + getColorText(color) + " - "  + myLan.dark + " )";
-                    text = QString().sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nSensMin*0.1);
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nSensMax * 0.1);
+                }
+                else
+                {
+                    title += " ( " + getColorText(color) + " - " + myLan.dark + " )";
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nSensMin * 0.1);
                 }
 
-		/* sensitivity */
+                /* sensitivity */
                 TeaSensLbe[i]->setText(text);
 
-		/* percent */
-                text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nPercent);
-            //    text = QString("%1").arg(struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum);
+                /* percent */
+                text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nPercent);
+                //    text = QString("%1").arg(struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum);
                 TeaPercentLbe[i]->setText(text);
 
                 TeaPercentLabel[i]->show();
@@ -2681,9 +2918,10 @@ void setMaterialSens::updateTeaList()
                 break;
             case ARITH_DISCOLOR_A:
             case ARITH_DISCOLOR_B:
-		/* title */
-                color =	struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nDiscolor;
-                switch (color) {
+                /* title */
+                color = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nDiscolor;
+                switch (color)
+                {
                 case 0:
                     name = myLan.red_green;
                     break;
@@ -2697,65 +2935,73 @@ void setMaterialSens::updateTeaList()
                     name = "";
                     break;
                 }
-                title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nMode) { //选亮
+                title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].sName);
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nMode)
+                { //选亮
                     title += " ( " + name + " - " + myLan.light + " )";
-                    text = QString().sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nSensMax*0.1);
-                } else {
-                    title += " ( " + name + " - " + myLan.dark + " )";
-                    text = QString().sprintf("%.1f%%",struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nSensMin*0.1);
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nSensMax * 0.1);
                 }
-		/* sensitivity */
+                else
+                {
+                    title += " ( " + name + " - " + myLan.dark + " )";
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nSensMin * 0.1);
+                }
+                /* sensitivity */
                 TeaSensLbe[i]->setText(text);
 
-		/* percent */
-                text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i-ARITH_GREY_A].nPercent);
+                /* percent */
+                text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[i - ARITH_GREY_A].nPercent);
                 TeaPercentLbe[i]->setText(text);
 
                 TeaPercentLabel[i]->show();
                 TeaPercentLbe[i]->show();
                 break;
             case ARITH_INTEL_A:
-		/* title */
+                /* title */
                 title = QString("%1").arg(struCnfp.nIntelMode == 1 ? myLan.ai_multi_mode : myLan.ai_class_mode_usual);
 
-		/* sensitivity */
-                text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i-ARITH_INTEL_A].nSens);
+                /* sensitivity */
+                text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i - ARITH_INTEL_A].nSens);
                 TeaSensLbe[i]->setText(text);
 
-		/* percent */
-                if (struCnfp.struGroupTick[struGsh.nLevel][currentChan].nEnableBalance){
+                /* percent */
+                if (struCnfp.struGroupTick[struGsh.nLevel][currentChan].nEnableBalance)
+                {
                     text = QString("%1").arg(struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum);
                 }
-                else{
-                    text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i-ARITH_INTEL_A].nPercent);
+                else
+                {
+                    text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i - ARITH_INTEL_A].nPercent);
                 }
                 TeaPercentLbe[i]->setText(text);
 
-		/* balance */
+                /* balance */
                 text = QString("%1").arg(struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum);
                 TeaBalanceLbe[i]->setText(text);
 
-		/* width */
+                /* width */
                 text = QString("%1").arg(struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth);
                 TeaWidthLbe[i]->setText(text);
 
-		/* area */
+                /* area */
                 text = QString("%1").arg(struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea);
                 TeaAreaLbe[i]->setText(text);
 
-		/* mode */
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i-ARITH_INTEL_A].nModeDfl) {
+                /* mode */
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i - ARITH_INTEL_A].nModeDfl)
+                {
                     TeaModeBtn[i]->setText(myLan.reverse);
                 }
-                else {
+                else
+                {
                     TeaModeBtn[i]->setText(myLan.sort);
                 }
 
-		/* show & hide */
+                /* show & hide */
                 TeaPercentLabel[i]->show();
                 TeaPercentLbe[i]->show();
-                if (struCnfp.struGroupTick[struGsh.nLevel][currentChan].nEnableBalance) {
+                if (struCnfp.struGroupTick[struGsh.nLevel][currentChan].nEnableBalance)
+                {
                     TeaBalanceLabel[i]->show();
                     TeaBalanceLbe[i]->show();
                     TeaWidthLabel[i]->show();
@@ -2763,63 +3009,75 @@ void setMaterialSens::updateTeaList()
                 }
                 break;
             case ARITH_SCALE:
-		/* title */
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nMode == 0) { // 选小
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nMode == 0)
+                { // 选小
                     title = title + " ( " + myLan.sort_small + " )";
-                } else {
+                }
+                else
+                {
                     title = title + " ( " + myLan.sort_big + " )";
                 }
 
-		/* sensitivity */
+                /* sensitivity */
                 text = QString().sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[0].nValue);
                 TeaSensLbe[i]->setText(text);
                 break;
             case ARITH_SCALE_B:
-        /* title */
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nMode == 0) { // 选小
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nMode == 0)
+                { // 选小
                     title = title + " ( " + myLan.sort_small + " )";
-                } else {
+                }
+                else
+                {
                     title = title + " ( " + myLan.sort_big + " )";
                 }
 
-        /* sensitivity */
+                /* sensitivity */
                 text = QString().sprintf("%d", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nValue);
                 TeaSensLbe[i]->setText(text);
                 break;
             case ARITH_SHAPE:
-		/* title */
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.sName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0) { // 选圆
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0)
+                { // 选圆
                     title = title + " ( " + myLan.sort_circular + " )";
-                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax*0.1);
-                } else {
-                    title = title + " ( " + myLan.sort_long + " )";
-                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin*0.1);
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax * 0.1);
                 }
-		/* sensitivity */
+                else
+                {
+                    title = title + " ( " + myLan.sort_long + " )";
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin * 0.1);
+                }
+                /* sensitivity */
                 TeaSensLbe[i]->setText(text);
                 break;
             case ARITH_SHAPE_LENGTH:
-		/* title */
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.sLengthName);
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0) { // 选短
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0)
+                { // 选短
                     title = title + " ( " + myLan.sort_short + " )";
-                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin*0.1);
-                } else {
-                    title = title + " ( " + myLan.sort_long + " )";
-                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax*0.1);
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin * 0.1);
                 }
-		/* sensitivity */
+                else
+                {
+                    title = title + " ( " + myLan.sort_long + " )";
+                    text = QString().sprintf("%.1f%%", struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax * 0.1);
+                }
+                /* sensitivity */
                 TeaSensLbe[i]->setText(text);
                 break;
             case ARITH_SHAPE_POLE_A:
-		/* title */
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.sName);
                 title = title + " ( " + myLan.material_shape_pole_a + " )";
 
-		/* area */
+                /* area */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nArea);
                 TeaSensLbe[i]->setText(text);
 
@@ -2827,9 +3085,9 @@ void setMaterialSens::updateTeaList()
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nPercent);
                 TeaPercentLbe[i]->setText(text);
 
-		/* width min */
+                /* width min */
 
-                /* width max */
+                        /* width max */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nWidthMax);
                 TeaBalanceLbe[i]->setText(text);
 
@@ -2838,45 +3096,45 @@ void setMaterialSens::updateTeaList()
                 TeaBalanceLabel[i]->show();
                 TeaBalanceLbe[i]->show();
                 break;
-	    case ARITH_SHAPE_POLE_B:
-		/* title */
+            case ARITH_SHAPE_POLE_B:
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.sPoleName);
                 title = title + " ( " + myLan.material_shape_pole_b + " )";
 
-        /* sensitivity */
+                /* sensitivity */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nPolePercent);
                 TeaSensLbe[i]->setText(text);
 
-        /* width max */
+                /* width max */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nPoleWidthMax);
                 TeaPercentLbe[i]->setText(text);
 
                 TeaPercentLabel[i]->show();
                 TeaPercentLbe[i]->show();
-		break;
-	    case ARITH_SHAPE_SLICE:
-		/* title */
+                break;
+            case ARITH_SHAPE_SLICE:
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struSlice.sName);
                 title = title + " ( " + myLan.material_shape_slice + " )";
 
-		/* area */
+                /* area */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struSlice.nArea);
                 TeaSensLbe[i]->setText(text);
-		break;
-	    case ARITH_SHAPE_LEAF:
-		/* title */
+                break;
+            case ARITH_SHAPE_LEAF:
+                /* title */
                 title = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struLeaf.sName);
                 title = title + " ( " + myLan.material_shape_leaf + " )";
 
-		/* width threshold */
+                /* width threshold */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struLeaf.nThreshold);
                 TeaSensLbe[i]->setText(text);
 
-		/* width max */
+                /* width max */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struLeaf.nWidthMax);
                 TeaPercentLbe[i]->setText(text);
 
-		/* percent */
+                /* percent */
                 text = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struLeaf.nPercent);
                 TeaBalanceLbe[i]->setText(text);
 
@@ -2884,28 +3142,32 @@ void setMaterialSens::updateTeaList()
                 TeaPercentLbe[i]->show();
                 TeaBalanceLabel[i]->show();
                 TeaBalanceLbe[i]->show();
-		break;
+                break;
             }
 
-	    TeaSensLabel[i]->setText(myLan.sensitivity);
-	    TeaPercentLabel[i]->setText(myLan.purity);
-	    TeaBalanceLabel[i]->setText(myLan.balance);
-	    TeaWidthLabel[i]->setText(myLan.mat_width);
-            if (i == ARITH_SHAPE_POLE_A) {
+            TeaSensLabel[i]->setText(myLan.sensitivity);
+            TeaPercentLabel[i]->setText(myLan.purity);
+            TeaBalanceLabel[i]->setText(myLan.balance);
+            TeaWidthLabel[i]->setText(myLan.mat_width);
+            if (i == ARITH_SHAPE_POLE_A)
+            {
                 TeaSensLabel[i]->setText(myLan.area);
                 TeaBalanceLabel[i]->setText(myLan.max_limit);
-	    }
-	    if (i == ARITH_SHAPE_POLE_B) {
+            }
+            if (i == ARITH_SHAPE_POLE_B)
+            {
                 TeaPercentLabel[i]->setText(myLan.max_limit);
-	    }
-	    if (i == ARITH_SHAPE_SLICE) {
+            }
+            if (i == ARITH_SHAPE_SLICE)
+            {
                 TeaSensLabel[i]->setText(myLan.area);
-	    }
-	    if (i == ARITH_SHAPE_LEAF) {
+            }
+            if (i == ARITH_SHAPE_LEAF)
+            {
                 TeaSensLabel[i]->setText(myLan.threshold);
                 TeaPercentLabel[i]->setText(myLan.max_limit);
                 TeaBalanceLabel[i]->setText(myLan.purity);
-	    }
+            }
 
             TeaSensListCbx[i]->setTitle(title);
             TeaSensListCbx[i]->show();
@@ -2925,9 +3187,11 @@ void setMaterialSens::getTeaIndex(int index)
     QString text;
 
     // 参数一（灵敏度）
-    if (index%MAX_TEA == 0) {
+    if (index % MAX_TEA == 0)
+    {
         /* 灵敏度 */
-        switch(index/MAX_TEA) {
+        switch (index / MAX_TEA)
+        {
         case ARITH_GREY_A: // 灰度AB
         case ARITH_GREY_B:
         case ARITH_DISCOLOR_A: // 色差AB
@@ -2936,37 +3200,46 @@ void setMaterialSens::getTeaIndex(int index)
             nMax = 100;
             nType = floatType;
 
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nMode) { //选亮
-                nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nSensMax * 0.1;
-            } else {
-                nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nSensMin * 0.1;
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nMode)
+            { //选亮
+                nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nSensMax * 0.1;
+            }
+            else
+            {
+                nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nSensMin * 0.1;
             }
             break;
         case ARITH_INTEL_A: // 智能
             nMin = 1;
             nMax = 200;
             nType = intType;
-            nValue = TeaSensLbe[index/MAX_TEA]->text().toDouble();
+            nValue = TeaSensLbe[index / MAX_TEA]->text().toDouble();
             break;
         case ARITH_SCALE: // 形状-选大小
         case ARITH_SCALE_B: // 形状-选大小
             nMin = 0;
-            if (struCnfc.nSensorType == SENSOR_T_2566) {
+            if (struCnfc.nSensorType == SENSOR_T_2566)
+            {
                 nMax = 4095;
-            } else {
+            }
+            else
+            {
                 nMax = 65535;
             }
             nType = intType;
-            nValue = TeaSensLbe[index/MAX_TEA]->text().toDouble();
+            nValue = TeaSensLbe[index / MAX_TEA]->text().toDouble();
             break;
         case ARITH_SHAPE: // 形状-选圆长
             nMin = 0;
             nMax = 100;
             nType = floatType;
 
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0) { // 选圆
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0)
+            { // 选圆
                 nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax * 0.1;
-            } else {
+            }
+            else
+            {
                 nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin * 0.1;
             }
             break;
@@ -2975,9 +3248,12 @@ void setMaterialSens::getTeaIndex(int index)
             nMax = 100;
             nType = floatType;
 
-            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0) { // 选短
+            if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0)
+            { // 选短
                 nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin * 0.1;
-            } else {
+            }
+            else
+            {
                 nValue = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax * 0.1;
             }
             break;
@@ -2986,42 +3262,47 @@ void setMaterialSens::getTeaIndex(int index)
             nMin = 0;
             nMax = 255;
             nType = intType;
-            nValue = TeaSensLbe[index/MAX_TEA]->text().toDouble();
+            nValue = TeaSensLbe[index / MAX_TEA]->text().toDouble();
             break;
         case ARITH_SHAPE_SLICE: // 形状-选片
             nMin = 0;
             nMax = 1023;
             nType = intType;
-            nValue = TeaSensLbe[index/MAX_TEA]->text().toDouble();
+            nValue = TeaSensLbe[index / MAX_TEA]->text().toDouble();
             break;
         case ARITH_SHAPE_LEAF: // 反选选芽
             nMin = 0;
             nMax = 255;
             nType = intType;
-            nValue = TeaSensLbe[index/MAX_TEA]->text().toDouble();
+            nValue = TeaSensLbe[index / MAX_TEA]->text().toDouble();
             break;
         default:
             break;
         }
 
         myInputPanel inputDlg1(nType, nMin, nMax, nValue);
-        if (inputDlg1.exec() == QDialog::Accepted) {
+        if (inputDlg1.exec() == QDialog::Accepted)
+        {
             nValue = inputDlg1.getValue();
 
-            switch (index/MAX_TEA) {
+            switch (index / MAX_TEA)
+            {
             case ARITH_GREY_A: // 灰度AB
             case ARITH_GREY_B:
             case ARITH_DISCOLOR_A: // 色差AB
             case ARITH_DISCOLOR_B:
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nMode) {//选亮
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nSensMax = nValue*10.0+0.5;
-                } else {
-                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nSensMin = nValue*10.0+0.5;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nMode)
+                {//选亮
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nSensMax = nValue * 10.0 + 0.5;
+                }
+                else
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nSensMin = nValue * 10.0 + 0.5;
                 }
                 text = QString().sprintf("%.1f%%", nValue);
                 break;
             case ARITH_INTEL_A: // 智能
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/MAX_TEA-ARITH_INTEL_A].nSens = nValue;
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / MAX_TEA - ARITH_INTEL_A].nSens = nValue;
                 text = QString("%1").arg(nValue);
                 break;
             case ARITH_SCALE: // 大小
@@ -3033,18 +3314,24 @@ void setMaterialSens::getTeaIndex(int index)
                 text = QString("%1").arg(nValue);
                 break;
             case ARITH_SHAPE: // 形状
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0) {
-                   struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax = nValue*10;
-                } else {
-                   struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin = nValue*10;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nMode == 0)
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMax = nValue * 10;
+                }
+                else
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nAreaMin = nValue * 10;
                 }
                 text = QString().sprintf("%.1f%%", nValue);
                 break;
             case ARITH_SHAPE_LENGTH: // 长短
-                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0) {
-                   struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin = nValue*10;
-                } else {
-                   struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax = nValue*10;
+                if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMode == 0)
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMin = nValue * 10;
+                }
+                else
+                {
+                    struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struShape.nLengthMax = nValue * 10;
                 }
                 text = QString().sprintf("%.1f%%", nValue);
                 break;
@@ -3068,24 +3355,26 @@ void setMaterialSens::getTeaIndex(int index)
                 break;
             }
 
-            TeaSensLbe[index/MAX_TEA]->setText(text);
+            TeaSensLbe[index / MAX_TEA]->setText(text);
 
             /* 参数发送 */
-            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
-       }
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+        }
     }
 
     // 参数二（纯度）
-    if (index%MAX_TEA == 1) {
-        switch (index/MAX_TEA) {
+    if (index % MAX_TEA == 1)
+    {
+        switch (index / MAX_TEA)
+        {
         case ARITH_GREY_A:
         case ARITH_GREY_B:
         case ARITH_DISCOLOR_A:
         case ARITH_DISCOLOR_B:
             nMin = 1;
-            nMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nRow*
-                   struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nColumn;
+            nMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nRow *
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nColumn;
             nType = intType;
             break;
         case ARITH_SHAPE_POLE_A:
@@ -3099,15 +3388,15 @@ void setMaterialSens::getTeaIndex(int index)
             nMax = 31;
             nType = intType;
             break;
-//        case ARITH_INTEL_A:
-//            nMin = 0;
-//            nMax = 255;
-//            nType = intType;
-//            break;
+            //        case ARITH_INTEL_A:
+            //            nMin = 0;
+            //            nMax = 255;
+            //            nType = intType;
+            //            break;
         case ARITH_INTEL_A:
             nMin = 1;
-            nMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/MAX_TEA-ARITH_INTEL_A].nRow*
-                   struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/MAX_TEA-ARITH_INTEL_A].nColumn;
+            nMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / MAX_TEA - ARITH_INTEL_A].nRow *
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / MAX_TEA - ARITH_INTEL_A].nColumn;
             nType = intType;
             break;
         default:
@@ -3116,63 +3405,71 @@ void setMaterialSens::getTeaIndex(int index)
             nType = intType;
             break;
         }
-        nValue = TeaPercentLbe[index/MAX_TEA]->text().toDouble();
+        nValue = TeaPercentLbe[index / MAX_TEA]->text().toDouble();
         myInputPanel inputDlg2(nType, nMin, nMax, nValue);
-        if (inputDlg2.exec() == QDialog::Accepted) {
+        if (inputDlg2.exec() == QDialog::Accepted)
+        {
             nValue = inputDlg2.getValue();
-            TeaPercentLbe[index/MAX_TEA]->setText(QString("%1").arg(nValue));
+            TeaPercentLbe[index / MAX_TEA]->setText(QString("%1").arg(nValue));
 
             /* 纯度 */
-            switch(index/MAX_TEA) {
+            switch (index / MAX_TEA)
+            {
             case ARITH_GREY_A: // 灰度AB
             case ARITH_GREY_B:
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nPercent = nValue;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nPercent = nValue;
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
                 break;
             case ARITH_DISCOLOR_A: // 色差AB
             case ARITH_DISCOLOR_B:
-                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index/MAX_TEA-ARITH_GREY_A].nPercent = nValue;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
+                struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / MAX_TEA - ARITH_GREY_A].nPercent = nValue;
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
                 break;
             case ARITH_INTEL_A: // 智能
-                if (struCnfp.struGroupTick[struGsh.nLevel][currentChan].nEnableBalance){
+                if (struCnfp.struGroupTick[struGsh.nLevel][currentChan].nEnableBalance)
+                {
                     struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum = nValue;
                     int nUnitAddr;
-                    for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++) {
-                         nUnitAddr = myFlow.getTickGroupAddr(struGsh.nLevel, currentChan, i);
+                    for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++)
+                    {
+                        nUnitAddr = myFlow.getTickGroupAddr(struGsh.nLevel, currentChan, i);
 
-                         MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0, 
-                                             struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
-                                             struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
-                                             struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
-                                             struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
-                     }
-                } else {
-                    for (int i = 0; i < MAX_AI; i++) {
-                        if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][ARITH_INTEL_A+i]) {
+                        MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0,
+                            struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
+                            struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
+                            struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
+                            struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < MAX_AI; i++)
+                    {
+                        if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][ARITH_INTEL_A + i])
+                        {
                             struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nPercent = nValue;
-                            myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+i, 0);
-                            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+i, 0);
+                            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + i, 0);
+                            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + i, 0);
                         }
                     }
                 }
                 break;
             case ARITH_SHAPE_POLE_A: // 选杆模式 - 细杆
                 struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nPercent = nValue;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
                 break;
             case ARITH_SHAPE_POLE_B: // 选杆模式 - 粗杆
                 struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nPoleWidthMax = nValue;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
                 break;
             case ARITH_SHAPE_LEAF: // 反选选芽
                 struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struLeaf.nWidthMax = nValue;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
                 break;
             default:
                 break;
@@ -3181,8 +3478,10 @@ void setMaterialSens::getTeaIndex(int index)
     }
 
     // 参数三（平衡病斑）
-    if (index%MAX_TEA == 2) {
-        switch (index/MAX_TEA) {
+    if (index % MAX_TEA == 2)
+    {
+        switch (index / MAX_TEA)
+        {
         case ARITH_SHAPE_POLE_A:
             nMin = 0;
             nMax = 31;
@@ -3201,36 +3500,39 @@ void setMaterialSens::getTeaIndex(int index)
         default:
             break;
         }
-        nValue = TeaBalanceLbe[index/MAX_TEA]->text().toDouble();
+        nValue = TeaBalanceLbe[index / MAX_TEA]->text().toDouble();
         myInputPanel inputDlg3(nType, nMin, nMax, nValue);
-        if (inputDlg3.exec() == QDialog::Accepted) {
+        if (inputDlg3.exec() == QDialog::Accepted)
+        {
             nValue = inputDlg3.getValue();
-            TeaBalanceLbe[index/MAX_TEA]->setText(QString("%1").arg(nValue));
+            TeaBalanceLbe[index / MAX_TEA]->setText(QString("%1").arg(nValue));
 
             /* 参数发送 */
-            switch (index/MAX_TEA) {
+            switch (index / MAX_TEA)
+            {
             case ARITH_INTEL_A:
                 struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum = nValue;
                 int nUnitAddr;
-                for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++) {
-                   nUnitAddr = myFlow.getTickGroupAddr(struGsh.nLevel, currentChan, i);
+                for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++)
+                {
+                    nUnitAddr = myFlow.getTickGroupAddr(struGsh.nLevel, currentChan, i);
 
-                   MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0,
-                               struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
-                               struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
-                               struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
-                               struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
+                    MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0,
+                        struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
+                        struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
+                        struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
+                        struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
                 }
                 break;
             case ARITH_SHAPE_POLE_A:
                 struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPole.nWidthMax = nValue;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
                 break;
             case ARITH_SHAPE_LEAF:
                 struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struLeaf.nPercent = nValue;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, index/MAX_TEA, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index/MAX_TEA, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / MAX_TEA, 0);
                 break;
             default:
                 break;
@@ -3239,65 +3541,74 @@ void setMaterialSens::getTeaIndex(int index)
     }
 
     // 参数四（物料宽度）
-    if (index%MAX_TEA == 3) {
-        nValue = TeaWidthLbe[index/MAX_TEA]->text().toDouble();
+    if (index % MAX_TEA == 3)
+    {
+        nValue = TeaWidthLbe[index / MAX_TEA]->text().toDouble();
         myInputPanel inputDlg4(intType, 0, 255, nValue);
-        if (inputDlg4.exec() == QDialog::Accepted) {
+        if (inputDlg4.exec() == QDialog::Accepted)
+        {
             nValue = inputDlg4.getValue();
             struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth = nValue;
-            TeaWidthLbe[index/MAX_TEA]->setText(QString("%1").arg(nValue));
+            TeaWidthLbe[index / MAX_TEA]->setText(QString("%1").arg(nValue));
 
             /* 参数发送 */
             int nUnitAddr;
-            for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++) {
+            for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++)
+            {
                 nUnitAddr = myFlow.getTickGroupAddr(struGsh.nLevel, currentChan, i);
 
-                MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0, 
-				    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
-                                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
-                                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
-                                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
+                MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
             }
         }
     }
 
     // 参数五（物料尺寸）
-    if (index%MAX_TEA == 4) {
-        nValue = TeaAreaLbe[index/MAX_TEA]->text().toDouble();
+    if (index % MAX_TEA == 4)
+    {
+        nValue = TeaAreaLbe[index / MAX_TEA]->text().toDouble();
         myInputPanel inputDlg5(intType, 0, 255, nValue);
-        if (inputDlg5.exec() == QDialog::Accepted) {
+        if (inputDlg5.exec() == QDialog::Accepted)
+        {
             nValue = inputDlg5.getValue();
             struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea = nValue;
-            TeaAreaLbe[index/MAX_TEA]->setText(QString("%1").arg(nValue));
+            TeaAreaLbe[index / MAX_TEA]->setText(QString("%1").arg(nValue));
 
             /* 参数发送 */
             int nUnitAddr;
-            for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++) {
+            for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].struTickGroupInfo[currentChan].nUnitCount; i++)
+            {
                 nUnitAddr = myFlow.getTickGroupAddr(struGsh.nLevel, currentChan, i);
 
-                MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0, 
-				    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
-                                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
-                                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
-                                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
+                MySerial.com1Write(CMD_UNIT_BAD_NUM, UNIT, struGsh.nLevel, nUnitAddr, 0,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatArea,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nMatWidth,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nGoodNum,
+                    struCnfp.struGroupTick[struGsh.nLevel][currentChan].nBadNum, 3);
             }
         }
     }
 
     // 参数六（正反选设置, 区分多分类及传统智能）
-    if (index%MAX_TEA == 5) {
-        int nModeDfl = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index/MAX_TEA-ARITH_INTEL_A].nModeDfl == 1 ? 0 : 1;
+    if (index % MAX_TEA == 5)
+    {
+        int nModeDfl = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / MAX_TEA - ARITH_INTEL_A].nModeDfl == 1 ? 0 : 1;
         if (nModeDfl)
-            TeaModeBtn[index/MAX_TEA]->setText(myLan.reverse);
+            TeaModeBtn[index / MAX_TEA]->setText(myLan.reverse);
         else
-            TeaModeBtn[index/MAX_TEA]->setText(myLan.sort);
+            TeaModeBtn[index / MAX_TEA]->setText(myLan.sort);
 
         /* 参数下发 */
-        for (int i = 0; i < MAX_AI; i++) {
-            if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i+ARITH_INTEL_A]) {
+        for (int i = 0; i < MAX_AI; i++)
+        {
+            if (struCnfp.nArithmeticEnableLevel[struGsh.nLevel][i + ARITH_INTEL_A])
+            {
                 struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nModeDfl = nModeDfl;
-                myFlow.materialCopyAssemble(struGsh.nLevel      , currentChan, 0, ARITH_INTEL_A+i, 0);
-                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A+i, 0);
+                myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + i, 0);
+                myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + i, 0);
             }
         }
 
@@ -3315,40 +3626,42 @@ void setMaterialSens::createRsvPage()
 {
     rsvSignalMapper = new QSignalMapper(m_pageGeneralRsv);
 
-    for (int i = 0; i < MAX_RSV;i++) {
-        rsvSensListCbx[i] = new myGroupBox(QString("%1 (%2)").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.sName).arg(myString.sArithmeticName[ARITH_RESERVED+i]), m_pageGeneralRsv);
-        rsvSensListCbx[i]->setMaximumHeight(380/MAX_SHAPE);
+    for (int i = 0; i < MAX_RSV;i++)
+    {
+        rsvSensListCbx[i] = new myGroupBox(QString("%1 (%2)").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.sName).arg(myString.sArithmeticName[ARITH_RESERVED + i]), m_pageGeneralRsv);
+        rsvSensListCbx[i]->setMaximumHeight(380 / MAX_SHAPE);
 
-        rsvThresholdLabel_s[i]  = new myLabel(myLan.threshold+" 1", m_pageGeneralRsv);
-        rsvThresholdLbe_s[i]    = new myLineEdit("", m_pageGeneralRsv);
-        rsvThresholdLabe_r[i]   = new myLabel(myLan.threshold+" 2", m_pageGeneralRsv);
-        rsvThresholdLbe_r[i]    = new myLineEdit("", m_pageGeneralRsv);
+        rsvThresholdLabel_s[i] = new myLabel(myLan.threshold + " 1", m_pageGeneralRsv);
+        rsvThresholdLbe_s[i] = new myLineEdit("", m_pageGeneralRsv);
+        rsvThresholdLabe_r[i] = new myLabel(myLan.threshold + " 2", m_pageGeneralRsv);
+        rsvThresholdLbe_r[i] = new myLineEdit("", m_pageGeneralRsv);
 
-        rsvRowLabel[i]          = new myLabel(myLan.scale, m_pageGeneralRsv);
-        rsvRowLbe[i]            = new myLineEdit("", m_pageGeneralRsv);
+        rsvRowLabel[i] = new myLabel(myLan.scale, m_pageGeneralRsv);
+        rsvRowLbe[i] = new myLineEdit("", m_pageGeneralRsv);
 
         /*页面布局*/
-        rsvBoxLayout[i]    = new QHBoxLayout(rsvSensListCbx[i]);
+        rsvBoxLayout[i] = new QHBoxLayout(rsvSensListCbx[i]);
         rsvBoxLayout[i]->addWidget(rsvThresholdLabel_s[i]);
         rsvBoxLayout[i]->addWidget(rsvThresholdLbe_s[i]);
         rsvBoxLayout[i]->addWidget(rsvThresholdLabe_r[i]);
         rsvBoxLayout[i]->addWidget(rsvThresholdLbe_r[i]);
         rsvBoxLayout[i]->addWidget(rsvRowLabel[i]);
         rsvBoxLayout[i]->addWidget(rsvRowLbe[i]);
-        rsvBoxLayout[i]->setContentsMargins(2,2,2,2);
+        rsvBoxLayout[i]->setContentsMargins(2, 2, 2, 2);
         rsvBoxLayout[i]->setSpacing(10);
 
         /*消息栈*/
-        rsvSignalMapper->setMapping(rsvThresholdLbe_s[i], i*3);
+        rsvSignalMapper->setMapping(rsvThresholdLbe_s[i], i * 3);
         connect(rsvThresholdLbe_s[i], SIGNAL(pressed()), rsvSignalMapper, SLOT(map()));
-        rsvSignalMapper->setMapping(rsvThresholdLbe_r[i], i*3+1);
+        rsvSignalMapper->setMapping(rsvThresholdLbe_r[i], i * 3 + 1);
         connect(rsvThresholdLbe_r[i], SIGNAL(pressed()), rsvSignalMapper, SLOT(map()));
-        rsvSignalMapper->setMapping(rsvRowLbe[i], i*3+2);
+        rsvSignalMapper->setMapping(rsvRowLbe[i], i * 3 + 2);
         connect(rsvRowLbe[i], SIGNAL(pressed()), rsvSignalMapper, SLOT(map()));
     }
     /*整个页面布局*/
     rsvMainLayout = new QVBoxLayout(m_pageGeneralRsv);
-    for (int i = 0; i < MAX_RSV;i++) {
+    for (int i = 0; i < MAX_RSV;i++)
+    {
         rsvMainLayout->addWidget(rsvSensListCbx[i]);
     }
     /*更新形状算法列表*/
@@ -3367,19 +3680,22 @@ void setMaterialSens::updateRsvList()
     QString strThresholdLabel_r;
     QString strRsvRow;
 
-    for (int i = 0; i < MAX_RSV;i++) {
+    for (int i = 0; i < MAX_RSV;i++)
+    {
         rsvSensListCbx[i]->hide();
     }
 
-    for (int i = 0; i < MAX_RSV;i++) {
-        if (struCnfp.nArithmeticEnable[ARITH_RESERVED+i]) {
-            strRsvList = QString("%1 (%2)").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.sName).arg(myString.sArithmeticName[ARITH_RESERVED+i]);
+    for (int i = 0; i < MAX_RSV;i++)
+    {
+        if (struCnfp.nArithmeticEnable[ARITH_RESERVED + i])
+        {
+            strRsvList = QString("%1 (%2)").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.sName).arg(myString.sArithmeticName[ARITH_RESERVED + i]);
             rsvSensListCbx[i]->setTitle(strRsvList);
             rsvThresholdLbe_s[i]->setText(strThresholdLabel_s.setNum(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nThreshold_s));
             rsvThresholdLbe_r[i]->setText(strThresholdLabel_r.setNum(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nThreshold_r));
             rsvRowLbe[i]->setText(strRsvRow.setNum(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nRow));
-         }
-         rsvSensListCbx[i]->show();
+        }
+        rsvSensListCbx[i]->show();
     }
 }
 
@@ -3390,52 +3706,60 @@ void setMaterialSens::updateRsvList()
 void setMaterialSens::getRsvIndex(int index)
 {
     int ret;
-    if (index%3 == 0) {
+    if (index % 3 == 0)
+    {
         double arg1[MAX_RSV];
-        arg1[index/3] = rsvThresholdLbe_s[index/3]->text().toDouble();
-        myInputPanel inputDlg2(intType,0,255,arg1[index/3]);
+        arg1[index / 3] = rsvThresholdLbe_s[index / 3]->text().toDouble();
+        myInputPanel inputDlg2(intType, 0, 255, arg1[index / 3]);
 
-        ret  = inputDlg2.exec();
-        if (ret == QDialog::Accepted) {
-            arg1[index/3] = inputDlg2.getValue();
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nThreshold_s = arg1[index/3];
-            rsvThresholdLbe_s[index/3]->setText(QString("%1").arg(arg1[index/3]));
+        ret = inputDlg2.exec();
+        if (ret == QDialog::Accepted)
+        {
+            arg1[index / 3] = inputDlg2.getValue();
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nThreshold_s = arg1[index / 3];
+            rsvThresholdLbe_s[index / 3]->setText(QString("%1").arg(arg1[index / 3]));
 
             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED+index/3, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel       , currentChan, 0, ARITH_RESERVED+index/3, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED + index / 3, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED + index / 3, 0);
         }
-     } else if (index%3 ==1) {
+    }
+    else if (index % 3 == 1)
+    {
         double arg2[MAX_RSV];
-        arg2[index/3] = rsvThresholdLbe_r[index/3]->text().toDouble();
-        myInputPanel inputDlg2(intType,0,255,arg2[index/3]);
+        arg2[index / 3] = rsvThresholdLbe_r[index / 3]->text().toDouble();
+        myInputPanel inputDlg2(intType, 0, 255, arg2[index / 3]);
 
-        ret  = inputDlg2.exec();
-        if (ret == QDialog::Accepted) {
-            arg2[index/3] = inputDlg2.getValue();
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nThreshold_r = arg2[index/3];
-            rsvThresholdLbe_r[index/3]->setText(QString("%1").arg(arg2[index/3]));
+        ret = inputDlg2.exec();
+        if (ret == QDialog::Accepted)
+        {
+            arg2[index / 3] = inputDlg2.getValue();
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nThreshold_r = arg2[index / 3];
+            rsvThresholdLbe_r[index / 3]->setText(QString("%1").arg(arg2[index / 3]));
 
             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED+index/3, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel       , currentChan, 0, ARITH_RESERVED+index/3, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED + index / 3, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED + index / 3, 0);
         }
-     } else if (index%3 == 2) {
+    }
+    else if (index % 3 == 2)
+    {
         double arg3[MAX_RSV];
-        arg3[index/3] = rsvRowLbe[index/3]->text().toDouble();
-        myInputPanel inputDlg2(intType,1,16,arg3[index/3]);
+        arg3[index / 3] = rsvRowLbe[index / 3]->text().toDouble();
+        myInputPanel inputDlg2(intType, 1, 16, arg3[index / 3]);
 
-        ret  = inputDlg2.exec();
-        if (ret == QDialog::Accepted) {
-            arg3[index/3] = inputDlg2.getValue();
-            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nRow = arg3[index/3];
-            rsvRowLbe[index/3]->setText(QString("%1").arg(arg3[index/3]));
+        ret = inputDlg2.exec();
+        if (ret == QDialog::Accepted)
+        {
+            arg3[index / 3] = inputDlg2.getValue();
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.nRow = arg3[index / 3];
+            rsvRowLbe[index / 3]->setText(QString("%1").arg(arg3[index / 3]));
 
             //参数发送
-            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED+index/3, 0);
-            myFlow.materialResetGroupAssemble(struGsh.nLevel       , currentChan, 0, ARITH_RESERVED+index/3, 0);
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED + index / 3, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_RESERVED + index / 3, 0);
         }
-     }
+    }
 
     /* 重置延迟时间 */
     myFlow.resetEjectTime();
@@ -3451,17 +3775,18 @@ void setMaterialSens::createPageRSC()
     m_pageRSC = new QWidget;
     m_scrollArea->setWidget(m_pageRSC);
 
-    QVBoxLayout *mainLay = new QVBoxLayout(m_pageRSC);
+    QVBoxLayout* mainLay = new QVBoxLayout(m_pageRSC);
 
     //! 若RSC机型算法列表变化则需更新
     mainLay->addWidget(generalSensListCbx[ARITH_GREY_A]);
     mainLay->addWidget(generalSensListCbx[ARITH_GREY_B]);
     mainLay->addWidget(generalSensListCbx[ARITH_DISCOLOR_A]);
-    for (int i = 0; i < MAX_SHAPE+1; i++) {
+    for (int i = 0; i < MAX_SHAPE + 1; i++)
+    {
         mainLay->addWidget(shapeSensListCbx[i]);
     }
-    mainLay->addWidget(AISensListCbx[ARITH_INTEL_A-ARITH_INTEL_A]);
-    mainLay->addWidget(AISensListCbx[ARITH_INTEL_B-ARITH_INTEL_A]);
+    mainLay->addWidget(AISensListCbx[ARITH_INTEL_A - ARITH_INTEL_A]);
+    mainLay->addWidget(AISensListCbx[ARITH_INTEL_B - ARITH_INTEL_A]);
 }
 
 /*!
@@ -3470,13 +3795,16 @@ void setMaterialSens::createPageRSC()
 void setMaterialSens::updatePageRSC()
 {
     int nArithNum = 0;
-    for (int i = 0; i < struCnfe.nArithmeticTotal; i++) {
-        switch (i) {
+    for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
+    {
+        switch (i)
+        {
         case ARITH_GREY_A:
         case ARITH_GREY_B:
         case ARITH_DISCOLOR_A:
-            if (struCnfp.nArithmeticEnable[i]) {
-                generalHBoxLayout[i]->setContentsMargins(350,0,300,2);
+            if (struCnfp.nArithmeticEnable[i])
+            {
+                generalHBoxLayout[i]->setContentsMargins(350, 0, 300, 2);
                 generalRowLabel[i]->hide();
                 generalRowLbe[i]->hide();
                 generalPercentLabel[i]->hide();
@@ -3484,7 +3812,9 @@ void setMaterialSens::updatePageRSC()
 
                 generalSensListCbx[i]->show();
                 nArithNum++;
-            } else {
+            }
+            else
+            {
                 generalSensListCbx[i]->hide();
             }
             break;
@@ -3494,37 +3824,46 @@ void setMaterialSens::updatePageRSC()
         case ARITH_SCALE:
         case ARITH_BUD_1:
         case ARITH_BUD_2:
-            if (struCnfp.nArithmeticEnable[i]) {
-                shapeBoxLayout[i-ARITH_SHAPE]->setContentsMargins(350,0,300,2);
-                shapeSensListCbx[i-ARITH_SHAPE]->show();
+            if (struCnfp.nArithmeticEnable[i])
+            {
+                shapeBoxLayout[i - ARITH_SHAPE]->setContentsMargins(350, 0, 300, 2);
+                shapeSensListCbx[i - ARITH_SHAPE]->show();
                 nArithNum++;
-            } else {
-                shapeSensListCbx[i-ARITH_SHAPE]->hide();
+            }
+            else
+            {
+                shapeSensListCbx[i - ARITH_SHAPE]->hide();
             }
             break;
 
         case ARITH_INTEL_A:
         case ARITH_INTEL_B:
-            if (struCnfp.nArithmeticEnable[i]) {
-                AIBoxLayout[i-ARITH_INTEL_A]->setContentsMargins(350,0,300,2);
-                AIRowLabel[i-ARITH_INTEL_A]->hide();
-                AIRowLbe[i-ARITH_INTEL_A]->hide();
-                AIPercentLabel[i-ARITH_INTEL_A]->hide();
-                AIPercentLbe[i-ARITH_INTEL_A]->hide();
-                m_AIRsvBtn[i-ARITH_INTEL_A]->hide();
-                AISensListCbx[i-ARITH_INTEL_A]->show();
+            if (struCnfp.nArithmeticEnable[i])
+            {
+                AIBoxLayout[i - ARITH_INTEL_A]->setContentsMargins(350, 0, 300, 2);
+                AIRowLabel[i - ARITH_INTEL_A]->hide();
+                AIRowLbe[i - ARITH_INTEL_A]->hide();
+                AIPercentLabel[i - ARITH_INTEL_A]->hide();
+                AIPercentLbe[i - ARITH_INTEL_A]->hide();
+                m_AIRsvBtn[i - ARITH_INTEL_A]->hide();
+                AISensListCbx[i - ARITH_INTEL_A]->show();
                 nArithNum++;
-            } else {
-                AISensListCbx[i-ARITH_INTEL_A]->hide();
+            }
+            else
+            {
+                AISensListCbx[i - ARITH_INTEL_A]->hide();
             }
             break;
 
         case ARITH_SCALE_B:
-            if (struCnfp.nArithmeticEnable[ARITH_SCALE_B]) {
-                shapeBoxLayout[5]->setContentsMargins(350,0,300,2);
+            if (struCnfp.nArithmeticEnable[ARITH_SCALE_B])
+            {
+                shapeBoxLayout[5]->setContentsMargins(350, 0, 300, 2);
                 shapeSensListCbx[5]->show();
                 nArithNum++;
-            } else {
+            }
+            else
+            {
                 shapeSensListCbx[5]->hide();
             }
             break;
@@ -3534,27 +3873,33 @@ void setMaterialSens::updatePageRSC()
         }
     }
 
-    switch (struCnfg.nProfileMode[struCnfg.nProfile]) {
+    switch (struCnfg.nProfileMode[struCnfg.nProfile])
+    {
     case RSC_DIFF_POSITIVE_SORT: //异色粒正选(前视隐藏智能A、后视隐藏灰度B)
-        if(currentChan%2 == 1) {
+        if (currentChan % 2 == 1)
+        {
             generalSensListCbx[ARITH_GREY_B]->hide();
-        } else {
-            AISensListCbx[ARITH_INTEL_A-ARITH_INTEL_A]->hide();
+        }
+        else
+        {
+            AISensListCbx[ARITH_INTEL_A - ARITH_INTEL_A]->hide();
         }
         break;
     case RSC_WHITE_NEGATIVE_SORT:
-       if(currentChan %2 == 0) {
-           generalSensListCbx[ARITH_GREY_A]->hide();
-       }
-       break;
+        if (currentChan % 2 == 0)
+        {
+            generalSensListCbx[ARITH_GREY_A]->hide();
+        }
+        break;
     case RSC_YELLOW_WHITE_SORT:  //黄白同选(前视隐藏智能A)
-        if(currentChan %2 == 0) {
-            AISensListCbx[ARITH_INTEL_A-ARITH_INTEL_A]->hide();
+        if (currentChan % 2 == 0)
+        {
+            AISensListCbx[ARITH_INTEL_A - ARITH_INTEL_A]->hide();
         }
         break;
     }
 
-    int nHei = 120*nArithNum;
+    int nHei = 120 * nArithNum;
     nHei = (nHei > 480) ? nHei : 480;
     m_pageRSC->setFixedWidth(LCD_WIDTH - 50);
     m_pageRSC->setFixedHeight(nHei);

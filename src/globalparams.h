@@ -189,6 +189,15 @@ enum
 
 
 #define MAX_BACKGROUND_GROUP    4       // 最大支持背景设置组数(单层)
+
+#define TITLE_COLUMN_NUM 1              // 标题栏列数
+#define ROW_SHOW_CAM_NUM 2              // 一行显示的相机数量
+#define ROW_SHOW_AIDEV_NUM 2            // 一行显示的Ai板卡数量 
+#define AIDEV_BEGIN_COL_NO 3            // AI起始列号
+#define SUM_SHOW_ROW_NUM   (MAX_UNIT / 2 + TITLE_COLUMN_NUM)    // 总显示行数
+#define SUM_SHOW_COLUMN_NUM (MAX_BACKGROUND_GROUP + ROW_SHOW_CAM_NUM + ROW_SHOW_AIDEV_NUM)  // 总显示列数
+
+
 /*!
  *\brief 背景组索引号
  */
@@ -318,7 +327,7 @@ enum
     ARITH_SCALE_B,          //27 茶叶选芽算法
     ARITH_RESERVED,         //28 保留算法，独立与其他算法
     ARITH_CANDY,            //29 糖果算法
-    ARITH_PISTACHIO         //29 开心果算法
+    ARITH_PISTACHIO         //29 开心果算法, 现调整为AI算法
 };
 
 /*!

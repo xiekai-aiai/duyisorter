@@ -27,14 +27,14 @@
 #include "mydelaycode.h"
 #include "rgb/setencryt.h"
 
-/*!
- * \brief 通信自检界面类
- */
+ /*!
+  * \brief 通信自检界面类
+  */
 class communication : public QWidget
 {
     Q_OBJECT
 public:
-    explicit communication(QWidget *parent = 0);
+    explicit communication(QWidget* parent = 0);
 
 signals:
     void updateCommunicationSig();
@@ -45,8 +45,8 @@ public slots:
     void startComSlt(void);
 
 private:
-    myLabel         *waitCommLabel;
-    QVBoxLayout     *commVBLayout;
+    myLabel* waitCommLabel;
+    QVBoxLayout* commVBLayout;
 };
 
 /*!
@@ -56,13 +56,11 @@ class communicationList : public QWidget
 {
     Q_OBJECT
 public:
-    explicit communicationList(QWidget *parent = 0);
+    explicit communicationList(QWidget* parent = 0);
 
     void commuUpdateInterface();
     void commuUpdateCtrl();
     void commuUpdateCamera();
-    void commuUpdateCameraMultiView();
-    void commuUpdateCameraRS();
     void commuUpdateLightSrc(void);     // 更新恒流源板版本信息
     void hideColumn(int index);         // 隐藏某一列
     void showColumn(int index);         // 显示某一列
@@ -77,44 +75,45 @@ public slots:
     void onNextBtnClickedSlt();
 
 private:
-    g_Config *config;
+    g_Config* config;
     // 通信列表
-    myLabel         *waitCommLabel;
-    myPushButton    *rechekBtn;
-    myPushButton    *nextBtn;
+    myLabel* waitCommLabel;
+    myPushButton* rechekBtn;
+    myPushButton* nextBtn;
 
-    myGroupBox *interfaceBoardListGroup;
-    QGridLayout *interfaceListLayout;
+    myGroupBox* interfaceBoardListGroup;
+    QGridLayout* interfaceListLayout;
 
-    myGroupBox *newInterfaceBoardListGroup;
-    QGridLayout *newInterfaceListLayout;
-    QLabel *cameraStateLbl;
-    QLabel *testStateLbl;
+    myGroupBox* newInterfaceBoardListGroup;
+    QGridLayout* newInterfaceListLayout;
+    QLabel* cameraStateLbl;
+    QLabel* testStateLbl;
 
     /** 接口板版本中加入USB固件版本 */
-    QLabel *interfaceListLabel[MAX_INT+1][2];
+    QLabel* interfaceListLabel[MAX_INT + 1][2];
 
-    myGroupBox *ctrlBoardListGroup;
-    QGridLayout *controlListLayout;
-    QLabel *controlListLabel[MAX_CTRL][2];
+    myGroupBox* ctrlBoardListGroup;
+    QGridLayout* controlListLayout;
+    QLabel* controlListLabel[MAX_CTRL][2];
 
-    QLabel *aiLabelName;
-    QLabel *aiLabelStatus;
+    QLabel* aiLabelName;
+    QLabel* aiLabelStatus;
 
-    QGroupBox *cameraBoardListGroup;
-    QGridLayout *cameraListLayout;
-    QLabel *cameraListLabel[MAX_UNIT/2 + 1][MAX_BACKGROUND_GROUP + 3];
+    QGroupBox* cameraBoardListGroup;
+    QGridLayout* cameraListLayout;
+    // 记录相机和AI板卡的版本信息等
+    QLabel* cameraListLabel[SUM_SHOW_ROW_NUM][SUM_SHOW_COLUMN_NUM];
     /* 横流源板版本部分控件 */
-    QGroupBox *m_lightSrcListGroup;
-    QLabel *m_lightSrcLabel[MAX_LIGHT_SOURCE][2];
-    QGridLayout *m_lightSrcLay;
+    QGroupBox* m_lightSrcListGroup;
+    QLabel* m_lightSrcLabel[MAX_LIGHT_SOURCE][2];
+    QGridLayout* m_lightSrcLay;
 
-    QVBoxLayout *backHBLayout;
-    QHBoxLayout *communicationLayout;
+    QVBoxLayout* backHBLayout;
+    QHBoxLayout* communicationLayout;
 
-    QGridLayout     *commListGridLayout;
-    QHBoxLayout     *commListHBLayout;
-    QSpacerItem     *horizontalSpacer;
+    QGridLayout* commListGridLayout;
+    QHBoxLayout* commListHBLayout;
+    QSpacerItem* horizontalSpacer;
 };
 
 /*!
@@ -124,7 +123,7 @@ class initialization : public QWidget
 {
     Q_OBJECT
 public:
-    explicit initialization(QWidget *parent = 0);
+    explicit initialization(QWidget* parent = 0);
 
 signals:
     void goToPreheatPageSig();
@@ -134,9 +133,9 @@ public slots:
 
 private:
     // 通信列表
-    myLabel         *waitCommLabel;
+    myLabel* waitCommLabel;
 
-    QVBoxLayout     *initVBLayout;
+    QVBoxLayout* initVBLayout;
 };
 
 /*!
@@ -146,7 +145,7 @@ class preheat : public QWidget
 {
     Q_OBJECT
 public:
-    explicit preheat(QWidget *parent = 0);
+    explicit preheat(QWidget* parent = 0);
 
 signals:
     void goToHomePageSig();
@@ -157,14 +156,14 @@ public slots:
 
 private:
     // 通信列表
-    myLabel         *waitCommLabel;
-    QProgressBar    *progressBar;
-    myPushButton    *skipBtn;
+    myLabel* waitCommLabel;
+    QProgressBar* progressBar;
+    myPushButton* skipBtn;
     bool            bFlagSkip;
 
-    QGridLayout     *preheatGridLayout;
-    QHBoxLayout     *preheatHBLayout;
-    QSpacerItem     *horizontalSpacer;
+    QGridLayout* preheatGridLayout;
+    QHBoxLayout* preheatHBLayout;
+    QSpacerItem* horizontalSpacer;
 };
 
 #endif // SYSTEMINITIALIZATION_H

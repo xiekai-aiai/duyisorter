@@ -8,6 +8,7 @@
 #include "globalparams.h"
 #include "globalflow.h"
 #include "configmgr.h"
+#include "unilog.h"
 
 
  /***************************************************************************************************
@@ -2296,6 +2297,10 @@ void GlobalFlow::resetMaterial(int nLevelId, int nGroupId, int bIsAllSens, int n
 
 void GlobalFlow::materialAiModelParaSet(int nLevelId, int nGroupId)
 {
+    LOG_INFO_STM("model param set, level: " << nLevelId << ", group: " << nGroupId
+        << ", model Id:" << QString::fromUtf8(struCnfp.struGroupIdentify[nLevelId][nGroupId].struAi.modelId).toStdString()
+        << ", count:" << struCnfg.struLevelInfo[nLevelId].struIdentifyGroupInfo[nGroupId].nUnitCount);
+
     int nUnitAddr = 0;
     int ret;
     QByteArray args;

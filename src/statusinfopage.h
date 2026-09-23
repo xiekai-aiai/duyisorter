@@ -11,7 +11,7 @@
 
 #include <QWidget>
 #include <QStackedWidget>
-//#include <QWebView>
+ //#include <QWebView>
 #include "common/mypushbutton.h"
 #include "common/mylabel.h"
 #include "common/mylineedit.h"
@@ -37,7 +37,8 @@
 using QJson::JsonObject;
 using QJson::JsonArray;
 
-enum {
+enum
+{
     STATUS_INDEX_INFO,
     STATUS_INDEX_STATISTIC,
     STATUS_INDEX_ALARM,
@@ -50,7 +51,8 @@ enum {
     STATUS_INDEX_CONNECT
 };
 
-enum {
+enum
+{
     STATISTIC_INDEX_STATUS,
     STATISTIC_INDEX_LOG,
     STATISTIC_INDEX_BACKGROUND,
@@ -67,7 +69,7 @@ class StatusInfoPage : public QWidget
 {
     Q_OBJECT
 public:
-    explicit StatusInfoPage(QWidget *parent = 0);
+    explicit StatusInfoPage(QWidget* parent = 0);
 
     void updateAll();                   // 更新全部内容
     void updateListWidget();            // 更新页面列表
@@ -76,7 +78,7 @@ public:
     void updateStatisticPage(int index);// 更新大数据信息页面
     void CreateSetAlarmPage();          // 设置报警页面控件
     void CreateSystemTimePage();        // 系统时间页面控件
-    void setDateTime(int y,int m, int d,int h,int min,int sec);     // 设置系统时间
+    void setDateTime(int y, int m, int d, int h, int min, int sec);     // 设置系统时间
     void updateDateTime();              // 更新系统时间
     void CreateSoftwareVersionPage();   // 软件版本页面控件
     void CreateSetNetworkPage();     // 远程控制页面控件
@@ -85,7 +87,7 @@ public:
     void CreateGetHowToWidget(void);    // 系统帮助页面控件
     void CreateConnectUsPage();         // 联系我们页面控件
 
-    void getVersionMaterialType(int nVer, int nVal, char *materialType);
+    void getVersionMaterialType(int nVer, int nVal, char* materialType);
     void reloadHowTo(void);             // 重新加载帮助页面
     void sendAlarmSms(void);            // 有报警时发送提示短信
     void updateAlarmStatus(void);       // 更新报警状态
@@ -147,14 +149,13 @@ public slots:
     void versionUpdateCamera();         // 相机板版本信息
     void versionUpdateLightSrc(void);   // 恒流源板版本信息
     void versionUpdateCameraLD4();      // LD4相机板版本信息
-	void versionUpdateCameraRSC();    	// RSC相机板版本信息
+    void versionUpdateCameraRSC();    	// RSC相机板版本信息
     void versionUpdateCameraTD();       // TD版本信息
     void versionUpdateCameraLD();       // LD版本信息
     void versionUpdateCameraLDS();      // LDS版本信息
     void versionUpdateCameraLDS2();     // LDS2版本信息
     void versionUpdateCameraCF();       // CF版本信息
     void versionUpdateCameraLD2();      // LD2版本信息
-    void versionUpdateCameraRS();    	// RS相机板版本信息
 
     // pageAutoCalibrate
     void autoCalibrateSignal();         // 一键自动校正
@@ -183,171 +184,176 @@ public slots:
 
 
 private:
-     g_Config          *config;
-     QTimer            *timer;
-     myListWidget      *listWidget;
-     myListWidgetItem  *statusListItem[10];
-     QVector<int>      listIndex;
+    g_Config* config;
+    QTimer* timer;
+    myListWidget* listWidget;
+    myListWidgetItem* statusListItem[10];
+    QVector<int>      listIndex;
 
-     QStackedWidget    *stackedWidget;
-     QWidget           *pageGeneral;
-     QWidget           *pageStatistic;
-     QWidget           *pageAlarm;
-     QWidget           *pageSetNetwork;
-     QWidget           *pageSystemTime;
-     QWidget           *pageInformation;
-     QWidget           *pageSoftwareVersion;
-     QWidget           *pageAutoCalibrate;
-     QWidget           *pageContactUs;
+    QStackedWidget* stackedWidget;
+    QWidget* pageGeneral;
+    QWidget* pageStatistic;
+    QWidget* pageAlarm;
+    QWidget* pageSetNetwork;
+    QWidget* pageSystemTime;
+    QWidget* pageInformation;
+    QWidget* pageSoftwareVersion;
+    QWidget* pageAutoCalibrate;
+    QWidget* pageContactUs;
 
-     QGridLayout       *statusInfoPageGridLayout;
-     QHBoxLayout       *statusInfoPageHBLayout;
-     QSpacerItem       *horizontalSpacer_1;
+    QGridLayout* statusInfoPageGridLayout;
+    QHBoxLayout* statusInfoPageHBLayout;
+    QSpacerItem* horizontalSpacer_1;
 
-     // pageGeneral
-     myLabel    *thisRunLabel;
-     myLabel    *thisFeedRunLabel;
-     myLabel    *totalRunLabel;
-     myLabel    *totalFeedRunLabel;
-     myLabel    *m_thisPressureAlarmLabel;
-     myLabel    *m_totalPressAlarmLabel;
-     myLabel    *feedLabel;
-     myLabel    *ejectLabel;
-     myLabel    *blowerLabel;
-     myLabel    *lampLabel;
-     myLabel    *pressLabel;
-     myLabel    *beltStatus[MAX_LEVEL];
-     myLabel    *m_feedAlarmLabel;
-     myLabel    *m_commAlarmLabel;
-     myLabel	*m_temperatureLabel;
-     myLabel    *m_slaveCommAlarmLabel;
-     QVBoxLayout *generalVBLayout;
-     QSpacerItem *verticalSpacer_1;
-     MyTabBar *statusTabBar;
-     myGroupBox *generalInfoGroup;
+    // pageGeneral
+    myLabel* thisRunLabel;
+    myLabel* thisFeedRunLabel;
+    myLabel* totalRunLabel;
+    myLabel* totalFeedRunLabel;
+    myLabel* m_thisPressureAlarmLabel;
+    myLabel* m_totalPressAlarmLabel;
+    myLabel* feedLabel;
+    myLabel* ejectLabel;
+    myLabel* blowerLabel;
+    myLabel* lampLabel;
+    myLabel* pressLabel;
+    myLabel* beltStatus[MAX_LEVEL];
+    myLabel* m_feedAlarmLabel;
+    myLabel* m_commAlarmLabel;
+    myLabel* m_temperatureLabel;
+    myLabel* m_slaveCommAlarmLabel;
+    QVBoxLayout* generalVBLayout;
+    QSpacerItem* verticalSpacer_1;
+    MyTabBar* statusTabBar;
+    myGroupBox* generalInfoGroup;
 
-     // pageAlarm
-     myCustomCheckBox   *alarmEnableBtn[MAX_ALARM];
-     QSignalMapper      *alarmSignalMapper;
-     myLineEdit		*temperatureThreshold;
+    // pageAlarm
+    myCustomCheckBox* alarmEnableBtn[MAX_ALARM];
+    QSignalMapper* alarmSignalMapper;
+    myLineEdit* temperatureThreshold;
 
-     // pageSysTime
-     QSignalMapper *timeSignalMapper;
-     myLabel       *dateLabel[6];
-     myLineEdit    *dateLbe[6];
-     QDateTimeEdit *dateTimeEdit;
-     QSpacerItem   *horizontalSpacer;
-     myPushButton  *setDateBtn;
-     QGridLayout   *gridLayout;
-     QVBoxLayout   *dateVBLayout;
-     QSpacerItem   *horizontalSpacer_2;
-     int            data[6];
+    // pageSysTime
+    QSignalMapper* timeSignalMapper;
+    myLabel* dateLabel[6];
+    myLineEdit* dateLbe[6];
+    QDateTimeEdit* dateTimeEdit;
+    QSpacerItem* horizontalSpacer;
+    myPushButton* setDateBtn;
+    QGridLayout* gridLayout;
+    QVBoxLayout* dateVBLayout;
+    QSpacerItem* horizontalSpacer_2;
+    int            data[6];
 
-     // pageInformation
-     myLabel        *infoLabel;
+    // pageInformation
+    myLabel* infoLabel;
 
-     // pageVersion
-     myGroupBox *screenListGroup;
-     QGridLayout *screenListLayout;
-     QLabel *screenListLabel;
+    // pageVersion
+    myGroupBox* screenListGroup;
+    QGridLayout* screenListLayout;
+    QLabel* screenListLabel;
 
-     myGroupBox *interfaceBoardListGroup;
-     QGridLayout *interfaceListLayout;
+    myGroupBox* interfaceBoardListGroup;
+    QGridLayout* interfaceListLayout;
 
-     /** 接口板版本查询增加USB固件版本 */
-     QLabel *interfaceListLabel[MAX_INT+1][2];
+    /** 接口板版本查询增加USB固件版本 */
+    QLabel* interfaceListLabel[MAX_INT + 1][2];
 
-     myGroupBox *ctrlBoardListGroup;
-     QGridLayout *controlListLayout;
-     QLabel *controlListLabel[MAX_CTRL][2];
+    myGroupBox* ctrlBoardListGroup;
+    QGridLayout* controlListLayout;
+    QLabel* controlListLabel[MAX_CTRL][2];
 
-     QGroupBox *cameraBoardListGroup;
-     QGridLayout *cameraListLayout;
-     QLabel *cameraListLabel[MAX_UNIT/2+1][MAX_BACKGROUND_GROUP + 3];
+    QGroupBox* cameraBoardListGroup;
+    QGridLayout* cameraListLayout;
+    /*
+    * 用于相机版本和AI板卡信息
+    * i: 1行显示前后视，所以这里MAX_UNIT/2, 第一行用于显示标题所以总行数为MAX_UNIT / 2 + 1
+    * j: 4: 前后视相机+前后视AI板卡
+    */
+    QLabel* cameraListLabel[SUM_SHOW_ROW_NUM][SUM_SHOW_COLUMN_NUM];
 
-     /* 恒流源板 */
-     QGroupBox *m_lightSrcGroup;
-     QLabel *m_lightSrcLabel[MAX_LIGHT_SOURCE][2];
-     QGridLayout *m_lightSrcLay;
+    /* 恒流源板 */
+    QGroupBox* m_lightSrcGroup;
+    QLabel* m_lightSrcLabel[MAX_LIGHT_SOURCE][2];
+    QGridLayout* m_lightSrcLay;
 
-     QHBoxLayout *backHBLayout;
-     QVBoxLayout *versionLayout;
+    QHBoxLayout* backHBLayout;
+    QVBoxLayout* versionLayout;
 
-     QGridLayout    *versionListGridLayout;
-     QHBoxLayout    *versionListHBLayout;
-     myPushButton   *reCheckBtn;
+    QGridLayout* versionListGridLayout;
+    QHBoxLayout* versionListHBLayout;
+    myPushButton* reCheckBtn;
 
-     // pageSetNetwork
-     QTabBar            *remoteTabBar;
-     QStackedWidget     *remoteStackedWidget;
-     MyNetConfig    	*pageNetConfig;
-     MyRemoteControl    *pageRemoteControl;
-     QWidget           *pageWifiSet;
+    // pageSetNetwork
+    QTabBar* remoteTabBar;
+    QStackedWidget* remoteStackedWidget;
+    MyNetConfig* pageNetConfig;
+    MyRemoteControl* pageRemoteControl;
+    QWidget* pageWifiSet;
 
-     MyBigData          *pageBigData;
-//     MyLoggerViewer     *pageLogger;
+    MyBigData* pageBigData;
+    //     MyLoggerViewer     *pageLogger;
 
-     // pageAutoCalibrate
-     myLabel            *autoLabel;
+         // pageAutoCalibrate
+    myLabel* autoLabel;
 
-     // page contact us
-     myLabel           *qrCodeLabel;
-     myLineEdit        *machineLbe;
-     myLabel           *machineLabel;
-     myLineEdit        *engineerLbe;
-     myLabel           *engineerLabel;
-     myLineEdit        *machineIDLbe;
-     myLabel           *machineIDLabel;
-     myLineEdit        *expireTimeLbe;
-     myLabel           *expireTimeLabel;
+    // page contact us
+    myLabel* qrCodeLabel;
+    myLineEdit* machineLbe;
+    myLabel* machineLabel;
+    myLineEdit* engineerLbe;
+    myLabel* engineerLabel;
+    myLineEdit* machineIDLbe;
+    myLabel* machineIDLabel;
+    myLineEdit* expireTimeLbe;
+    myLabel* expireTimeLabel;
 
-     myPushButton      *setinfoBtn;
+    myPushButton* setinfoBtn;
 
-     QGridLayout       *machineInfoLayout;
+    QGridLayout* machineInfoLayout;
 
-     // common controls
-     QPushButton       *leftBtn;
-     QPushButton       *cancelBtn;
+    // common controls
+    QPushButton* leftBtn;
+    QPushButton* cancelBtn;
 
-     /* 系统帮助页面 */
-     QWidget *pageHowTo;
-//     QWebView *helpview;
+    /* 系统帮助页面 */
+    QWidget* pageHowTo;
+    //     QWebView *helpview;
 
-     /* 设置短信页面 */
-     SetSms *m_pageSetSms;
-     MySlaveList *m_pageSlaveList;
+         /* 设置短信页面 */
+    SetSms* m_pageSetSms;
+    MySlaveList* m_pageSlaveList;
 
-     QTextEdit *m_textEdit;
+    QTextEdit* m_textEdit;
 
-     /* 大数据页面 */
+    /* 大数据页面 */
 //     QWebView	   *webview;
-     myLabel       *materialNumLabel;
-     myLabel       *materialBadNumLabel;
-     MyCheckBox    *statisticEnable;
-     myValueBar    *cameraHRef;
-     myValueBar    *cameraVRef;
-     myGroupBox    *bgStatisticGroup;
-     myGroupBox    *materialStatisticGroup;
-     myGroupBox    *histogramGroup;
-     myGroupBox    *ejectStatisticGroup;
-     myGroupBox    *cameraRefBox;
-     myGroupBox    *timeStatisticGroup;
-     myGroupBox    *serverGroup;
-     myLineEdit    *timeMaterialStaisticLineEdit;
-     myLineEdit    *timeHistogramStaisticLineEdit;
-     myLineEdit    *serverLineEdit;
+    myLabel* materialNumLabel;
+    myLabel* materialBadNumLabel;
+    MyCheckBox* statisticEnable;
+    myValueBar* cameraHRef;
+    myValueBar* cameraVRef;
+    myGroupBox* bgStatisticGroup;
+    myGroupBox* materialStatisticGroup;
+    myGroupBox* histogramGroup;
+    myGroupBox* ejectStatisticGroup;
+    myGroupBox* cameraRefBox;
+    myGroupBox* timeStatisticGroup;
+    myGroupBox* serverGroup;
+    myLineEdit* timeMaterialStaisticLineEdit;
+    myLineEdit* timeHistogramStaisticLineEdit;
+    myLineEdit* serverLineEdit;
 
-     myLabel       *ssidLabel;
-     MyComboBox    *ssidComboBox;
-     myLabel       *passWordLabel;
-     myLineEdit    *passWordLineEdit;
-     QTextEdit     *connectResultEdit;
-     myPushButton  *wifiScanBtn;
-     myPushButton  *wifiConnectBtn;
-     myPushButton  *wifiDisconnectBtn;
-     QProcess      *ycprocess;
-     myLabel       *wifiAddrLabel;
-     myLineEdit    *wifiAddrLineEdit;
+    myLabel* ssidLabel;
+    MyComboBox* ssidComboBox;
+    myLabel* passWordLabel;
+    myLineEdit* passWordLineEdit;
+    QTextEdit* connectResultEdit;
+    myPushButton* wifiScanBtn;
+    myPushButton* wifiConnectBtn;
+    myPushButton* wifiDisconnectBtn;
+    QProcess* ycprocess;
+    myLabel* wifiAddrLabel;
+    myLineEdit* wifiAddrLineEdit;
 
 };
 #endif // STATUSINFOPAGE_H
