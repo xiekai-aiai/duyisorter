@@ -5,6 +5,7 @@
 #include "cmdudpmanager.h"
 #include "cmdworker.h"
 #include "unilog.h"
+#include "sqlitemgr.h"
 #include <queue>
 #include <iostream>
 #include <sstream>
@@ -426,7 +427,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         int p = (received * 100) / total;
         showTip(QString("模型下载中：%1%（%2/%3）").arg(p).arg(formatFileSize(received)).arg(formatFileSize(total)));
     });
-
+    
     // [3.5] 硬件架构查询结果 → 先下载 JSON（取 md5），再下载 .bin/.dlc 并校验
     // ═══ 关键修复：用 QTimer::singleShot(0, ...) 延迟触发 ═══
     // 原因：archResult 是由 HttpTool::requestSuccess 同步 emit 的，
@@ -548,6 +549,43 @@ AiModelSet::AiModelSet(QWidget *parent) :
                         wf.close();
                         LOG_DEBUG_STM("[下载流程] 已把类别名写回 JSON:" << m_classNames);
                     }
+                }
+            }
+        }
+
+        // ⭐ 模型下载成功 → 插入数据库（ModelInfo + ModelClsParam 列表）
+        {
+            // 1) 插入模型主记录
+            ModelInfo mi;
+            mi.model_id_  = downLoadModelName;
+            mi.model_name_ = downLoadModelName;
+            mi.is_apply_  = false;
+            mi.is_upload_ = false;
+            if (!SQLiteMgr::Instance().InsertModelInfo(mi)) {
+                LOG_WARN_STM("[下载流程] 插入 ModelInfo 失败（可能已存在）：" << downLoadModelName);
+            }
+
+            // 2) 插入每个类别的参数
+            QVector<ModelClsParam> clsParams;
+            for (int ci = 0; ci < m_classNames.size(); ++ci) {
+                ModelClsParam cp;
+                cp.model_id_      = downLoadModelName;
+                cp.cls_id_        = static_cast<quint8>(ci);
+                cp.cls_name_      = m_classNames[ci];
+                cp.level_         = 0;
+                cp.identify_grp_  = 0;
+                cp.threshold_     = 0;
+                cp.is_apply_      = false;
+                cp.area_model_    = 0;
+                cp.area_threshold_ = 0;
+                clsParams.append(cp);
+            }
+            if (!clsParams.isEmpty()) {
+                if (!SQLiteMgr::Instance().InsertModelClsParams(clsParams)) {
+                    LOG_WARN_STM("[下载流程] 插入 ModelClsParam 失败：model=" << downLoadModelName);
+                } else {
+                    LOG_INFO_STM("[下载流程] 数据库已写入：ModelInfo(" << downLoadModelName
+                                 << ") + " << clsParams.size() << " 个类别参数");
                 }
             }
         }
@@ -3423,6 +3461,10 @@ bool AiModelSet::runEmulateOnce()
     QString boardImgDir = "/ftp/emulate";
     showTip(QString("上传图片到板卡：%1 → %2 ...").arg(imgFileName).arg(boardImgDir));
     QApplication::processEvents();
+
+    // ⭐ 关键：记录 SftpWorker 实际上传到板卡的远程文件名 basename
+    // 避免上传侧和命令侧各自算 fileName() 导致不一致（ExperienceRecall 教训）
+    QString actualRemoteBaseName;
     {
         SftpWorker w(boardIp, AI_DEV_USER, AI_DEV_PWD, 22);
         if (!w.connect()) {
@@ -3431,6 +3473,11 @@ bool AiModelSet::runEmulateOnce()
         }
         w.mkdir_p(boardImgDir);
         bool uploadOk = false;
+        // 捕获实际上传的远程文件名
+        connect(&w, &SftpWorker::fileUploadCompleted, &w,
+                [&](const QString& /*local*/, const QString& remote, bool ok) {
+                    if (ok) actualRemoteBaseName = QFileInfo(remote).fileName();
+                }, Qt::DirectConnection);
         connect(&w, &SftpWorker::allUploadCompleted, &w,
                 [&](bool success) { uploadOk = success; }, Qt::DirectConnection);
         w.onUploadFiles(QStringList{m_currentImagePath}, boardImgDir);
@@ -3440,6 +3487,16 @@ bool AiModelSet::runEmulateOnce()
             return false;
         }
     }
+    // 防御：如果实际上传文件名和命令侧计算的不一致，以实际上传的为准（理论上应该相等）
+    if (actualRemoteBaseName.isEmpty()) {
+        actualRemoteBaseName = imgFileName;
+    } else if (actualRemoteBaseName != imgFileName) {
+        LOG_WARN_STM("[仿真] 上传远程文件名(" << actualRemoteBaseName
+                     << ") 与命令侧计算的(" << imgFileName << ") 不一致！以远程为准");
+    }
+    LOG_INFO_STM("[仿真] runEmulateOnce 图片名: 本地路径=" << m_currentImagePath
+                 << ", 预期basename=" << imgFileName
+                 << ", 实际上传basename=" << actualRemoteBaseName);
 
     /*
     // ═══ 先 ModelApply 加载模型到板卡内存 ═══
@@ -3465,15 +3522,15 @@ bool AiModelSet::runEmulateOnce()
     }
     */
 
-    // 发送仿真 UDP 请求（img_name_ 用纯文件名！板卡自己去 /ftp/emulate/ 找）
+    // 发送仿真 UDP 请求（img_name_ 用实际上传到板卡的远程文件名！避免分叉计算）
     EmulateParam info;
     info.model_name_ = modelBinName;
-    info.img_name_   = imgFileName;
+    info.img_name_   = actualRemoteBaseName;
 
     QByteArray request = cmdworker::EmulateParamRequest(info);
     QByteArray response;
 
-    showTip(QString("仿真中：model=%1, img=%2 ...").arg(modelBinName).arg(imgFileName));
+    showTip(QString("仿真中：model=%1, img=%2 ...").arg(modelBinName).arg(actualRemoteBaseName));
     QApplication::processEvents();
 
     // UDP 发送到板卡 :AI_UPD_CMD_PORT（3s 超时）
@@ -3726,6 +3783,17 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     QString boardImgDir = "/ftp/emulate";
     w.mkdir_p(boardImgDir);
 
+    // ⭐ 关键：循环外 connect 一次信号（避免循环内重复 connect 累积导致悬垂引用）
+    // 同时从实际上传结果取远程文件名 basename，消除上传侧和命令侧的分叉计算
+    bool batchUploadOk = false;
+    QString batchActualRemoteBaseName;
+    connect(&w, &SftpWorker::fileUploadCompleted, &w,
+            [&](const QString& /*local*/, const QString& remote, bool ok) {
+                if (ok) batchActualRemoteBaseName = QFileInfo(remote).fileName();
+            }, Qt::DirectConnection);
+    connect(&w, &SftpWorker::allUploadCompleted, &w,
+            [&](bool success) { batchUploadOk = success; }, Qt::DirectConnection);
+
     // ⑥ ModelApply（只做一次，加载模型到板卡内存）
     QString modelBinName = modelName + ".bin";
     // ⭐ 如果之前刚对同一模型做过 ModelApply，跳过（板卡 RKNN runtime 双重加载会崩溃）
@@ -3771,19 +3839,27 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         QApplication::processEvents();
 
         // 7a. SFTP upload 图片（复用同一个 SftpWorker 连接，不 moveToThread，直接调 slot）
-        bool uploadOk = false;
-        connect(&w, &SftpWorker::allUploadCompleted, &w,
-                [&](bool success) { uploadOk = success; }, Qt::DirectConnection);
+        // 每次循环前重置状态变量
+        batchUploadOk = false;
+        batchActualRemoteBaseName.clear();
         w.onUploadFiles(QStringList{imgPath}, boardImgDir);
-        if (!uploadOk) {
+        // DirectConnection 保证信号已同步触发，batchUploadOk / batchActualRemoteBaseName 已更新
+        if (!batchUploadOk) {
             LOG_WARN_STM("批量仿真 SFTP 上传失败：" << imgFileName);
             failCount++; continue;
         }
+        // 防御：如果实际上传文件名为空（信号没触发），回退到本地计算值
+        if (batchActualRemoteBaseName.isEmpty()) {
+            batchActualRemoteBaseName = imgFileName;
+        } else if (batchActualRemoteBaseName != imgFileName) {
+            LOG_WARN_STM("[批量仿真] 上传远程文件名(" << batchActualRemoteBaseName
+                         << ") 与命令侧计算的(" << imgFileName << ") 不一致！以远程为准");
+        }
         
-        // 7b. Emulate UDP 请求（img_name 用纯文件名！）
+        // 7b. Emulate UDP 请求（img_name 用实际上传到板卡的远程文件名，避免分叉计算）
         EmulateParam info;
         info.model_name_ = modelBinName;
-        info.img_name_   = imgFileName;
+        info.img_name_   = batchActualRemoteBaseName;
         QByteArray request  = cmdworker::EmulateParamRequest(info);
         QByteArray response;
         bool ok = CmdUdpManager::instance().onSendCommand(
