@@ -253,6 +253,28 @@ bool SQLiteMgr::DelModelInfo(const QString& model_id)
     return true;
 }
 
+bool SQLiteMgr::DelModelClsParam(const QString& model_id)
+{
+    if (!db_.isOpen())
+    {
+        LOG_ERROR_STM("open sqlite db[" << db_path_.toStdString() << "] failed! ");
+        return false;
+    }
+
+    QSqlQuery query(db_);
+    query.prepare("DELETE FROM model_params WHERE modelId = ?");
+    query.addBindValue(model_id);
+
+    if (!query.exec())
+    {
+        LOG_ERROR_STM("[Delete Failed]" << query.lastError().text().toStdString());
+        return false;
+    }
+
+    LOG_INFO_STM("delete model cls param successfully, model_id:" << model_id.toStdString());
+    return true;
+}
+
 bool SQLiteMgr::LoadAllModeInfo(QVector<ModelInfo>& model_infos)
 {
     if (!db_.isOpen())

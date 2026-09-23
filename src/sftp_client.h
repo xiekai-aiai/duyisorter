@@ -83,6 +83,12 @@ public:
      */
     std::string exec(const std::string& cmd);
 
+    /**
+     * @brief: 删除文件
+     * @return true: 删除成功， false: 删除失败
+     */
+    bool deleteFiles(const std::string& file);
+
     /** libssh2 全局初始化 / 释放（程序启动/退出各一次） */
     static void init_sftp_lib();
     static void deinit_sftp_lib();

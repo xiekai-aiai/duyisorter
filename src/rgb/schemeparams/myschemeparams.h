@@ -1,11 +1,11 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
- *              All rights reserved.
- * \file        myschemeparams.h
- * \brief       彩色机型方案参数界面头文件
- *              子页面包括识别参数、剔除参数、吹气时间、背景设置、灯光控制及智能供料。
- * \date        2015.01.14
- */
+  * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+  *              All rights reserved.
+  * \file        myschemeparams.h
+  * \brief       彩色机型方案参数界面头文件
+  *              子页面包括识别参数、剔除参数、吹气时间、背景设置、灯光控制及智能供料。
+  * \date        2015.01.14
+  */
 #ifndef MY_SCHEME_PARAMETERS_H
 #define MY_SCHEME_PARAMETERS_H
 
@@ -18,16 +18,17 @@
 #include "ai.h"
 #include "schemeparams.h"
 
-/*!
- * \brief 彩色机型方案参数界面头文件
- */
+  /*!
+   * \brief 彩色机型方案参数界面头文件
+   */
 class MySchemeParams : public QWidget
 {
     Q_OBJECT
 
-    enum {
+        enum
+    {
         Page_ID_Params,
-//        Page_ID_Background,
+        //        Page_ID_Background,
         Page_ID_Arith,
         Page_ID_Reserved,
         Page_ID_Intel,
@@ -35,7 +36,7 @@ class MySchemeParams : public QWidget
     };
 
 public:
-    MySchemeParams(QWidget *parent = 0);
+    MySchemeParams(QWidget* parent = 0);
     void setSchemeParams(int pageId);
     void resetSchemeParams(int pageId);
 
@@ -52,6 +53,8 @@ public slots:
     void onCurrentChanged(int index);
     void onOkBtnClicked();
     void onCancelBtnClicked();
+    void onUploadBtnClicked();
+    void onDeleteBtnClicked();
     void refreshSchemeParams();
     void shutdownCurveBackGround();
 
@@ -60,18 +63,21 @@ private:
     void displayPageButton(int index);
 
 private:
-    QStackedWidget  *pagesWidget;
-    QPushButton     *okButton;
-    QPushButton     *cancelButton;
+    QStackedWidget* pagesWidget;
+    QPushButton* okButton;
+    QPushButton* cancelButton;
 
-    PageParams      *pageParams;
-//    PageBackground  *pageBackground;
-    PageArith       *pageArith;
-    PageReserved    *pageReserved;
-    PageIntel       *pageIntel;
-    PageAi          *pageAi;
+    QPushButton* uploadBtn;                 // 上传按钮
+    QPushButton* deleteBtn;                 // 删除按钮
 
-    g_Config *config;
+    PageParams* pageParams;
+    //    PageBackground  *pageBackground;
+    PageArith* pageArith;
+    PageReserved* pageReserved;
+    PageIntel* pageIntel;
+    PageAi* pageAi;
+
+    g_Config* config;
 };
 
 #endif

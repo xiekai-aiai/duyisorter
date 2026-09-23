@@ -4,16 +4,18 @@
  * @Author: xiekai
  * @Date: 2026-09-08 15:23:00
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-22 20:16:07
+ * @LastEditTime: 2026-09-23 13:38:34
  */
 #ifndef AI_H
 #define AI_H
 
+#include <QMap>
 #include <QWidget>
 #include "functions.h"
 #include <QSqlError>
 #include <QSqlQuery>
 #include "sortertypes.h"
+#include "sftpworker.h"
 
 
  /*!
@@ -25,8 +27,11 @@ class PageAi : public QWidget
 
 public:
     PageAi(QWidget* parent = 0);
+    ~PageAi();
     void setIntelParams();
     void resetIntelParams();
+    void onUploadModel();
+    void onDeleteModel();
 
 signals:
     void pageUpdated();
@@ -55,10 +60,18 @@ private:
      */
     bool modelApply(const ModelInfo& info);
 
+    /**
+     * @brief: 删除模型
+     * @param {ModelInfo&} info
+     * @return {*}
+     */
+    bool modelDelete(const ModelInfo& info);
+
 private:
     MyTabBar* tabBar;
     myListWidget* modelListWidget;
     stu_group_identify m_struGroupIdentify[MAX_LEVEL * MAX_GROUP_IDTNTIFY];
+    QMap<QString, SftpWorker*> sftp_worker_map;
 
 };
 

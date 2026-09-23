@@ -76,6 +76,12 @@ public:
      */
     bool mkdir_p(const QString& remoteDir);
 
+    // 上传文件
+    bool onUploadFilesSync(const QStringList& files, const QString& remoteDir);
+
+    // 删除远程文件
+    bool onDeleteFilesSync(const QStringList& files);
+
 signals:
     // ── 目录遍历 ──────────────────────────────────────────────────
     /** onRemoteList 完成后发射，files 是纯文件名（不含路径） */

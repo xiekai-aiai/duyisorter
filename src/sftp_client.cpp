@@ -366,6 +366,24 @@ bool SftpClient::stat_file(const std::string& remote_file, LIBSSH2_SFTP_ATTRIBUT
     return true;
 }
 
+bool SftpClient::deleteFiles(const std::string& file)
+{
+    if (!is_init_)
+    {
+        LOG_ERROR_STM("deleteFiels: not connected");
+        return false;
+    }
+
+    LOG_INFO_STM("delete ftp file:" << file);
+    int rc = libssh2_sftp_unlink(sftp_, file.c_str());
+    if (rc != 0)
+    {
+        // 文件不存在是正常情况，不算错误
+        return false;
+    }
+    return true;
+}
+
 std::string SftpClient::exec(const std::string& cmd)
 {
     if (!is_init_)

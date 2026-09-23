@@ -2301,77 +2301,8 @@ void GlobalFlow::materialAiModelParaSet(int nLevelId, int nGroupId)
         << ", model Id:" << QString::fromUtf8(struCnfp.struGroupIdentify[nLevelId][nGroupId].struAi.modelId).toStdString()
         << ", count:" << struCnfg.struLevelInfo[nLevelId].struIdentifyGroupInfo[nGroupId].nUnitCount);
 
-    int nUnitAddr = 0;
-    int ret;
-    QByteArray args;
-    AI_Data_Protocol_D data;
-    int applyCount = 0;
-    int seq = 0;
-    args.clear();
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
-    {
-        QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[nLevelId][nGroupId].struAi.modelId);
-        QSqlQuery query;
-        int modeParaCount = 0;
-        query.prepare("SELECT modelId, id, zhName, enName, threshold, isApply, chgTime FROM modelParaInfo  "
-            "where modelId = ?  and levelTotal = ? and identifyGroupTotal = ? order by id asc");
-
-        query.bindValue(0, modelId);
-        query.bindValue(1, nLevelId);
-        query.bindValue(2, nGroupId);
-        if (!query.exec())
-        {
-            qDebug() << "查询失败：" << query.lastError();
-        }
-        else
-        {
-            while (query.next())
-            {
-                QString id = query.value(1).toString();
-                QString zhName = query.value(2).toString();
-                QString threshold = query.value(4).toString();
-                QString isApply = query.value(5).toString();
-
-                if (id.isNull() || zhName.isNull() || threshold.isNull() || isApply.isNull())
-                {
-                    break;
-                }
-                modeParaStr[modeParaCount].id = id;
-                modeParaStr[modeParaCount].isApply = isApply;
-                modeParaStr[modeParaCount].name = zhName;
-                modeParaStr[modeParaCount].threshold = threshold;
-
-                if (modeParaStr[modeParaCount].isApply.toInt() == 1)
-                {
-                    applyCount++;
-                    args[seq++] = modeParaStr[modeParaCount].id.toInt();
-                    //阈值=100-灵敏度
-                    args[seq++] = 100 - modeParaStr[modeParaCount].threshold.toInt();
-                }
-                modeParaCount++;
-            }
-        }
-
-        if (applyCount == 0)
-        {
-            return;
-        }
-
-        for (int k = 0; k < struCnfg.struLevelInfo[nLevelId].struIdentifyGroupInfo[nGroupId].nUnitCount; k++)
-        {
-            nUnitAddr = getIdentifyGroupAddr(nLevelId, nGroupId, k);
-            if (nUnitAddr % 2 == 0)
-            {
-                MyUpd.writeDatagram(CMD_AI_MODEL_PARA, nUnitAddr / 2, applyCount * 2, args, struGsh.addressList.at(nUnitAddr / 2), AI_UDP_SEND_PORT);
-                data.nCommandAddress = CMD_AI_MODEL_PARA;
-                ret = MyUpd.readUdpDatagrams(&data, 13);
-                if (ret != 0)
-                {
-                    qDebug("nUnitAddr/2: %d, ret: %d", nUnitAddr / 2, ret);
-                }
-            }
-        }
-    }
+    
+    // xknote: 每次阈值调整，调用次数太多，可能是根据不同次进行配置，暂时不在这里设置
 }
 
 /***************************************************************************************************

@@ -19,6 +19,86 @@ PageAi::PageAi(QWidget* parent)
     layoutPage();
 }
 
+PageAi::~PageAi()
+{
+    for (auto* worker : sftp_worker_map.values())
+    {
+        worker->deleteLater();
+    }
+    sftp_worker_map.clear();
+}
+
+void PageAi::onUploadModel()
+{
+    // 点击上传时，处理模型应用 
+    LOG_INFO_STM("upload page ai params! count:" << modelListWidget->count());
+
+    if (modelListWidget->currentItem() == NULL)
+    {
+        LOG_INFO_STM("modelListWidget current item is null");
+        return;
+    }
+
+    QString model_name = modelListWidget->currentItem()->text();
+    QString model_id = modelListWidget->currentItem()->data(Qt::UserRole).toString();
+    LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
+        << ", model id:" << model_id.toStdString());
+
+    ModelInfo info;
+    info.is_apply_ = false;
+    info.is_upload_ = false;
+    info.model_id_ = model_id;
+    info.model_name_ = model_name;
+    if (!modelUpload(info))
+    {
+        QMessageBox::warning(this, "应用警告", "模型上传失败！");
+        return;
+    }
+
+    SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true);
+}
+
+void PageAi::onDeleteModel()
+{
+    // 点击上传时，处理模型应用 
+    LOG_INFO_STM("delete page ai params! count:" << modelListWidget->count());
+
+    if (modelListWidget->currentItem() == NULL)
+    {
+        LOG_INFO_STM("modelListWidget current item is null");
+        return;
+    }
+
+    QString model_name = modelListWidget->currentItem()->text();
+    QString model_id = modelListWidget->currentItem()->data(Qt::UserRole).toString();
+    LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
+        << ", model id:" << model_id.toStdString());
+
+    ModelInfo info;
+    if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, info))
+    {
+        QMessageBox::warning(this, "应用警告", "模型删除失败！");
+        return;
+    }
+
+    if (info.is_apply_)
+    {
+        QMessageBox::warning(this, "应用警告", "模型应用中，删除失败！");
+        return;
+    }
+
+    if(!modelDelete(info))
+    {
+        QMessageBox::warning(this, "应用警告", "模型删除失败！");
+        return;
+    }
+
+    SQLiteMgr::Instance().DelModelInfo(model_id);
+    SQLiteMgr::Instance().DelModelClsParam(model_id);
+
+    emit pageUpdated();
+}
+
 /* 应用当前智能参数固化页面设置 */
 void PageAi::setIntelParams()
 {
@@ -35,26 +115,29 @@ void PageAi::setIntelParams()
     LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
         << ", model id:" << model_id.toStdString());
 
-    // 根据模型id获取模型信息
     ModelInfo info;
     if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, info))
     {
+        QMessageBox::warning(this, "应用警告", "模型加载失败！");
         return;
     }
 
     if (!modelUpload(info))
     {
+        QMessageBox::warning(this, "应用警告", "模型上传失败！");
         return;
     }
 
     if (!modelApply(info))
     {
+        QMessageBox::warning(this, "应用警告", "模型应用失败！");
         return;
     }
 
-    if (!SQLiteMgr::Instance().UpdateModelInfoApplyFlag(model_id, true)
-        || !SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true))
+    if (!SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true)
+        || !SQLiteMgr::Instance().UpdateModelInfoApplyFlag(model_id, true))
     {
+        QMessageBox::warning(this, "应用警告", "模型应用持久化失败！");
         return;
     }
 
@@ -215,7 +298,66 @@ bool PageAi::modelUpload(const ModelInfo& info)
         return true;
     }
 
-    // xktodo 上传模型到AI板卡
+    int lastDot = info.model_name_.lastIndexOf('.');
+    QString name = (lastDot != -1) ? info.model_name_.left(lastDot) : info.model_name_;
+
+    QStringList upload_lists;
+    upload_lists.append(ai_helper::GetModelRootPath() + "/" + info.model_name_);
+    upload_lists.append(ai_helper::GetModelRootPath() + "/" + name + ".json");
+
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        auto it = sftp_worker_map.find(ip);
+        if (sftp_worker_map.end() == it)
+        {
+            SftpWorker* worker = new SftpWorker(ip, AI_DEV_USER, AI_DEV_PWD);
+            it = sftp_worker_map.insert(ip, worker);
+        }
+
+        bool ret = it.value()->onUploadFilesSync(upload_lists, AI_DEV_MODEL_PATH);
+        if (!ret)
+        {
+            return ret;
+        }
+    }
+
+    return true;
+}
+
+bool PageAi::modelDelete(const ModelInfo& info)
+{
+    if (info.is_apply_)
+    {
+        LOG_ERROR_STM("model:" << info.model_id_.toStdString() << ", model name:" << info.model_name_.toStdString()
+            << " applyed!");
+        return false;
+    }
+
+    int lastDot = info.model_name_.lastIndexOf('.');
+    QString name = (lastDot != -1) ? info.model_name_.left(lastDot) : info.model_name_;
+
+    QStringList del_lists;
+    del_lists.append(AI_DEV_MODEL_PATH + info.model_name_);
+    del_lists.append(AI_DEV_MODEL_PATH + name + ".json");
+
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        auto it = sftp_worker_map.find(ip);
+        if (sftp_worker_map.end() == it)
+        {
+            SftpWorker* worker = new SftpWorker(ip, AI_DEV_USER, AI_DEV_PWD);
+            it = sftp_worker_map.insert(ip, worker);
+        }
+
+        bool ret = it.value()->onDeleteFilesSync(del_lists);
+        if (!ret)
+        {
+            return ret;
+        }
+    }
+
     return true;
 }
 
