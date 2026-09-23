@@ -3473,7 +3473,7 @@ void StatusInfoPage::onWifiScanBtnPressed()
     memset(cmdStr, 0, 1024);
     sprintf(cmdStr, "ip link set wlan0 up && iwlist wlan0 scan | grep 'ESSID:' | cut -d'\"' -f2 > /tmp/wifi.txt");
     system(cmdStr);
-
+    
     memset(cmdStr, 0, 256);
     sprintf(cmdStr, "cat /tmp/wifi.txt | wc -l");//Get "auto eth1" line number
     fp = popen(cmdStr, "r");
@@ -3481,7 +3481,7 @@ void StatusInfoPage::onWifiScanBtnPressed()
     fread(readStr, 1, sizeof(readStr), fp);
     pclose(fp);
     allwifiitem = atoi(readStr);
-
+    
     for (i = 0;i < allwifiitem;i++)
     {
         memset(cmdStr, 0, 256);
