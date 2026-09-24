@@ -27,7 +27,7 @@ class SftpClient final
 {
 public:
     SftpClient(const std::string& host, int port,
-               const std::string& user, const std::string& passwd);
+        const std::string& user, const std::string& passwd);
     ~SftpClient();
 
     /**
@@ -46,17 +46,26 @@ public:
     bool isConnected() const { return is_init_; }
 
     /**
-     * @brief: 上传单个文件（remote_file 必须是完整路径，如 /ftp/task/raw/image/a.jpg）
-     */
+    * @brief: 上传文件到远程ftp服务器
+    * @param {string&} local_file  本地文件路径, 绝对路径
+    * @param {string&} remote_file 远程文件路径, 绝对路径
+    * @return {*}
+    */
     bool upload(const std::string& local_file, const std::string& remote_file);
 
     /**
-     * @brief: 下载单个文件
+     * @brief: 下载文件到本地
+     * @param {string&} remote_file 远程文件路径
+     * @param {string&} local_file  本地文件路径
+     * @return {*}
      */
     bool download(const std::string& remote_file, const std::string& local_file);
 
     /**
-     * @brief: 遍历远程目录下的文件（只返回文件名，不含路径）
+     * @brief: 遍历远程目录下的文件
+     * @param {string&} remote_path  远程目录路径
+     * @param {vector<string>&} files  文件列表
+     * @return {*}
      */
     bool list_files(const std::string& remote_path, std::vector<std::string>& files);
 
@@ -94,8 +103,6 @@ public:
     static void deinit_sftp_lib();
 
 private:
-    // 构造后不能用 init()/clear() 了，改用 connect()/disconnect()
-
     bool is_init_{ false };
     std::string host_;
     int         port_{ 22 };
