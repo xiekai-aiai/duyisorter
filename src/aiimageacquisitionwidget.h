@@ -42,6 +42,12 @@ public slots:
      */
     void onEnableAcquComBoxClicked();
 
+    /**
+     * @brief: 处理采集张数点击时间
+     * @return {*}
+     */
+    void onAcqPicNumLineEdtClicked();
+
 private:
     myLineEdit* acqPicNumLineEdt;            // 采集张数
     myCustomCheckBox* enabelAcquComBox;      // 是否使能采集

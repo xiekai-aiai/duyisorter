@@ -17,7 +17,9 @@
 #include "src/qdatabase.h"
 #include "unilog.h"
 #include "configmgr.h"
-
+#include "cmdworker.h"
+#include "cmdudpmanager.h"
+#include "aihelper.h"
 
 StatusInfoPage::StatusInfoPage(QWidget* parent) :
     QWidget(parent)
@@ -134,13 +136,40 @@ StatusInfoPage::StatusInfoPage(QWidget* parent) :
 void StatusInfoPage::TimeOutSlt()
 {
     updateGeneralPage();
+    updateAiRunStatus();
     updateDateTime();
+}
+
+void StatusInfoPage::updateAiRunStatus()
+{
+    LOG_INFO_STM("update ai status, tab count:" << statusTabBar->count()
+        << ", tab index:" << statusTabBar->currentIndex() << ", list:"
+        << listWidget->currentRow());
+
+    // 如果当前页面不是AI状态页面，则不处理
+    if ((listWidget->currentRow() != 0) || (statusTabBar->currentIndex() != 1))
+    {
+        return;
+    }
+
+    QVector<AiStatusInfo> status_vec = GetAiStatus();
+    int col_num = status_vec.size() / 2;
+
+    for (int c = 0; c < col_num; c++)
+    {
+        QStringList col_info = GetAiStatusColInfo(status_vec, c);
+        for (int r = 0; r < col_info.size(); r++)
+        {
+            aiStatusLabels[r][c + 1]->setText(col_info[r]);
+        }
+    }
 }
 
 void StatusInfoPage::updateAll()
 {
     updateListWidget();
     updateGeneralPage();
+    updateAiRunStatus();
     updateSetAlarmPageSlt();
     versionUpdateCamera();
     versionUpdateCtrl();
@@ -331,9 +360,10 @@ void StatusInfoPage::onListWidgetRowChangedSlt(int nIndex)
 
 void StatusInfoPage::onStatusTabChanged(int index)
 {
+    LOG_INFO_STM("status info page idx:" << index << ", myTab count:" << statusTabBar->count()
+        << ", now idx:" << statusTabBar->currentIndex());
     generalInfoGroup->hide();
-    //    pageLogger->hide();
-    //    webview->hide();
+    aiInfoGroup->hide();
     cameraRefBox->hide();
     timeStatisticGroup->hide();
     statisticEnable->hide();
@@ -345,9 +375,8 @@ void StatusInfoPage::onStatusTabChanged(int index)
     case STATISTIC_INDEX_STATUS:
         generalInfoGroup->show();
         break;
-    case STATISTIC_INDEX_LOG:
-        //        pageLogger->show();
-        leftBtn->show();
+    case STATISTIC_INDEX_LOG:  // 现在修改为AI检测状态 
+        aiInfoGroup->show();
         break;
     case STATISTIC_INDEX_BACKGROUND:
         //        webview->show();
@@ -554,6 +583,7 @@ void StatusInfoPage::CreateGeneralPage()
     m_slaveCommAlarmLabel = new myLabel(str);
     m_slaveCommAlarmLabel->setMaximumHeight(30);
 
+    // 检测状态
     generalInfoGroup = new myGroupBox(myLan.state_info);
     generalVBLayout = new QVBoxLayout(generalInfoGroup);
     generalVBLayout->setSpacing(10);
@@ -577,9 +607,55 @@ void StatusInfoPage::CreateGeneralPage()
     generalVBLayout->addWidget(m_slaveCommAlarmLabel);
     generalVBLayout->addItem(verticalSpacer_1);
 
-    // 统计信息展示
-//    webview = new QWebView;
-//    webview->load(QUrl("qrc:/res/html/statistic.html"));
+    // AI状态
+    const QStringList ROW_LABELS = {
+        "通道",
+        "前视丢包数",
+        "后视丢包数",
+        "前视平均推理耗时(ms)",
+        "后视平均推理耗时(ms)",
+        "前视延迟超时数",
+        "后视延迟超时数"
+    };
+
+
+    aiInfoGroup = new myGroupBox("AI状态信息");
+    aiGridLayout = new QGridLayout(aiInfoGroup);
+    aiGridLayout->setContentsMargins(12, 8, 12, 8);
+    aiGridLayout->setHorizontalSpacing(24);
+    aiGridLayout->setVerticalSpacing(6);
+
+    aiStatusLabels.resize(ROW_LABELS.size());
+    for (int r = 0; r < ROW_LABELS.size(); ++r)
+    {
+        // 第一列是标签列
+        myLabel* lbl = new myLabel(ROW_LABELS[r]);
+        lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        lbl->setMinimumWidth(160); // 保证标签列不被挤压
+        aiGridLayout->addWidget(lbl, r, 0);
+        aiStatusLabels[r].append(lbl);
+    }
+
+    QVector<AiStatusInfo> status_vec = GetAiStatus();
+    int col_num = status_vec.size() / 2;
+
+    for (int c = 0; c < col_num; c++)
+    {
+        QStringList col_info = GetAiStatusColInfo(status_vec, c);
+        for (int r = 0; r < col_info.size(); r++)
+        {
+            myLabel* lbl = new myLabel(col_info[r]);
+            lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            lbl->setMinimumWidth(160); // 保证标签列不被挤压
+            aiGridLayout->addWidget(lbl, r, c + 1);
+            aiStatusLabels[r].append(lbl);
+        }
+    }
+
+    LOG_INFO_STM("ai status label row:" << aiStatusLabels.size() << ", col:" << aiStatusLabels[0].size());
+
+    aiGridLayout->setColumnStretch(0, 0);
+
 
     /* 构建参考相机的布局 */
     statisticEnable = new MyCheckBox(myLan.value_added, struCnfg.nStatisticEnable);
@@ -627,31 +703,25 @@ void StatusInfoPage::CreateGeneralPage()
         statusTabBar->setStyleSheet("QTabBar::tab{""min-height:35;min-width:100;}");
     }
     statusTabBar->addTab(myLan.state);
-    //    statusTabBar->addTab(myLan.log);
-    //    statusTabBar->addTab(myLan.backgroud);
-    //    statusTabBar->addTab(myLan.material);
-    //    statusTabBar->addTab(myLan.identify);
-    //    statusTabBar->addTab(myLan.eject);
-    //    statusTabBar->addTab(myLan.configration);
+    // xktodo
+    statusTabBar->addTab("AI检测状态");
 
-    //    pageLogger = new MyLoggerViewer();
+    LOG_TRACE_STM("myLan.state:" << myLan.state.toStdString() << ",myLan.state_info:" << myLan.state_info.toStdString());
 
     QVBoxLayout* statusVBLayout = new QVBoxLayout(pageGeneral);
     statusVBLayout->addWidget(statusTabBar);
-    //    statusVBLayout->addWidget(pageLogger);
     statusVBLayout->addWidget(generalInfoGroup);
-    //    statusVBLayout->addWidget(webview);
+    statusVBLayout->addWidget(aiInfoGroup);
     statusVBLayout->addWidget(statisticEnable);
     statusVBLayout->addWidget(cameraRefBox);
     statusVBLayout->addWidget(timeStatisticGroup);
     statusVBLayout->addWidget(serverGroup);
 
-    //    pageLogger->hide();
-    //    webview->hide();
     statisticEnable->hide();
     cameraRefBox->hide();
     timeStatisticGroup->hide();
     serverGroup->hide();
+    aiInfoGroup->hide();
 
     connect(cameraHRef, SIGNAL(valueChanged(int)), this, SLOT(onCameraHRefChangedSlt(int)));
     connect(cameraVRef, SIGNAL(valueChanged(int)), this, SLOT(onCameraVRefChangedSlt(int)));
@@ -3557,6 +3627,66 @@ void StatusInfoPage::CreateInfomationPage()
 void StatusInfoPage::getHowToHelp()
 {
 
+}
+
+QStringList StatusInfoPage::GetAiStatusColInfo(const QVector<AiStatusInfo>& status_vec, int col_no)
+{
+    QStringList ret_list;
+    // 通道
+    ret_list.append(QString::number(col_no + 1));
+    // 前视丢包数
+    ret_list.append(QString::number(status_vec[col_no * 2].discard_num_));
+    // 后视丢包数
+    ret_list.append(QString::number(status_vec[col_no * 2 + 1].discard_num_));
+    // 前视推理耗时
+    ret_list.append(QString::number(status_vec[col_no * 2].ai_cost_ / 1000.0));
+    // 后视推理耗时
+    ret_list.append(QString::number(status_vec[col_no * 2 + 1].ai_cost_ / 1000.0));
+    // 前视延迟超时数
+    ret_list.append(QString::number(status_vec[col_no * 2].timeout_num_));
+    // 后视延迟超时数
+    ret_list.append(QString::number(status_vec[col_no * 2 + 1].timeout_num_));
+    return ret_list;
+}
+
+QVector<AiStatusInfo> StatusInfoPage::GetAiStatus()
+{
+    QVector<AiStatusInfo> status_vec;
+
+    QByteArray request = cmdworker::AiStatusRequest();
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        AiStatusInfo status_info;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            status_vec.append(status_info);
+            LOG_ERROR_STM("ai status opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            continue;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            status_vec.append(status_info);
+            LOG_ERROR_STM("ai status opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            continue;
+        }
+
+        status_info = cmdworker::AiStatusResponse(cmd_pkg);
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",ai status opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            << response.toHex(' ').toUpper().toStdString());
+
+        status_vec.append(status_info);
+    }
+
+    return status_vec;
 }
 
 QString StatusInfoPage::getVpnIpAddress()

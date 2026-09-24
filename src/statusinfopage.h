@@ -9,6 +9,8 @@
 #ifndef STATUSINFOPAGE_H
 #define STATUSINFOPAGE_H
 
+#include <QMap>
+#include <QVector>
 #include <QWidget>
 #include <QStackedWidget>
  //#include <QWebView>
@@ -33,6 +35,7 @@
 #include "remotecontrol.h"
 #include "setsms.h"
 #include "stdint.h"
+#include "sortertypes.h"
 
 using QJson::JsonObject;
 using QJson::JsonArray;
@@ -92,6 +95,7 @@ public:
     void sendAlarmSms(void);            // 有报警时发送提示短信
     void updateAlarmStatus(void);       // 更新报警状态
     void setLeftBtnStatus();            // 更新左边重新检测按钮显示状态
+    void updateAiRunStatus();
 
     void hideColumn(int index);
     void showColumn(int index);
@@ -103,6 +107,9 @@ public:
     char hexToByte(const QString& hexString);
     QString convertHexInString(const QString& hexString);
     QString getVpnIpAddress();
+
+    QVector<AiStatusInfo> GetAiStatus();
+    QStringList GetAiStatusColInfo(const QVector<AiStatusInfo>& status_vec, int col_no);
 
 signals:
     void updateStatusPageSig();         // 更新系统状态页面
@@ -226,6 +233,13 @@ private:
     QSpacerItem* verticalSpacer_1;
     MyTabBar* statusTabBar;
     myGroupBox* generalInfoGroup;
+
+    // AI状态信息
+    myGroupBox* aiInfoGroup;
+    // AI状态布局
+    QGridLayout* aiGridLayout;
+    // AI状态显示信息
+    QVector<QVector<myLabel*>> aiStatusLabels;
 
     // pageAlarm
     myCustomCheckBox* alarmEnableBtn[MAX_ALARM];
