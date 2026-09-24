@@ -558,7 +558,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
             // 1) 插入模型主记录
             ModelInfo mi;
             mi.model_id_  = downLoadModelName;
-            mi.model_name_ = downLoadModelName;
+            mi.model_name_ = downLoadModelName+".bin";
             mi.is_apply_  = false;
             mi.is_upload_ = false;
             if (!SQLiteMgr::Instance().InsertModelInfo(mi)) {
