@@ -18,21 +18,25 @@ SftpClient::~SftpClient()
     LOG_INFO_STM("SftpClient dtor: " << host_ << ":" << port_);
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// 持久连接管理
-// ═══════════════════════════════════════════════════════════════════════
 
 bool SftpClient::connect()
 {
-    if (is_init_) return true;  // 已连接，复用
+    if (is_init_)
+    {
+        return true;
+    }
 
     do
     {
         // DNS 解析（支持域名 / IP）
-        struct addrinfo hints { 0 }, * res{ nullptr };
+        struct addrinfo hints { 0 };
         hints.ai_family = AF_INET;
         hints.ai_socktype = SOCK_STREAM;
-        char portbuf[16]; snprintf(portbuf, sizeof(portbuf), "%d", port_);
+
+        char portbuf[16];
+        snprintf(portbuf, sizeof(portbuf), "%d", port_);
+        struct addrinfo* res{ nullptr };
+
         if (getaddrinfo(host_.c_str(), portbuf, &hints, &res) != 0 || !res)
         {
             LOG_ERROR_STM("getaddrinfo failed, host:" << host_ << ", port:" << port_);
@@ -44,7 +48,10 @@ bool SftpClient::connect()
         for (struct addrinfo* rp = res; rp; rp = rp->ai_next)
         {
             socket_fd_ = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-            if (socket_fd_ < 0) continue;
+            if (socket_fd_ < 0)
+            {
+                continue;
+            }
 
             // 设置超时时间，防止网络不通
             struct timeval tv;
@@ -64,6 +71,7 @@ bool SftpClient::connect()
             close(socket_fd_);
             socket_fd_ = -1;
         }
+
         freeaddrinfo(res);
         if (!tcp_ok)
         {
@@ -139,7 +147,7 @@ void SftpClient::disconnect()
 
 bool SftpClient::mkdir(const std::string& remote_dir, int mode)
 {
-    if (!is_init_)
+    if (!connect())
     {
         LOG_ERROR_STM("mkdir: not connected, call connect() first");
         return false;
@@ -170,7 +178,16 @@ bool SftpClient::mkdir(const std::string& remote_dir, int mode)
 
 bool SftpClient::mkdir_p(const std::string& remote_dir, int mode)
 {
-    if (remote_dir.empty()) return false;
+    if (remote_dir.empty())
+    {
+        return false;
+    }
+
+    if (!connect())
+    {
+        LOG_ERROR_STM("mkdir: not connected, call connect() first");
+        return false;
+    }
 
     // 逐级 mkdir，逐段用 / 切割
     std::string partial;
@@ -195,7 +212,7 @@ bool SftpClient::mkdir_p(const std::string& remote_dir, int mode)
 
 bool SftpClient::upload(const std::string& local_file, const std::string& remote_file)
 {
-    if (!is_init_)
+    if (!connect())
     {
         LOG_ERROR_STM("upload: not connected, call connect() first");
         return false;
@@ -247,6 +264,7 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
 
     if (!ret)
     {
+        disconnect();
         LOG_ERROR_STM("upload FAILED local:" << local_file << " -> remote:" << remote_file);
     }
     return ret;
@@ -254,7 +272,7 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
 
 bool SftpClient::download(const std::string& remote_file, const std::string& local_file)
 {
-    if (!is_init_)
+    if (!connect())
     {
         LOG_ERROR_STM("download: not connected, call connect() first");
         return false;
@@ -304,6 +322,7 @@ bool SftpClient::download(const std::string& remote_file, const std::string& loc
 
     if (!ret)
     {
+        disconnect();
         LOG_ERROR_STM("download FAILED remote:" << remote_file << " -> local:" << local_file);
     }
     return ret;
@@ -311,7 +330,7 @@ bool SftpClient::download(const std::string& remote_file, const std::string& loc
 
 bool SftpClient::list_files(const std::string& remote_path, std::vector<std::string>& files)
 {
-    if (!is_init_)
+    if (!connect())
     {
         LOG_ERROR_STM("list_files: not connected, call connect() first");
         return false;
@@ -347,16 +366,22 @@ bool SftpClient::list_files(const std::string& remote_path, std::vector<std::str
         libssh2_sftp_closedir(dir);
     }
 
+    if (!ret)
+    {
+        disconnect();
+    }
+
     return ret;
 }
 
 bool SftpClient::stat_file(const std::string& remote_file, LIBSSH2_SFTP_ATTRIBUTES& attrs)
 {
-    if (!is_init_)
+    if (!connect())
     {
-        LOG_ERROR_STM("stat_file: not connected");
+        LOG_ERROR_STM("stat_file: not connected, call connect() first");
         return false;
     }
+
     int rc = libssh2_sftp_stat(sftp_, remote_file.c_str(), &attrs);
     if (rc != 0)
     {
@@ -368,11 +393,12 @@ bool SftpClient::stat_file(const std::string& remote_file, LIBSSH2_SFTP_ATTRIBUT
 
 bool SftpClient::deleteFiles(const std::string& file)
 {
-    if (!is_init_)
+    if (!connect())
     {
-        LOG_ERROR_STM("deleteFiels: not connected");
+        LOG_ERROR_STM("deleteFiles: not connected, call connect() first");
         return false;
     }
+
 
     LOG_INFO_STM("delete ftp file:" << file);
     int rc = libssh2_sftp_unlink(sftp_, file.c_str());
@@ -386,9 +412,9 @@ bool SftpClient::deleteFiles(const std::string& file)
 
 std::string SftpClient::exec(const std::string& cmd)
 {
-    if (!is_init_)
+    if (!connect())
     {
-        LOG_ERROR_STM("exec: not connected");
+        LOG_ERROR_STM("exec: not connected, call connect() first");
         return "";
     }
 
