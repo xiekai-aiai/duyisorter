@@ -4666,7 +4666,7 @@ void GlobalFlow::initUdpImagPara()
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",image height opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
@@ -4715,7 +4715,7 @@ void GlobalFlow::initPixelImagPara()
                 continue;
             }
 
-            LOG_INFO_STM("set pixel index:" << j << " ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+            LOG_INFO_STM("set pixel index:" << j << " ip:" << ip.toStdString() << " code" << (int)cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
                 << ", response body:" << response.toHex(' ').toUpper().toStdString());
         }
     }
@@ -4770,7 +4770,7 @@ void GlobalFlow::initEjectorDelayPara()
                     continue;
                 }
 
-                LOG_INFO_STM("blow time index::" << nUnitAddr << " ip:" << ip.toStdString() << " code:" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                LOG_INFO_STM("blow time index::" << nUnitAddr << " ip:" << ip.toStdString() << " code:" << (int)cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
                     << ", response body:" << response.toHex(' ').toUpper().toStdString());
             }
         }
@@ -4827,7 +4827,7 @@ void GlobalFlow::initEjectorModePara()
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",valve model index: send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
@@ -4865,7 +4865,7 @@ void GlobalFlow::startAiCollect()
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",collect opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
 
 
@@ -4918,7 +4918,7 @@ void GlobalFlow::stopAiCollect()
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",collect opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 
@@ -4956,7 +4956,7 @@ void GlobalFlow::startAiInfer()
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ", infer opr send command : " << request.toHex(' ').toUpper().toStdString() << ", response : "
-            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
 
     // 给所有相机发送开启推理指令 
@@ -5006,7 +5006,7 @@ void GlobalFlow::stopAiInfer()
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ", infer opr send command : " << request.toHex(' ').toUpper().toStdString() << ", response : "
-            << response.toHex(' ').toUpper().toStdString() << ", code:" << cmdworker::CommResponse(cmd_pkg).code_);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
 }
 

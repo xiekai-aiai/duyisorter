@@ -1306,6 +1306,9 @@ void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
 
     foreach(CaptureConfig tmp, qlCaptureConfig)
     {
+        LOG_INFO_STM("nUnitAddr:" << tmp.nUnitAddr << ", nSeq:" << tmp.nSeq << ", protoType:" << tmp.nProtoType
+            << ", nViewNum:" << tmp.nViewNum << ", data len:" << tmp.dataLen << ", datadep:" << tmp.dataDepth
+            << ", result:" << tmp.result << ", unitName:" << tmp.unitViewName.toStdString());
         if (tmp.nTransType == 1)
         {  //USB需要初始化
 //            if (isUSBInit) {

@@ -1610,7 +1610,7 @@ void setColorCamera::calDivChannelParams(int beginCh, int endCh)
             }
             else
             {
-                LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << (int)cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
                     << ", response body:" << response.toHex(' ').toUpper().toStdString());
             }
         }
@@ -3933,7 +3933,7 @@ void setColorCamera::onDivChannelListResetBtnClicked(int type)
                     }
                     else
                     {
-                        LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                        LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << (int)cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
                             << ", response body:" << response.toHex(' ').toUpper().toStdString());
                     }
                 }
@@ -4001,7 +4001,7 @@ void setColorCamera::onDivChannelListResetBtnClicked2(int type)
                     }
                     else
                     {
-                        LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
+                        LOG_INFO_STM("set pixel  ip:" << ip.toStdString() << " code" << (int)cmdworker::CommResponse(cmd_pkg).code_ << ", request body:" << request.toHex(' ').toUpper().toStdString()
                             << ", response body:" << response.toHex(' ').toUpper().toStdString());
                     }
                 }
