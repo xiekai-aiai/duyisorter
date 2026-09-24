@@ -225,7 +225,7 @@ void PageAi::onCurrentRowChanged(int index)
 
     QString model_name = modelListWidget->currentItem()->text();
     QString model_id = modelListWidget->currentItem()->data(Qt::UserRole).toString();
-    const char* charArray = model_id.toStdString().c_str();
+    const char* charArray = model_id.toUtf8().constData();
     strcpy(m_struGroupIdentify[tabIndex].struAi.modelId, charArray);
     LOG_INFO_STM("current model name:" << model_name.toStdString() << ", model id:" << model_id.toStdString());
 
