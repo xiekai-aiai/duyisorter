@@ -54,6 +54,8 @@ MySchemeParams::MySchemeParams(QWidget* parent)
     uploadBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     deleteBtn = new myPushButton("删除", myIcon.Action_Apply, true, true, this);
     deleteBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    uploadBtn->hide();
+    deleteBtn->hide();
 
     /* page update */
         /* signals to slots */

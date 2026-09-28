@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:23:37
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-21 10:12:48
+ * @LastEditTime: 2026-09-28 09:26:07
  */
 #ifndef CMDWORKER_H
 #define CMDWORKER_H
@@ -73,6 +73,9 @@ namespace cmdworker
 
     // 预览请求
     QByteArray ViewParamRequest(const ViewParam& info);
+
+    // 预览请求2
+    QByteArray ViewParamRequest2(const ViewParam& info);
 
     // 仿真请求
     QByteArray EmulateParamRequest(const EmulateParam& info);

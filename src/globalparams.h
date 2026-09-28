@@ -9,14 +9,12 @@
 #define GLOBALPARAMS_H
 
 #include "myqextserialport.h"
-#include "aicommunicate.h"
 #include "mylanguage.h"
 #include "mydelaycode.h"
 #include "3rdparty/qjson/qjson.h"
 #include "mydevmonitor.h"
 
 class MyQextSerialPort;
-class AiCommunicate;
 class MyGlobalString;
 
 
@@ -1507,11 +1505,6 @@ struct struShare
     int idIndex[MAX_LEVEL * 2];       // TD机型的TabBar对应的识别组位置
 
     QString tempPwd;                // 临时密码
-    int aiDeviceNum;
-    QList<QHostAddress>     addressList;
-    QList<QString>         ftpIpAddressList;
-    QHostAddress     address;
-    QString          ftpIpAddress;
     QString aiResult[MAX_UNIT];
 
     QString wifiSsid;

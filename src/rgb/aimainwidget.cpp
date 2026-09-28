@@ -1335,14 +1335,8 @@ void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
 
     foreach(CaptureConfig tmp, qlCaptureConfig)
     {
-        QByteArray args;
-        args.clear();
-        args[0] = 0;
-        //清空读图片缓冲区
-        int ret1 = MyUpd.clear_udp_buffer(MyUpd.getSockfd());
-        std::cout << "已清空缓冲区字节" << ret1 << " 字节" << std::endl;
 
-        MyUpd.writeDatagram(CMD_AI_IMG_VID_UPLOAD, tmp.nUnitAddr / 2, 1, args, struGsh.addressList.at(tmp.nUnitAddr / 2), AI_UDP_SEND_PORT);
+        // todo 发送upd抓拍图片指令
         myFlow.msleep(50);
 
         if (tmp.result == ERR_USB_INIT)
@@ -1898,12 +1892,8 @@ void AIMainWidget::processImageDataFromCameraByAIEN(CaptureConfig& captureConfig
 
     char* data = NULL;
 
-#ifdef Q_OS_WIN32
-    captureConfig.result = ERR_CONFIG;
-    goto EXIT;
-#endif
 
-#ifdef Q_OS_UNIX
+
     //    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     //    int buf_size = BUFFER_SIZE;
     //    struct sockaddr_in serv_addr;
@@ -1990,8 +1980,9 @@ void AIMainWidget::processImageDataFromCameraByAIEN(CaptureConfig& captureConfig
 
         // 临时缓冲区用于接收单次数据
         unsigned char temp_buf[40960];  // 单次接收4KB，避免大数组
-        ssize_t recv_len = recvfrom(MyUpd.getSockfd(), temp_buf, sizeof(temp_buf), 0,
-            (struct sockaddr*)&client_addr, &addr_len);
+        // xktodo 接收抓拍图片数据 
+        ssize_t recv_len;
+        // = recvfrom(MyUpd.getSockfd(), temp_buf, sizeof(temp_buf), 0, (struct sockaddr*)&client_addr, &addr_len);
 
         // 处理接收结果（关键错误检查）
         if (recv_len < 0)
@@ -2086,7 +2077,6 @@ OK:
         }
         updateBtnStatus();
     }
-#endif
 
 EXIT:
     fflush(0);
