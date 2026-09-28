@@ -65,6 +65,14 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QFileInfo>
 #include <algorithm>   // std::sort
 
+// ═══ 新增 include ═══
+#include "globalflow.h"   // myFlow.mountUdisk()
+#include <QProgressBar>
+#include <QThread>
+
+// ═══ UI 兼容宏：.ui 里删除了 validImgPushButton，但保留实现代码 ═══
+#define AIMODELSET_VALID_IMG_BUTTON_REMOVED 1
+
 // ── IoU 辅助：两个矩形的交并比 ──
 static double calcIoU(const QRect& a, const QRect& b)
 {
@@ -267,8 +275,10 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(ui->areaThresholdAnnoPushButton, &QPushButton::clicked, this, &AiModelSet::onAreaThresholdAnnoPushButtonClicked);
 
     // ── 校验图片按钮（toggle，触发完整仿真流程）───────────────────
+#if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
     ui->validImgPushButton->setCheckable(true);
     connect(ui->validImgPushButton, &QPushButton::clicked, this, &AiModelSet::onValidImgPushButtonClicked);
+#endif
 
     ui->batchValidImgPushButton->setCheckable(true);
     connect(ui->batchValidImgPushButton, &QPushButton::clicked, this, &AiModelSet::onBatchValidImgPushButtonClicked);
@@ -818,7 +828,9 @@ void AiModelSet::resetTrainingState()
     m_trainingBusy = false;
     if (ui) {
         ui->modelTrainPushButton->setEnabled(true);   // 训练按钮恢复
+#if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
         ui->validImgPushButton->setEnabled(true);     // 仿真按钮恢复
+#endif
         ui->batchValidImgPushButton->setEnabled(true);
         ui->validvsAnnoImgPushButton->setEnabled(true);
     }
@@ -2388,6 +2400,108 @@ static void removeDirInFileDialog(QFileDialog *dlg)
     }
 }
 
+// ═══════════════════════════════════════════════════════════
+// U盘导出功能：CopyThread + exportDirToUsb
+// ═══════════════════════════════════════════════════════════
+namespace {
+class CopyThread : public QThread {
+public:
+    CopyThread(const QString &src, const QString &dst, int total)
+        : m_src(src), m_dst(dst), m_total(total) {}
+    int done() const { return m_done; }
+    int total() const { return m_total; }
+    bool stopped() const { return m_stopped; }
+    QString currentFile() const { return m_current; }
+    void stop() { m_stopped = true; }
+protected:
+    void run() override {
+        QDirIterator it(m_src, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            if (m_stopped) break;
+            const QString srcFile = it.next();
+            QFileInfo fi(srcFile);
+            if (!fi.isFile()) continue;
+            const QString rel = fi.absoluteFilePath().mid(m_src.length() + 1);
+            const QString dstFile = m_dst + "/" + rel;
+            m_current = rel;
+            QDir().mkpath(QFileInfo(dstFile).absolutePath());
+            QFile::remove(dstFile);
+            QFile::copy(srcFile, dstFile);
+            ++m_done;
+        }
+    }
+private:
+    QString m_src, m_dst;
+    int m_total, m_done = 0;
+    bool m_stopped = false;
+    QString m_current;
+};
+}
+
+bool AiModelSet::exportDirToUsb(const QString &srcDir, QWidget *parent)
+{
+    QDir src(srcDir);
+    if (!src.exists()) {
+        QMessageBox::warning(parent, tr("提示"), tr("源目录不存在！"));
+        return false;
+    }
+    showTip(tr("检测U盘..."));
+    if (!myFlow.mountUdisk()) {
+        QMessageBox::warning(parent, tr("提示"),
+            tr("未检测到U盘！\n请插上U盘后再试。"));
+        return false;
+    }
+    QDir udisk("/udisk");
+    if (!udisk.exists()) {
+        QMessageBox::warning(parent, tr("提示"), tr("U盘挂载失败（/udisk 不存在）"));
+        return false;
+    }
+    const QString dstDir = "/udisk/" + QFileInfo(srcDir).fileName();
+    QDir().mkpath(dstDir);
+    int total = 0;
+    QDirIterator it(srcDir, QDirIterator::Subdirectories);
+    while (it.hasNext()) { it.next(); if (QFileInfo(it.filePath()).isFile()) ++total; }
+    if (total == 0) {
+        QMessageBox::information(parent, tr("提示"), tr("目录为空，无需导出"));
+        return true;
+    }
+    QDialog dlg(parent);
+    dlg.setWindowTitle(tr("导出到U盘"));
+    dlg.setMinimumWidth(420);
+    auto *v = new QVBoxLayout(&dlg);
+    auto *bar = new QProgressBar(&dlg);
+    bar->setRange(0, total); bar->setValue(0);
+    auto *lbl = new QLabel(tr("准备中..."), &dlg);
+    auto *cancelBtn = new QPushButton(tr("取消"), &dlg);
+    auto *btnRow = new QHBoxLayout();
+    btnRow->addStretch(); btnRow->addWidget(cancelBtn);
+    v->addWidget(bar); v->addWidget(lbl); v->addLayout(btnRow);
+    auto *copyThread = new CopyThread(srcDir, dstDir, total);
+    connect(cancelBtn, &QPushButton::clicked, copyThread, &CopyThread::stop);
+    connect(cancelBtn, &QPushButton::clicked, &dlg, &QDialog::close);
+    copyThread->start();
+    QTimer poller;
+    connect(&poller, &QTimer::timeout, [&]() {
+        bar->setValue(copyThread->done());
+        lbl->setText(QString("%1 / %2  %3").arg(copyThread->done()).arg(total).arg(copyThread->currentFile()));
+        if (!copyThread->isRunning()) {
+            poller.stop();
+            if (copyThread->stopped()) {
+                QMessageBox::information(parent, tr("提示"), tr("已取消"));
+            } else {
+                QMessageBox::information(parent, tr("提示"),
+                    tr("导出完成！\n已拷贝到 %1").arg(dstDir));
+            }
+            copyThread->deleteLater();
+            dlg.accept();
+        }
+    });
+    poller.start(50);
+    dlg.exec();
+    if (copyThread->isRunning()) { copyThread->stop(); copyThread->wait(); copyThread->deleteLater(); }
+    return true;
+}
+
 void AiModelSet::onImportImgPushButtonClicked(){
     FLOW("import 入口");
     FLOW("import 弹框前");
@@ -2408,63 +2522,29 @@ void AiModelSet::onImportImgPushButtonClicked(){
     // 默认打开 GetAcqImgRootPath()（部分平台会忽略构造参数，这里再显式设置一次）
     dlg.setDirectory(initDir);
 
-    // 缩短 Directory 右边的编辑框 + 顶部 Look in 下拉框
-    if (QLineEdit *fileNameEdit = dlg.findChild<QLineEdit*>("fileNameEdit"))
-        fileNameEdit->setMaximumWidth(350);
-    if (QComboBox *lookCombo = dlg.findChild<QComboBox*>("lookInCombo"))
-        lookCombo->setMaximumWidth(280);
+    // ═══ 隐藏所有非必要控件 ═══
+    for (QComboBox *cb : dlg.findChildren<QComboBox*>()) cb->hide();
+    if (QLineEdit *fileNameEdit = dlg.findChild<QLineEdit*>("fileNameEdit")) fileNameEdit->hide();
+    if (QWidget *filterW = dlg.findChild<QWidget*>("filterWidget")) filterW->hide();
+    for (QLabel *lbl : dlg.findChildren<QLabel*>()) lbl->hide();
 
-    // 在 buttonBox 里加 Delete 但立刻 hide + 从 buttonBox 脱出来，
-    // 然后手动定位到 Choose(AcceptedRole) 按钮的正左边，
-    // 完全绕过 theme 对 buttonBox 内部布局的竖排行为
-    // ⭐ 调试：探测 QFileDialog 自绘对话框的 buttonBox 结构
+    // ═══ Delete + Export 加到 buttonBox，和 Choose/Cancel 并排 ═══
     QDialogButtonBox *box = dlg.findChild<QDialogButtonBox*>("buttonBox");
-    qDebug() << "[DBG] buttonBox=" << box;
-
-    if (!box) {
-        qWarning() << "[DBG] buttonBox not found!";
-    } else {
-        // 找到 AcceptRole 的那个按钮（就是 Choose）
-        QPushButton *chooseBtn = nullptr;
-        for (QAbstractButton *ab : box->buttons()) {
-            QPushButton *btn = qobject_cast<QPushButton*>(ab);
-            if (!btn) continue;
-            qDebug() << "[DBG] box button:" << btn->text()
-                     << "role=" << box->buttonRole(btn);
-            if (box->buttonRole(btn) == QDialogButtonBox::AcceptRole)
-                chooseBtn = btn;
-        }
-
+    if (box) {
+        box->setOrientation(Qt::Horizontal);
         QPushButton *delBtn = box->addButton("Delete", QDialogButtonBox::DestructiveRole);
-        qDebug() << "[DBG] delBtn=" << delBtn << "chooseBtn=" << chooseBtn;
-        // 从 buttonBox 脱出来挂到 dlg 顶层，绕过 theme 的竖排布局
-        delBtn->setParent(&dlg);
-
-        QPushButton *chooseRef = chooseBtn;
-        QMetaObject::invokeMethod(&dlg, [delBtn, chooseRef, &dlg]() {
-            if (!chooseRef) { qWarning() << "[DBG] chooseRef null"; return; }
-            delBtn->setFixedSize(chooseRef->size());
-            // ⭐ 关键：chooseRef 的坐标是相对 buttonBox 的，必须 mapTo dlg 才能用于 delBtn
-            const QPoint p = chooseRef->mapTo(&dlg, QPoint(0, 0));
-            delBtn->move(p.x() - delBtn->width() - 6, p.y());
-            delBtn->raise();
-            delBtn->show();
-
-            // ⭐ Delete 是浮在 dlg 顶层的独立控件，不参与 grid 布局，
-            // Directory 编辑框不会自动让位 → 把它的右端收到 Delete 左侧，避免被遮挡
-            if (QLineEdit *edit = dlg.findChild<QLineEdit*>("fileNameEdit")) {
-                const QPoint ep = edit->mapTo(&dlg, QPoint(0, 0));
-                const int w = delBtn->x() - 6 - ep.x();
-                if (w > 60) edit->setMaximumWidth(w);
-            }
-
-            qDebug() << "[DBG] delBtn ->" << delBtn->geometry()
-                     << "choose(mapTo dlg) ->" << p
-                     << "visible=" << delBtn->isVisible();
-        }, Qt::QueuedConnection);
-
+        QPushButton *exportBtn = box->addButton("Export", QDialogButtonBox::ActionRole);
         connect(delBtn, &QPushButton::clicked, &dlg, [&dlg]() {
             removeDirInFileDialog(&dlg);
+        });
+        connect(exportBtn, &QPushButton::clicked, &dlg, [this, &dlg]() {
+            QString dir = dlg.selectedFiles().value(0);
+            if (dir.isEmpty()) dir = dlg.directory().absolutePath();
+            if (dir.isEmpty() || !QDir(dir).exists()) {
+                QMessageBox::warning(&dlg, tr("提示"), tr("请先选择要导出的目录！"));
+                return;
+            }
+            exportDirToUsb(dir, &dlg);
         });
     }
 
@@ -3630,7 +3710,13 @@ bool AiModelSet::loadEmulateResultFromFile(const QString& imgPath, QVector<ObjIn
 // ═══════════════════════════════════════════════════════════
 void AiModelSet::onValidImgPushButtonClicked()
 {
+#if AIMODELSET_VALID_IMG_BUTTON_REMOVED
+    return;
+#else
+
+    #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
     bool willShow = ui->validImgPushButton->isChecked();
+    #endif
     if (!willShow) {
         m_emulating = false;
         m_emulateObjInfos.clear();
@@ -3655,13 +3741,17 @@ void AiModelSet::onValidImgPushButtonClicked()
 
     // ① 模型必须选中
     if (modelName.isEmpty()) {
+        #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
         ui->validImgPushButton->setChecked(false);
+        #endif
         QMessageBox::warning(this, tr("提示"), tr("请先在模型加载中选择仿真模型！"));
         return;
     }
     // ② 图片必须加载
     if (m_currentPixmap.isNull()) {
+        #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
         ui->validImgPushButton->setChecked(false);
+        #endif
         showTip("请先加载图片", true);
         return;
     }
@@ -3677,7 +3767,9 @@ void AiModelSet::onValidImgPushButtonClicked()
 
     // ④ 板卡模型 MD5 校验 + 自动上传（只在 pred 不存在、需要远程推理时才做）
     if (!ensureBoardModelUploaded(modelName)) {
+        #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
         ui->validImgPushButton->setChecked(false);
+        #endif
         m_emulating = false;
         return;
     }
@@ -3689,7 +3781,11 @@ void AiModelSet::onValidImgPushButtonClicked()
 // ═══════════════════════════════════════════════════════════
 // 批量仿真按钮：遍历当前目录所有图片，保存 pred txt
 // UI 阻塞，tipLabel 显示进度
-// ═══════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════
+#endif
+}
+
+
 void AiModelSet::onBatchValidImgPushButtonClicked()
 {
     bool willShow = ui->batchValidImgPushButton->isChecked();
@@ -3701,7 +3797,9 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     }
 
     // 互斥：关掉其他两个按钮的选中态
+    #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
     ui->validImgPushButton->setChecked(false);
+    #endif
     ui->validvsAnnoImgPushButton->setChecked(false);
     m_vsAnnoMode = false;
 
@@ -3752,7 +3850,9 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         showTip(QString("批量仿真已完成（从缓存加载，共 %1 张）").arg(cachedCount));
         ui->batchValidImgPushButton->setChecked(true);
         ui->batchValidImgPushButton->setEnabled(true);
+        #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
         ui->validImgPushButton->setChecked(false);
+        #endif
         m_emulating = true;
         m_emulateObjInfos.clear();
         loadEmulateResultFromFile(m_currentImagePath, m_emulateObjInfos);
@@ -3889,7 +3989,9 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     // ⑧ 恢复 UI + 自动进入仿真查看态（从 pred txt 读）
     ui->batchValidImgPushButton->setChecked(true);   // 批量按钮保持选中
     ui->batchValidImgPushButton->setEnabled(true);
+    #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
     ui->validImgPushButton->setChecked(false);         // 互斥：仿真按钮取消选中
+    #endif
     for (auto* b : allBtns) b->setEnabled(true);
 
     // ⑨ 切换到仿真查看态（只读 pred txt）
@@ -3925,7 +4027,9 @@ void AiModelSet::onValidvsAnnoImgPushButtonClicked()
     }
 
     // 和其他按钮互斥
+    #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
     ui->validImgPushButton->setChecked(false);
+    #endif
     ui->batchValidImgPushButton->setChecked(false);
     m_emulating = false;
     m_emulateObjInfos.clear();
@@ -4032,7 +4136,9 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     m_trainingBusy = true;
     ui->modelTrainPushButton->setEnabled(false);   // 训练按钮置灰
     // 仿真相关按钮全部禁用，直到训练结束/异常退出 → resetTrainingState 统一恢复
+#if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
     ui->validImgPushButton->setEnabled(false);
+#endif
     ui->batchValidImgPushButton->setEnabled(false);
     ui->validvsAnnoImgPushButton->setEnabled(false);
     m_pollFailCount = 0;

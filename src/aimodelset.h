@@ -461,6 +461,7 @@ public:
     void getFgRects();
     void removeNestedBoxes(QVector<QRect>& rects);  // 移除被大框包含的小框，仅留最外层
     void showTip(const QString &msg, bool red = false);  // 提示（red=true 用红色）
+    bool exportDirToUsb(const QString &srcDir, QWidget *parent = nullptr);  // 导出目录到U盘（带进度）
 
 public slots:
     void onSetBackBtnClicked();      // 响应返回按钮按下事件

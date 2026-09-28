@@ -375,7 +375,7 @@ QPushButton:pressed {
     <rect>
      <x>20</x>
      <y>680</y>
-     <width>141</width>
+     <width>111</width>
      <height>51</height>
     </rect>
    </property>
@@ -402,15 +402,15 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>导入图片资源</string>
+    <string>图片管理</string>
    </property>
   </widget>
   <widget class="QPushButton" name="mergeImgPushButton">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>140</x>
      <y>680</y>
-     <width>141</width>
+     <width>111</width>
      <height>51</height>
     </rect>
    </property>
@@ -612,11 +612,11 @@ QPushButton:pressed {
    <property name="font">
     <font>
      <family>HarmonyOS Sans Medium</family>
-     <pointsize>6</pointsize>
+     <pointsize>10</pointsize>
     </font>
    </property>
    <property name="text">
-    <string/>
+    <string>当前图像和页</string>
    </property>
    <property name="pixmap">
     <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>
@@ -760,7 +760,7 @@ QPushButton:checked {
 	   padding: 2px;}</string>
    </property>
    <property name="text">
-    <string>前景目标</string>
+    <string>自动拉框</string>
    </property>
    <property name="checkable">
     <bool>true</bool>
@@ -924,7 +924,7 @@ QPushButton:pressed {
   <widget class="QLineEdit" name="m_areaThresholdlineEdit">
    <property name="geometry">
     <rect>
-     <x>800</x>
+     <x>790</x>
      <y>420</y>
      <width>61</width>
      <height>31</height>
@@ -940,16 +940,16 @@ QPushButton:pressed {
   <widget class="QLabel" name="areaLabel">
    <property name="geometry">
     <rect>
-     <x>740</x>
+     <x>720</x>
      <y>420</y>
-     <width>51</width>
+     <width>71</width>
      <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>HarmonyOS Sans Medium</family>
-     <pointsize>7</pointsize>
+     <pointsize>10</pointsize>
     </font>
    </property>
    <property name="text">
@@ -962,16 +962,16 @@ QPushButton:pressed {
   <widget class="QLabel" name="colorDiffLabel">
    <property name="geometry">
     <rect>
-     <x>880</x>
+     <x>860</x>
      <y>420</y>
-     <width>51</width>
+     <width>71</width>
      <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>HarmonyOS Sans Medium</family>
-     <pointsize>7</pointsize>
+     <pointsize>10</pointsize>
     </font>
    </property>
    <property name="text">
@@ -984,7 +984,7 @@ QPushButton:pressed {
   <widget class="QLineEdit" name="m_colorDiffThresholdlineEdit">
    <property name="geometry">
     <rect>
-     <x>940</x>
+     <x>930</x>
      <y>420</y>
      <width>61</width>
      <height>31</height>
@@ -997,12 +997,12 @@ QPushButton:pressed {
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="validImgPushButton">
+  <widget class="QPushButton" name="batchValidImgPushButton">
    <property name="geometry">
     <rect>
-     <x>320</x>
+     <x>270</x>
      <y>680</y>
-     <width>141</width>
+     <width>111</width>
      <height>51</height>
     </rect>
    </property>
@@ -1039,54 +1039,12 @@ QPushButton:checked {
     <string>仿真</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="batchValidImgPushButton">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>680</y>
-     <width>141</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>HarmonyOS Sans Medium</family>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-	   text-align: center;
-	   outline: none;
-	   background-color: #e0f7fa;
-	   border-color: #afafaf;
-	   border-width: 2px;
-	   border-style: solid;
-	   border-radius: 5;
-	   padding: 2px;}
-
-QPushButton:pressed {
-	   padding-left: 5px;
-	   padding-top: 5px;
-	   background-color: lightgrey;}
-
-QPushButton:checked {
-	   background-color: #00bcd4;
-	   color: white;
-	   border-color: #0097a7;
-	   border-width: 3px;
-	   padding: 2px;}</string>
-   </property>
-   <property name="text">
-    <string>批量仿真</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="validvsAnnoImgPushButton">
    <property name="geometry">
     <rect>
-     <x>620</x>
+     <x>390</x>
      <y>680</y>
-     <width>141</width>
+     <width>111</width>
      <height>51</height>
     </rect>
    </property>
