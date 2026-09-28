@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QStringList>
 #include <QThread>
-#include "aicommunicate.h"
 
 class QListWidget;
 class QPushButton;
@@ -37,7 +36,7 @@ class ImageFolderImporter : public QWidget
     Q_OBJECT
 
 public:
-    explicit ImageFolderImporter(QWidget *parent = nullptr);
+    explicit ImageFolderImporter(QWidget* parent = nullptr);
     ~ImageFolderImporter() override;
 
 private slots:

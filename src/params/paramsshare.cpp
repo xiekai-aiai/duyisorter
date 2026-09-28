@@ -608,52 +608,6 @@ void GlobalFlow::getDefaultPara()
         idTotal = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal;
         break;
     }
-    struGsh.aiDeviceNum = idTotal / 2;
-    qDebug() << "aiDeviceNum" << struGsh.aiDeviceNum;
-
-    struGsh.ftpIpAddressList.clear();
-    struGsh.addressList.clear();
-
-    struGsh.ftpIpAddressList.append(AI_IP_ADDRESS);
-    QString oldIpAddress = AI_IP_ADDRESS;
-
-    for (int i = 1; i < struGsh.aiDeviceNum; i++)
-    {
-        QString newIpAddress = oldIpAddress;
-        newIpAddress = incrementLastOctet(oldIpAddress);
-        oldIpAddress = newIpAddress;
-        struGsh.ftpIpAddressList.append(newIpAddress);
-    }
-    //json文件解析
-    QFile file(DEFAULT_PARA_INIT);
-    file.open(QFile::ReadOnly);
-    QString json = QString::fromUtf8(file.readAll());
-    file.close();
-    bool ok;
-    QVariantMap resultMap = QJson::parse(json.toUtf8(), ok).toMap();
-    if (!ok)
-    {
-        qDebug() << "json open failed, using default IpAddress";
-    }
-    else
-    {
-        for (int i = 0; i < struGsh.aiDeviceNum; i++)
-        {
-            QString key = QString("ftpIp%1").arg(i);
-            if (resultMap.keys().contains(key))
-            {
-                struGsh.ftpIpAddress = resultMap[key].toString();
-                struGsh.ftpIpAddressList.replace(i, struGsh.ftpIpAddress);
-            }
-        }
-    }
-    qDebug() << "ftpIpAddressList" << struGsh.ftpIpAddressList;
-    struGsh.address = QHostAddress(struGsh.ftpIpAddressList.at(0));
-    struGsh.addressList.append(struGsh.address);
-    for (int i = 1; i < struGsh.ftpIpAddressList.size(); i++)
-    {
-        struGsh.addressList.append(QHostAddress(struGsh.ftpIpAddressList.at(i)));
-    }
 }
 
 // IP地址最后一位+1

@@ -94,7 +94,7 @@ HEADERS += $$PWD/src/*.h \
            $$PWD/src/rgb/upgradefpga/upgradefpgawidget.h \
            $$PWD/src/rgb/upgradefpga/selectfiledialog.h \
            $$PWD/src/rgb/tickmodewidget.h \
-           $$PWD/src/rgb/autoanalysiswidget.h 
+           $$PWD/src/rgb/autoanalysiswidget.h
 
 # source file
 SOURCES += $$PWD/src/*.cpp \
@@ -123,7 +123,7 @@ SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/rgb/schemeparams/*.cpp \
            $$PWD/src/rgb/upgradefpga/upgradeprogramwidget.cpp \
            $$PWD/src/rgb/upgradefpga/upgradefpgawidget.cpp \
-           $$PWD/src/rgb/upgradefpga/selectfiledialog.cpp 
+           $$PWD/src/rgb/upgradefpga/selectfiledialog.cpp
 
 win32{
             DESTDIR = app

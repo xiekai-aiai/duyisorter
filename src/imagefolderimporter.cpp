@@ -14,6 +14,7 @@
 #include <QFileInfo>
 #include <QDirIterator>
 #include <QProgressDialog>
+#include "aihelper.h"
 
 // ImageScanner 实现
 ImageScanner::ImageScanner(const QString& dirPath, QObject* parent)
@@ -73,7 +74,8 @@ ImageFolderImporter::ImageFolderImporter(QWidget* parent)
     m_refreshBtn = new QPushButton("刷新列表", this);
     m_clearBtn = new QPushButton("清空列表", this);
     m_statusLabel = new QLabel("就绪", this);
-    m_currentDir = QString("%1").arg(LOCAL_IMG_PATH);
+    m_currentDir = ai_helper::GetAcqImgRootPath();
+
 
     // 布局管理
     QHBoxLayout* btnLayout = new QHBoxLayout();

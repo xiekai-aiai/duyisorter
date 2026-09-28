@@ -19,7 +19,6 @@ struct struCnfProfile struCnfp, _t_struCnfp;
 struct struCnfFileStatus	struCnfs;
 struct struShare struGsh;
 
-AiCommunicate MyUpd;
 GlobalFlow myFlow;
 MyGlobalString myString;
 StrNetConfig strNetInfo;

@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-22 16:20:47
+ * @LastEditTime: 2026-09-28 15:52:14
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -13,8 +13,17 @@
 #include <QVector>
 #include "globalparams.h"
 
- // 本地发送udp命令端口
+// 最大接收缓冲区(4M)
+#define MAX_SOCKET_RCV_BUFFER 33554432
+
+// 本地发送udp命令端口
 #define SELF_UPD_CMD_PORT 19900
+// 本地接受图片数据端口
+#define SELF_UPD_VIDEO_PORT 19196
+
+// 相机像素宽
+#define CAM_PIXEL_WIDTH 1020
+
 // AI设备接收udp命令端口
 #define AI_UPD_CMD_PORT 9193
 // AI响应超时时间
@@ -51,6 +60,15 @@
 #define PKGA_HEAD1 0x5A
 #define PKGA_TAIL0 0xFF
 #define PKGA_TAIL1 0xFF
+
+// 包头长度
+#define IMG_PACKAGE_HEAD_LEN 4
+// 数据包包头
+#define IMG_PACKAGE_HEAD0 0xAA
+#define IMG_PACKAGE_HEAD1 0xAA
+#define IMG_PACKAGE_HEAD2 0xAA
+#define IMG_PACKAGE_HEAD3 0xAA
+
 // 最小A类包长度
 #define MIN_PKGA_LEN 12
 
@@ -79,6 +97,7 @@
 #define CMD_CODE_IP_MODIFY 0x0011              // ip修改命令
 #define CMD_CODE_AREA_SELECT 0x0012            // 面积选择命令
 #define CMD_CODE_AI_STATUS 0x0013              // AI状态命令
+#define CMD_CODE_VIEW_NEW 0x0014               // 新预览命令
 
 // 命令长度
 #define CMD_LEN_COLLECT 3                     // 采集命令
@@ -97,6 +116,7 @@
 #define CMD_LEN_VIWE 1                        // 预览命令
 #define CMD_LEN_IP_MODIFY 13                  // ip修改命令
 #define CMD_LEN_AREA_SELECT 4                 // 面积选择命令
+#define CMD_LEN_VIWE_NEW 1                    // 新预览命令
 
 // 错误编码
 #define CMD_CODE_FAIL 0                       // 错误编码
