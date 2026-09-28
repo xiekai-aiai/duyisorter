@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-17 15:50:40
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-23 18:08:49
+ * @LastEditTime: 2026-09-28 19:15:41
  */
 #include "aiimageacquisitionwidget.h"
 #include <QVBoxLayout>
@@ -16,6 +16,9 @@
 
 AiImageAcquisitionWidget::AiImageAcquisitionWidget(QWidget* parent) : QWidget(parent)
 {
+    // 标题栏默认不显示
+    setWindowFlags(Qt::FramelessWindowHint);
+    
     // 使能AI图片采集
     enabelAcquComBox = new myCustomCheckBox(myLan.enable + myLan.image_acquisition, false);
 

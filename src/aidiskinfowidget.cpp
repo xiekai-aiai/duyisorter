@@ -9,6 +9,9 @@
 
 AiDiskInfoWidget::AiDiskInfoWidget(QWidget* parent) : QWidget(parent)
 {
+    // 标题栏默认不显示
+    setWindowFlags(Qt::FramelessWindowHint);
+    
     mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(8);
 }
