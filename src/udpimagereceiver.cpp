@@ -204,6 +204,7 @@ void UdpImageReceiver::processDatagram(const QByteArray& datagram)
 
     uchar* dst = cur_image_.scanLine(cur_row_);
 
+
     /*
      * UDP中的数据本身就是BGR。
      */
@@ -223,6 +224,15 @@ void UdpImageReceiver::processDatagram(const QByteArray& datagram)
         frameCount_++;
 
         LOG_TRACE_STM("image read:" << frameCount_);
+
+        // xknote: 对于x5板卡， 相机传过来的数据是-128的
+        uchar* data = cur_image_.bits();
+        const int size = cur_image_.sizeInBytes();
+        for (int i = 0; i < size; ++i)
+        {
+            data[i] = static_cast<uchar>(
+                static_cast<int>(static_cast<signed char>(data[i])) + 128);
+        }
 
         emit imageReady(cur_image_);
 
