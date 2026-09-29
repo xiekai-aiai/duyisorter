@@ -62,7 +62,7 @@ mySensInputPanel::~mySensInputPanel()
  */
 void mySensInputPanel::createButtons(void)
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     this->setMinimumSize(50,50);
     int wid = LCD_WIDTH*0.75;
     int hei = LCD_CONTENT_HEIGTH*0.9;

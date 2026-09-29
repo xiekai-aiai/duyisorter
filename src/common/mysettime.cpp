@@ -10,7 +10,7 @@
 mySetTime::mySetTime(QWidget *parent) :
     QDialog(parent)
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setGeometry(QRect(0, LCD_TITLE_HEIGHT+1, LCD_WIDTH, LCD_CONTENT_HEIGTH-2));
     setStyleSheet(g_style1);
 

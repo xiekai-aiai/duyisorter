@@ -1100,7 +1100,7 @@ void AiModelSet::updateClassAnnotCounts()
         while (!in.atEnd()) {
             QString line = in.readLine().trimmed();
             if (line.isEmpty()) continue;
-            QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+            QStringList parts = line.split(QRegularExpression("\\s+"));
             if (parts.isEmpty()) continue;
             bool ok = false;
             int cid = parts[0].toInt(&ok);
@@ -1108,7 +1108,7 @@ void AiModelSet::updateClassAnnotCounts()
         }
         f.close();
     }
-
+    
     // 更新 label
     for (int i = 0; i < m_classCountLabels.size(); ++i) {
         int n = counts.value(i, 0);
@@ -2301,14 +2301,280 @@ void AiModelSet::onModelSelPushButtonClicked()
         listWidget->setCurrentRow(0);
     }
 
-    // 底部按钮
+    // 底部按钮：[模型删除] [模型导出] [模型导入]  stretch  [确定] [取消]
     QHBoxLayout *btnRow = new QHBoxLayout();
+    QPushButton *delModelBtn   = new QPushButton(tr("模型删除"), &dlg);
+    QPushButton *exportModelBtn = new QPushButton(tr("模型导出"), &dlg);
+    QPushButton *importModelBtn = new QPushButton(tr("模型导入"), &dlg);
+    btnRow->addWidget(delModelBtn);
+    btnRow->addWidget(exportModelBtn);
+    btnRow->addWidget(importModelBtn);
     btnRow->addStretch(1);
-    QPushButton *okBtn = new QPushButton("确定", &dlg);
-    QPushButton *cancelBtn = new QPushButton("取消", &dlg);
+    QPushButton *okBtn = new QPushButton(tr("确定"), &dlg);
+    QPushButton *cancelBtn = new QPushButton(tr("取消"), &dlg);
     btnRow->addWidget(okBtn);
     btnRow->addWidget(cancelBtn);
     mainLayout->addLayout(btnRow);
+
+    auto currentBinPath = [&]() -> QString {
+        QListWidgetItem *it = listWidget->currentItem();
+        if (!it) return {};
+        // 过滤掉列表里的占位符
+        if (!binNames.contains(it->text())) return {};
+        return it->data(Qt::UserRole).toString();
+    };
+    auto currentBinName = [&]() -> QString {
+        QListWidgetItem *it = listWidget->currentItem();
+        if (!it) return {};
+        return it->text();  // 无后缀
+    };
+    auto refreshList = [&]() {
+        listWidget->clear();
+        QStringList filters; filters << "*.bin";
+        QFileInfoList files = dir.entryInfoList(filters, QDir::Files);
+        std::sort(files.begin(), files.end(), [](const QFileInfo& a, const QFileInfo& b) {
+            return a.lastModified() > b.lastModified();
+        });
+        binNames.clear();
+        for (const auto &fi : files) {
+            binNames.append(fi.completeBaseName());
+            auto *item = new QListWidgetItem(fi.completeBaseName(), listWidget);
+            item->setData(Qt::UserRole, fi.filePath());
+        }
+        if (binNames.isEmpty())
+            new QListWidgetItem(tr("(该目录下没有 .bin 模型文件)"), listWidget);
+        else
+            listWidget->setCurrentRow(0);
+    };
+
+    // ── 模型删除 ──
+    connect(delModelBtn, &QPushButton::clicked, &dlg, [&]() {
+        QString binPath = currentBinPath();
+        if (binPath.isEmpty()) {
+            QMessageBox::warning(&dlg, tr("提示"), tr("请先选择一个模型"));
+            return;
+        }
+        QString baseName = currentBinName();
+        if (QMessageBox::question(&dlg, tr("删除模型"),
+                tr("确定删除模型 %1 吗？\n将同时删除 .bin 和 .json 文件，此操作不可恢复！").arg(baseName),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
+            return;
+        QString jsonPath = binPath; jsonPath.chop(4); jsonPath += ".json";
+        bool binOk  = QFile::remove(binPath);
+        bool jsonOk = QFile::remove(jsonPath);
+
+        // 删除数据库记录（ModelInfo + ModelClsParam）
+        bool dbOk = true;
+        if (!SQLiteMgr::Instance().DelModelClsParam(baseName)) {
+            LOG_WARN_STM("[模型删除] DelModelClsParam 失败：" << baseName);
+            dbOk = false;
+        }
+        if (!SQLiteMgr::Instance().DelModelInfo(baseName)) {
+            LOG_WARN_STM("[模型删除] DelModelInfo 失败：" << baseName);
+            dbOk = false;
+        }
+
+        if (binOk || jsonOk || dbOk) {
+            QStringList parts;
+            if (binOk) parts << binPath;      else parts << "(bin 删除失败)";
+            if (jsonOk) parts << jsonPath;     else parts << "(json 不存在)";
+            if (dbOk)   parts << "(数据库已清除)"; else parts << "(数据库清除失败)";
+            QMessageBox::information(&dlg, tr("提示"), tr("已删除: %1\n%2")
+                .arg(baseName).arg(parts.join("\n")));
+            // 如果删的是当前正在用的模型 → 清空 modelNameLabel
+            if (ui->modelNameLabel->text() == baseName) {
+                ui->modelNameLabel->clear();
+                modelCategoryNum = 0;
+                m_classNames.clear();
+                setupClassCheckBoxes(0);
+            }
+            refreshList();
+        } else {
+            QMessageBox::warning(&dlg, tr("删除失败"), tr("无法删除模型文件"));
+        }
+    });
+
+    // ── 模型导出（bin + json → /udisk/<baseName>/） ──
+    connect(exportModelBtn, &QPushButton::clicked, &dlg, [&]() {
+        QString binPath = currentBinPath();
+        if (binPath.isEmpty()) {
+            QMessageBox::warning(&dlg, tr("提示"), tr("请先选择一个模型"));
+            return;
+        }
+        QString baseName = currentBinName();
+        QString jsonPath = binPath; jsonPath.chop(4); jsonPath += ".json";
+        if (!QFile::exists(jsonPath)) {
+            if (QMessageBox::question(&dlg, tr("提示"),
+                    tr("模型 %1 缺少 .json 文件，是否仍要导出 .bin？").arg(baseName),
+                    QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
+                return;
+        }
+        // 禁用所有按钮（导出期间不让动）
+        QList<QPushButton*> allBtns = dlg.findChildren<QPushButton*>();
+        for (auto *b : allBtns) b->setEnabled(false);
+
+        showTip(tr("检测U盘..."));
+        if (!myFlow.mountUdisk()) {
+            for (auto *b : allBtns) b->setEnabled(true);
+            QMessageBox::warning(&dlg, tr("提示"), tr("未检测到U盘！\n请插上U盘后再试。"));
+            return;
+        }
+        QDir().mkpath(QString("/udisk") + "/" + baseName);
+
+        showTip(tr("正在拷贝 %1.bin ...").arg(baseName));
+        QApplication::processEvents();
+
+        QFile::remove(QString("/udisk/%1/%1.bin").arg(baseName));
+        bool b1 = QFile::copy(binPath, QString("/udisk/%1/%1.bin").arg(baseName));
+        bool b2 = true;
+        if (b1 && QFile::exists(jsonPath)) {
+            showTip(tr("正在拷贝 %1.json ...").arg(baseName));
+            QApplication::processEvents();
+            QFile::remove(QString("/udisk/%1/%1.json").arg(baseName));
+            b2 = QFile::copy(jsonPath, QString("/udisk/%1/%1.json").arg(baseName));
+        }
+
+        for (auto *b : allBtns) b->setEnabled(true);
+        if (b1) {
+            showTip(tr("模型导出完成"));
+            QMessageBox::information(&dlg, tr("提示"),
+                tr("导出完成！\n已拷贝到 /udisk/%1/").arg(baseName));
+        } else {
+            showTip(tr("模型导出失败"), true);
+            QMessageBox::warning(&dlg, tr("导出失败"), tr("U盘写入失败"));
+        }
+    });
+
+    // ── 模型导入（从 /udisk 选 .bin → 拷到 userdata/model/） ──
+    connect(importModelBtn, &QPushButton::clicked, &dlg, [&]() {
+        showTip(tr("检测U盘..."));
+        if (!myFlow.mountUdisk()) {
+            QMessageBox::warning(&dlg, tr("提示"), tr("未检测到U盘！\n请插上U盘后再试。"));
+            return;
+        }
+        // 列出 /udisk 下所有 .bin 文件（递归搜子目录）
+        QStringList binList;
+        QDirIterator it(QString("/udisk"), QStringList{"*.bin"}, QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext()) { binList.append(it.next()); }
+        if (binList.isEmpty()) {
+            QMessageBox::information(&dlg, tr("提示"), tr("U 盘里没有 .bin 模型文件"));
+            return;
+        }
+        // 弹选择框
+        QDialog impDlg(&dlg);
+        impDlg.setWindowTitle(tr("从U盘导入模型"));
+        impDlg.resize(500, 350);
+        auto *iv = new QVBoxLayout(&impDlg);
+        auto *ilist = new QListWidget(&impDlg);
+        ilist->setSelectionMode(QAbstractItemView::SingleSelection);
+        for (const auto &p : binList) {
+            auto *item = new QListWidgetItem(p, ilist);
+            item->setData(Qt::UserRole, p);
+        }
+        iv->addWidget(ilist, 1);
+        auto *ibtnRow = new QHBoxLayout();
+        ibtnRow->addStretch();
+        auto *okI = new QPushButton(tr("确定"), &impDlg);
+        auto *caI = new QPushButton(tr("取消"), &impDlg);
+        ibtnRow->addWidget(okI); ibtnRow->addWidget(caI);
+        iv->addLayout(ibtnRow);
+        connect(caI, &QPushButton::clicked, &impDlg, &QDialog::reject);
+        connect(okI, &QPushButton::clicked, &impDlg, &QDialog::accept);
+
+        if (impDlg.exec() == QDialog::Accepted) {
+            QListWidgetItem *sel = ilist->currentItem();
+            if (!sel) return;
+            QString srcBin = sel->data(Qt::UserRole).toString();
+            QString base = QFileInfo(srcBin).completeBaseName();
+            QString dstBin = dirPath + base + ".bin";
+            QString srcJson = srcBin; srcJson.chop(4); srcJson += ".json";
+            QString dstJson = dirPath + base + ".json";
+            // 冲突保护
+            if (QFile::exists(dstBin)) {
+                if (QMessageBox::question(&dlg, tr("提示"),
+                        tr("本地已存在 %1，是否覆盖？").arg(base + ".bin"),
+                        QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
+                    return;
+            }
+            QFile::remove(dstBin);
+            bool okBin = QFile::copy(srcBin, dstBin);
+            bool okJson = true;
+            if (QFile::exists(srcJson)) {
+                QFile::remove(dstJson);
+                okJson = QFile::copy(srcJson, dstJson);
+            }
+            if (okBin) {
+                // ── 写入数据库（ModelInfo + ModelClsParam 列表） ──
+                {
+                    // 1) 删旧记录（如果已存在）
+                    SQLiteMgr::Instance().DelModelInfo(base);
+                    SQLiteMgr::Instance().DelModelClsParam(base);
+
+                    // 2) 写 ModelInfo
+                    ModelInfo mi;
+                    mi.model_id_   = base;
+                    mi.model_name_ = base + ".bin";
+                    mi.is_apply_   = false;
+                    mi.is_upload_  = false;
+                    if (!SQLiteMgr::Instance().InsertModelInfo(mi))
+                        LOG_WARN_STM("[模型导入] InsertModelInfo 失败：" << base);
+
+                    // 3) 读 .json 解析类别 → 写 ModelClsParam
+                    QVector<ModelClsParam> clsParams;
+                    QFile jf(dstJson);
+                    if (okJson && jf.open(QIODevice::ReadOnly)) {
+                        QJsonDocument doc = QJsonDocument::fromJson(jf.readAll());
+                        jf.close();
+                        if (doc.isObject()) {
+                            QJsonArray classes = doc.object().value("class").toArray();
+                            for (int ci = 0; ci < classes.size(); ++ci) {
+                                QJsonObject cls = classes[ci].toObject();
+                                ModelClsParam cp;
+                                cp.model_id_       = base;
+                                cp.cls_id_         = static_cast<quint8>(ci);
+                                cp.cls_name_       = cls.value("name").toString(QString::number(ci));
+                                cp.level_          = 0;
+                                cp.identify_grp_   = 0;
+                                cp.threshold_      = 0;
+                                cp.is_apply_       = false;
+                                cp.area_model_     = 0;
+                                cp.area_threshold_ = 0;
+                                clsParams.append(cp);
+                            }
+                        }
+                    }
+                    if (!clsParams.isEmpty()) {
+                        if (!SQLiteMgr::Instance().InsertModelClsParams(clsParams))
+                            LOG_WARN_STM("[模型导入] InsertModelClsParams 失败：model=" << base);
+                        else
+                            LOG_INFO_STM("[模型导入] 数据库写入：ModelInfo(" << base << ") + "
+                                         << clsParams.size() << " 个类别");
+                    } else {
+                        // 没 json 也写空 ModelClsParam，保证 ModelInfo 能查到
+                        ModelClsParam cp;
+                        cp.model_id_ = base;
+                        cp.cls_id_   = 0;
+                        cp.cls_name_ = base;
+                        cp.level_    = 0;
+                        cp.identify_grp_ = 0;
+                        cp.threshold_    = 0;
+                        cp.is_apply_     = false;
+                        cp.area_model_   = 0;
+                        cp.area_threshold_ = 0;
+                        SQLiteMgr::Instance().InsertModelClsParam(cp);
+                    }
+                }
+
+                QMessageBox::information(&dlg, tr("提示"),
+                    tr("导入完成：%1\n%2")
+                    .arg(dstBin)
+                    .arg(okJson ? dstJson : tr("(无 json 文件)")));
+                refreshList();
+            } else {
+                QMessageBox::warning(&dlg, tr("导入失败"), tr("拷贝 .bin 失败"));
+            }
+        }
+    });
 
     connect(cancelBtn, &QPushButton::clicked, &dlg, &QDialog::reject);
     connect(okBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
@@ -2451,12 +2717,12 @@ bool AiModelSet::exportDirToUsb(const QString &srcDir, QWidget *parent)
             tr("未检测到U盘！\n请插上U盘后再试。"));
         return false;
     }
-    QDir udisk("/udisk");
+    QDir udisk(QString("/udisk"));
     if (!udisk.exists()) {
         QMessageBox::warning(parent, tr("提示"), tr("U盘挂载失败（/udisk 不存在）"));
         return false;
     }
-    const QString dstDir = "/udisk/" + QFileInfo(srcDir).fileName();
+    const QString dstDir = QString("/udisk") + "/" + QFileInfo(srcDir).fileName();
     QDir().mkpath(dstDir);
     int total = 0;
     QDirIterator it(srcDir, QDirIterator::Subdirectories);
@@ -3173,7 +3439,7 @@ bool AiModelSet::prepareTrain()
                     while (!in.atEnd()) {
                         QString line = in.readLine().trimmed();
                         if (line.isEmpty()) continue;
-                        QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+                        QStringList parts = line.split(QRegularExpression("\\s+"));
                         if (parts.size() < 5) continue;
                         bool ok0, ok1, ok2, ok3, ok4;
                         int classId = parts[0].toInt(&ok0);

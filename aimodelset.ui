@@ -227,7 +227,7 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>模型加载</string>
+    <string>模型管理</string>
    </property>
   </widget>
   <widget class="QPushButton" name="oneKeyAnnoPushButton">
@@ -616,7 +616,7 @@ QPushButton:pressed {
     </font>
    </property>
    <property name="text">
-    <string>当前图像和页</string>
+    <string/>
    </property>
    <property name="pixmap">
     <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>

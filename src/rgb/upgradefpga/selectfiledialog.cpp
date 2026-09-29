@@ -27,7 +27,7 @@ SelectFileDialog::SelectFileDialog(QStringList strList, QWidget *parent) :
  */
 void SelectFileDialog::setDialogAttr()
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
     int w = LCD_WIDTH*0.75;
     int h = LCD_CONTENT_HEIGTH*0.9;

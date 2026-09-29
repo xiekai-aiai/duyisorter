@@ -49,7 +49,7 @@ MainWidget::MainWidget(QWidget* parent)
     config = g_Config::getInstance();
     // 标题栏默认不显示
     setAutoFillBackground(true);
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     //    setAttribute(Qt::WA_TranslucentBackground,true);
 
         //! 初始化图标

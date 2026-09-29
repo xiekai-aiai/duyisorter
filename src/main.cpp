@@ -322,7 +322,7 @@ int main(int argc, char *argv[])
         // 关闭启动画面
         label->close();
         // 显示主窗口
-        w.show();
+        w.showFullScreen();
     });
 
 //    w.show();

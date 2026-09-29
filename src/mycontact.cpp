@@ -18,7 +18,7 @@ MyContact::MyContact(QString text,QWidget *parent) :
     }
 
     this->setWindowModality(Qt::ApplicationModal);
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setGeometry(LCD_WIDTH/4,LCD_HEIGHT/4,LCD_WIDTH/2,LCD_HEIGHT/2);
     setFixedSize(LCD_WIDTH/2,LCD_HEIGHT/2);
     setStyleSheet(g_style2);

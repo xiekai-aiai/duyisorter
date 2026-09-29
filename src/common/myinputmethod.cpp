@@ -132,7 +132,7 @@ void myInputMethod::createButtons(void)
 {
     method = english;
     strText = strInput;
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     kw = LCD_WIDTH;
     kh = LCD_CONTENT_HEIGTH-2;
     this->setGeometry(QRect(0, LCD_TITLE_HEIGHT+1, kw, kh));
