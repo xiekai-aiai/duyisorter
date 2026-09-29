@@ -283,7 +283,8 @@ void setMaterialSens::setModeParaInfo()
     {
         cls_vec.append(modeParaArr[i]);
 
-        if(modeParaArr[i].is_apply_) {
+        if (modeParaArr[i].is_apply_)
+        {
             ModelParam item;
             item.cls_id_ = modeParaArr[i].cls_id_;
             item.threshold_ = modeParaArr[i].threshold_;
@@ -298,7 +299,7 @@ void setMaterialSens::setModeParaInfo()
         QByteArray response;
         QString ip = ai_helper::GetAiIpByIndex(idx);
         bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
-                response, AI_RESPONSE_TIMEOUT);
+            response, AI_RESPONSE_TIMEOUT);
 
         if (!ok)
         {
@@ -313,23 +314,25 @@ void setMaterialSens::setModeParaInfo()
         {
             success = false;
             LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
-                    << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
             break;
         }
 
         int code = cmdworker::CommResponse(cmd_pkg).code_;
-        if(AI_RESPONSE_SUCCESS != code) {
+        if (AI_RESPONSE_SUCCESS != code)
+        {
             LOG_ERROR_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-                    << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+                << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
             success = false;
             break;
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
-                << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
     }
 
-    if(!success) {
+    if (!success)
+    {
         QMessageBox::warning(this, "应用警告", "模型阈值配置失败！");
         return;
     }
@@ -467,8 +470,9 @@ void setMaterialSens::updateListWidget()
         << listWidget->count() << ", ai enable:" << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]);
 
     listWidget->clear();
-    while (stackedWidget->count() > 0) {
-        QWidget *widget = stackedWidget->widget(0); // 始终取索引 0
+    while (stackedWidget->count() > 0)
+    {
+        QWidget* widget = stackedWidget->widget(0); // 始终取索引 0
         stackedWidget->removeWidget(widget);        // 从堆栈中移除
     }
 
@@ -540,7 +544,7 @@ void setMaterialSens::updateListWidget()
         }
 
         LOG_TRACE_STM("nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView << ",struCnfp.nArithmeticEnable[ARITH_INTEL_A]:"
-                      << struCnfp.nArithmeticEnable[ARITH_INTEL_A] << ",nArithmeticEnable[ARITH_INTEL_A]:" << struCnfp.nArithmeticEnable[ARITH_INTEL_A]);
+            << struCnfp.nArithmeticEnable[ARITH_INTEL_A] << ",nArithmeticEnable[ARITH_INTEL_A]:" << struCnfp.nArithmeticEnable[ARITH_INTEL_A]);
     }
 
     // 实现AI智能
@@ -2362,6 +2366,8 @@ void setMaterialSens::getAIIndex(int index)
 {
     int ret, row, col, per, bal;
 
+    LOG_TRACE_STM("-------index:" << index << ", aiSensNum:" << aiSensNum);
+
     //灵敏度设置
     if (index % aiSensNum == 0)
     {
@@ -2369,6 +2375,9 @@ void setMaterialSens::getAIIndex(int index)
         myInputPanel inputDlg1(intType, 1, 200, AISensLbe[index / aiSensNum]->text().toInt());
         nSens[index / aiSensNum] = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nSens;
         inputDlg1.setValue(nSens[index / aiSensNum]);
+
+        LOG_TRACE_STM("index:" << index << ", AISensLbe[index / aiSensNum]->text().toInt():" << AISensLbe[index / aiSensNum]->text().toInt()
+            << ", nSens[index / aiSensNum]:" << nSens[index / aiSensNum]);
 
         ret = inputDlg1.exec();
         if (ret == QDialog::Accepted)
@@ -2559,8 +2568,32 @@ void setMaterialSens::getAIIndex(int index)
         }
     }
 
+    if (index % aiSensNum == 7)
+    {
+        LOG_TRACE_STM("nIntelType:" << struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType);
+        if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType != 0)
+        {
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType = 0;
+            AIModeGeneralTypeBtn[index / aiSensNum]->setIcon(myIcon.Action_Apply_Icon);
+            AIModeRatioTypeBtn[index / aiSensNum]->setIcon(QIcon());
+
+
+            AIRowLabel[index / aiSensNum]->setEnabled(true);
+            AIRowLbe[index / aiSensNum]->setEnabled(true);
+            AIPercentLabel[index / aiSensNum]->setEnabled(true);
+            AIPercentLbe[index / aiSensNum]->setEnabled(true);
+            AISensRatioLbe[index / aiSensNum]->setEnabled(false);
+            AISensRatioLabel[index / aiSensNum]->setEnabled(false);
+
+            /*参数发送*/
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, ARITH_INTEL_A + index / aiSensNum, 0);
+        }
+    }
+
     if (index % aiSensNum == 8)
     {
+        LOG_TRACE_STM("nIntelType:" << struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType);
         if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType != 1)
         {
             struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType = 1;
@@ -2608,6 +2641,7 @@ void setMaterialSens::getAIIndex(int index)
  */
 void setMaterialSens::onAIRsvBtnsPressed(int index)
 {
+    LOG_TRACE_STM("-----------index:" << index);
     m_pageAIRsv->setArithIndex(index + ARITH_INTEL_A);
     m_pageAIRsv->resetReservedParams();                 //发出刷新页面信息信号
     stackedWidget->setCurrentWidget(m_pageAIRsv);
