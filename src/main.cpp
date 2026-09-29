@@ -315,14 +315,15 @@ int main(int argc, char *argv[])
 
 // 设置定时器，在一段时间后关闭启动画面并显示主窗口
     QTimer::singleShot(2000, [&]() {
-        // 停止动图播放
-        movie->stop();
-        // 释放QMovie对象的内存
-        delete movie;
-        // 关闭启动画面
-        label->close();
-        // 显示主窗口
+        // ⭐ 先 show 主窗口 → 让 X11 立即把 MainWidget 映射到屏幕
+        //    再 hide splash → 彻底消除「窗口间隙」露出桌面背景的问题
         w.showFullScreen();
+        QCoreApplication::processEvents();  // 强制立即处理 X11 MapRequest
+
+        // 停止动图 + 关启动画面
+        movie->stop();
+        delete movie;
+        label->close();
     });
 
 //    w.show();
