@@ -4620,6 +4620,7 @@ void GlobalFlow::initAll()
 
 void GlobalFlow::initUdpImagPara()
 {
+    // 向AI板卡发送推理高度、采集高度等参数
     AiCfgInfo cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
 
     if (!cfg_info.enable_ai_)
@@ -4676,6 +4677,8 @@ void GlobalFlow::initPixelImagPara()
         return;
     }
 
+    // 向AI板卡发送相机的像素划分参数
+
     // 遍历每一层
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {
@@ -4726,6 +4729,8 @@ void GlobalFlow::initEjectorDelayPara()
     {
         return;
     }
+
+    // 向AI板卡发送动态延迟，固定延迟等参数
 
     // 遍历每一层
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
@@ -4780,6 +4785,8 @@ void GlobalFlow::initEjectorDelayPara()
 void GlobalFlow::initEjectorModePara()
 {
     int model = 0;
+
+    // 向AI板卡发送推理模式参数
 
     // 开启AI模式
     if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
@@ -4924,6 +4931,14 @@ void GlobalFlow::stopAiCollect()
 
 void GlobalFlow::startAiInfer()
 {
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_ || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
+    {
+        LOG_INFO_STM("Ai enable is false or struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = " << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]
+            << ",so don't send start ai infer!");
+        return;
+    }
+
+
     LOG_INFO_STM("start infer image, ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
 
     // 开始推理，先通知AI板卡启动 
@@ -4968,6 +4983,13 @@ void GlobalFlow::startAiInfer()
 
 void GlobalFlow::stopAiInfer()
 {
+    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_ || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
+    {
+        LOG_INFO_STM("Ai enable is false or struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = " << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]
+            << ", so don't send stop ai infer!");
+        return;
+    }
+
     LOG_INFO_STM("Stop infer image, ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);
 
     // 停止推理，先给所有相机发送停止推理指令 
@@ -5051,6 +5073,8 @@ int  GlobalFlow::initAiCommunication()
         LOG_INFO_STM("enable ai is false!");
         return 0;
     }
+
+    // 查看AI板卡版本信息 
 
     int ret_code{ 0 };
     LOG_INFO_STM("ai device num:" << struCnfg.struLevelInfo[0].nUnitLevelTotal);

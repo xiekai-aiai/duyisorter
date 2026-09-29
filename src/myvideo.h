@@ -151,7 +151,6 @@ public slots:
     void onRowMinusBtnClicked();
     void onSimulateBtnClicked();
     void onAutoAnalysisBtnClicked();
-    void updateVideoImageQueue(QByteArray);
     void onViewRequest(int idx, bool is_start);
     void onImageReady(const QImage& img);
     void onDisplayImage();

@@ -166,7 +166,7 @@ void MySchemeParams::setSchemeParams(int pageId)
         pageIntel->setIntelParams();
         break;
     case Page_ID_Ai:
-        pageAi->setIntelParams();
+        //pageAi->setIntelParams();
         break;
     default:
         break;
@@ -250,8 +250,15 @@ void MySchemeParams::onOkBtnClicked()
     case Page_ID_Intel:
         break;
     case Page_ID_Ai:
-        //emit pageChanged(Page_Params);
-        break;
+    {
+        bool ret = pageAi->setIntelParams();
+        if (ret)
+        {
+            // 模型应用成功返回
+            emit pageChanged(Page_Params);
+        }
+    }
+    break;
     case Page_ID_Arith:
         emit pageChanged(Page_Params);
         break;
