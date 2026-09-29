@@ -292,6 +292,9 @@ public:
    // 颜色表（用户指定的 10 类颜色）
    static QVector<QColor> getClassColorTable();
 
+   // 文字颜色表（与颜色表一一对应，用于类别按钮文字，用户指定）
+   static QVector<QColor> getClassTextColorTable();
+
    // 动态创建 class checkbox（数量由模型类别数决定，names 可选：json 里读的类别名）
    void setupClassCheckBoxes(int count, const QStringList& names = QStringList());
 

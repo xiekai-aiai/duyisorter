@@ -4442,7 +4442,7 @@ void AiModelSet::onModelNewPushButtonClicked()
     nameRow->addWidget(nameEdit, 1);
     mainLayout->addLayout(nameRow);
 
-    // ── 第二栏: 类别名称列表（动态增删，可编辑名称，最多 9 类） ──
+    // ── 第二栏: 类别名称列表（动态增删，可编辑名称，最多 8 类） ──
     QLabel *clsTitle = new QLabel("类别列表:", &dlg);
     mainLayout->addWidget(clsTitle);
 

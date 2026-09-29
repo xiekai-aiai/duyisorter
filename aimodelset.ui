@@ -137,8 +137,6 @@
     <font>
      <family>DejaVu Sans</family>
      <pointsize>8</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
     </font>
    </property>
    <property name="styleSheet">
@@ -174,8 +172,6 @@ QPushButton:pressed {
     <font>
      <family>DejaVu Sans</family>
      <pointsize>8</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
     </font>
    </property>
    <property name="styleSheet">
@@ -211,8 +207,8 @@ QPushButton:pressed {
     <font>
      <family>DejaVu Sans</family>
      <pointsize>8</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
+     <weight>50</weight>
+     <bold>false</bold>
     </font>
    </property>
    <property name="styleSheet">
@@ -238,10 +234,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="oneKeyAnnoPushButton">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>410</y>
-     <width>91</width>
-     <height>51</height>
+     <x>90</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -273,10 +269,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="drawAnnoPushButton">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>410</y>
-     <width>91</width>
-     <height>51</height>
+     <x>260</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -308,10 +304,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="addTrainListPushButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>608</y>
-     <width>91</width>
-     <height>51</height>
+     <x>670</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -343,10 +339,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="erasePushButton">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>410</y>
-     <width>91</width>
-     <height>51</height>
+     <x>345</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -378,8 +374,8 @@ QPushButton:pressed {
   <widget class="QPushButton" name="importImgPushButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>680</y>
+     <x>10</x>
+     <y>620</y>
      <width>111</width>
      <height>51</height>
     </rect>
@@ -413,8 +409,8 @@ QPushButton:pressed {
   <widget class="QPushButton" name="mergeImgPushButton">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>680</y>
+     <x>130</x>
+     <y>620</y>
      <width>111</width>
      <height>51</height>
     </rect>
@@ -449,9 +445,9 @@ QPushButton:pressed {
    <property name="geometry">
     <rect>
      <x>520</x>
-     <y>410</y>
-     <width>91</width>
-     <height>51</height>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -487,10 +483,10 @@ QPushButton:disabled {
   <widget class="QPushButton" name="m_prevBtn">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>608</y>
-     <width>81</width>
-     <height>51</height>
+     <x>940</x>
+     <y>450</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -522,10 +518,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="m_nextBtn">
    <property name="geometry">
     <rect>
-     <x>510</x>
-     <y>608</y>
-     <width>81</width>
-     <height>51</height>
+     <x>940</x>
+     <y>540</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -557,10 +553,10 @@ QPushButton:pressed {
   <widget class="QLineEdit" name="m_curPagelineEdit">
    <property name="geometry">
     <rect>
-     <x>950</x>
-     <y>610</y>
-     <width>61</width>
-     <height>31</height>
+     <x>940</x>
+     <y>500</y>
+     <width>80</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
@@ -573,8 +569,8 @@ QPushButton:pressed {
   <widget class="QPushButton" name="backPushButton">
    <property name="geometry">
     <rect>
-     <x>800</x>
-     <y>680</y>
+     <x>860</x>
+     <y>620</y>
      <width>161</width>
      <height>51</height>
     </rect>
@@ -609,7 +605,7 @@ QPushButton:pressed {
    <property name="geometry">
     <rect>
      <x>750</x>
-     <y>616</y>
+     <y>580</y>
      <width>190</width>
      <height>20</height>
     </rect>
@@ -666,7 +662,7 @@ QPushButton:pressed {
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>660</y>
+     <y>600</y>
      <width>1021</width>
      <height>16</height>
     </rect>
@@ -678,9 +674,9 @@ QPushButton:pressed {
   <widget class="QListWidget" name="m_imageList">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>470</y>
-     <width>1000</width>
+     <x>5</x>
+     <y>450</y>
+     <width>930</width>
      <height>128</height>
     </rect>
    </property>
@@ -694,10 +690,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="delTrainListPushButton">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>608</y>
-     <width>91</width>
-     <height>51</height>
+     <x>760</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -729,10 +725,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="fgPushButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>410</y>
-     <width>91</width>
-     <height>51</height>
+     <x>5</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -774,10 +770,10 @@ QPushButton:checked {
   <widget class="QPushButton" name="selectAnnoPushButton">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>410</y>
-     <width>91</width>
-     <height>51</height>
+     <x>175</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -819,8 +815,8 @@ QPushButton:pressed {
     <font>
      <family>DejaVu Sans</family>
      <pointsize>8</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
+     <weight>50</weight>
+     <bold>false</bold>
     </font>
    </property>
    <property name="styleSheet">
@@ -859,10 +855,10 @@ QPushButton:pressed {
   <widget class="QPushButton" name="addAllLabeledTrainListPushButton">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>608</y>
-     <width>91</width>
-     <height>51</height>
+     <x>850</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -888,16 +884,16 @@ QPushButton:pressed {
 	   background-color: lightgrey;}</string>
    </property>
    <property name="text">
-    <string>+有标注文件</string>
+    <string>+有标注</string>
    </property>
   </widget>
   <widget class="QPushButton" name="delTrainListAllPushButton">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>608</y>
-     <width>91</width>
-     <height>51</height>
+     <x>940</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
@@ -1010,8 +1006,8 @@ QPushButton:pressed {
   <widget class="QPushButton" name="batchValidImgPushButton">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>680</y>
+     <x>250</x>
+     <y>620</y>
      <width>111</width>
      <height>51</height>
     </rect>
@@ -1052,8 +1048,8 @@ QPushButton:checked {
   <widget class="QPushButton" name="validvsAnnoImgPushButton">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>680</y>
+     <x>370</x>
+     <y>620</y>
      <width>111</width>
      <height>51</height>
     </rect>
@@ -1094,10 +1090,10 @@ QPushButton:checked {
   <widget class="QPushButton" name="areaThresholdAnnoPushButton">
    <property name="geometry">
     <rect>
-     <x>620</x>
-     <y>410</y>
-     <width>91</width>
-     <height>51</height>
+     <x>435</x>
+     <y>400</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="font">
