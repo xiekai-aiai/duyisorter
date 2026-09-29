@@ -56,6 +56,7 @@ void PageAi::onUploadModel()
     }
 
     SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true);
+
 }
 
 void PageAi::onDeleteModel()
@@ -87,7 +88,7 @@ void PageAi::onDeleteModel()
         return;
     }
 
-    if(!modelDelete(info))
+    if (!modelDelete(info))
     {
         QMessageBox::warning(this, "应用警告", "模型删除失败！");
         return;
@@ -100,14 +101,14 @@ void PageAi::onDeleteModel()
 }
 
 /* 应用当前智能参数固化页面设置 */
-void PageAi::setIntelParams()
+bool PageAi::setIntelParams()
 {
     // 点击应用时，处理模型应用 
     LOG_INFO_STM("save page ai params! count:" << modelListWidget->count());
     if (modelListWidget->currentItem() == NULL)
     {
         LOG_INFO_STM("modelListWidget current item is null");
-        return;
+        return false;
     }
 
     QString model_name = modelListWidget->currentItem()->text();
@@ -119,26 +120,26 @@ void PageAi::setIntelParams()
     if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, info))
     {
         QMessageBox::warning(this, "应用警告", "模型加载失败！");
-        return;
+        return false;
     }
 
     if (!modelUpload(info))
     {
         QMessageBox::warning(this, "应用警告", "模型上传失败！");
-        return;
+        return false;
     }
 
     if (!modelApply(info))
     {
         QMessageBox::warning(this, "应用警告", "模型应用失败！");
-        return;
+        return false;
     }
 
     if (!SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true)
         || !SQLiteMgr::Instance().UpdateModelInfoApplyFlag(model_id, true))
     {
         QMessageBox::warning(this, "应用警告", "模型应用持久化失败！");
-        return;
+        return false;
     }
 
 
@@ -154,6 +155,10 @@ void PageAi::setIntelParams()
 
     myFlow.materialCopyAssemble(0, tabBar->currentIndex(), 0, ARITH_PISTACHIO, 0);
     myFlow.materialResetGroupAssemble(struGsh.nLevel, tabBar->currentIndex(), 0, ARITH_PISTACHIO, 0);
+
+    LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
+        << ", model id:" << model_id.toStdString() << " apply model successful!");
+    return true;
 }
 
 /* 重置当前智能参数固化页面设置 */

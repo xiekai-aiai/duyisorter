@@ -28,7 +28,7 @@ class PageAi : public QWidget
 public:
     PageAi(QWidget* parent = 0);
     ~PageAi();
-    void setIntelParams();
+    bool setIntelParams();
     void resetIntelParams();
     void onUploadModel();
     void onDeleteModel();

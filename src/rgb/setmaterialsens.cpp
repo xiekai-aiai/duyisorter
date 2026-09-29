@@ -467,20 +467,15 @@ void setMaterialSens::updateListWidget()
         << listWidget->count() << ", ai enable:" << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]);
 
     listWidget->clear();
-    stackedWidget->removeWidget(pageGeneral);
-    stackedWidget->removeWidget(pageShape);
-    stackedWidget->removeWidget(pageAI);
-    stackedWidget->removeWidget(pagePeanut);
-    stackedWidget->removeWidget(pageWatermelon);
-    stackedWidget->removeWidget(pageTea);
-    stackedWidget->removeWidget(m_pageAIRsv);
-    stackedWidget->removeWidget(m_pageGeneralRsv);
+    while (stackedWidget->count() > 0) {
+        QWidget *widget = stackedWidget->widget(0); // 始终取索引 0
+        stackedWidget->removeWidget(widget);        // 从堆栈中移除
+    }
 
     listWidget->setSpacing(10);
 
     for (i = 0; i < MAX_GENERAL;i++)
     {
-        LOG_TRACE_STM("general i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i] << ", struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
         if (struCnfp.nArithmeticEnable[i])
         {
             if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS))
@@ -493,25 +488,25 @@ void setMaterialSens::updateListWidget()
             }
             listWidget->addItem(statusListItem[0]);
             stackedWidget->addWidget(pageGeneral);
+            LOG_TRACE_STM("general i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i] << ", struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
             break;
         }
     }
     for (i = MAX_GENERAL; i < MAX_GENERAL + MAX_SHAPE;i++)
     {
-        LOG_TRACE_STM("shape i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i]
-            << ", ARITH_SCALE_B:" << struCnfp.nArithmeticEnable[ARITH_SCALE_B]);
         if (struCnfp.nArithmeticEnable[i] == 1 || struCnfp.nArithmeticEnable[ARITH_SCALE_B] == 1)
         {
             statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(BTN_WIDTH - 20, ICON_WID * 2));
             listWidget->addItem(statusListItem[1]);
             stackedWidget->addWidget(pageShape);
+            LOG_TRACE_STM("shape i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i]
+                << ", ARITH_SCALE_B:" << struCnfp.nArithmeticEnable[ARITH_SCALE_B]);
             break;
         }
     }
     for (i = ARITH_INTEL_A; i < ARITH_INTEL_A + MAX_AI;i++)
     {
-        LOG_TRACE_STM("智能 i:" << i << ",alg enable:" << struCnfp.nArithmeticEnable[i] << ",struCnfg.nLang:" << struCnfg.nLang
-            << ",struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
+
         if (struCnfp.nArithmeticEnable[i])
         {
             if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS))
@@ -524,6 +519,8 @@ void setMaterialSens::updateListWidget()
             }
             listWidget->addItem(statusListItem[2]);
             stackedWidget->addWidget(pageAI);
+            LOG_TRACE_STM("智能 i:" << i << ",alg enable:" << struCnfp.nArithmeticEnable[i] << ",struCnfg.nLang:" << struCnfg.nLang
+                << ",struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
             break;
         }
     }
@@ -541,6 +538,9 @@ void setMaterialSens::updateListWidget()
         {
             stackedWidget->addWidget(m_pageAIRsv);
         }
+
+        LOG_TRACE_STM("nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView << ",struCnfp.nArithmeticEnable[ARITH_INTEL_A]:"
+                      << struCnfp.nArithmeticEnable[ARITH_INTEL_A] << ",nArithmeticEnable[ARITH_INTEL_A]:" << struCnfp.nArithmeticEnable[ARITH_INTEL_A]);
     }
 
     // 实现AI智能
@@ -549,12 +549,17 @@ void setMaterialSens::updateListWidget()
         statusListItem[4] = new myListWidgetItem("Ai" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
         listWidget->addItem(statusListItem[4]);
         stackedWidget->addWidget(pageAi);
+        LOG_TRACE_STM("struCnfp.nArithmeticEnable[ARITH_PISTACHIO]:" << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]);
+
     }
 
     if (listWidget->count() > 0)
     {
         listWidget->setCurrentRow(0);
     }
+
+    LOG_INFO_STM("end stackedWidget size:" << stackedWidget->count() << ", list widget count:"
+        << listWidget->count());
 }
 /**
  * @brief setMaterialSens::updateStackWidget

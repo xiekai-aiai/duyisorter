@@ -613,6 +613,7 @@ void MyVideo::startCalSmallMatPerRSC(bool bIsCapturing)
 
 void MyVideo::startCapture(bool bIsCapturing)
 {
+    // 视频预览操作
     m_bIsCapturing = bIsCapturing;
     QByteArray img;
     if (m_bIsCapturing)
@@ -641,13 +642,6 @@ void MyVideo::startCapture(bool bIsCapturing)
         udp_img_receiver->stop();
         myFlow.sleep(2);
         infoWidget->hide();
-
-        if (!ImageQueue.isEmpty())
-        {
-            imageQMutex.lock();
-            ImageQueue.clear();
-            imageQMutex.unlock();
-        }
     }
 
     resetCaptureState(m_bIsCapturing);
@@ -660,17 +654,6 @@ void MyVideo::resetCaptureMode(bool bIsUsb)
     //    for (int i = 0; i < struCnfg.nLevelTotal; i++) {
     //		MySerial.com1Write(CMD_INT_IMAGE_CAPTURE_MODE, INT, i, 0, 0, 0, 0, 0, nCapMode, 3);
     //	}
-}
-
-void MyVideo::updateVideoImageQueue(QByteArray img)
-{
-    ImageQueue.enqueue(img);
-    if (ImageQueue.size() > 3)
-    {
-        imageQMutex.lock();
-        ImageQueue.dequeue();
-        imageQMutex.unlock();
-    }
 }
 
 void MyVideo::onViewRequest(int idx, bool is_start)
@@ -708,13 +691,8 @@ void MyVideo::updateVideoWidget()
 
 void MyVideo::updateBoardNum()
 {
+    // 切换通道和前后视时，调用
     LOG_INFO_STM("updateBoardNum, m_bIsCapturing:" << m_bIsCapturing);
-    if (m_bIsCapturing && ImageQueue.size() > 1)
-    {
-        imageQMutex.lock();
-        ImageQueue.dequeue();
-        imageQMutex.unlock();
-    }
 }
 
 void MyVideo::resetCaptureState(bool bState)
