@@ -14,3 +14,6 @@ app/
 src/3rdparty/arm/
 .DS_Store
 cp_data.sh
+UI参考/UI_RESIZE_ANALYSIS.md 
+fix_ui.sh
+tar_app/

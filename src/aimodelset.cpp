@@ -237,8 +237,8 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(ui->m_prevBtn, SIGNAL(clicked()), this, SLOT(prevPage()));
     connect(ui->m_nextBtn, SIGNAL(clicked()), this, SLOT(nextPage()));
 
-    // 页码跳转：只允许输入 1-999 的数字，回车触发 gotoPage
-    ui->m_curPagelineEdit->setValidator(new QIntValidator(1, 999, this));
+    // 页码跳转：只允许输入正整数，回车触发 gotoPage；超限在 gotoPage 里裁剪到 m_totalPages
+    ui->m_curPagelineEdit->setValidator(new QIntValidator(1, 99999, this));
     ui->m_curPagelineEdit->setFocusPolicy(Qt::NoFocus);  // 阻止系统虚拟键盘，只用 myInputPanel
     ui->m_curPagelineEdit->setText("1");  // 默认值 1
     {
@@ -248,7 +248,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
                     auto *le = qobject_cast<QLineEdit*>(o);
                     if (le) {
                         int minV = 1;
-                        int maxV = 999;
+                        int maxV = 99999;
                         myInputPanel kb(intType, minV, maxV, le->text().toInt());
                         kb.setTitle("跳转页码");
                         if (kb.exec() == QDialog::Accepted) {
