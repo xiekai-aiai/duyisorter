@@ -7,6 +7,7 @@
  */
 #include "myinputmethod.h"
 #include "mylanguage.h"
+#include <QTimer>
 
 myInputMethod::myInputMethod(QString titleText, QString inputText, QWidget *parent)
     : QDialog(parent)
@@ -132,11 +133,18 @@ void myInputMethod::createButtons(void)
 {
     method = english;
     strText = strInput;
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+
+    // ⭐ 嵌套在另一个 QDialog 的 exec() 里触发 → 加 X11Bypass 绕过 WM Z-order
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint
+#if defined(Q_OS_LINUX)
+                    | Qt::X11BypassWindowManagerHint
+#endif
+                   );
+
     kw = LCD_WIDTH;
-    kh = LCD_CONTENT_HEIGTH-2;
-    this->setGeometry(QRect(0, LCD_TITLE_HEIGHT+1, kw, kh));
-    this->setMinimumSize(50,50);
+    kh = LCD_CONTENT_HEIGTH - 2;
+    this->setGeometry(QRect(0, LCD_TITLE_HEIGHT + 1, kw, kh));
+    this->setMinimumSize(50, 50);
     this->setFocusPolicy(Qt::NoFocus);
 
 //    setStyleSheet(g_style1);

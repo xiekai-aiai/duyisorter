@@ -10,8 +10,8 @@
 myInputPanel::myInputPanel(inputType type, int nMin, int nMax, double nDisp, QWidget* parent)
     : QDialog(parent)
 {
-    this->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-
+    // ⭐ 构造函数里先不设 flags，让 QDialog 初始化完后由 createButtons 统一设
+    //    X11 上两次 setWindowFlags 可能互相干扰
     nMinNum = nMin;
     nMaxNum = nMax;
     nDispNum = nDisp;
@@ -50,13 +50,24 @@ myInputPanel::~myInputPanel()
  */
 void myInputPanel::createButtons(void)
 {
-    this->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    // ⭐ 用 Qt::Tool（不是 Qt::Dialog）减少 X11 WM 对位置的干预
+    this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint);
 
     this->setMinimumSize(50, 50);
+
     int wid = LCD_WIDTH * 0.75;
     int hei = LCD_CONTENT_HEIGTH * 0.9;
+    int x = (LCD_WIDTH - wid) / 2;
+    int y = (LCD_HEIGHT - hei) / 2;
 
-    setGeometry((LCD_WIDTH - wid) / 2, (LCD_HEIGHT - hei) / 2, wid, hei);
+    // 层1：先 setGeometry（板子上直接生效）
+    setGeometry(x, y, wid, hei);
+
+    // 层2：show 后再 move（X11 WM 常在 MapRequest 时 override 位置）
+    QTimer::singleShot(0, this, [this, x, y, wid, hei]() {
+        this->setGeometry(x, y, wid, hei);
+        this->raise();
+    });
     //    setStyleSheet(g_style2);
     QPalette palette;
     QPixmap pixmap(":/res/png/inputPanelBack.png");

@@ -962,9 +962,10 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
         LOG_DEBUG_STM("🟡 setupClassCheckBoxes: count<=0, 跳过创建");
         return;
     }
-    if (count > 9) count = 9;
+    if (count > 8) count = 8;
 
     auto colorTable = getClassColorTable();
+    auto textColorTable = getClassTextColorTable();
 
     // 存类别名
     m_classNames = names;
@@ -974,11 +975,10 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
         }
     }
 
-    const int AREA_X = 30, AREA_Y = 35, AREA_W = 640, AREA_H = 60;  // ⭐ 垂直中心对齐 trainServerCfgPushButton(y=30,h=41 → 中心50.5)
-    const int BTN_FIXED_W = 80;   // ⭐ 加宽到 80px 显示中文类别名（原来 48 太窄）
-    const int BTN_FIXED_H = 24;
-    const int FIXED_SPACING = 6;  // 按钮间水平间距
-    const int BTN_LABEL_GAP = 5;  // 按钮行和计数行之间的垂直间距
+    const int AREA_X = 5, AREA_Y = 63, AREA_W = 800, AREA_H = 40;  // ⭐ 5~720 起，够塞 9 个按钮 + 右 stretch
+    const int BTN_W = 80;
+    const int BTN_H = 40;
+    const int SPACING = 5;  // 按钮间水平间距
 
     m_cbContainer = new QWidget(this);
     m_cbContainer->setObjectName("classButtonContainer");
@@ -987,66 +987,43 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
     m_classBtnGroup = new QButtonGroup(this);
     m_classBtnGroup->setExclusive(true);
 
-    // ⭐ 容器用 QVBoxLayout：上面按钮一行，下面计数一行
-    // 不设 stretch，两行自然堆叠，垂直间距完全由 spacing 控制
-    auto *vbox = new QVBoxLayout(m_cbContainer);
-    vbox->setContentsMargins(0, 4, 0, 4);  // 上下各 4px margin
-    vbox->setSpacing(BTN_LABEL_GAP);
-
-    // ── 第一行：按钮 ──
-    auto *btnRow = new QHBoxLayout();
-    btnRow->setContentsMargins(0, 0, 0, 0);
-    btnRow->setSpacing(FIXED_SPACING);
-    btnRow->addStretch(1);  // 左 stretch 居中
-
-    // ── 第二行：计数 label ──
-    auto *countRow = new QHBoxLayout();
-    countRow->setContentsMargins(0, 0, 0, 0);
-    countRow->setSpacing(FIXED_SPACING);  // 和按钮行同 spacing → label 对齐按钮
-    countRow->addStretch(1);  // 左 stretch 居中
+    // ⭐ 容器用 QHBoxLayout：单行按钮，每个按钮内显示"名称：数量"
+    auto *hbox = new QHBoxLayout(m_cbContainer);
+    hbox->setContentsMargins(0, 0, 0, 0);
+    hbox->setSpacing(SPACING);
 
     m_classButtons.clear();
-    m_classCountLabels.clear();
+    m_classCountLabels.clear();  // 不再创建 countLbl
 
     LOG_DEBUG_STM("🟢 setupClassCheckBoxes: count=" << count);
 
     for (int i = 0; i < count; ++i) {
         QColor color = (i < colorTable.size()) ? colorTable[i] : QColor(Qt::black);
-        QString label = (i < m_classNames.size()) ? m_classNames[i] : QString("%1").arg(i);
+        QString name = (i < m_classNames.size()) ? m_classNames[i] : QString("%1").arg(i);
 
-        // 互斥按钮（checkable），固定 48x24
-        auto* btn = new QPushButton(label, m_cbContainer);
+        // 互斥按钮（checkable），80×40，显示"名称：数量"
+        auto* btn = new QPushButton(QString("%1：0").arg(name), m_cbContainer);
         btn->setCheckable(true);
-        btn->setFixedSize(BTN_FIXED_W, BTN_FIXED_H);
+        btn->setFixedSize(BTN_W, BTN_H);
         btn->setFont(QFont("HarmonyOS Sans Medium", 8, QFont::Bold));
         btn->setCursor(Qt::PointingHandCursor);
 
         QString colorStr = QString("rgb(%1,%2,%3)").arg(color.red()).arg(color.green()).arg(color.blue());
+        QColor textColor = (i < textColorTable.size()) ? textColorTable[i] : QColor(Qt::black);
+        QString textColorStr = QString("rgb(%1,%2,%3)").arg(textColor.red()).arg(textColor.green()).arg(textColor.blue());
         btn->setStyleSheet(QString(
-            "QPushButton { background-color: %1; color: black; border: 2px solid transparent; border-radius: 3px; }"
+            "QPushButton { background-color: %1; color: %2; border: 2px solid transparent; border-radius: 5px; }"
             "QPushButton:checked { border: 2px solid #333333; }"
-        ).arg(colorStr));
+        ).arg(colorStr, textColorStr));
 
         m_classBtnGroup->addButton(btn, i);
         connect(btn, &QPushButton::clicked, this, &AiModelSet::onClassButtonClicked);
 
-        // 计数 label，固定 48x18（和按钮同宽 → 完美对齐，高度足够容纳 8pt 文字）
-        auto* countLbl = new QLabel("0", m_cbContainer);
-        countLbl->setAlignment(Qt::AlignCenter);
-        countLbl->setFixedSize(BTN_FIXED_W, 18);
-        countLbl->setStyleSheet("color: #888; font-size: 9pt;");
-
-        btnRow->addWidget(btn);
-        countRow->addWidget(countLbl);
+        hbox->addWidget(btn);
         m_classButtons.append(btn);
-        m_classCountLabels.append(countLbl);
     }
 
-    btnRow->addStretch(1);    // 右 stretch 居中
-    countRow->addStretch(1);  // 右 stretch 居中
-
-    vbox->addLayout(btnRow);
-    vbox->addLayout(countRow);
+    hbox->addStretch(1);
 
     m_cbContainer->show();
     updateClassAnnotCounts();
@@ -1074,12 +1051,6 @@ void AiModelSet::onClassButtonClicked()
 // 刷新每个类别按钮下的标注计数（统计所有训练图片的标签，非当前图片）
 void AiModelSet::updateClassAnnotCounts()
 {
-    // 先清零
-    for (auto* lbl : m_classCountLabels) {
-        lbl->setText("0");
-        lbl->setStyleSheet("color: #888; font-size: 9pt;");
-    }
-
     // ⭐ 统计所有训练图片的标签（不是当前图片）
     // 规则：当前图片用内存 m_annotations（可能尚未保存），其余图片读同名 txt
     QMap<int, int> counts;
@@ -1108,15 +1079,12 @@ void AiModelSet::updateClassAnnotCounts()
         }
         f.close();
     }
-    
-    // 更新 label
-    for (int i = 0; i < m_classCountLabels.size(); ++i) {
+
+    // 更新按钮 text → "名称：数量"
+    for (int i = 0; i < m_classButtons.size(); ++i) {
         int n = counts.value(i, 0);
-        auto* lbl = m_classCountLabels[i];
-        lbl->setText(QString::number(n));
-        if (n > 0) {
-            lbl->setStyleSheet("color: #000; font-size: 9pt; font-weight: bold;");
-        }
+        QString name = (i < m_classNames.size()) ? m_classNames[i] : QString("%1").arg(i);
+        m_classButtons[i]->setText(QString("%1：%2").arg(name).arg(n));
     }
 }
 
@@ -1354,16 +1322,34 @@ void AiModelSet::onBackLastAnnoBtnClicked()
 QVector<QColor> AiModelSet::getClassColorTable()
 {
     static const QVector<QColor> table = {
-        QColor(0,   255, 0),    // 0: 绿色
-        QColor(255, 0,   0),    // 1: 红色
-        QColor(0,   0,   255),  // 2: 蓝色
-        QColor(255, 255, 0),    // 3: 黄色
-        QColor(255, 165, 0),    // 4: 橙色
-        QColor(255, 0,   255),  // 5: 品红
-        QColor(128, 0,   128),  // 6: 紫色
-        QColor(0,   255, 255),  // 7: 青色
-        QColor(255, 192, 203),  // 8: 粉色
-        QColor(139, 69,  19),   // 9: 棕色
+        QColor(89,   173, 91),    // 0: 绿色 白色
+        QColor(212, 84,   83),    // 1: 红色 白色
+        QColor(70,   98,   213),  // 2: 蓝色 白色
+        QColor(240, 218, 74),    // 3: 黄色 黑色
+        QColor(201, 52, 0),    // 4: 橙色 白色
+        QColor(255, 59,   48),  // 5: 品红 白色
+        QColor(137, 68,   171),  // 6: 紫色 白色
+        QColor(100,   210, 255),  // 7: 青色 黑色
+        QColor(255, 100, 230),  // 8: 粉色 
+        QColor(127, 101,  69),   // 9: 棕色
+    };
+    return table;
+}
+
+// ── 10 类按钮文字颜色表（与颜色表一一对应，索引 = classId，用户指定） ──────
+QVector<QColor> AiModelSet::getClassTextColorTable()
+{
+    static const QVector<QColor> table = {
+        QColor(Qt::white),   // 0: 绿色 → 白色
+        QColor(Qt::white),   // 1: 红色 → 白色
+        QColor(Qt::white),   // 2: 蓝色 → 白色
+        QColor(Qt::black),   // 3: 黄色 → 黑色
+        QColor(Qt::white),   // 4: 橙色 → 白色
+        QColor(Qt::white),   // 5: 品红 → 白色
+        QColor(Qt::white),   // 6: 紫色 → 白色
+        QColor(Qt::black),   // 7: 青色 → 黑色
+        QColor(Qt::black),   // 8: 粉色 → 黑色（未标注，按浅色底取黑）
+        QColor(Qt::white),   // 9: 棕色 → 白色（未标注，按深色底取白）
     };
     return table;
 }
@@ -4488,7 +4474,7 @@ void AiModelSet::onModelNewPushButtonClicked()
     };
 
     auto addRow = [&](const QString &initialName) {
-        if (clsRows.size() >= 9) return;   // 最多 9 类
+        if (clsRows.size() >= 8) return;   // 最多 8 类
         ClassRow r;
         r.row = new QWidget(clsContainer);
         auto *rowLay = new QHBoxLayout(r.row);
@@ -4541,11 +4527,11 @@ void AiModelSet::onModelNewPushButtonClicked()
     refreshRowIds();
 
     QPushButton *addClsBtn = new QPushButton("+ 新增类别", &dlg);
-    addClsBtn->setEnabled(clsRows.size() < 9);
+    addClsBtn->setEnabled(clsRows.size() < 8);
     mainLayout->addWidget(addClsBtn);
     connect(addClsBtn, &QPushButton::clicked, &dlg, [&]() {
         addRow(QString());
-        addClsBtn->setEnabled(clsRows.size() < 9);
+        addClsBtn->setEnabled(clsRows.size() < 8);
     });
 
     // ── 确定 / 取消 ──

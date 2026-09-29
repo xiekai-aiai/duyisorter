@@ -68,7 +68,12 @@ void UdpImageReceiver::start()
         this, &UdpImageReceiver::onReadyRead);
 
     // 创建第一张图片
-    cur_image_ = QImage(width_, height_, QImage::Format_BGR888);
+    cur_image_ = QImage(width_, height_,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+                        QImage::Format_BGR888);
+#else
+                        QImage::Format_RGB888);
+#endif
     cur_image_.fill(Qt::black);
 
     cur_row_ = 0;
@@ -227,19 +232,26 @@ void UdpImageReceiver::processDatagram(const QByteArray& datagram)
 
         // xknote: 对于x5板卡， 相机传过来的数据是-128的
         uchar* data = cur_image_.bits();
-        const int size = cur_image_.sizeInBytes();
+        const int size = cur_image_.width() * cur_image_.height() * 3;  // Qt 5.9 compat
         for (int i = 0; i < size; ++i)
         {
             data[i] = static_cast<uchar>(
                 static_cast<int>(static_cast<signed char>(data[i])) + 128);
         }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+        cur_image_ = cur_image_.rgbSwapped();
+#endif
+
         emit imageReady(cur_image_);
 
-        /*
-         * 准备接收下一张图片
-         */
-        cur_image_ = QImage(width_, height_, QImage::Format_BGR888);
+        // 准备接收下一张图片
+        cur_image_ = QImage(width_, height_,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+                            QImage::Format_BGR888);
+#else
+                            QImage::Format_RGB888);
+#endif
         cur_image_.fill(Qt::black);
         cur_row_ = 0;
     }
