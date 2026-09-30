@@ -188,6 +188,17 @@ public slots:
     void result();
     void onPassWordLineEditPressed();
 
+    // wifi.sh 异步执行完成（成功/失败都进这里，用来启动 DHCP 轮询）
+    void onWifiProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    // wifi IP 轮询定时器：周期检查 wlan0 IP 是否拿到/变化
+    void onWifiIpPollTimeout();
+    // iwlist 扫描异步完成：解析结果填充 SSID 下拉框（不阻塞 UI）
+    void onWifiScanFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    // 启动自动连接（QTimer::singleShot 通过 SLOT() 调用，必须声明为槽）
+    void autoConnectWifi();
+    // ssidComboBox 切换时自动填密码（存过的就自动填；connect 用 SLOT() 也必须为槽）
+    void onSsidComboTextChanged(const QString& ssid);
+
 
 
 private:
@@ -366,8 +377,43 @@ private:
     myPushButton* wifiConnectBtn;
     myPushButton* wifiDisconnectBtn;
     QProcess* ycprocess;
+    QProcess* m_wifiScanProcess;    // 扫描专用进程，和 ycprocess（连接流程）分开，避免互相打断
     myLabel* wifiAddrLabel;
     myLineEdit* wifiAddrLineEdit;
+
+    // ═══════════════ wifi.cnf 持久化 + 启动自动连接 + IP 实时刷新 ═══════════════
+    // wifi.cnf 路径（运行时在 app/cnf/ 下，和 cnf.global 同级）
+    QString m_wifiCnfPath;
+    void buildWifiCnfPath();
+    // 用 wifi.cnf [known] 的历史 SSID 补齐下拉框，并恢复选中 [last]（只追加不清空）
+    void reloadSsidCombo();
+    // ── 多 SSID 管理（已知网络库） ──
+    // 格式: INI, QSettings 读写
+    //   [known]    ssid=password   （所有成功连过的）
+    //   [last]     ssid=xxx        （最近一次成功连接的 SSID）
+    void saveKnownWifi(const QString& ssid, const QString& password);
+    QString lookupKnownPassword(const QString& ssid);   // 没存过返回 ""
+    bool    readLastSuccess(QString& outSsid, QString& outPassword);
+    void    saveLastSuccess(const QString& ssid);
+
+    // 自动连接是否已连上（有 IP 即视为已连接）
+    bool isWifiAlreadyConnected();
+
+    // wifi IP 轮询定时器（连接上后每隔 3s 拉一次 IP，直到拿到且稳定）
+    QTimer* m_wifiIpPollTimer;
+    QString m_lastWifiIp;
+    int     m_wifiPollCountdown;
+    void    startWifiIpPoll();
+    void    stopWifiIpPoll();
+
+    // 连接过程状态：成功拿到 IP 才写 wifi.cnf，避免把错误密码也存进去
+    bool    m_wifiConnecting;
+    QString m_pendingSsid;
+    QString m_pendingPassword;
+    void    markWifiConnectedSuccess();   // 拿到 IP 后调用 → 写 known + last + 清 flag
+
+    // 自动连接重试计数器（最多 3 次，每次间隔 1 秒）
+    int     m_wifiAutoRetryCount;
 
 };
 #endif // STATUSINFOPAGE_H
