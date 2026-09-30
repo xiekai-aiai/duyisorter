@@ -230,7 +230,7 @@ enum
 
 /* 灵敏度设置相关 */
 #define MAX_LIST		14
-#define MAX_GENERAL		4
+#define MAX_GENERAL		5
 #define MAX_AI			4 
 #define MAX_SHAPE		5
 #define MAX_PEANUT		4

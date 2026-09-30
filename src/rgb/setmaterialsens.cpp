@@ -1391,6 +1391,9 @@ void setMaterialSens::updateShapeList()
                 strShapePercent = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struBud[i - (ARITH_BUD_1 - ARITH_SHAPE)].nArea);
                 shapePercentLbe[i]->setText(strShapePercent);
 
+                LOG_TRACE_STM("idx:" << MAX_GENERAL + i << ", strName:" << strName.toStdString() << ", aithName:" << myString.sArithmeticName[MAX_GENERAL + i].toStdString()
+                    << ", strShapeRow:" << strShapeRow.toStdString() << ", strShapePercent:" << strShapePercent.toStdString());
+
                 /*显示后面按钮*/
                 shapeRowLabel[i]->setEnabled(true);
                 shapeRowLbe[i]->setEnabled(true);
