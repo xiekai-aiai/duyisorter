@@ -1114,9 +1114,7 @@ bool GlobalFlow::getGlobalSetting(const QString& fileName)
         {
             sizeTmp = sizeof(struCnfg.struProfileIndex[i].sMaterialName) - 1;    //以'\0'结尾
         }
-        memcpy(struCnfg.struProfileIndex[i].sProfileName, strTmp, sizeTmp);
-
-        //        strcpy(struCnfg.struProfileIndex[i].sMaterialName, strTmp);
+        memcpy(struCnfg.struProfileIndex[i].sMaterialName, strTmp, sizeTmp);
     }
 
     /* level total */
@@ -1351,10 +1349,7 @@ bool GlobalFlow::getGlobalSetting(const QString& fileName)
     }
 
     //! 温度临界阈值
-    for (int i = 0; i < MAX_GROUP_TICK; i++)
-    {
-        struCnfg.nTemperatureThreshold = setting.value(QString("%1-%2").arg(1).arg(47), struCnfg.nTemperatureThreshold).toInt();
-    }
+    struCnfg.nTemperatureThreshold = setting.value(QString("%1-%2").arg(1).arg(47), struCnfg.nTemperatureThreshold).toInt();
 
     //! 报警项使能
     for (int i = 0; i < MAX_ALARM; i++)

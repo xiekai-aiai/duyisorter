@@ -672,7 +672,19 @@ void setMaterialSens::createGeneralPage()
         generalSensLabel[i] = new myLabel(myLan.sensitivity, pageGeneral);
         generalSensLabel[i]->setFixedHeight(30);
 
-        strGeneralSens = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nSensMin);
+        // ARITH_CROSS (差分算法) 用独立的 struCross 结构体，其余 0..3 用 struGreyColor
+        if (i == ARITH_CROSS)
+        {
+            strGeneralSens = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struCross.nSens);
+            strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struCross.nRow);
+            strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struCross.nPercent);
+        }
+        else
+        {
+            strGeneralSens = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nSensMin);
+            strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nRow);
+            strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nPercent);
+        }
         generalSensLbe[i] = new myLineEdit(strGeneralSens, pageGeneral);
         generalSensLbe[i]->setFixedHeight(30);
 
@@ -681,7 +693,6 @@ void setMaterialSens::createGeneralPage()
         generalRowLabel[i]->setFixedHeight(30);
 
 
-        strGeneralRow = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nRow);
         generalRowLbe[i] = new myLineEdit(strGeneralRow, pageGeneral);
         generalRowLbe[i]->setFixedHeight(30);
 
@@ -690,7 +701,6 @@ void setMaterialSens::createGeneralPage()
         generalPercentLabel[i]->setFixedHeight(30);
 
 
-        strGeneralPercent = QString("%1").arg(struCnfp.struGroupIdentify[0][0].struGreyColor[i].nPercent);
         generalPercentLbe[i] = new myLineEdit(strGeneralPercent, pageGeneral);
         generalPercentLbe[i]->setFixedHeight(30);
 
@@ -1156,8 +1166,15 @@ void setMaterialSens::getGeneralIndex(int index)
     {
         double nPercent[MAX_GENERAL];
         nPercent[index / generalSensNum] = generalPercentLbe[index / generalSensNum]->text().toDouble();
-        myInputPanel inputDlg3(intType, 1, struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nRow
-            * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn, nPercent[index / generalSensNum]);
+        // ARITH_CROSS (4) 用独立 struCross，其余用 struGreyColor
+        int rowColMax;
+        if (index / generalSensNum == ARITH_CROSS)
+            rowColMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow
+                      * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn;
+        else
+            rowColMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nRow
+                      * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn;
+        myInputPanel inputDlg3(intType, 1, rowColMax, nPercent[index / generalSensNum]);
         ret = inputDlg3.exec();
         if (ret == QDialog::Accepted)
         {
@@ -1184,13 +1201,16 @@ void setMaterialSens::getGeneralIndex(int index)
         }
     }
 
-    //保留焦糊设置，玉米专用
+    //保留焦糊设置，玉米专用（差分算法 ARITH_CROSS 无此字段，跳过）
     if (index % generalSensNum == 3)
     {
-        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nBurntReservedFlag
-            = reservedCheckBox[index / generalSensNum]->isChecked();
-        myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
-        myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
+        if (index / generalSensNum != ARITH_CROSS)
+        {
+            struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nBurntReservedFlag
+                = reservedCheckBox[index / generalSensNum]->isChecked();
+            myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, currentChan, 0, index / generalSensNum, 0);
+        }
     }
     /* 重置延迟时间 */
     myFlow.resetEjectTime();
