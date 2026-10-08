@@ -1,4 +1,4 @@
-﻿#include "globalflow.h"
+#include "globalflow.h"
 
 void GlobalFlow::initLan()
 {
@@ -1222,210 +1222,73 @@ void GlobalFlow::initLan()
 }
 
 /* 设置界面语言 */
+// 前向声明：辅助函数（定义在文件末尾）
+static QStringList buildLangDirs();
+static bool tryLoadQm(QTranslator* trans, const QString& qmName);
 void GlobalFlow::setLang()
 {
     QTranslator* trans = new QTranslator;
     switch (struCnfg.nLang)
     {
     case LANG_CHS:
-        if (QFile(QString("%1zh-cn.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1zh-cn.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1zh-cn.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "zh-cn.qm");
         break;
     case LANG_ENG:
-        if (QFile(QString("%1en.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1en.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1en.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "en.qm");
         break;
     case LANG_SPAN:
-        if (QFile(QString("%1es.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1es.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1es.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "es.qm");
         break;
     case LANG_RUS:
-        if (QFile(QString("%1ru.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1ru.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1ru.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "ru.qm");
         break;
     case LANG_VIET:
-        if (QFile(QString("%1vi.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1vi.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1vi.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "vi.qm");
         break;
     case LANG_THAILAND:
-        if (QFile(QString("%1th.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1th.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1th.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "th.qm");
         break;
     case LANG_CHT:
-        if (QFile(QString("%1zh-tw.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1zh-tw.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1zh-tw.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "zh-tw.qm");
         break;
     case LANG_TURKEY:
-        if (QFile(QString("%1tr.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1tr.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1tr.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "tr.qm");
         break;
     case LANG_FARSIE:
-        if (QFile(QString("%1fa.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1fa.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1fa.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "fa.qm");
         break;
     case LANG_FRENCHE:
-        if (QFile(QString("%1fr.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1fr.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1fr.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "fr.qm");
         break;
     case LANG_UYGHUR:
-        if (QFile(QString("%1ug.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1ug.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1ug.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "ug.qm");
         break;
     case LANG_KOREANE:
-        if (QFile(QString("%1ko.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1ko.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1ko.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "ko.qm");
         break;
     case LANG_ARABICE:
-        if (QFile(QString("%1ar.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1ar.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1ar.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "ar.qm");
         break;
     case LANG_BULGARIANE:
-        if (QFile(QString("%1bg.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1bg.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1bg.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "bg.qm");
         break;
     case LANG_SLOVAKE:
-        if (QFile(QString("%1sk.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1sk.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1sk.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "sk.qm");
         break;
     case LANG_PORTUGUESEE:
-        if (QFile(QString("%1pt.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1pt.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1pt.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "pt.qm");
         break;
     case LANG_MYANMAR:
-        if (QFile(QString("%1my.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1my.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1my.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "my.qm");
         break;
     case LANG_BENGALIE:
-        if (QFile(QString("%1bn.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1bn.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1bn.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "bn.qm");
         break;
     case LANG_INDONESIA:
-        if (QFile(QString("%1id.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1id.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1id.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "id.qm");
         break;
     case LANG_POLAND:
-        if (QFile(QString("%1pl.qm").arg(LANG_DIR_SD)).exists())
-        {
-            trans->load(QString("%1pl.qm").arg(LANG_DIR_SD));
-        }
-        else
-        {
-            trans->load(QString("%1pl.qm").arg(LANG_DIR));
-        }
+        tryLoadQm(trans, "pl.qm");
         break;
     default:
         break;
@@ -1434,3 +1297,33 @@ void GlobalFlow::setLang()
     QCoreApplication::installTranslator(trans);
     initLan();
 }
+
+// 构造翻译文件路径列表：SD卡优先 → APP_PATH 硬编码路径 → exe 运行时目录（Debug/任意位置都能找到）
+// 返回一个 QStringList，每个元素是 "目录路径/" 格式
+static QStringList buildLangDirs()
+{
+    QStringList dirs;
+    // 1) SD卡路径（板卡上 /opt/app/userdata/i18n/，调试时忽略）
+    dirs << QString(LANG_DIR_SD);
+    // 2) APP_PATH 硬编码路径（globalparams.h 里的宏）
+    dirs << QString(LANG_DIR);
+    // 3) 运行时 exe 所在目录（x86_64 Debug 终极兜底）
+    dirs << QCoreApplication::applicationDirPath() + "/i18n/";
+    return dirs;
+}
+
+// 尝试在候选目录里加载某个 .qm 文件，返回是否成功
+static bool tryLoadQm(QTranslator* trans, const QString& qmName)
+{
+    QStringList dirs = buildLangDirs();
+    for (const QString& dir : dirs) {
+        QString path = dir + qmName;
+        if (QFile::exists(path) && trans->load(path)) {
+            qDebug() << "[setLang] loaded" << qmName << "from" << dir;
+            return true;
+        }
+    }
+    qDebug() << "[setLang] FAILED to load" << qmName << "(searched:" << dirs << ")";
+    return false;
+}
+
