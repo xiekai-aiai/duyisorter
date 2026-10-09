@@ -50,9 +50,9 @@ MySchemeParams::MySchemeParams(QWidget* parent)
     okButton->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     cancelButton = new myPushButton(myLan.back, myIcon.Action_Back, true, true, this);
     cancelButton->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
-    uploadBtn = new myPushButton("上传", myIcon.Action_Apply, true, true, this);
+    uploadBtn = new myPushButton(myLan.upload, myIcon.Action_Apply, true, true, this);
     uploadBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
-    deleteBtn = new myPushButton("删除", myIcon.Action_Apply, true, true, this);
+    deleteBtn = new myPushButton(myLan.del, myIcon.Action_Apply, true, true, this);
     deleteBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     uploadBtn->hide();
     deleteBtn->hide();

@@ -266,6 +266,7 @@ void GlobalFlow::initLan()
     myLan.material_watermelon_rugged_save_black = tr("material_watermelon_rugged_save_black");
     myLan.material_watermelon_ai_whole = tr("material_watermelon_ai_whole");
     myLan.material_watermelon_ai_edge = tr("material_watermelon_ai_edge");
+    myLan.material_ai_alg = tr("material_ai_alg");
     myLan.cfm_use_watermelon = tr("cfm_use_watermelon");
     myLan.cfm_rename_impurity = tr("cfm_rename_impurity");
     myLan.defect_name = tr("defect_name");
@@ -1202,6 +1203,17 @@ void GlobalFlow::initLan()
     myLan.acquisition_height = tr("acquisition_height");
     myLan.reasoning_height = tr("reasoning_height");
     myLan.ai_pic_num = tr("ai_pic_num");
+    myLan.ai_pic_view_h = tr("ai_pic_view_h");
+    myLan.ai_video_view_h = tr("ai_video_view_h");
+    myLan.ai_slider_h = tr("ai_slider_h");
+    myLan.ai_det_status = tr("ai_det_status");
+    myLan.ai_front_discard_num = tr("ai_front_discard_num");
+    myLan.ai_rear_discard_num = tr("ai_rear_discard_num");
+    myLan.ai_front_infer_cost = tr("ai_front_infer_cost");
+    myLan.ai_rear_infer_cost = tr("ai_rear_infer_cost");
+    myLan.ai_front_delay_num = tr("ai_front_delay_num");
+    myLan.ai_rear_delay_num = tr("ai_rear_delay_num");
+    myLan.ai_status_info = tr("ai_status_info");
 
     myLan.rename = tr("rename");
     myLan.add = tr("add");

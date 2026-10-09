@@ -4,215 +4,471 @@
 <context>
     <name>AIMainWidget</name>
     <message>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4791"/>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4866"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4806"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4881"/>
         <source>( </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4791"/>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4866"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4806"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4881"/>
         <source> )</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AiDeviceWidget</name>
+    <message>
+        <location filename="../src/aidevicewidget.cpp" line="329"/>
+        <source>Image Downing... %1%</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>AiModelSet</name>
     <message>
-        <location filename="../aimodelset.ui" line="37"/>
+        <location filename="../aimodelset.ui" line="38"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="138"/>
-        <source> A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="159"/>
-        <source>B</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="178"/>
-        <source>C</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="235"/>
+        <location filename="../aimodelset.ui" line="194"/>
         <source>开始训练</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="270"/>
-        <source>模型加载</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="305"/>
+        <location filename="../aimodelset.ui" line="1045"/>
         <source>仿真</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="340"/>
-        <source>手动标注</source>
+        <location filename="../aimodelset.ui" line="159"/>
+        <source>训练配置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="375"/>
-        <source>自动标注</source>
+        <location filename="../aimodelset.ui" line="231"/>
+        <source>模型管理</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="410"/>
-        <source>+ 添加到训练资源</source>
+        <location filename="../aimodelset.ui" line="266"/>
+        <source>一键标注</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="445"/>
-        <source>标注</source>
+        <location filename="../aimodelset.ui" line="301"/>
+        <source>拉框标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="336"/>
+        <source>+ 添加训练</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="371"/>
+        <source>删除标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="406"/>
+        <source>图片管理</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="441"/>
+        <source>合并标注目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../aimodelset.ui" line="480"/>
-        <source>擦除</source>
+        <source>上一步标注</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="546"/>
-        <source>导入图片资源</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="581"/>
-        <source>清空资源</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="616"/>
-        <source>全部删除</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="651"/>
-        <source>删除</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="686"/>
+        <location filename="../aimodelset.ui" line="515"/>
         <source>上一页</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="721"/>
+        <location filename="../aimodelset.ui" line="550"/>
         <source>下一页</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="765"/>
-        <source>11</source>
+        <location filename="../aimodelset.ui" line="563"/>
+        <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="834"/>
+        <location filename="../aimodelset.ui" line="722"/>
+        <source>- 从训练删除</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="764"/>
+        <source>自动拉框</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="802"/>
+        <source>点击标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="839"/>
+        <source>新建模型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="887"/>
+        <source>+有标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="922"/>
+        <source>- 全部删除</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="940"/>
+        <source>50</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="962"/>
+        <source>面积阈值</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="984"/>
+        <source>色差阈值</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="1000"/>
+        <source>30</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="1087"/>
+        <source>仿真vs标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="1133"/>
+        <source>选大小</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="601"/>
         <source>返回</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="988"/>
-        <source>2</source>
+        <location filename="../src/aimodelset.cpp" line="2292"/>
+        <source>模型删除</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1007"/>
-        <source>3</source>
+        <location filename="../src/aimodelset.cpp" line="2293"/>
+        <source>模型导出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1042"/>
+        <location filename="../src/aimodelset.cpp" line="2294"/>
+        <source>模型导入</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2299"/>
+        <location filename="../src/aimodelset.cpp" line="2463"/>
         <source>确定</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1077"/>
-        <source>加载已有模型</source>
+        <location filename="../src/aimodelset.cpp" line="2300"/>
+        <location filename="../src/aimodelset.cpp" line="2464"/>
+        <location filename="../src/aimodelset.cpp" line="2727"/>
+        <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1200"/>
-        <source>deltrain</source>
+        <location filename="../src/aimodelset.cpp" line="2331"/>
+        <source>(该目录下没有 .bin 模型文件)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1235"/>
-        <source>fg</source>
+        <location filename="../src/aimodelset.cpp" line="2340"/>
+        <location filename="../src/aimodelset.cpp" line="2368"/>
+        <location filename="../src/aimodelset.cpp" line="2387"/>
+        <location filename="../src/aimodelset.cpp" line="2393"/>
+        <location filename="../src/aimodelset.cpp" line="2405"/>
+        <location filename="../src/aimodelset.cpp" line="2426"/>
+        <location filename="../src/aimodelset.cpp" line="2438"/>
+        <location filename="../src/aimodelset.cpp" line="2446"/>
+        <location filename="../src/aimodelset.cpp" line="2480"/>
+        <location filename="../src/aimodelset.cpp" line="2554"/>
+        <location filename="../src/aimodelset.cpp" line="2697"/>
+        <location filename="../src/aimodelset.cpp" line="2702"/>
+        <location filename="../src/aimodelset.cpp" line="2708"/>
+        <location filename="../src/aimodelset.cpp" line="2717"/>
+        <location filename="../src/aimodelset.cpp" line="2742"/>
+        <location filename="../src/aimodelset.cpp" line="2744"/>
+        <location filename="../src/aimodelset.cpp" line="2796"/>
+        <location filename="../src/aimodelset.cpp" line="3999"/>
+        <location filename="../src/aimodelset.cpp" line="4070"/>
+        <location filename="../src/aimodelset.cpp" line="4309"/>
+        <source>提示</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1270"/>
+        <location filename="../src/aimodelset.cpp" line="2340"/>
+        <location filename="../src/aimodelset.cpp" line="2387"/>
+        <source>请先选择一个模型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2344"/>
+        <source>删除模型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2345"/>
+        <source>确定删除模型 %1 吗？
+将同时删除 .bin 和 .json 文件，此操作不可恢复！</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2368"/>
+        <source>已删除: %1
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2379"/>
+        <source>删除失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2379"/>
+        <source>无法删除模型文件</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2394"/>
+        <source>模型 %1 缺少 .json 文件，是否仍要导出 .bin？</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2402"/>
+        <location filename="../src/aimodelset.cpp" line="2436"/>
+        <location filename="../src/aimodelset.cpp" line="2700"/>
+        <source>检测U盘...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2405"/>
+        <location filename="../src/aimodelset.cpp" line="2438"/>
+        <location filename="../src/aimodelset.cpp" line="2703"/>
+        <source>未检测到U盘！
+请插上U盘后再试。</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2410"/>
+        <source>正在拷贝 %1.bin ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2417"/>
+        <source>正在拷贝 %1.json ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2425"/>
+        <source>模型导出完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2427"/>
+        <source>导出完成！
+已拷贝到 /udisk/%1/</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2429"/>
+        <source>模型导出失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2430"/>
+        <source>导出失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2430"/>
+        <source>U盘写入失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2446"/>
+        <source>U 盘里没有 .bin 模型文件</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2451"/>
+        <source>从U盘导入模型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2481"/>
+        <source>本地已存在 %1，是否覆盖？</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2555"/>
+        <source>导入完成：%1
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2557"/>
+        <source>(无 json 文件)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2560"/>
+        <source>导入失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2560"/>
+        <source>拷贝 .bin 失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2697"/>
+        <source>源目录不存在！</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2708"/>
+        <source>U盘挂载失败（/udisk 不存在）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2717"/>
+        <source>目录为空，无需导出</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2721"/>
+        <source>导出到U盘</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2726"/>
+        <source>准备中...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2742"/>
+        <source>已取消</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2745"/>
+        <source>导出完成！
+已拷贝到 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2796"/>
+        <source>请先选择要导出的目录！</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3522"/>
+        <source>类别不匹配，无法提交训练</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3999"/>
+        <location filename="../src/aimodelset.cpp" line="4070"/>
+        <source>请先在模型加载中选择仿真模型！</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4310"/>
+        <source>全部 %1 张图片标注和仿真结果一致，没有错标！</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>select</source>
-        <translation type="unfinished">Chọn</translation>
+        <translation type="obsolete">Chọn</translation>
     </message>
 </context>
 <context>
     <name>GlobalFlow</name>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="793"/>
+        <location filename="../src/params/paramslang.cpp" line="794"/>
         <source>first_lower_layer</source>
         <translation>1 dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="794"/>
+        <location filename="../src/params/paramslang.cpp" line="795"/>
         <source>first_upper_layer</source>
         <translation>1 trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="795"/>
+        <location filename="../src/params/paramslang.cpp" line="796"/>
         <source>second_lower_layer</source>
         <translation>2 dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="796"/>
+        <location filename="../src/params/paramslang.cpp" line="797"/>
         <source>second_upper_layer</source>
         <translation>2 trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="797"/>
+        <location filename="../src/params/paramslang.cpp" line="798"/>
         <source>1st_upper_master</source>
         <translation>1 trên-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="798"/>
+        <location filename="../src/params/paramslang.cpp" line="799"/>
         <source>1st_lower_master</source>
         <translation>1 dưới-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="799"/>
+        <location filename="../src/params/paramslang.cpp" line="800"/>
         <source>2nd_upper_master</source>
         <translation>2 trên-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="800"/>
+        <location filename="../src/params/paramslang.cpp" line="801"/>
         <source>2nd_lower_master</source>
         <translation>2 dưới-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="801"/>
+        <location filename="../src/params/paramslang.cpp" line="802"/>
         <source>1st_upper_slave</source>
         <translation>1 trên-phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="802"/>
+        <location filename="../src/params/paramslang.cpp" line="803"/>
         <source>1st_lower_slave</source>
         <translation>1 dưới phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="803"/>
+        <location filename="../src/params/paramslang.cpp" line="804"/>
         <source>2nd_upper_slave</source>
         <translation>2 trên-phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="804"/>
+        <location filename="../src/params/paramslang.cpp" line="805"/>
         <source>2nd_lower_slave</source>
         <translation>2 dưới-phụ</translation>
     </message>
@@ -353,7 +609,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="534"/>
+        <location filename="../src/params/paramslang.cpp" line="535"/>
         <source>sorter_manager</source>
         <translation type="unfinished"></translation>
     </message>
@@ -458,7 +714,7 @@
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="44"/>
-        <location filename="../src/params/paramslang.cpp" line="900"/>
+        <location filename="../src/params/paramslang.cpp" line="901"/>
         <source>camera_signal</source>
         <translation>Tín hiệu</translation>
     </message>
@@ -1595,477 +1851,542 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1109"/>
-        <source>schemeNew_select</source>
+        <location filename="../src/params/paramslang.cpp" line="269"/>
+        <source>material_ai_alg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1110"/>
-        <source>videoNew</source>
+        <source>schemeNew_select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1111"/>
-        <source>save_parameterNew</source>
+        <source>videoNew</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1112"/>
-        <source>working_stop</source>
+        <source>save_parameterNew</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1113"/>
+        <source>working_stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1114"/>
         <source>working_start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1115"/>
+        <location filename="../src/params/paramslang.cpp" line="1116"/>
         <source>set_sens</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1116"/>
+        <location filename="../src/params/paramslang.cpp" line="1117"/>
         <source>feeder_speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1117"/>
+        <location filename="../src/params/paramslang.cpp" line="1118"/>
         <source>test_ejector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1118"/>
+        <location filename="../src/params/paramslang.cpp" line="1119"/>
         <source>set_wiper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1119"/>
+        <location filename="../src/params/paramslang.cpp" line="1120"/>
         <source>set_function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1120"/>
+        <location filename="../src/params/paramslang.cpp" line="1121"/>
         <source>operation_level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1122"/>
+        <location filename="../src/params/paramslang.cpp" line="1123"/>
         <source>new_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1123"/>
+        <location filename="../src/params/paramslang.cpp" line="1124"/>
         <source>copy_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1124"/>
+        <location filename="../src/params/paramslang.cpp" line="1125"/>
         <source>delte_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1125"/>
+        <location filename="../src/params/paramslang.cpp" line="1126"/>
         <source>rename_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1126"/>
+        <location filename="../src/params/paramslang.cpp" line="1127"/>
         <source>recover_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1127"/>
+        <location filename="../src/params/paramslang.cpp" line="1128"/>
         <source>backup_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1129"/>
+        <location filename="../src/params/paramslang.cpp" line="1130"/>
         <source>customer_model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1130"/>
+        <location filename="../src/params/paramslang.cpp" line="1131"/>
         <source>sys_set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1131"/>
+        <location filename="../src/params/paramslang.cpp" line="1132"/>
         <source>network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1132"/>
+        <location filename="../src/params/paramslang.cpp" line="1133"/>
         <source>help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1133"/>
+        <location filename="../src/params/paramslang.cpp" line="1134"/>
         <source>device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1134"/>
+        <location filename="../src/params/paramslang.cpp" line="1135"/>
         <source>capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1135"/>
+        <location filename="../src/params/paramslang.cpp" line="1136"/>
         <source>algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1136"/>
+        <location filename="../src/params/paramslang.cpp" line="1137"/>
         <source>aux_parameter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1137"/>
+        <location filename="../src/params/paramslang.cpp" line="1138"/>
         <source>set_time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1138"/>
+        <location filename="../src/params/paramslang.cpp" line="1139"/>
         <source>io_set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1140"/>
+        <location filename="../src/params/paramslang.cpp" line="1141"/>
         <source>front_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1141"/>
+        <location filename="../src/params/paramslang.cpp" line="1142"/>
         <source>front_background</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1142"/>
+        <location filename="../src/params/paramslang.cpp" line="1143"/>
         <source>back_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1143"/>
+        <location filename="../src/params/paramslang.cpp" line="1144"/>
         <source>back_background</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1145"/>
+        <location filename="../src/params/paramslang.cpp" line="1146"/>
         <source>camera_new</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1146"/>
+        <location filename="../src/params/paramslang.cpp" line="1147"/>
         <source>set_machine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1147"/>
+        <location filename="../src/params/paramslang.cpp" line="1148"/>
         <source>test_output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1148"/>
+        <location filename="../src/params/paramslang.cpp" line="1149"/>
         <source>old_test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1149"/>
+        <location filename="../src/params/paramslang.cpp" line="1150"/>
         <source>set_vib_voltage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1150"/>
+        <location filename="../src/params/paramslang.cpp" line="1151"/>
         <source>tdemag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1151"/>
+        <location filename="../src/params/paramslang.cpp" line="1152"/>
         <source>setLight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1153"/>
+        <location filename="../src/params/paramslang.cpp" line="1154"/>
         <source>encrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1154"/>
+        <location filename="../src/params/paramslang.cpp" line="1155"/>
         <source>out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1155"/>
+        <location filename="../src/params/paramslang.cpp" line="1156"/>
         <source>bad_ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1156"/>
+        <location filename="../src/params/paramslang.cpp" line="1157"/>
         <source>background_proportion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1159"/>
+        <location filename="../src/params/paramslang.cpp" line="1160"/>
         <source>salesperson</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1160"/>
+        <location filename="../src/params/paramslang.cpp" line="1161"/>
         <source>telephone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1161"/>
+        <location filename="../src/params/paramslang.cpp" line="1162"/>
         <source>expiration_time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1163"/>
+        <location filename="../src/params/paramslang.cpp" line="1164"/>
         <source>illegal_password_decryption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1164"/>
+        <location filename="../src/params/paramslang.cpp" line="1165"/>
         <source>decryption_successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1165"/>
+        <location filename="../src/params/paramslang.cpp" line="1166"/>
         <source>decryption_process_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1167"/>
+        <location filename="../src/params/paramslang.cpp" line="1168"/>
         <source>illegal_password_encryption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1168"/>
+        <location filename="../src/params/paramslang.cpp" line="1169"/>
         <source>encryption_successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1169"/>
+        <location filename="../src/params/paramslang.cpp" line="1170"/>
         <source>encryption_process_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1170"/>
+        <location filename="../src/params/paramslang.cpp" line="1171"/>
         <source>target_value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1172"/>
+        <location filename="../src/params/paramslang.cpp" line="1173"/>
         <source>download_image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1173"/>
+        <location filename="../src/params/paramslang.cpp" line="1174"/>
         <source>image_reasoning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1174"/>
+        <location filename="../src/params/paramslang.cpp" line="1175"/>
         <source>image_acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1176"/>
+        <location filename="../src/params/paramslang.cpp" line="1177"/>
         <source>pixel_info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1177"/>
+        <location filename="../src/params/paramslang.cpp" line="1178"/>
         <source>ejector_para</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1178"/>
+        <location filename="../src/params/paramslang.cpp" line="1179"/>
         <source>image_height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1179"/>
+        <location filename="../src/params/paramslang.cpp" line="1180"/>
         <source>model_para</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1180"/>
+        <location filename="../src/params/paramslang.cpp" line="1181"/>
         <source>model_update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1181"/>
+        <location filename="../src/params/paramslang.cpp" line="1182"/>
         <source>ai_version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1182"/>
+        <location filename="../src/params/paramslang.cpp" line="1183"/>
         <source>disk_space</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1184"/>
+        <location filename="../src/params/paramslang.cpp" line="1185"/>
         <source>img_downloading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1185"/>
+        <location filename="../src/params/paramslang.cpp" line="1186"/>
         <source>ftp_status_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1186"/>
+        <location filename="../src/params/paramslang.cpp" line="1187"/>
         <source>img_download_finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1187"/>
+        <location filename="../src/params/paramslang.cpp" line="1188"/>
         <source>delete_original_image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1188"/>
+        <location filename="../src/params/paramslang.cpp" line="1189"/>
         <source>deleting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1189"/>
+        <location filename="../src/params/paramslang.cpp" line="1190"/>
         <source>img_list_blank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1190"/>
+        <location filename="../src/params/paramslang.cpp" line="1191"/>
         <source>delete_original_image_finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1191"/>
+        <location filename="../src/params/paramslang.cpp" line="1192"/>
         <source>setting_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1192"/>
+        <location filename="../src/params/paramslang.cpp" line="1193"/>
         <source>setting_succeeded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1193"/>
+        <location filename="../src/params/paramslang.cpp" line="1194"/>
         <source>setting_value_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1195"/>
+        <location filename="../src/params/paramslang.cpp" line="1196"/>
         <source>model_list_blank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1196"/>
+        <location filename="../src/params/paramslang.cpp" line="1197"/>
         <source>model_para_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1197"/>
+        <location filename="../src/params/paramslang.cpp" line="1198"/>
         <source>beginning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1198"/>
+        <location filename="../src/params/paramslang.cpp" line="1199"/>
         <source>error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1199"/>
+        <location filename="../src/params/paramslang.cpp" line="1200"/>
         <source>succeed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1200"/>
+        <location filename="../src/params/paramslang.cpp" line="1201"/>
         <source>fixed_delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1201"/>
+        <location filename="../src/params/paramslang.cpp" line="1202"/>
         <source>dynamic_delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1202"/>
+        <location filename="../src/params/paramslang.cpp" line="1203"/>
         <source>acquisition_height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1203"/>
+        <location filename="../src/params/paramslang.cpp" line="1204"/>
         <source>reasoning_height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1205"/>
-        <source>rename</source>
+        <source>ai_pic_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1206"/>
-        <source>add</source>
+        <source>ai_pic_view_h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1207"/>
-        <source>model</source>
+        <source>ai_video_view_h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1208"/>
-        <source>id_blank</source>
+        <source>ai_slider_h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1209"/>
-        <source>json_file</source>
+        <source>ai_det_status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1210"/>
-        <source>dlc_file</source>
+        <source>ai_front_discard_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1211"/>
-        <source>content</source>
+        <source>ai_rear_discard_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1212"/>
-        <source>open</source>
+        <source>ai_front_infer_cost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1213"/>
-        <source>notexist</source>
+        <source>ai_rear_infer_cost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1214"/>
-        <source>upload</source>
+        <source>ai_front_delay_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1215"/>
-        <source>model_exist_msg</source>
+        <source>ai_rear_delay_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1217"/>
-        <source>spray_valve_number</source>
+        <location filename="../src/params/paramslang.cpp" line="1216"/>
+        <source>ai_status_info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1218"/>
-        <source>nozzle_number</source>
+        <source>rename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1219"/>
+        <source>add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1220"/>
+        <source>model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1221"/>
+        <source>id_blank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1222"/>
+        <source>json_file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1223"/>
+        <source>dlc_file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1224"/>
+        <source>content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1225"/>
+        <source>open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1226"/>
+        <source>notexist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1227"/>
+        <source>upload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1228"/>
+        <source>model_exist_msg</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1230"/>
+        <source>spray_valve_number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1231"/>
+        <source>nozzle_number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1232"/>
         <source>spray_time_interval</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2163,747 +2484,747 @@
         <translation>AI góc cạnh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="269"/>
+        <location filename="../src/params/paramslang.cpp" line="270"/>
         <source>cfm_use_watermelon</source>
         <translatorcomment>Use Watermelon</translatorcomment>
         <translation>Use Watermelon</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="270"/>
+        <location filename="../src/params/paramslang.cpp" line="271"/>
         <source>cfm_rename_impurity</source>
         <translatorcomment>xác nhận đổi tên lỗi?</translatorcomment>
         <translation>xác nhận đổi tên lỗi?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="271"/>
+        <location filename="../src/params/paramslang.cpp" line="272"/>
         <source>defect_name</source>
         <translatorcomment>Tên lỗi</translatorcomment>
         <translation>Tên lỗi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="272"/>
+        <location filename="../src/params/paramslang.cpp" line="273"/>
         <source>mode</source>
         <translatorcomment>Chế độ</translatorcomment>
         <translation>Chế độ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="273"/>
+        <location filename="../src/params/paramslang.cpp" line="274"/>
         <source>scale</source>
         <translatorcomment>Kích cỡ</translatorcomment>
         <translation>Kích cỡ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="274"/>
+        <location filename="../src/params/paramslang.cpp" line="275"/>
         <source>purity</source>
         <translatorcomment>Độ sạch</translatorcomment>
         <translation>Độ sạch</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="275"/>
+        <location filename="../src/params/paramslang.cpp" line="276"/>
         <source>red</source>
         <translatorcomment>Đỏ</translatorcomment>
         <translation>Red</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="276"/>
+        <location filename="../src/params/paramslang.cpp" line="277"/>
         <source>green</source>
         <translatorcomment>Lục</translatorcomment>
         <translation>Lục</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="277"/>
+        <location filename="../src/params/paramslang.cpp" line="278"/>
         <source>blue</source>
         <translatorcomment>Xanh</translatorcomment>
         <translation>Xanh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="278"/>
+        <location filename="../src/params/paramslang.cpp" line="279"/>
         <source>dark</source>
         <translatorcomment>Màu tối</translatorcomment>
         <translation>Màu tối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="279"/>
+        <location filename="../src/params/paramslang.cpp" line="280"/>
         <source>light</source>
         <translatorcomment>Màu sáng</translatorcomment>
         <translation>Màu sáng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="280"/>
+        <location filename="../src/params/paramslang.cpp" line="281"/>
         <source>light_limit</source>
         <translatorcomment>Giớihạnsáng</translatorcomment>
         <translation>Giớihạnsáng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="281"/>
+        <location filename="../src/params/paramslang.cpp" line="282"/>
         <source>red_green</source>
         <translatorcomment>Đỏ-Lục</translatorcomment>
         <translation>Đỏ-Lục</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="282"/>
+        <location filename="../src/params/paramslang.cpp" line="283"/>
         <source>red_blue</source>
         <translatorcomment>Đỏ-xanh</translatorcomment>
         <translation>Đỏ-xanh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="283"/>
+        <location filename="../src/params/paramslang.cpp" line="284"/>
         <source>green_blue</source>
         <translatorcomment>Lục-xanh</translatorcomment>
         <translation>Lục-xanh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="284"/>
+        <location filename="../src/params/paramslang.cpp" line="285"/>
         <source>sort_circular</source>
         <translatorcomment>bắn hạttròn</translatorcomment>
         <translation>bắn hạttròn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="285"/>
+        <location filename="../src/params/paramslang.cpp" line="286"/>
         <source>sort_long</source>
         <translatorcomment>bắn hạtdàig</translatorcomment>
         <translation>bắn hạtdài</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="286"/>
+        <location filename="../src/params/paramslang.cpp" line="287"/>
         <source>sort_short</source>
         <translatorcomment>bắn hạtngắn</translatorcomment>
         <translation>bắn hạtngắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="287"/>
+        <location filename="../src/params/paramslang.cpp" line="288"/>
         <source>sort_small</source>
         <translatorcomment>bắn hạtnhỏ</translatorcomment>
         <translation>bắn hạtnhỏ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="288"/>
+        <location filename="../src/params/paramslang.cpp" line="289"/>
         <source>sort_big</source>
         <translatorcomment>bắn hạtlớn</translatorcomment>
         <translation>bắn hạtlớn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="289"/>
+        <location filename="../src/params/paramslang.cpp" line="290"/>
         <source>params_limit</source>
         <translatorcomment>G.hạn T.số</translatorcomment>
         <translation>G.hạn T.số</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="290"/>
+        <location filename="../src/params/paramslang.cpp" line="291"/>
         <source>area</source>
         <translatorcomment>vùng</translatorcomment>
         <translation>vùng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="291"/>
+        <location filename="../src/params/paramslang.cpp" line="292"/>
         <source>arithmetic_list</source>
         <translatorcomment>D. sách thuậttoán</translatorcomment>
         <translation>D. sách thuậttoán</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="292"/>
+        <location filename="../src/params/paramslang.cpp" line="293"/>
         <source>material_mode</source>
         <translatorcomment>Chếđộ nguyênliệu</translatorcomment>
         <translation>Chếđộ nguyênliệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="293"/>
+        <location filename="../src/params/paramslang.cpp" line="294"/>
         <source>first_second</source>
         <translatorcomment>máy 1,2 và 3 như nhau</translatorcomment>
         <translation>máy 1,2 và 3 như nhau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="294"/>
+        <location filename="../src/params/paramslang.cpp" line="295"/>
         <source>all_seperate</source>
         <translatorcomment>Riêng lẻ từng máy</translatorcomment>
         <translation>Riêng lẻ từng máy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="295"/>
+        <location filename="../src/params/paramslang.cpp" line="296"/>
         <source>front_rear</source>
         <translatorcomment>Trước và sau như nhau</translatorcomment>
         <translation>Trước và sau như nhau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="296"/>
+        <location filename="../src/params/paramslang.cpp" line="297"/>
         <source>all_alike</source>
         <translatorcomment>Tất cả như nhau</translatorcomment>
         <translation>Tất cả như nhau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="297"/>
+        <location filename="../src/params/paramslang.cpp" line="298"/>
         <source>reserved</source>
         <translatorcomment>Đảo ngược</translatorcomment>
         <translation>Đảo ngược</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="298"/>
+        <location filename="../src/params/paramslang.cpp" line="299"/>
         <source>reserved_1</source>
         <translatorcomment>Đảo ngược 1</translatorcomment>
         <translation>Đảo ngược 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="299"/>
+        <location filename="../src/params/paramslang.cpp" line="300"/>
         <source>reserved_2</source>
         <translatorcomment>Đảo ngược 2</translatorcomment>
         <translation>Đảo ngược 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="300"/>
+        <location filename="../src/params/paramslang.cpp" line="301"/>
         <source>reserved_dark_red</source>
         <translatorcomment>Đảo ngược đỏ</translatorcomment>
         <translation>Đảo ngược đỏ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="301"/>
+        <location filename="../src/params/paramslang.cpp" line="302"/>
         <source>reserved_peeled</source>
         <translatorcomment>Đảo ngược sạch lụa</translatorcomment>
         <translation>Đảo ngược sạch lụa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="302"/>
+        <location filename="../src/params/paramslang.cpp" line="303"/>
         <source>reserved_burnt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="303"/>
+        <location filename="../src/params/paramslang.cpp" line="304"/>
         <source>slice_sensitivity</source>
         <translatorcomment>Độ nhạy lát mỏng</translatorcomment>
         <translation>Độ nhạy lát mỏng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="304"/>
+        <location filename="../src/params/paramslang.cpp" line="305"/>
         <source>slice_size</source>
         <translatorcomment>Cỡ lát mỏng</translatorcomment>
         <translation>Cỡ lát mỏng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="305"/>
+        <location filename="../src/params/paramslang.cpp" line="306"/>
         <source>pole_size</source>
         <translatorcomment>Pole Size</translatorcomment>
         <translation>K.thước pole</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="306"/>
+        <location filename="../src/params/paramslang.cpp" line="307"/>
         <source>grain_sensitivity</source>
         <translatorcomment>Grain Sens</translatorcomment>
         <translation>Nhạy hạt</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="307"/>
+        <location filename="../src/params/paramslang.cpp" line="308"/>
         <source>grain_size</source>
         <translatorcomment>Grain Size</translatorcomment>
         <translation>Kích cớ hạt</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="308"/>
+        <location filename="../src/params/paramslang.cpp" line="309"/>
         <source>balance</source>
         <translatorcomment>Balance</translatorcomment>
         <translation>Cân bằng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="309"/>
+        <location filename="../src/params/paramslang.cpp" line="310"/>
         <source>hard_code</source>
         <translation>T.số phần cứng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="310"/>
+        <location filename="../src/params/paramslang.cpp" line="311"/>
         <source>min_limit</source>
         <translation>G.hạn trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="311"/>
+        <location filename="../src/params/paramslang.cpp" line="312"/>
         <source>max_limit</source>
         <translation>G.hạn dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="312"/>
+        <location filename="../src/params/paramslang.cpp" line="313"/>
         <source>threshold</source>
         <translation>Ngưỡng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="315"/>
+        <location filename="../src/params/paramslang.cpp" line="316"/>
         <source>lamp_front_bg_red</source>
         <translatorcomment>BG-R trước</translatorcomment>
         <translation>BG-R trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="316"/>
+        <location filename="../src/params/paramslang.cpp" line="317"/>
         <source>lamp_front_bg_green</source>
         <translatorcomment>BG-G trước</translatorcomment>
         <translation>BG-G trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="317"/>
+        <location filename="../src/params/paramslang.cpp" line="318"/>
         <source>lamp_front_bg_blue</source>
         <translatorcomment>BG-B trước</translatorcomment>
         <translation>BG-B trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="318"/>
+        <location filename="../src/params/paramslang.cpp" line="319"/>
         <source>lamp_rear_bg_red</source>
         <translatorcomment>BG-R sau</translatorcomment>
         <translation>BG-R sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="319"/>
+        <location filename="../src/params/paramslang.cpp" line="320"/>
         <source>lamp_rear_bg_green</source>
         <translatorcomment>BG-G sau</translatorcomment>
         <translation>BG-G sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="320"/>
+        <location filename="../src/params/paramslang.cpp" line="321"/>
         <source>lamp_rear_bg_blue</source>
         <translatorcomment>BG-B sau</translatorcomment>
         <translation>BG-B sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="321"/>
+        <location filename="../src/params/paramslang.cpp" line="322"/>
         <source>lamp_rear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="322"/>
+        <location filename="../src/params/paramslang.cpp" line="323"/>
         <source>lamp_rear_1</source>
         <translatorcomment>sau 1</translatorcomment>
         <translation>sau 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="323"/>
+        <location filename="../src/params/paramslang.cpp" line="324"/>
         <source>lamp_rear_2</source>
         <translatorcomment>sau 2</translatorcomment>
         <translation>sau 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="324"/>
+        <location filename="../src/params/paramslang.cpp" line="325"/>
         <source>lamp_rear_3</source>
         <translatorcomment>sau 3</translatorcomment>
         <translation>sau 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="325"/>
+        <location filename="../src/params/paramslang.cpp" line="326"/>
         <source>lamp_rear_4</source>
         <translatorcomment>sau 4</translatorcomment>
         <translation>sau 4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="326"/>
+        <location filename="../src/params/paramslang.cpp" line="327"/>
         <source>lamp_upper_1</source>
         <translatorcomment>trên 1</translatorcomment>
         <translation>trên 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="327"/>
+        <location filename="../src/params/paramslang.cpp" line="328"/>
         <source>lamp_upper_2</source>
         <translatorcomment>trên 2</translatorcomment>
         <translation>trên 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="328"/>
+        <location filename="../src/params/paramslang.cpp" line="329"/>
         <source>lamp_upper_3</source>
         <translatorcomment>trên 3</translatorcomment>
         <translation>trên 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="329"/>
+        <location filename="../src/params/paramslang.cpp" line="330"/>
         <source>lamp_upper_4</source>
         <translatorcomment>trên 4</translatorcomment>
         <translation>trên 4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="330"/>
+        <location filename="../src/params/paramslang.cpp" line="331"/>
         <source>lamp_front</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="331"/>
+        <location filename="../src/params/paramslang.cpp" line="332"/>
         <source>lamp_front_1</source>
         <translation>Trước 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="332"/>
+        <location filename="../src/params/paramslang.cpp" line="333"/>
         <source>lamp_front_2</source>
         <translation>trước 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="333"/>
+        <location filename="../src/params/paramslang.cpp" line="334"/>
         <source>lamp_front_3</source>
         <translation>Trước 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="334"/>
+        <location filename="../src/params/paramslang.cpp" line="335"/>
         <source>lamp_upper_bg</source>
         <translatorcomment>BG trên</translatorcomment>
         <translation>BG trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="335"/>
+        <location filename="../src/params/paramslang.cpp" line="336"/>
         <source>lamp_low_1</source>
         <translatorcomment>Dưới 1</translatorcomment>
         <translation>Dưới 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="336"/>
+        <location filename="../src/params/paramslang.cpp" line="337"/>
         <source>lamp_low_2</source>
         <translatorcomment>Dưới 2</translatorcomment>
         <translation>Dưới 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="337"/>
+        <location filename="../src/params/paramslang.cpp" line="338"/>
         <source>lamp_low_3</source>
         <translatorcomment>Dưới 3</translatorcomment>
         <translation>Dưới 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="338"/>
+        <location filename="../src/params/paramslang.cpp" line="339"/>
         <source>lamp_low_4</source>
         <translatorcomment>Dưới 4</translatorcomment>
         <translation>Dưới 4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="339"/>
+        <location filename="../src/params/paramslang.cpp" line="340"/>
         <source>lamp_low_bg</source>
         <translatorcomment>BG dưới</translatorcomment>
         <translation>BG dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="340"/>
+        <location filename="../src/params/paramslang.cpp" line="341"/>
         <source>lamp_upper_bg_red</source>
         <translatorcomment>BG-R Trên</translatorcomment>
         <translation>BG-R Trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="341"/>
+        <location filename="../src/params/paramslang.cpp" line="342"/>
         <source>lamp_upper_bg_green</source>
         <translatorcomment>BG-G Trên</translatorcomment>
         <translation>BG-G Trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="342"/>
+        <location filename="../src/params/paramslang.cpp" line="343"/>
         <source>lamp_upper_bg_blue</source>
         <translatorcomment>BG-B Trên</translatorcomment>
         <translation>BG-B Trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="343"/>
+        <location filename="../src/params/paramslang.cpp" line="344"/>
         <source>lamp_low_bg_red</source>
         <translatorcomment>BG-R dưới</translatorcomment>
         <translation>BG-R dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="344"/>
+        <location filename="../src/params/paramslang.cpp" line="345"/>
         <source>lamp_low_bg_green</source>
         <translatorcomment>BG-G dưới</translatorcomment>
         <translation>BG-G dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="345"/>
+        <location filename="../src/params/paramslang.cpp" line="346"/>
         <source>lamp_low_bg_blue</source>
         <translatorcomment>BG-B dưới</translatorcomment>
         <translation>BG-B dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="346"/>
+        <location filename="../src/params/paramslang.cpp" line="347"/>
         <source>lamp_mid_1</source>
         <translatorcomment>Giữa  1</translatorcomment>
         <translation>Giữa  1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="347"/>
+        <location filename="../src/params/paramslang.cpp" line="348"/>
         <source>lamp_mid_2</source>
         <translatorcomment>Giữa  2</translatorcomment>
         <translation>Giữa  2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="348"/>
+        <location filename="../src/params/paramslang.cpp" line="349"/>
         <source>lamp_mid_3</source>
         <translatorcomment>Giữa  3</translatorcomment>
         <translation>Giữa  3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="349"/>
+        <location filename="../src/params/paramslang.cpp" line="350"/>
         <source>lamp_mid_4</source>
         <translatorcomment>Giữa  4</translatorcomment>
         <translation>Giữa  4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="350"/>
+        <location filename="../src/params/paramslang.cpp" line="351"/>
         <source>lamp_mid_bg</source>
         <translatorcomment>BG giữa</translatorcomment>
         <translation>BG giữa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="351"/>
+        <location filename="../src/params/paramslang.cpp" line="352"/>
         <source>lamp_rear_bg</source>
         <translatorcomment>BG sau</translatorcomment>
         <translation>BG sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="352"/>
+        <location filename="../src/params/paramslang.cpp" line="353"/>
         <source>lamp_front_bg</source>
         <translation>Front BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="355"/>
+        <location filename="../src/params/paramslang.cpp" line="356"/>
         <source>feeder_set</source>
         <translatorcomment>Cài cấpliệu</translatorcomment>
         <translation>Cài cấpliệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="356"/>
+        <location filename="../src/params/paramslang.cpp" line="357"/>
         <source>feeder</source>
         <translatorcomment>Cấp liệu</translatorcomment>
         <translation>Cấp liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="357"/>
+        <location filename="../src/params/paramslang.cpp" line="358"/>
         <source>feed</source>
         <translatorcomment>Cấp liệu</translatorcomment>
         <translation>Cấp liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="358"/>
+        <location filename="../src/params/paramslang.cpp" line="359"/>
         <source>feeder_ac</source>
         <translatorcomment>Cấp liệu AC</translatorcomment>
         <translation>Cấp liệu AC</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="359"/>
+        <location filename="../src/params/paramslang.cpp" line="360"/>
         <source>feed_enable</source>
         <translation>Cho phép c.liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="431"/>
+        <location filename="../src/params/paramslang.cpp" line="432"/>
         <source>eject_bias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="462"/>
+        <location filename="../src/params/paramslang.cpp" line="463"/>
         <source>color_sort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="463"/>
+        <location filename="../src/params/paramslang.cpp" line="464"/>
         <source>shape_sort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="525"/>
+        <location filename="../src/params/paramslang.cpp" line="526"/>
         <source>contact_us</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="535"/>
+        <location filename="../src/params/paramslang.cpp" line="536"/>
         <source>auto_analysis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="537"/>
+        <location filename="../src/params/paramslang.cpp" line="538"/>
         <source>slave_list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="542"/>
+        <location filename="../src/params/paramslang.cpp" line="543"/>
         <source>local_host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="587"/>
+        <location filename="../src/params/paramslang.cpp" line="588"/>
         <source>farsi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="588"/>
+        <location filename="../src/params/paramslang.cpp" line="589"/>
         <source>french</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="589"/>
+        <location filename="../src/params/paramslang.cpp" line="590"/>
         <source>uyghur</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="590"/>
+        <location filename="../src/params/paramslang.cpp" line="591"/>
         <source>korean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="591"/>
+        <location filename="../src/params/paramslang.cpp" line="592"/>
         <source>arabic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="592"/>
+        <location filename="../src/params/paramslang.cpp" line="593"/>
         <source>bulgarian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="593"/>
+        <location filename="../src/params/paramslang.cpp" line="594"/>
         <source>slovak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="594"/>
+        <location filename="../src/params/paramslang.cpp" line="595"/>
         <source>portuguese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="595"/>
+        <location filename="../src/params/paramslang.cpp" line="596"/>
         <source>myanmar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="596"/>
+        <location filename="../src/params/paramslang.cpp" line="597"/>
         <source>bengali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="597"/>
+        <location filename="../src/params/paramslang.cpp" line="598"/>
         <source>indonesia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="598"/>
+        <location filename="../src/params/paramslang.cpp" line="599"/>
         <source>poland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="607"/>
+        <location filename="../src/params/paramslang.cpp" line="608"/>
         <source>standalone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="608"/>
+        <location filename="../src/params/paramslang.cpp" line="609"/>
         <source>master</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="609"/>
+        <location filename="../src/params/paramslang.cpp" line="610"/>
         <source>slave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="624"/>
+        <location filename="../src/params/paramslang.cpp" line="625"/>
         <source>big_data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="634"/>
+        <location filename="../src/params/paramslang.cpp" line="635"/>
         <source>msg_remove_data_wire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="658"/>
+        <location filename="../src/params/paramslang.cpp" line="659"/>
         <source>msg_enable_upgrade_board</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="659"/>
+        <location filename="../src/params/paramslang.cpp" line="660"/>
         <source>msg_major_to_factory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="660"/>
+        <location filename="../src/params/paramslang.cpp" line="661"/>
         <source>msg_major_file_to_int</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="661"/>
+        <location filename="../src/params/paramslang.cpp" line="662"/>
         <source>msg_major_download_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="662"/>
+        <location filename="../src/params/paramslang.cpp" line="663"/>
         <source>msg_major_burn_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="663"/>
+        <location filename="../src/params/paramslang.cpp" line="664"/>
         <source>msg_major_to_user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="665"/>
+        <location filename="../src/params/paramslang.cpp" line="666"/>
         <source>msg_assist_to_factory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="666"/>
+        <location filename="../src/params/paramslang.cpp" line="667"/>
         <source>msg_assist_file_to_int</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="667"/>
+        <location filename="../src/params/paramslang.cpp" line="668"/>
         <source>msg_assist_file_download_to_major</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="668"/>
+        <location filename="../src/params/paramslang.cpp" line="669"/>
         <source>msg_assist_download_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="669"/>
+        <location filename="../src/params/paramslang.cpp" line="670"/>
         <source>msg_assist_burn_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="670"/>
+        <location filename="../src/params/paramslang.cpp" line="671"/>
         <source>msg_assist_to_user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="686"/>
+        <location filename="../src/params/paramslang.cpp" line="687"/>
         <source>select_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="687"/>
+        <location filename="../src/params/paramslang.cpp" line="688"/>
         <source>msg_select_right_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="694"/>
+        <location filename="../src/params/paramslang.cpp" line="695"/>
         <source>color_gain_adjust</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="730"/>
+        <location filename="../src/params/paramslang.cpp" line="731"/>
         <source>align</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="754"/>
+        <location filename="../src/params/paramslang.cpp" line="755"/>
         <source>upper_master_view</source>
         <translation>View trên-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="755"/>
+        <location filename="../src/params/paramslang.cpp" line="756"/>
         <source>lower_master_view</source>
         <translation>view dưới-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="756"/>
+        <location filename="../src/params/paramslang.cpp" line="757"/>
         <source>upper_slave_view</source>
         <translation>View trên-phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="757"/>
+        <location filename="../src/params/paramslang.cpp" line="758"/>
         <source>lower_slave_view</source>
         <translation>View dưới-phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="842"/>
+        <location filename="../src/params/paramslang.cpp" line="843"/>
         <source>msg_testing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="863"/>
+        <location filename="../src/params/paramslang.cpp" line="864"/>
         <source>cfm_set_background_color</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="935"/>
+        <location filename="../src/params/paramslang.cpp" line="936"/>
         <source>input_ai_params</source>
         <translation></translation>
     </message>
@@ -2912,972 +3233,972 @@
         <translation>Bật báo băngtải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="360"/>
+        <location filename="../src/params/paramslang.cpp" line="361"/>
         <source>feeder_value</source>
         <translation>Cấp liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="361"/>
+        <location filename="../src/params/paramslang.cpp" line="362"/>
         <source>enable_all</source>
         <translation>bật hết</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="362"/>
+        <location filename="../src/params/paramslang.cpp" line="363"/>
         <source>disable_all</source>
         <translation>tắt hết</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="363"/>
+        <location filename="../src/params/paramslang.cpp" line="364"/>
         <source>single</source>
         <translation>Đơn lẻ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="364"/>
+        <location filename="../src/params/paramslang.cpp" line="365"/>
         <source>complex</source>
         <translation>Tổ hợp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="365"/>
+        <location filename="../src/params/paramslang.cpp" line="366"/>
         <source>feeder_level</source>
         <translation>Mức độ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="366"/>
+        <location filename="../src/params/paramslang.cpp" line="367"/>
         <source>feeder_empty</source>
         <translation>Trống</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="367"/>
+        <location filename="../src/params/paramslang.cpp" line="368"/>
         <source>feeder_conbine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="368"/>
+        <location filename="../src/params/paramslang.cpp" line="369"/>
         <source>no_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="369"/>
+        <location filename="../src/params/paramslang.cpp" line="370"/>
         <source>exist_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="372"/>
+        <location filename="../src/params/paramslang.cpp" line="373"/>
         <source>belt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="375"/>
+        <location filename="../src/params/paramslang.cpp" line="376"/>
         <source>wipe_set</source>
         <translatorcomment>Quét kiếng</translatorcomment>
         <translation>Quét kiếng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="376"/>
+        <location filename="../src/params/paramslang.cpp" line="377"/>
         <source>wipe_duration</source>
         <translatorcomment>T. gian quét</translatorcomment>
         <translation>T. gian quét</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="377"/>
+        <location filename="../src/params/paramslang.cpp" line="378"/>
         <source>wipe_interval</source>
         <translatorcomment>Chu kỳ quét</translatorcomment>
         <translation>Chu kỳ quét</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="378"/>
+        <location filename="../src/params/paramslang.cpp" line="379"/>
         <source>wipe_enable</source>
         <translatorcomment>Cho phép quét</translatorcomment>
         <translation>Cho phép quét</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="379"/>
+        <location filename="../src/params/paramslang.cpp" line="380"/>
         <source>wipe_manual</source>
         <translatorcomment>Quét tay</translatorcomment>
         <translation>Quét tay</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="380"/>
+        <location filename="../src/params/paramslang.cpp" line="381"/>
         <source>wipe_wind</source>
         <translatorcomment>Thổi gió</translatorcomment>
         <translation>Thổi gió</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="381"/>
+        <location filename="../src/params/paramslang.cpp" line="382"/>
         <source>wipe_wind_duration</source>
         <translatorcomment>T. Gian thổi</translatorcomment>
         <translation>T. Gian thổi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="382"/>
+        <location filename="../src/params/paramslang.cpp" line="383"/>
         <source>wipe_wind_interval</source>
         <translatorcomment>chu kỳ thổi</translatorcomment>
         <translation>chu kỳ thổi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="383"/>
+        <location filename="../src/params/paramslang.cpp" line="384"/>
         <source>wipe_wind_manual</source>
         <translation>Thổi thử</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="384"/>
+        <location filename="../src/params/paramslang.cpp" line="385"/>
         <source>wipe_water</source>
         <translatorcomment>phun nước</translatorcomment>
         <translation>phun nước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="385"/>
+        <location filename="../src/params/paramslang.cpp" line="386"/>
         <source>wipe_water_duration</source>
         <translatorcomment>T.gian phun</translatorcomment>
         <translation>T.gian phun</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="386"/>
+        <location filename="../src/params/paramslang.cpp" line="387"/>
         <source>wipe_water_delay</source>
         <translation>T.gian phun</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="387"/>
+        <location filename="../src/params/paramslang.cpp" line="388"/>
         <source>wipe_delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="390"/>
+        <location filename="../src/params/paramslang.cpp" line="391"/>
         <source>select</source>
         <translatorcomment>Chọn</translatorcomment>
         <translation>Chọn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="391"/>
+        <location filename="../src/params/paramslang.cpp" line="392"/>
         <source>scheme_select</source>
         <translatorcomment>Chọn c.trình</translatorcomment>
         <translation>Chọn c.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="392"/>
+        <location filename="../src/params/paramslang.cpp" line="393"/>
         <source>scheme_parameter</source>
         <translatorcomment>T.số c.trình</translatorcomment>
         <translation>T.số c.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="393"/>
+        <location filename="../src/params/paramslang.cpp" line="394"/>
         <source>scheme_manage</source>
         <translatorcomment>Quản lý C.trình</translatorcomment>
         <translation>Quản lý C.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="394"/>
+        <location filename="../src/params/paramslang.cpp" line="395"/>
         <source>scheme_new</source>
         <translatorcomment>C.trình mới</translatorcomment>
         <translation>C.trình mới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="395"/>
+        <location filename="../src/params/paramslang.cpp" line="396"/>
         <source>scheme_copy</source>
         <translatorcomment>Chép c.trình</translatorcomment>
         <translation>Chép c.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="396"/>
+        <location filename="../src/params/paramslang.cpp" line="397"/>
         <source>scheme_delete</source>
         <translatorcomment>Xóa c.trình</translatorcomment>
         <translation>Xóa c.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="397"/>
+        <location filename="../src/params/paramslang.cpp" line="398"/>
         <source>scheme_rename</source>
         <translatorcomment>Đổi tên C.trình</translatorcomment>
         <translation>Đổi tên C.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="398"/>
+        <location filename="../src/params/paramslang.cpp" line="399"/>
         <source>scheme_restore</source>
         <translatorcomment>Khôi phục lại</translatorcomment>
         <translation>Khôi phục lại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="399"/>
+        <location filename="../src/params/paramslang.cpp" line="400"/>
         <source>scheme_backup</source>
         <translatorcomment>Lưu C.Trình</translatorcomment>
         <translation>Lưu C.Trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="400"/>
+        <location filename="../src/params/paramslang.cpp" line="401"/>
         <source>scheme_change_mode</source>
         <translation>Chỉnh sửa c.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="401"/>
+        <location filename="../src/params/paramslang.cpp" line="402"/>
         <source>scheme_copy_major</source>
         <translation>Chép t.số quan trọng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="402"/>
+        <location filename="../src/params/paramslang.cpp" line="403"/>
         <source>cfm_create_scheme</source>
         <translatorcomment>Lập C.trình mới?</translatorcomment>
         <translation>Lập C.trình mới?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="403"/>
+        <location filename="../src/params/paramslang.cpp" line="404"/>
         <source>cfm_scheme_copy</source>
         <translatorcomment>Chép c.trình này?</translatorcomment>
         <translation>Chép c.trình này?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="404"/>
+        <location filename="../src/params/paramslang.cpp" line="405"/>
         <source>cfm_scheme_delete</source>
         <translatorcomment>Xóa C.trình này?</translatorcomment>
         <translation>Xóa C.trình này?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="405"/>
+        <location filename="../src/params/paramslang.cpp" line="406"/>
         <source>msg_delete_forbidden</source>
         <translatorcomment>K.thể xóa c.trình trước!!</translatorcomment>
         <translation>Không thể xóa c.trình cuối!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="406"/>
+        <location filename="../src/params/paramslang.cpp" line="407"/>
         <source>cfm_scheme_rename</source>
         <translatorcomment>Đổi tên C.trình này?</translatorcomment>
         <translation>Đổi tên C.trình này?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="407"/>
+        <location filename="../src/params/paramslang.cpp" line="408"/>
         <source>msg_scheme_name_input</source>
         <translatorcomment>Nhập tên C.trình</translatorcomment>
         <translation>Nhập tên C.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="408"/>
+        <location filename="../src/params/paramslang.cpp" line="409"/>
         <source>cfm_restore_from_local</source>
         <translatorcomment>khôi phục c.trình từ máy?</translatorcomment>
         <translation>khôi phục c.trình từ máy?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="409"/>
+        <location filename="../src/params/paramslang.cpp" line="410"/>
         <source>cfm_restore_from_usb</source>
         <translatorcomment>khôi phục c.trình từ USB?</translatorcomment>
         <translation>khôi phục c.trình từ USB?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="410"/>
+        <location filename="../src/params/paramslang.cpp" line="411"/>
         <source>msg_restore_from_usb_error</source>
         <translation>Restore from USB error!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="411"/>
+        <location filename="../src/params/paramslang.cpp" line="412"/>
         <source>cfm_backup_to_local</source>
         <translatorcomment>Lưu c.trình vào máy?</translatorcomment>
         <translation>Lưu c.trình vào máy?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="412"/>
+        <location filename="../src/params/paramslang.cpp" line="413"/>
         <source>cfm_backup_to_usb</source>
         <translatorcomment>Lưu c.trình vào USB?</translatorcomment>
         <translation>Lưu c.trình vào USB?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="413"/>
+        <location filename="../src/params/paramslang.cpp" line="414"/>
         <source>cfm_select_current_scheme</source>
         <translatorcomment>Chọn C.trình này?</translatorcomment>
         <translation>Chọn C.trình này?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="414"/>
+        <location filename="../src/params/paramslang.cpp" line="415"/>
         <source>cfm_change_profile_mode</source>
         <translation>Xác nhận chỉnh sửa c.trình?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="415"/>
+        <location filename="../src/params/paramslang.cpp" line="416"/>
         <source>msg_custom_language_input</source>
         <translation>Nhập chủ đề người sử dụng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="416"/>
+        <location filename="../src/params/paramslang.cpp" line="417"/>
         <source>msg_rename_custom_language</source>
         <translation>Quá lâu, xin nhập lại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="419"/>
+        <location filename="../src/params/paramslang.cpp" line="420"/>
         <source>background_set</source>
         <translatorcomment>Thanh nền</translatorcomment>
         <translation>Thanh nền</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="420"/>
+        <location filename="../src/params/paramslang.cpp" line="421"/>
         <source>value</source>
         <translatorcomment>Trị giá BG</translatorcomment>
         <translation>Trị giá BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="421"/>
+        <location filename="../src/params/paramslang.cpp" line="422"/>
         <source>percent</source>
         <translatorcomment>Tỷ lệ BG</translatorcomment>
         <translation>Tỷ lệ BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="422"/>
+        <location filename="../src/params/paramslang.cpp" line="423"/>
         <source>black</source>
         <translatorcomment>Đen</translatorcomment>
         <translation>Đen</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="423"/>
+        <location filename="../src/params/paramslang.cpp" line="424"/>
         <source>white</source>
         <translatorcomment>Trắng</translatorcomment>
         <translation>Trắng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="424"/>
+        <location filename="../src/params/paramslang.cpp" line="425"/>
         <source>automatic</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="425"/>
+        <location filename="../src/params/paramslang.cpp" line="426"/>
         <source>msg_auto_bgk_ckeck_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="426"/>
+        <location filename="../src/params/paramslang.cpp" line="427"/>
         <source>msg_strip_frame_data_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="428"/>
+        <location filename="../src/params/paramslang.cpp" line="429"/>
         <source>eject_on</source>
         <translatorcomment>Mở bép hơi</translatorcomment>
         <translation>Mở bép hơi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="429"/>
+        <location filename="../src/params/paramslang.cpp" line="430"/>
         <source>eject_duration</source>
         <translatorcomment>T, gian mở bép (ms)</translatorcomment>
         <translation>T, gian mở bép (ms)</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="430"/>
+        <location filename="../src/params/paramslang.cpp" line="431"/>
         <source>eject_delay</source>
         <translatorcomment>T.gian trễ(ms)</translatorcomment>
         <translation>T.gian trễ(ms)</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="432"/>
+        <location filename="../src/params/paramslang.cpp" line="433"/>
         <source>eject_test</source>
         <translatorcomment>Thử bép</translatorcomment>
         <translation>Thử bép</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="433"/>
+        <location filename="../src/params/paramslang.cpp" line="434"/>
         <source>ejector_current</source>
         <translatorcomment>Bép hiện hành</translatorcomment>
         <translation>Bép hiện hành</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="434"/>
+        <location filename="../src/params/paramslang.cpp" line="435"/>
         <source>ejector_keep_loop</source>
         <translatorcomment>Thử đơn lẻ</translatorcomment>
         <translation>Thử đơn lẻ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="435"/>
+        <location filename="../src/params/paramslang.cpp" line="436"/>
         <source>eject_time</source>
         <translatorcomment>T.Gian bép</translatorcomment>
         <translation>T.Gian bép</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="436"/>
+        <location filename="../src/params/paramslang.cpp" line="437"/>
         <source>eject_fast_test</source>
         <translation>Kiểm tra nhanh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="437"/>
+        <location filename="../src/params/paramslang.cpp" line="438"/>
         <source>lamp_control</source>
         <translatorcomment>Cài đènp</translatorcomment>
         <translation>Cài đèn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="438"/>
+        <location filename="../src/params/paramslang.cpp" line="439"/>
         <source>tick_params</source>
         <translation>Th.số bép</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="439"/>
+        <location filename="../src/params/paramslang.cpp" line="440"/>
         <source>infra_tick_params</source>
         <translation>Th.số hồng ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="440"/>
+        <location filename="../src/params/paramslang.cpp" line="441"/>
         <source>infra_background_set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="441"/>
+        <location filename="../src/params/paramslang.cpp" line="442"/>
         <source>fixed_mode</source>
         <translatorcomment>Lưu lại</translatorcomment>
         <translation>Lưu lại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="442"/>
+        <location filename="../src/params/paramslang.cpp" line="443"/>
         <source>extended_mode</source>
         <translatorcomment>Chọn hết</translatorcomment>
         <translation>Chọn hết</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="443"/>
+        <location filename="../src/params/paramslang.cpp" line="444"/>
         <source>accurate_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="444"/>
+        <location filename="../src/params/paramslang.cpp" line="445"/>
         <source>eject_mode</source>
         <translatorcomment>Ch.độ bắn</translatorcomment>
         <translation>Ch.độ bắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="445"/>
+        <location filename="../src/params/paramslang.cpp" line="446"/>
         <source>infect_arithmetic</source>
         <translatorcomment>Nhiềm</translatorcomment>
         <translation>Nhiềm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="446"/>
+        <location filename="../src/params/paramslang.cpp" line="447"/>
         <source>edge_cut</source>
         <translation>Cắt góc</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="449"/>
+        <location filename="../src/params/paramslang.cpp" line="450"/>
         <source>edge_revise</source>
         <translation>Chỉnh góc</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="450"/>
+        <location filename="../src/params/paramslang.cpp" line="451"/>
         <source>mat_width</source>
         <translation>Rộng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="451"/>
+        <location filename="../src/params/paramslang.cpp" line="452"/>
         <source>bad_number</source>
         <translatorcomment>số xấu</translatorcomment>
         <translation>số xấu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="452"/>
+        <location filename="../src/params/paramslang.cpp" line="453"/>
         <source>good_number</source>
         <translation>Cân bằng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="453"/>
+        <location filename="../src/params/paramslang.cpp" line="454"/>
         <source>enable_balance</source>
         <translation>Cân bằng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="454"/>
+        <location filename="../src/params/paramslang.cpp" line="455"/>
         <source>logic_or</source>
         <translation>Hoặc</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="455"/>
+        <location filename="../src/params/paramslang.cpp" line="456"/>
         <source>logic_and</source>
         <translation>Và</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="456"/>
+        <location filename="../src/params/paramslang.cpp" line="457"/>
         <source>logical_relation</source>
         <translatorcomment>liên quan</translatorcomment>
         <translation>liên quan</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="457"/>
+        <location filename="../src/params/paramslang.cpp" line="458"/>
         <source>sort</source>
         <translatorcomment>bình thường</translatorcomment>
         <translation>bình thường</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="458"/>
+        <location filename="../src/params/paramslang.cpp" line="459"/>
         <source>reverse</source>
         <translatorcomment>Bắn ngược</translatorcomment>
         <translation>Bắn ngược</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="459"/>
+        <location filename="../src/params/paramslang.cpp" line="460"/>
         <source>sort_mode</source>
         <translatorcomment>Chế độ chọn</translatorcomment>
         <translation>Chế độ bắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="460"/>
+        <location filename="../src/params/paramslang.cpp" line="461"/>
         <source>unknown</source>
         <translatorcomment>K. biết</translatorcomment>
         <translation>K. biết</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="461"/>
+        <location filename="../src/params/paramslang.cpp" line="462"/>
         <source>enable_default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="464"/>
+        <location filename="../src/params/paramslang.cpp" line="465"/>
         <source>huff_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="465"/>
+        <location filename="../src/params/paramslang.cpp" line="466"/>
         <source>huff_width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="468"/>
+        <location filename="../src/params/paramslang.cpp" line="469"/>
         <source>system_stat</source>
         <translatorcomment>tình trạng</translatorcomment>
         <translation>tình trạng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="469"/>
+        <location filename="../src/params/paramslang.cpp" line="470"/>
         <source>screen</source>
         <translatorcomment>màn hình</translatorcomment>
         <translation>màn hình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="470"/>
+        <location filename="../src/params/paramslang.cpp" line="471"/>
         <source>interface_board</source>
         <translatorcomment>Giao diện</translatorcomment>
         <translation>Giao diện</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="471"/>
+        <location filename="../src/params/paramslang.cpp" line="472"/>
         <source>control_board</source>
         <translatorcomment>kiểm soát</translatorcomment>
         <translation>kiểm soát</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="472"/>
+        <location filename="../src/params/paramslang.cpp" line="473"/>
         <source>color_board</source>
         <translatorcomment>camera</translatorcomment>
         <translation>camera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="473"/>
+        <location filename="../src/params/paramslang.cpp" line="474"/>
         <source>color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="474"/>
+        <location filename="../src/params/paramslang.cpp" line="475"/>
         <source>mono_board</source>
         <translation>Bo đơn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="475"/>
+        <location filename="../src/params/paramslang.cpp" line="476"/>
         <source>infra_board</source>
         <translatorcomment>Bo hồng ngoại</translatorcomment>
         <translation>Bo hồng ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="476"/>
+        <location filename="../src/params/paramslang.cpp" line="477"/>
         <source>light_src_board</source>
         <translation>Bo màu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="477"/>
+        <location filename="../src/params/paramslang.cpp" line="478"/>
         <source>recheck</source>
         <translatorcomment>kiểm tra lại</translatorcomment>
         <translation>kiểm tra lại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="478"/>
+        <location filename="../src/params/paramslang.cpp" line="479"/>
         <source>infra</source>
         <translatorcomment>hồng ngoại</translatorcomment>
         <translation>hồng ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="479"/>
+        <location filename="../src/params/paramslang.cpp" line="480"/>
         <source>software_version</source>
         <translatorcomment>Phiên bản</translatorcomment>
         <translation>Phiên bản</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="480"/>
+        <location filename="../src/params/paramslang.cpp" line="481"/>
         <source>normal</source>
         <translatorcomment>Bình thường</translatorcomment>
         <translation>Bình thường</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="481"/>
+        <location filename="../src/params/paramslang.cpp" line="482"/>
         <source>abnormal</source>
         <translatorcomment>Khác thường</translatorcomment>
         <translation>Khác thường</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="482"/>
+        <location filename="../src/params/paramslang.cpp" line="483"/>
         <source>eject_frequency</source>
         <translatorcomment>T. số bép</translatorcomment>
         <translation>T. số bép</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="483"/>
+        <location filename="../src/params/paramslang.cpp" line="484"/>
         <source>system_time</source>
         <translatorcomment>T.Gian</translatorcomment>
         <translation>T.Gian</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="484"/>
+        <location filename="../src/params/paramslang.cpp" line="485"/>
         <source>year</source>
         <translatorcomment>Năm</translatorcomment>
         <translation>Năm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="485"/>
+        <location filename="../src/params/paramslang.cpp" line="486"/>
         <source>month</source>
         <translatorcomment>Tháng</translatorcomment>
         <translation>Tháng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="486"/>
+        <location filename="../src/params/paramslang.cpp" line="487"/>
         <source>day</source>
         <translatorcomment>Ngày</translatorcomment>
         <translation>Ngày</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="487"/>
+        <location filename="../src/params/paramslang.cpp" line="488"/>
         <source>hour</source>
         <translatorcomment>Giờ</translatorcomment>
         <translation>Giờ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="488"/>
+        <location filename="../src/params/paramslang.cpp" line="489"/>
         <source>minute</source>
         <translatorcomment>Phút</translatorcomment>
         <translation>Phút</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="489"/>
+        <location filename="../src/params/paramslang.cpp" line="490"/>
         <source>sec</source>
         <translatorcomment>Giây</translatorcomment>
         <translation>Giây</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="490"/>
+        <location filename="../src/params/paramslang.cpp" line="491"/>
         <source>information</source>
         <translatorcomment>Thông tin</translatorcomment>
         <translation>Thông tin</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="491"/>
+        <location filename="../src/params/paramslang.cpp" line="492"/>
         <source>this_run</source>
         <translatorcomment>Giờ máy</translatorcomment>
         <translation>Giờ máy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="493"/>
+        <location filename="../src/params/paramslang.cpp" line="494"/>
         <source>total_run</source>
         <translatorcomment>Tổng giờ</translatorcomment>
         <translation>Tổng giờ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="495"/>
+        <location filename="../src/params/paramslang.cpp" line="496"/>
         <source>this_pressure_alarm_times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="496"/>
+        <location filename="../src/params/paramslang.cpp" line="497"/>
         <source>total_pressure_alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="497"/>
+        <location filename="../src/params/paramslang.cpp" line="498"/>
         <source>feed_stat</source>
         <translatorcomment>T.trạng cấpliệu</translatorcomment>
         <translation>T.trạng cấpliệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="498"/>
+        <location filename="../src/params/paramslang.cpp" line="499"/>
         <source>eject_stat</source>
         <translatorcomment>T.trạng bắn</translatorcomment>
         <translation>T.trạng bắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="499"/>
+        <location filename="../src/params/paramslang.cpp" line="500"/>
         <source>belt_1_status</source>
         <translatorcomment>Băng tải 1</translatorcomment>
         <translation>Băng tải 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="500"/>
+        <location filename="../src/params/paramslang.cpp" line="501"/>
         <source>belt_2_status</source>
         <translatorcomment>Băng tải 2</translatorcomment>
         <translation>Băng tải 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="501"/>
+        <location filename="../src/params/paramslang.cpp" line="502"/>
         <source>alarm_set</source>
         <translatorcomment>cài báolỗi</translatorcomment>
         <translation>cài báolỗi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="502"/>
+        <location filename="../src/params/paramslang.cpp" line="503"/>
         <source>msg_pressure_alarm_check_pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="503"/>
+        <location filename="../src/params/paramslang.cpp" line="504"/>
         <source>msg_pressure_alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="504"/>
+        <location filename="../src/params/paramslang.cpp" line="505"/>
         <source>pressure_not_enough</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="505"/>
+        <location filename="../src/params/paramslang.cpp" line="506"/>
         <source>warm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="506"/>
+        <location filename="../src/params/paramslang.cpp" line="507"/>
         <source>blower_alarm</source>
         <translatorcomment>báolỗibắn</translatorcomment>
         <translation>báolỗibắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="507"/>
+        <location filename="../src/params/paramslang.cpp" line="508"/>
         <source>lamp_alarm</source>
         <translatorcomment>báolỗiđèn</translatorcomment>
         <translation>báolỗiđèn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="508"/>
+        <location filename="../src/params/paramslang.cpp" line="509"/>
         <source>pressure_alarm</source>
         <translatorcomment>báolỗikhínén</translatorcomment>
         <translation>báo lỗi khí nén</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="509"/>
+        <location filename="../src/params/paramslang.cpp" line="510"/>
         <source>enable_press_alarm</source>
         <translatorcomment>C.phép báolỗikhínén</translatorcomment>
         <translation>Bật báolỗikhínén</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="510"/>
+        <location filename="../src/params/paramslang.cpp" line="511"/>
         <source>enable_blower_alarm</source>
         <translatorcomment>C.phép báolỗibéphơi</translatorcomment>
         <translation>Bật báolỗibéphơi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="511"/>
+        <location filename="../src/params/paramslang.cpp" line="512"/>
         <source>enable_lamp_alarm</source>
         <translatorcomment>C.phépbáolỗiđèn</translatorcomment>
         <translation>Bật báolỗiđèn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="512"/>
+        <location filename="../src/params/paramslang.cpp" line="513"/>
         <source>enable_belt_status</source>
         <translatorcomment>C.phép báo băngtải</translatorcomment>
         <translation>Bật báo băngtải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="514"/>
+        <location filename="../src/params/paramslang.cpp" line="515"/>
         <source>enable_communication_alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="515"/>
+        <location filename="../src/params/paramslang.cpp" line="516"/>
         <source>auto_calibrate</source>
         <translatorcomment>h.chỉnh botrắng</translatorcomment>
         <translation>Tựđộnghiệuchỉnh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="516"/>
+        <location filename="../src/params/paramslang.cpp" line="517"/>
         <source>auto_calibrate_tips</source>
         <translatorcomment>Start Auto Calibration Will Influence Sorting Result!
 Before Calibration,Please Do Something As Follows:</translatorcomment>
         <translation>bắt đầu hiệu chỉnh, sẽ ảnh hưởng tới máy, trước khi hiệu chỉnh, xin làm như sau </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="517"/>
+        <location filename="../src/params/paramslang.cpp" line="518"/>
         <source>auto_calibrate_step1</source>
         <translatorcomment>1.Be Sure To Make Glass Cleanly And Transparently.</translatorcomment>
         <translation>Kiếng có sạch và trong không?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="518"/>
+        <location filename="../src/params/paramslang.cpp" line="519"/>
         <source>auto_calibrate_step2</source>
         <translatorcomment>2.Be Sure To Make Calibration Board Cleanly.</translatorcomment>
         <translation>Bo định dạng có sạch không?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="519"/>
+        <location filename="../src/params/paramslang.cpp" line="520"/>
         <source>auto_calibrate_step3</source>
         <translatorcomment>3.Turn Over The Background Board From Blue White.</translatorcomment>
         <translation>Chỉnh thanh nền từ xanh sang trắng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="520"/>
+        <location filename="../src/params/paramslang.cpp" line="521"/>
         <source>auto_calibrate_step4</source>
         <translatorcomment>4.Click Calibrate Button To Start One-key Calibration.</translatorcomment>
         <translation>Nhấn &quot;định dạng&quot;  để bắt đầu định dạng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="521"/>
+        <location filename="../src/params/paramslang.cpp" line="522"/>
         <source>auto_calibrate_step5</source>
         <translatorcomment>5.Turn Over The Background Board from White To Blue.</translatorcomment>
         <translation>Chỉnh thanh nền từ trắng sang xanh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="522"/>
+        <location filename="../src/params/paramslang.cpp" line="523"/>
         <source>auto_calibrate_step6</source>
         <translatorcomment>6.Calibration Finished.</translatorcomment>
         <translation>Định dạng xong</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="523"/>
+        <location filename="../src/params/paramslang.cpp" line="524"/>
         <source>background_angle</source>
         <translation>Góc thanh nền</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="524"/>
+        <location filename="../src/params/paramslang.cpp" line="525"/>
         <source>HowTo</source>
         <translation>H.Dẫn sử dụng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="526"/>
+        <location filename="../src/params/paramslang.cpp" line="527"/>
         <source>Reload</source>
         <translation>nạp lại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="527"/>
+        <location filename="../src/params/paramslang.cpp" line="528"/>
         <source>one_key_feed</source>
         <translation>Cấp liệu ngay</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="528"/>
+        <location filename="../src/params/paramslang.cpp" line="529"/>
         <source>communication_alarm</source>
         <translation>báo giao tiếp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="529"/>
+        <location filename="../src/params/paramslang.cpp" line="530"/>
         <source>level_stat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="530"/>
+        <location filename="../src/params/paramslang.cpp" line="531"/>
         <source>level_empty_alarm</source>
         <translation>Báo mức cạn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="531"/>
+        <location filename="../src/params/paramslang.cpp" line="532"/>
         <source>level_full_alarm</source>
         <translation>báo đèn đầy đủ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="532"/>
+        <location filename="../src/params/paramslang.cpp" line="533"/>
         <source>level_sensor_alarm</source>
         <translation>báo mức nhạy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="513"/>
+        <location filename="../src/params/paramslang.cpp" line="514"/>
         <source>enable_temperature_alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="536"/>
+        <location filename="../src/params/paramslang.cpp" line="537"/>
         <source>temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="540"/>
+        <location filename="../src/params/paramslang.cpp" line="541"/>
         <source>remote_control</source>
         <translatorcomment>Đ.khiển từxa</translatorcomment>
         <translation>Đ.khiển từxa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="541"/>
+        <location filename="../src/params/paramslang.cpp" line="542"/>
         <source>network_config</source>
         <translatorcomment>Nôi mạng</translatorcomment>
         <translation>Nôi mạng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="543"/>
+        <location filename="../src/params/paramslang.cpp" line="544"/>
         <source>ip_address</source>
         <translatorcomment>Địa chỉ IP</translatorcomment>
         <translation>Địachỉ IP</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="544"/>
+        <location filename="../src/params/paramslang.cpp" line="545"/>
         <source>subnet_mask</source>
         <translatorcomment>Subnet Mask</translatorcomment>
         <translation>Subnet Mask</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="545"/>
+        <location filename="../src/params/paramslang.cpp" line="546"/>
         <source>default_gateway</source>
         <translatorcomment>Gateway</translatorcomment>
         <translation>Cổng vào</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="546"/>
+        <location filename="../src/params/paramslang.cpp" line="547"/>
         <source>dns_server</source>
         <translatorcomment>DNS Server</translatorcomment>
         <translation>máy chủ DNS</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="547"/>
+        <location filename="../src/params/paramslang.cpp" line="548"/>
         <source>mac_address</source>
         <translatorcomment>MAC Address</translatorcomment>
         <translation>Địa chỉ MAC</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="548"/>
+        <location filename="../src/params/paramslang.cpp" line="549"/>
         <source>route_address</source>
         <translatorcomment>Route Address</translatorcomment>
         <translation>Địa chỉ Route</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="549"/>
+        <location filename="../src/params/paramslang.cpp" line="550"/>
         <source>set_server</source>
         <translation>Máy chủ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="550"/>
+        <location filename="../src/params/paramslang.cpp" line="551"/>
         <source>set_sms</source>
         <translation>Cài SMS</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="551"/>
+        <location filename="../src/params/paramslang.cpp" line="552"/>
         <source>receiver_num</source>
         <translation>Số máy nhận</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="552"/>
+        <location filename="../src/params/paramslang.cpp" line="553"/>
         <source>sms_center_num</source>
         <translation>Số trung tâm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="553"/>
+        <location filename="../src/params/paramslang.cpp" line="554"/>
         <source>sms_content</source>
         <translation>Chứa SMS</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="554"/>
+        <location filename="../src/params/paramslang.cpp" line="555"/>
         <source>sms_send</source>
         <translation>Gửi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="555"/>
+        <location filename="../src/params/paramslang.cpp" line="556"/>
         <source>test_signal</source>
         <translation>Thử T.hiệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="556"/>
+        <location filename="../src/params/paramslang.cpp" line="557"/>
         <source>obtain_auto</source>
         <translation>T,động lấy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="557"/>
+        <location filename="../src/params/paramslang.cpp" line="558"/>
         <source>qrcode</source>
         <translation>Mã QR</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="558"/>
+        <location filename="../src/params/paramslang.cpp" line="559"/>
         <source>qrcode_generator</source>
         <translation>Phát mã QR</translation>
     </message>
@@ -3886,497 +4207,497 @@ Before Calibration,Please Do Something As Follows:</translatorcomment>
         <translation type="obsolete">Nhận dạng DEV</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="447"/>
+        <location filename="../src/params/paramslang.cpp" line="448"/>
         <source>remove_joint</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="448"/>
+        <location filename="../src/params/paramslang.cpp" line="449"/>
         <source>remove_tick</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="492"/>
+        <location filename="../src/params/paramslang.cpp" line="493"/>
         <source>this_feed_run</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="494"/>
+        <location filename="../src/params/paramslang.cpp" line="495"/>
         <source>total_feed_run</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="533"/>
+        <location filename="../src/params/paramslang.cpp" line="534"/>
         <source>video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="559"/>
+        <location filename="../src/params/paramslang.cpp" line="560"/>
         <source>Device info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="562"/>
+        <location filename="../src/params/paramslang.cpp" line="563"/>
         <source>factory_set</source>
         <translatorcomment>Nhà sản xuất</translatorcomment>
         <translation>Nhà sản xuất</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="563"/>
+        <location filename="../src/params/paramslang.cpp" line="564"/>
         <source>language</source>
         <translatorcomment>Cài ngôn ngữ</translatorcomment>
         <translation>Cài ngôn ngữ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="564"/>
+        <location filename="../src/params/paramslang.cpp" line="565"/>
         <source>product</source>
         <translatorcomment>Cài sản phẩm</translatorcomment>
         <translation>Cài sản phẩm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="565"/>
+        <location filename="../src/params/paramslang.cpp" line="566"/>
         <source>clear_running_time</source>
         <translatorcomment>Xóa T.gian chạy</translatorcomment>
         <translation>Xóa T.gian chạy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="566"/>
+        <location filename="../src/params/paramslang.cpp" line="567"/>
         <source>aging_test</source>
         <translatorcomment>Thử già hóa</translatorcomment>
         <translation>Thử già hóa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="567"/>
+        <location filename="../src/params/paramslang.cpp" line="568"/>
         <source>upgrade_screen</source>
         <translatorcomment>nâng cấp màn hình</translatorcomment>
         <translation>nâng cấp màn hình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="568"/>
+        <location filename="../src/params/paramslang.cpp" line="569"/>
         <source>upgrade_fpga</source>
         <translatorcomment>Nâng cấp FPGA</translatorcomment>
         <translation>Nâng cấp FPGA</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="569"/>
+        <location filename="../src/params/paramslang.cpp" line="570"/>
         <source>init_mode</source>
         <translatorcomment>Chế độ ban đầu</translatorcomment>
         <translation>Chế độ ban đầu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="570"/>
+        <location filename="../src/params/paramslang.cpp" line="571"/>
         <source>ts_calibrate</source>
         <translatorcomment>H.chỉnh màn hình</translatorcomment>
         <translation>H.chỉnh màn hình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="571"/>
+        <location filename="../src/params/paramslang.cpp" line="572"/>
         <source>throughput_test</source>
         <translatorcomment>Thử năng suất</translatorcomment>
         <translation>Thử năng suất</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="572"/>
+        <location filename="../src/params/paramslang.cpp" line="573"/>
         <source>run_mode</source>
         <translatorcomment>Chế độ chạy</translatorcomment>
         <translation>Chế độ chạy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="573"/>
+        <location filename="../src/params/paramslang.cpp" line="574"/>
         <source>run_test</source>
         <translatorcomment>Tựu kiểm tra</translatorcomment>
         <translation>Tự kiểm tra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="574"/>
+        <location filename="../src/params/paramslang.cpp" line="575"/>
         <source>run_fre</source>
         <translatorcomment>tỷ lệ tự kiểm</translatorcomment>
         <translation>tỷ lệ tự kiểm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="575"/>
+        <location filename="../src/params/paramslang.cpp" line="576"/>
         <source>test_time</source>
         <translatorcomment>T.gian thử(s)</translatorcomment>
         <translation>T.gian k.tra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="576"/>
+        <location filename="../src/params/paramslang.cpp" line="577"/>
         <source>mode_1</source>
         <translatorcomment>Chế độ-1</translatorcomment>
         <translation>Chế độ-1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="577"/>
+        <location filename="../src/params/paramslang.cpp" line="578"/>
         <source>mode_2</source>
         <translatorcomment>Chế độ-2</translatorcomment>
         <translation>Chế độ-2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="578"/>
+        <location filename="../src/params/paramslang.cpp" line="579"/>
         <source>mode_3</source>
         <translatorcomment>Chế độ-3</translatorcomment>
         <translation>Chế độ-3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="579"/>
+        <location filename="../src/params/paramslang.cpp" line="580"/>
         <source>english</source>
         <translatorcomment>Tiếng Anh</translatorcomment>
         <translation type="unfinished">Tiếng Anh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="580"/>
+        <location filename="../src/params/paramslang.cpp" line="581"/>
         <source>chinese_simplified</source>
         <translatorcomment>Trungquốc</translatorcomment>
         <translation type="unfinished">Trungquốc mới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="581"/>
+        <location filename="../src/params/paramslang.cpp" line="582"/>
         <source>chinese_traditonal</source>
         <translatorcomment>Simplified Chinese</translatorcomment>
         <translation type="unfinished">Trung quốcc cũ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="582"/>
+        <location filename="../src/params/paramslang.cpp" line="583"/>
         <source>russian</source>
         <translatorcomment>Nga</translatorcomment>
         <translation type="unfinished">Nga</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="583"/>
+        <location filename="../src/params/paramslang.cpp" line="584"/>
         <source>vietnam</source>
         <translatorcomment>Việtnam</translatorcomment>
         <translation type="unfinished">Việtnam</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="584"/>
+        <location filename="../src/params/paramslang.cpp" line="585"/>
         <source>thailand</source>
         <translatorcomment>Thái</translatorcomment>
         <translation type="unfinished">Thái</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="585"/>
+        <location filename="../src/params/paramslang.cpp" line="586"/>
         <source>spanish</source>
         <translatorcomment>Spanish</translatorcomment>
         <translation type="unfinished">tây ban nha</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="586"/>
+        <location filename="../src/params/paramslang.cpp" line="587"/>
         <source>turkey</source>
         <translation type="unfinished">Tiếng Thổ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="599"/>
+        <location filename="../src/params/paramslang.cpp" line="600"/>
         <source>cfm_change_language</source>
         <translatorcomment>K.động lại khi đổi ngôn ngữ UI!</translatorcomment>
         <translation>Bạn muốn đổi ngôn ngữ?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="600"/>
+        <location filename="../src/params/paramslang.cpp" line="601"/>
         <source>cfm_clear_time</source>
         <translatorcomment>Bạn có chắc xóa thời gian chạy?</translatorcomment>
         <translation>Bạn có chắc xóa thời gian chạy?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="601"/>
+        <location filename="../src/params/paramslang.cpp" line="602"/>
         <source>cfm_ts_calibrate</source>
         <translatorcomment>K.động lại sau khi hiệu chỉnh TS!</translatorcomment>
         <translation>Bạn muốn định dạng lại màn hình?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="602"/>
+        <location filename="../src/params/paramslang.cpp" line="603"/>
         <source>cfm_upgrade_screen</source>
         <translatorcomment>Bạn có chắc năng cấp LCD?</translatorcomment>
         <translation>Bạn muốn nâng cấp màn hình?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="603"/>
+        <location filename="../src/params/paramslang.cpp" line="604"/>
         <source>cfm_upgrade_fpga</source>
         <translatorcomment>Bạn có chắc nâng cấp FPGA?</translatorcomment>
         <translation>Bạn muốn nâng cấp vi xử lý?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="604"/>
+        <location filename="../src/params/paramslang.cpp" line="605"/>
         <source>feeder_voltage</source>
         <translation>điện áp cấp liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="605"/>
+        <location filename="../src/params/paramslang.cpp" line="606"/>
         <source>feeder_voltage_high</source>
         <translation>cao</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="606"/>
+        <location filename="../src/params/paramslang.cpp" line="607"/>
         <source>feeder_voltage_low</source>
         <translation>thấp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="612"/>
+        <location filename="../src/params/paramslang.cpp" line="613"/>
         <source>server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="613"/>
+        <location filename="../src/params/paramslang.cpp" line="614"/>
         <source>server_ip</source>
         <translatorcomment>IP máy chủ</translatorcomment>
         <translation>IP máy chủ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="614"/>
+        <location filename="../src/params/paramslang.cpp" line="615"/>
         <source>server_port</source>
         <translatorcomment>Trạm máy chủ</translatorcomment>
         <translation>Trạm máy chủ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="615"/>
+        <location filename="../src/params/paramslang.cpp" line="616"/>
         <source>local_virtual_ip</source>
         <translatorcomment>IP máy ảo</translatorcomment>
         <translation>IP máy ảo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="616"/>
+        <location filename="../src/params/paramslang.cpp" line="617"/>
         <source>username</source>
         <translatorcomment>Tênsửdụng</translatorcomment>
         <translation>Tênsửdụng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="617"/>
+        <location filename="../src/params/paramslang.cpp" line="618"/>
         <source>password</source>
         <translatorcomment>Mật khẩu</translatorcomment>
         <translation>Mật khẩu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="618"/>
+        <location filename="../src/params/paramslang.cpp" line="619"/>
         <source>connect</source>
         <translatorcomment>kết nối</translatorcomment>
         <translation>kết nối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="619"/>
+        <location filename="../src/params/paramslang.cpp" line="620"/>
         <source>disconnect</source>
         <translatorcomment>ngắt kếtnối</translatorcomment>
         <translation>ngắt kếtnối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="620"/>
+        <location filename="../src/params/paramslang.cpp" line="621"/>
         <source>msg_connecting</source>
         <translatorcomment>Đang kếtnối...</translatorcomment>
         <translation>Đang kếtnối...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="621"/>
+        <location filename="../src/params/paramslang.cpp" line="622"/>
         <source>msg_connect_fail</source>
         <translatorcomment>kết nối lỗi, thử lại</translatorcomment>
         <translation>kết nối lỗi, thử lại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="625"/>
+        <location filename="../src/params/paramslang.cpp" line="626"/>
         <source>data_center</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="626"/>
+        <location filename="../src/params/paramslang.cpp" line="627"/>
         <source>value_added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="627"/>
+        <location filename="../src/params/paramslang.cpp" line="628"/>
         <source>service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="630"/>
+        <location filename="../src/params/paramslang.cpp" line="631"/>
         <source>msg_insert_udisk</source>
         <translatorcomment>Xin cắm thẻ nhớ USB</translatorcomment>
         <translation>Xin cắm thẻ nhớ USB</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="631"/>
+        <location filename="../src/params/paramslang.cpp" line="632"/>
         <source>last</source>
         <translatorcomment>Trước </translatorcomment>
         <translation>Trước </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="632"/>
+        <location filename="../src/params/paramslang.cpp" line="633"/>
         <source>next</source>
         <translatorcomment>Kế tiếp</translatorcomment>
         <translation>Kế tiếp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="633"/>
+        <location filename="../src/params/paramslang.cpp" line="634"/>
         <source>msg_insert_data_wire</source>
         <translatorcomment>Rút USB và chèn dữ liệu USB </translatorcomment>
         <translation>Rút USB và chèn dữ liệu USB </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="635"/>
+        <location filename="../src/params/paramslang.cpp" line="636"/>
         <source>user_mode</source>
         <translatorcomment>Chế độ người dùng</translatorcomment>
         <translation>Chế độ người dùng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="636"/>
+        <location filename="../src/params/paramslang.cpp" line="637"/>
         <source>board_num</source>
         <translatorcomment>Số bo mạch</translatorcomment>
         <translation>Số bo mạch</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="637"/>
+        <location filename="../src/params/paramslang.cpp" line="638"/>
         <source>upgrade</source>
         <translatorcomment>Nâng cấp</translatorcomment>
         <translation>Nâng cấp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="638"/>
+        <location filename="../src/params/paramslang.cpp" line="639"/>
         <source>upgrade_retry</source>
         <translatorcomment>Thử lại</translatorcomment>
         <translation>Thử lại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="639"/>
+        <location filename="../src/params/paramslang.cpp" line="640"/>
         <source>upgrade_whole</source>
         <translatorcomment>Toàn bộ</translatorcomment>
         <translation>Toàn bộ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="640"/>
+        <location filename="../src/params/paramslang.cpp" line="641"/>
         <source>update_return</source>
         <translatorcomment>Trở về</translatorcomment>
         <translation>Trở về</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="641"/>
+        <location filename="../src/params/paramslang.cpp" line="642"/>
         <source>msg_int_to_factory</source>
         <translatorcomment>Bật giao tiếp về c.độ nhà SX</translatorcomment>
         <translation>Bật giao tiếp về c.độ nhà SX</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="642"/>
+        <location filename="../src/params/paramslang.cpp" line="643"/>
         <source>msg_int_download_file</source>
         <translatorcomment>nạp file nâng cấp giao tiếp</translatorcomment>
         <translation>nạp file nâng cấp giao tiếp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="643"/>
+        <location filename="../src/params/paramslang.cpp" line="644"/>
         <source>msg_int_burn_file</source>
         <translatorcomment>Ghi File nâng cấp giao tiếp</translatorcomment>
         <translation>Ghi File nâng cấp giao tiếp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="644"/>
+        <location filename="../src/params/paramslang.cpp" line="645"/>
         <source>msg_int_to_user</source>
         <translatorcomment>Giao diện tới người dùng</translatorcomment>
         <translation>Giao diện tới người dùng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="645"/>
+        <location filename="../src/params/paramslang.cpp" line="646"/>
         <source>msg_color_download_file</source>
         <translatorcomment>nạp file nâng cấp camera màu</translatorcomment>
         <translation>nạp file nâng cấp camera màu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="646"/>
+        <location filename="../src/params/paramslang.cpp" line="647"/>
         <source>msg_color_to_factory</source>
         <translatorcomment>Bật camera màu c.độ nhà máy SX</translatorcomment>
         <translation>Bật camera màu c.độ nhà SX</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="647"/>
+        <location filename="../src/params/paramslang.cpp" line="648"/>
         <source>msg_color_burn_file</source>
         <translatorcomment>Ghi File nâng cấp camera màu</translatorcomment>
         <translation>Ghi File nâng cấp camera màu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="648"/>
+        <location filename="../src/params/paramslang.cpp" line="649"/>
         <source>msg_color_to_user</source>
         <translatorcomment>Bật kiểm soát C.độ nhà máy SX </translatorcomment>
         <translation>Bật camera màu chế độ người dùng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="649"/>
+        <location filename="../src/params/paramslang.cpp" line="650"/>
         <source>msg_inf_download_file</source>
         <translatorcomment>nạp file nâng cấp camera hồng ngoại</translatorcomment>
         <translation>nạp file nâng cấp camera hồng ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="650"/>
+        <location filename="../src/params/paramslang.cpp" line="651"/>
         <source>msg_inf_to_factory</source>
         <translatorcomment>Bật hồng ngoại c.độ nhà máy SX</translatorcomment>
         <translation>Bật hồng ngoại c.độ nhà SX</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="651"/>
+        <location filename="../src/params/paramslang.cpp" line="652"/>
         <source>msg_inf_burn_file</source>
         <translatorcomment>Ghi file nâng cấp camera hồng ngoại</translatorcomment>
         <translation>Ghi file nâng cấp camera hồng ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="652"/>
+        <location filename="../src/params/paramslang.cpp" line="653"/>
         <source>msg_inf_to_user</source>
         <translatorcomment>Bật hồng ngoại c. độ người sử dụng</translatorcomment>
         <translation>Bật hồng ngoại c. độ người sử dụng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="653"/>
+        <location filename="../src/params/paramslang.cpp" line="654"/>
         <source>msg_ctrl_to_factory</source>
         <translatorcomment>Bật kiểm soát C.độ nhà máy SX</translatorcomment>
         <translation>Bật kiểm soát C.độ nhà SX</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="654"/>
+        <location filename="../src/params/paramslang.cpp" line="655"/>
         <source>msg_ctrl_erase</source>
         <translatorcomment>Xóa kiểm soát</translatorcomment>
         <translation>Xóa kiểm soát</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="655"/>
+        <location filename="../src/params/paramslang.cpp" line="656"/>
         <source>msg_ctrl_burn_file</source>
         <translatorcomment>Ghi file nâng cấp kiểm soát</translatorcomment>
         <translation>Ghi file nâng cấp kiểm soát</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="656"/>
+        <location filename="../src/params/paramslang.cpp" line="657"/>
         <source>msg_ctrl_to_user</source>
         <translatorcomment>Bật kiểm soát C.độ người sử dụng</translatorcomment>
         <translation>Bật kiểm soát C.độ người sử dụng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="672"/>
+        <location filename="../src/params/paramslang.cpp" line="673"/>
         <source>upgrade_file_list</source>
         <translatorcomment>nâng cấp danh sách file</translatorcomment>
         <translation>nâng cấp danh sách file</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="673"/>
+        <location filename="../src/params/paramslang.cpp" line="674"/>
         <source>upgrade_usb_communication</source>
         <translatorcomment>Giao tiếp USB</translatorcomment>
         <translation>Giao tiếp USB</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="674"/>
+        <location filename="../src/params/paramslang.cpp" line="675"/>
         <source>upgrade_board</source>
         <translatorcomment>nâng cấp bo</translatorcomment>
         <translation>nâng cấp bo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="675"/>
+        <location filename="../src/params/paramslang.cpp" line="676"/>
         <source>upgrade_doing</source>
         <translatorcomment>Đang làm</translatorcomment>
         <translation>Đang làm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="676"/>
+        <location filename="../src/params/paramslang.cpp" line="677"/>
         <source>upgrade_fail</source>
         <translatorcomment>Fail</translatorcomment>
         <translation>Fail</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="677"/>
+        <location filename="../src/params/paramslang.cpp" line="678"/>
         <source>upgrade_untreated</source>
         <translatorcomment>chưa k. động</translatorcomment>
         <translation>chưa k. động</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="678"/>
+        <location filename="../src/params/paramslang.cpp" line="679"/>
         <source>upgrade_ok</source>
         <translatorcomment>OK</translatorcomment>
         <translation>OK</translation>
@@ -4387,138 +4708,138 @@ Before Calibration,Please Do Something As Follows:</translatorcomment>
         <translation type="obsolete">Đã cắm USB chưa?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="679"/>
+        <location filename="../src/params/paramslang.cpp" line="680"/>
         <source>msg_file_open_error</source>
         <translatorcomment>File mở máy bị lỗi!</translatorcomment>
         <translation>File mở máy bị lỗi!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="680"/>
+        <location filename="../src/params/paramslang.cpp" line="681"/>
         <source>msg_no_inf</source>
         <translatorcomment>Không có hồng ngoại.</translatorcomment>
         <translation>Không có hồng ngoại.</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="681"/>
+        <location filename="../src/params/paramslang.cpp" line="682"/>
         <source>msg_no_color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="682"/>
+        <location filename="../src/params/paramslang.cpp" line="683"/>
         <source>msg_unknown_file</source>
         <translatorcomment>K.biết tên file</translatorcomment>
         <translation>K.biết tên file</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="683"/>
+        <location filename="../src/params/paramslang.cpp" line="684"/>
         <source>cfm_insert_datawire</source>
         <translatorcomment>Đã kết nối dây dữ liệu?</translatorcomment>
         <translation>Đã kết nối dây dữ liệu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="684"/>
+        <location filename="../src/params/paramslang.cpp" line="685"/>
         <source>msg_select_user_mode</source>
         <translatorcomment>chọn chế độ sử dụng!</translatorcomment>
         <translation>chọn chế độ sử dụng!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="685"/>
+        <location filename="../src/params/paramslang.cpp" line="686"/>
         <source>cfm_upgrade_whole</source>
         <translatorcomment>xác nhận nâng cấp tất cả CCD!</translatorcomment>
         <translation>xác nhận nâng cấp tất cả CCD!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="690"/>
+        <location filename="../src/params/paramslang.cpp" line="691"/>
         <source>color_camera</source>
         <translatorcomment>Camera màu</translatorcomment>
         <translation>Color Camera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="691"/>
+        <location filename="../src/params/paramslang.cpp" line="692"/>
         <source>confirm_set_camera</source>
         <oldsource>msg_confirm_set_camera</oldsource>
         <translatorcomment>bạn có chắc vào trang cemera màu?</translatorcomment>
         <translation>bạn có chắc vào trang cemera màu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="692"/>
+        <location filename="../src/params/paramslang.cpp" line="693"/>
         <source>confirm_set_infra_camera</source>
         <translation>xác nhận nhập vào trang H.ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="693"/>
+        <location filename="../src/params/paramslang.cpp" line="694"/>
         <source>color_calibrate</source>
         <translatorcomment>Hiệu chỉnh</translatorcomment>
         <translation>Hiệu chỉnh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="695"/>
+        <location filename="../src/params/paramslang.cpp" line="696"/>
         <source>color_analog_gain</source>
         <translatorcomment>Độlợi Ana</translatorcomment>
         <translation>Độlợi Ana</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="696"/>
+        <location filename="../src/params/paramslang.cpp" line="697"/>
         <source>color_lens_params</source>
         <translatorcomment>Set Lens</translatorcomment>
         <translation>cài ống kính</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="697"/>
+        <location filename="../src/params/paramslang.cpp" line="698"/>
         <source>color_biasing</source>
         <translatorcomment>Set Biasing</translatorcomment>
         <translation>cài phân cực</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="698"/>
+        <location filename="../src/params/paramslang.cpp" line="699"/>
         <source>color_digital_gain</source>
         <translatorcomment>Độlợi Digi</translatorcomment>
         <translation>Độlợi Digi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="699"/>
+        <location filename="../src/params/paramslang.cpp" line="700"/>
         <source>color_digital_gain_set</source>
         <translatorcomment>Độlợi Digi</translatorcomment>
         <translation>Độlợi Digital</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="700"/>
+        <location filename="../src/params/paramslang.cpp" line="701"/>
         <source>color_sensor_params</source>
         <translatorcomment>Cài độnhạy</translatorcomment>
         <translation>Cài độnhạy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="701"/>
+        <location filename="../src/params/paramslang.cpp" line="702"/>
         <source>gain_rough</source>
         <translatorcomment>Độlợi thô</translatorcomment>
         <translation>Độlợi thô</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="702"/>
+        <location filename="../src/params/paramslang.cpp" line="703"/>
         <source>gain_tiny</source>
         <translatorcomment>Độlợi tinh</translatorcomment>
         <translation>Độlợi tinh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="703"/>
+        <location filename="../src/params/paramslang.cpp" line="704"/>
         <source>channel_begin</source>
         <translatorcomment>Điểm đầu</translatorcomment>
         <translation>Điểm đầu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="704"/>
+        <location filename="../src/params/paramslang.cpp" line="705"/>
         <source>channel_end</source>
         <translatorcomment>Điểm cuối</translatorcomment>
         <translation>Điểm cuối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="705"/>
+        <location filename="../src/params/paramslang.cpp" line="706"/>
         <source>channel_restore</source>
         <translatorcomment>càilại</translatorcomment>
         <translation>càilại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="706"/>
+        <location filename="../src/params/paramslang.cpp" line="707"/>
         <source>sensor</source>
         <translatorcomment>Kiểu sensor</translatorcomment>
         <translation>Kiểu sensor</translation>
@@ -4546,596 +4867,596 @@ Before Calibration,Please Do Something As Follows:</translatorcomment>
         <translation type="obsolete">Sê ri D2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="707"/>
+        <location filename="../src/params/paramslang.cpp" line="708"/>
         <source>row_fre</source>
         <translatorcomment>Row Fre</translatorcomment>
         <translation>Row Fre</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="708"/>
+        <location filename="../src/params/paramslang.cpp" line="709"/>
         <source>sensor_mode</source>
         <translatorcomment>Sensor Mode</translatorcomment>
         <translation>Sensor Mode</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="709"/>
+        <location filename="../src/params/paramslang.cpp" line="710"/>
         <source>sensor_light</source>
         <translatorcomment>Sáng</translatorcomment>
         <translation>Sáng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="710"/>
+        <location filename="../src/params/paramslang.cpp" line="711"/>
         <source>sensor_dark</source>
         <translatorcomment>Tối</translatorcomment>
         <translation>Tối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="711"/>
+        <location filename="../src/params/paramslang.cpp" line="712"/>
         <source>sensor_black_white</source>
         <translatorcomment>Đen-trắng</translatorcomment>
         <translation>Đen-trắng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="712"/>
+        <location filename="../src/params/paramslang.cpp" line="713"/>
         <source>sensor_pixel</source>
         <translation>Phângiải Sensor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="713"/>
+        <location filename="../src/params/paramslang.cpp" line="714"/>
         <source>front_begin</source>
         <translatorcomment>Điểmđầutrước</translatorcomment>
         <translation>Điểmđầutrước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="714"/>
+        <location filename="../src/params/paramslang.cpp" line="715"/>
         <source>front_end</source>
         <translatorcomment>Điểmcuốitrước</translatorcomment>
         <translation>Điểmcuốitrước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="715"/>
+        <location filename="../src/params/paramslang.cpp" line="716"/>
         <source>rear_begin</source>
         <translatorcomment>Điểmđầusau</translatorcomment>
         <translation>Điểmđầusau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="716"/>
+        <location filename="../src/params/paramslang.cpp" line="717"/>
         <source>rear_end</source>
         <translatorcomment>Điểmcuốisau</translatorcomment>
         <translation>Điểmcuốisau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="717"/>
+        <location filename="../src/params/paramslang.cpp" line="718"/>
         <source>upper_view_begin</source>
         <translatorcomment>Điểmđầutrên</translatorcomment>
         <translation>Điểmđầutrên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="718"/>
+        <location filename="../src/params/paramslang.cpp" line="719"/>
         <source>upper_view_end</source>
         <translatorcomment>Điểmcuốitrên</translatorcomment>
         <translation>Điểmcuốitrên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="719"/>
+        <location filename="../src/params/paramslang.cpp" line="720"/>
         <source>lower_view_begin</source>
         <translatorcomment>Điểmđầudưới</translatorcomment>
         <translation>Điểmđầudưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="720"/>
+        <location filename="../src/params/paramslang.cpp" line="721"/>
         <source>lower_view_end</source>
         <translatorcomment>Điểmcuốidưới</translatorcomment>
         <translation>Điểmcuốidưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="721"/>
+        <location filename="../src/params/paramslang.cpp" line="722"/>
         <source>upper_layer_begin</source>
         <translatorcomment>Điểmđầutrên</translatorcomment>
         <translation>Điểmđầutrên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="722"/>
+        <location filename="../src/params/paramslang.cpp" line="723"/>
         <source>upper_layer_end</source>
         <translatorcomment>Điểmcuốitrên</translatorcomment>
         <translation>Điểmcuốitrên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="723"/>
+        <location filename="../src/params/paramslang.cpp" line="724"/>
         <source>lower_layer_begin</source>
         <translatorcomment>Điểmđầudưới</translatorcomment>
         <translation>Điểmđầudưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="724"/>
+        <location filename="../src/params/paramslang.cpp" line="725"/>
         <source>lower_layer_end</source>
         <translatorcomment>Điểmcuốidưới</translatorcomment>
         <translation>Điểmcuốidưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="725"/>
+        <location filename="../src/params/paramslang.cpp" line="726"/>
         <source>mid_layer_begin</source>
         <translatorcomment>Điểmđầugiữa</translatorcomment>
         <translation>Điểmđầugiữa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="726"/>
+        <location filename="../src/params/paramslang.cpp" line="727"/>
         <source>mid_layer_end</source>
         <translatorcomment>Điểmcuốigiữa</translatorcomment>
         <translation>Điểmcuốigiữa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="727"/>
+        <location filename="../src/params/paramslang.cpp" line="728"/>
         <source>begin</source>
         <translatorcomment>Điểmđầu</translatorcomment>
         <translation>Điểmđầu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="728"/>
+        <location filename="../src/params/paramslang.cpp" line="729"/>
         <source>end</source>
         <translatorcomment>Điểmcuối</translatorcomment>
         <translation>Điểmcuối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="729"/>
+        <location filename="../src/params/paramslang.cpp" line="730"/>
         <source>auto_divide</source>
         <translatorcomment>Tựđộng</translatorcomment>
         <translation>Tựđộng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="731"/>
+        <location filename="../src/params/paramslang.cpp" line="732"/>
         <source>update_capture</source>
         <translatorcomment>Thuthập</translatorcomment>
         <translation>Thuthập</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="732"/>
+        <location filename="../src/params/paramslang.cpp" line="733"/>
         <source>update_save</source>
         <translatorcomment>Lưu</translatorcomment>
         <translation>Lưu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="733"/>
+        <location filename="../src/params/paramslang.cpp" line="734"/>
         <source>update_capture_dark</source>
         <translation>Chụp tối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="734"/>
+        <location filename="../src/params/paramslang.cpp" line="735"/>
         <source>update_save_dark</source>
         <translation>Lưu tối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="735"/>
+        <location filename="../src/params/paramslang.cpp" line="736"/>
         <source>update_auto</source>
         <translatorcomment>Tựđộng</translatorcomment>
         <translation>Tựđộng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="736"/>
+        <location filename="../src/params/paramslang.cpp" line="737"/>
         <source>update_auto_level</source>
         <translation>Tự động</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="737"/>
+        <location filename="../src/params/paramslang.cpp" line="738"/>
         <source>channel_divide</source>
         <translatorcomment>Kênh</translatorcomment>
         <translation>Kênh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="738"/>
+        <location filename="../src/params/paramslang.cpp" line="739"/>
         <source>front_upper_view</source>
         <translation>Trên-trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="739"/>
+        <location filename="../src/params/paramslang.cpp" line="740"/>
         <source>front_lower_view</source>
         <translation>Dưới-trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="740"/>
+        <location filename="../src/params/paramslang.cpp" line="741"/>
         <source>rear_upper_view</source>
         <translation>Trên-sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="741"/>
+        <location filename="../src/params/paramslang.cpp" line="742"/>
         <source>rear_lower_view</source>
         <translation>dưới-sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="742"/>
+        <location filename="../src/params/paramslang.cpp" line="743"/>
         <source>ejector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="743"/>
+        <location filename="../src/params/paramslang.cpp" line="744"/>
         <source>pixle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="744"/>
+        <location filename="../src/params/paramslang.cpp" line="745"/>
         <source>single_calibrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="745"/>
+        <location filename="../src/params/paramslang.cpp" line="746"/>
         <source>whole_calibrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="746"/>
+        <location filename="../src/params/paramslang.cpp" line="747"/>
         <source>default_params</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="747"/>
+        <location filename="../src/params/paramslang.cpp" line="748"/>
         <source>auto_cal_note</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="748"/>
+        <location filename="../src/params/paramslang.cpp" line="749"/>
         <source>auto_cal_lightset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="749"/>
+        <location filename="../src/params/paramslang.cpp" line="750"/>
         <source>auto_cal_gainset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="750"/>
+        <location filename="../src/params/paramslang.cpp" line="751"/>
         <source>auto_cal_get_target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="751"/>
+        <location filename="../src/params/paramslang.cpp" line="752"/>
         <source>rear_no_signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="752"/>
+        <location filename="../src/params/paramslang.cpp" line="753"/>
         <source>front_no_signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="759"/>
+        <location filename="../src/params/paramslang.cpp" line="760"/>
         <source>front_upper_view_begin</source>
         <translation>Trên-trước đầu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="760"/>
+        <location filename="../src/params/paramslang.cpp" line="761"/>
         <source>front_lower_view_begin</source>
         <translation>Dưới-trước đầu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="761"/>
+        <location filename="../src/params/paramslang.cpp" line="762"/>
         <source>rear_upper_view_begin</source>
         <translation>Trên-sau đầu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="762"/>
+        <location filename="../src/params/paramslang.cpp" line="763"/>
         <source>rear_lower_view_begin</source>
         <translation>dưới-sau đầu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="763"/>
+        <location filename="../src/params/paramslang.cpp" line="764"/>
         <source>front_upper_view_end</source>
         <translation>Trên-trước cuối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="764"/>
+        <location filename="../src/params/paramslang.cpp" line="765"/>
         <source>front_lower_view_end</source>
         <translation>Dưới-trước cuối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="765"/>
+        <location filename="../src/params/paramslang.cpp" line="766"/>
         <source>rear_upper_view_end</source>
         <translation>Trên-sau cuối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="766"/>
+        <location filename="../src/params/paramslang.cpp" line="767"/>
         <source>rear_lower_view_end</source>
         <translation>Dưới-sau cuối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="767"/>
+        <location filename="../src/params/paramslang.cpp" line="768"/>
         <source>left_side</source>
         <translation>Phụ-trái</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="768"/>
+        <location filename="../src/params/paramslang.cpp" line="769"/>
         <source>right_side</source>
         <translation>Phụ-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="769"/>
+        <location filename="../src/params/paramslang.cpp" line="770"/>
         <source>upper_view_page</source>
         <translation>Trang trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="770"/>
+        <location filename="../src/params/paramslang.cpp" line="771"/>
         <source>lower_view_page</source>
         <translation>Trang dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="771"/>
+        <location filename="../src/params/paramslang.cpp" line="772"/>
         <source>front_view_page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="772"/>
+        <location filename="../src/params/paramslang.cpp" line="773"/>
         <source>rear_view_page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="773"/>
+        <location filename="../src/params/paramslang.cpp" line="774"/>
         <source>upper_layer_page</source>
         <translation>Trang tầng trên</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="774"/>
+        <location filename="../src/params/paramslang.cpp" line="775"/>
         <source>lower_layer_page</source>
         <translation>Trang tầng dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="775"/>
+        <location filename="../src/params/paramslang.cpp" line="776"/>
         <source>down_front_left_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="776"/>
+        <location filename="../src/params/paramslang.cpp" line="777"/>
         <source>down_front_left_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="777"/>
+        <location filename="../src/params/paramslang.cpp" line="778"/>
         <source>down_front_right_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="778"/>
+        <location filename="../src/params/paramslang.cpp" line="779"/>
         <source>down_front_right_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="779"/>
+        <location filename="../src/params/paramslang.cpp" line="780"/>
         <source>down_rear_left_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="780"/>
+        <location filename="../src/params/paramslang.cpp" line="781"/>
         <source>down_rear_left_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="781"/>
+        <location filename="../src/params/paramslang.cpp" line="782"/>
         <source>down_rear_right_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="782"/>
+        <location filename="../src/params/paramslang.cpp" line="783"/>
         <source>down_rear_right_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="783"/>
+        <location filename="../src/params/paramslang.cpp" line="784"/>
         <source>up_front_left_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="784"/>
+        <location filename="../src/params/paramslang.cpp" line="785"/>
         <source>up_front_left_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="785"/>
+        <location filename="../src/params/paramslang.cpp" line="786"/>
         <source>up_front_right_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="786"/>
+        <location filename="../src/params/paramslang.cpp" line="787"/>
         <source>up_front_right_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="787"/>
+        <location filename="../src/params/paramslang.cpp" line="788"/>
         <source>up_rear_left_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="788"/>
+        <location filename="../src/params/paramslang.cpp" line="789"/>
         <source>up_rear_left_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="789"/>
+        <location filename="../src/params/paramslang.cpp" line="790"/>
         <source>up_rear_right_view_begin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="790"/>
+        <location filename="../src/params/paramslang.cpp" line="791"/>
         <source>up_rear_right_view_end</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="807"/>
+        <location filename="../src/params/paramslang.cpp" line="808"/>
         <source>inf_camera</source>
         <translatorcomment>CameraH.ngoại</translatorcomment>
         <translation>CameraH.ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="808"/>
+        <location filename="../src/params/paramslang.cpp" line="809"/>
         <source>inf_gain</source>
         <translatorcomment>Đ.lợiH.ngoạin</translatorcomment>
         <translation>Đ.lợiH.ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="809"/>
+        <location filename="../src/params/paramslang.cpp" line="810"/>
         <source>inf_channel</source>
         <translatorcomment>Kênh H.ngoại</translatorcomment>
         <translation>Kênh H.ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="810"/>
+        <location filename="../src/params/paramslang.cpp" line="811"/>
         <source>inf_biasing</source>
         <translatorcomment>Bias H.ngoại</translatorcomment>
         <translation>Bias H.ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="811"/>
+        <location filename="../src/params/paramslang.cpp" line="812"/>
         <source>inf_update</source>
         <translatorcomment>H.chỉnh H.ngoại</translatorcomment>
         <translation>H.chỉnh H.ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="812"/>
+        <location filename="../src/params/paramslang.cpp" line="813"/>
         <source>inf_odd</source>
         <translatorcomment>Lẻ</translatorcomment>
         <translation>Lẻ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="813"/>
+        <location filename="../src/params/paramslang.cpp" line="814"/>
         <source>inf_even</source>
         <translatorcomment>Chẵn</translatorcomment>
         <translation>Chẵn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="814"/>
+        <location filename="../src/params/paramslang.cpp" line="815"/>
         <source>inf_positive</source>
         <translatorcomment>Thuận </translatorcomment>
         <translation>Thuận </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="815"/>
+        <location filename="../src/params/paramslang.cpp" line="816"/>
         <source>inf_negative</source>
         <translatorcomment>Ngược</translatorcomment>
         <translation>Ngược</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="816"/>
+        <location filename="../src/params/paramslang.cpp" line="817"/>
         <source>inf_pixel_base</source>
         <translatorcomment>pixel nền</translatorcomment>
         <translation>pixel nền</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="817"/>
+        <location filename="../src/params/paramslang.cpp" line="818"/>
         <source>inf_reference</source>
         <translatorcomment>nền H.Ngoại</translatorcomment>
         <translation>nền H.Ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="818"/>
+        <location filename="../src/params/paramslang.cpp" line="819"/>
         <source>inf</source>
         <translation>Thông tin</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="821"/>
+        <location filename="../src/params/paramslang.cpp" line="822"/>
         <source>set_screensaver</source>
         <translatorcomment>Cài mànhình tiếtkiệm</translatorcomment>
         <translation>Cài mànhình tiếtkiệm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="822"/>
+        <location filename="../src/params/paramslang.cpp" line="823"/>
         <source>enable_screensaver</source>
         <translatorcomment>C.phép cài tiếtkiệm</translatorcomment>
         <translation>bật cài tiếtkiệm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="823"/>
+        <location filename="../src/params/paramslang.cpp" line="824"/>
         <source>input_screensaver_password</source>
         <translatorcomment>Nhập mật khẩu mới</translatorcomment>
         <translation>Nhập mật khẩu mới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="824"/>
+        <location filename="../src/params/paramslang.cpp" line="825"/>
         <source>confirm_screensaver_password</source>
         <translatorcomment>xác nhận mật khẩu mới</translatorcomment>
         <translation>xác nhận mật khẩu mới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="827"/>
+        <location filename="../src/params/paramslang.cpp" line="828"/>
         <source>msg_statistic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="828"/>
+        <location filename="../src/params/paramslang.cpp" line="829"/>
         <source>msg_applying</source>
         <translatorcomment>Đang cài đặt…</translatorcomment>
         <translation>Đang cài đặt…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="829"/>
+        <location filename="../src/params/paramslang.cpp" line="830"/>
         <source>msg_turning_on</source>
         <translatorcomment>Đang mở cấp liệu…</translatorcomment>
         <translation>Đang mở cấp liệu…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="830"/>
+        <location filename="../src/params/paramslang.cpp" line="831"/>
         <source>msg_turning_off</source>
         <translatorcomment>Đang tắt cấp liệu…</translatorcomment>
         <translation>Đang tắt cấp liệu…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="831"/>
+        <location filename="../src/params/paramslang.cpp" line="832"/>
         <source>msg_turn_off_first</source>
         <translatorcomment>Xin tắt cấp liệu trước…</translatorcomment>
         <translation>Xin tắt cấp liệu trước…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="832"/>
+        <location filename="../src/params/paramslang.cpp" line="833"/>
         <source>msg_shutdown</source>
         <translatorcomment>Đang lưu và tắt máy, xin chờ…</translatorcomment>
         <translation>Đang lưu và tắt máy, xin chờ…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="833"/>
+        <location filename="../src/params/paramslang.cpp" line="834"/>
         <source>msg_wiping</source>
         <translatorcomment>Quét kiếng, xin chờ…</translatorcomment>
         <translation>Quét kiếng, xin chờ….</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="834"/>
+        <location filename="../src/params/paramslang.cpp" line="835"/>
         <source>msg_password_error</source>
         <translatorcomment>Mật khẩu sai!</translatorcomment>
         <translation>Mật khẩu sai!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="835"/>
+        <location filename="../src/params/paramslang.cpp" line="836"/>
         <source>msg_divide_channel</source>
         <translatorcomment>Đang cài kênh, xin chờ…</translatorcomment>
         <translation>Đang cài kênh, xin chờ…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="836"/>
+        <location filename="../src/params/paramslang.cpp" line="837"/>
         <source>msg_communicating</source>
         <translatorcomment>Đang kết nối, xin chờ…</translatorcomment>
         <translation>Đang kết nối, xin chờ…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="837"/>
+        <location filename="../src/params/paramslang.cpp" line="838"/>
         <source>msg_require_version</source>
         <translatorcomment>Đang thu thập, xin chờ…</translatorcomment>
         <translation>Đang thu thập, xin chờ….</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="838"/>
+        <location filename="../src/params/paramslang.cpp" line="839"/>
         <source>msg_system_init</source>
         <translatorcomment>Nạp hệ thống gốc, xin chờ…</translatorcomment>
         <translation>Nạp hệ thống gốc, xin chờ….</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="839"/>
+        <location filename="../src/params/paramslang.cpp" line="840"/>
         <source>msg_preheating</source>
         <translatorcomment>Đag làm nóng, xin chờ…</translatorcomment>
         <translation>Đag làm nóng, xin chờ…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="840"/>
+        <location filename="../src/params/paramslang.cpp" line="841"/>
         <source>msg_input_name</source>
         <translatorcomment>Xin nhập tên.</translatorcomment>
         <translation>Xin nhập tên.</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="841"/>
+        <location filename="../src/params/paramslang.cpp" line="842"/>
         <source>msg_mode_changing</source>
         <translatorcomment>Xin cẩn thận khi chọn h.thống gốc!</translatorcomment>
         <translation>Xin cẩn thận khi chọn h.thống gốc!</translation>
@@ -5146,88 +5467,88 @@ Before Calibration,Please Do Something As Follows:</translatorcomment>
         <translation type="obsolete">Đang thử năng xuất…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="843"/>
+        <location filename="../src/params/paramslang.cpp" line="844"/>
         <source>msg_change_init_mode</source>
         <translatorcomment>Xin cẩn thận khi chọn h.thống gốc!</translatorcomment>
         <translation>Xin cẩn thận khi chọn h.thống gốc!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="844"/>
+        <location filename="../src/params/paramslang.cpp" line="845"/>
         <source>msg_delay_get_zero</source>
         <translatorcomment>Sắp đến hạn khóa máy!</translatorcomment>
         <translation>Sắp đến hạn khóa máy!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="845"/>
+        <location filename="../src/params/paramslang.cpp" line="846"/>
         <source>msg_saving_params</source>
         <translatorcomment>Đang lưu thông số…</translatorcomment>
         <translation>Đang lưu thông số…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="846"/>
+        <location filename="../src/params/paramslang.cpp" line="847"/>
         <source>msg_params_save_error</source>
         <translatorcomment>Lưu thông số bị lỗi!</translatorcomment>
         <translation>Lưu thông số bị lỗi!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="847"/>
+        <location filename="../src/params/paramslang.cpp" line="848"/>
         <source>msg_usb_init_error</source>
         <translatorcomment>Gốc USB lỗi</translatorcomment>
         <translation>Gốc USB lỗi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="848"/>
+        <location filename="../src/params/paramslang.cpp" line="849"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="849"/>
+        <location filename="../src/params/paramslang.cpp" line="850"/>
         <source>msg_auto_calibrating</source>
         <translatorcomment>Tự động H. chỉnh…</translatorcomment>
         <translation>Tự động H. chỉnh…</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="850"/>
+        <location filename="../src/params/paramslang.cpp" line="851"/>
         <source>msg_auto_calibrate</source>
         <translatorcomment>H.chỉnh thanh công!</translatorcomment>
         <translation>H.chỉnh thanh công!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="851"/>
+        <location filename="../src/params/paramslang.cpp" line="852"/>
         <source>msg_length_exceed_limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="852"/>
+        <location filename="../src/params/paramslang.cpp" line="853"/>
         <source>msg_set_impure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="855"/>
+        <location filename="../src/params/paramslang.cpp" line="856"/>
         <source>cfm_save_parameter</source>
         <translatorcomment>bạn có chắc lưu thông số?</translatorcomment>
         <translation>bạn có chắc lưu thông số?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="856"/>
+        <location filename="../src/params/paramslang.cpp" line="857"/>
         <source>cfm_turn_on_while_belt_off</source>
         <translatorcomment>Bạn có chắc mở máy khi băng tải ngừng?</translatorcomment>
         <translation>Bạn có chắc mở máy khi băng tải ngừng?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="857"/>
+        <location filename="../src/params/paramslang.cpp" line="858"/>
         <source>cfm_shut_down</source>
         <translatorcomment>bạn có chắc tắt máy?</translatorcomment>
         <translation>bạn có chắc tắt máy?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="858"/>
+        <location filename="../src/params/paramslang.cpp" line="859"/>
         <source>cfm_turn_on</source>
         <translatorcomment>bạn có chắc mở máy?</translatorcomment>
         <translation>bạn có chắc mở máy?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="859"/>
+        <location filename="../src/params/paramslang.cpp" line="860"/>
         <source>cfm_auto_calibrate</source>
         <translatorcomment>bạn có chắc muốn tự động hiệu chỉnh?</translatorcomment>
         <translation>bạn có chắc muốn tự động hiệu chỉnh?</translation>
@@ -5238,992 +5559,992 @@ Before Calibration,Please Do Something As Follows:</translatorcomment>
         <translation type="obsolete">Đã cắm USB chưa?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="860"/>
+        <location filename="../src/params/paramslang.cpp" line="861"/>
         <source>cfm_copy_to_all</source>
         <translation>Có chắc chép t.số quan trọng tới các c.trình?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="861"/>
+        <location filename="../src/params/paramslang.cpp" line="862"/>
         <source>cfm_change_analog_gain</source>
         <translation>có chắc chỉnh sửa độ lợi annalog?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="862"/>
+        <location filename="../src/params/paramslang.cpp" line="863"/>
         <source>cfm_auto_set</source>
         <translation>Có chắc cân chỉnh tín hiệu tự động?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="865"/>
+        <location filename="../src/params/paramslang.cpp" line="866"/>
         <source>init_autoSig</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="866"/>
+        <location filename="../src/params/paramslang.cpp" line="867"/>
         <source>cfm_init_autoSig</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="867"/>
+        <location filename="../src/params/paramslang.cpp" line="868"/>
         <source>msg_initing_autoSig</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="868"/>
+        <location filename="../src/params/paramslang.cpp" line="869"/>
         <source>msg_init_sutoSig_fail</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="869"/>
+        <location filename="../src/params/paramslang.cpp" line="870"/>
         <source>cfm_reboot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="872"/>
+        <location filename="../src/params/paramslang.cpp" line="873"/>
         <source>config_major</source>
         <translation>Cấu hình chính</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="873"/>
+        <location filename="../src/params/paramslang.cpp" line="874"/>
         <source>config_assist</source>
         <translation>Cấu hình phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="874"/>
+        <location filename="../src/params/paramslang.cpp" line="875"/>
         <source>row</source>
         <translation>Hàng ngang</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="875"/>
+        <location filename="../src/params/paramslang.cpp" line="876"/>
         <source>col</source>
         <translation>hàng dọc</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="876"/>
+        <location filename="../src/params/paramslang.cpp" line="877"/>
         <source>mode_dark</source>
         <translation>Tối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="877"/>
+        <location filename="../src/params/paramslang.cpp" line="878"/>
         <source>mode_discolor</source>
         <translation>vàng, sâu hư</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="878"/>
+        <location filename="../src/params/paramslang.cpp" line="879"/>
         <source>mode_discolor_reverse</source>
         <translation>Ngược vàng, sâu hư</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="879"/>
+        <location filename="../src/params/paramslang.cpp" line="880"/>
         <source>mode_milky</source>
         <translation>Bạc bụng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="880"/>
+        <location filename="../src/params/paramslang.cpp" line="881"/>
         <source>mode_milky_reverse</source>
         <translation>Ngược bạc bụng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="881"/>
+        <location filename="../src/params/paramslang.cpp" line="882"/>
         <source>mode_yellow_milky</source>
         <translation>Tách tổng hợp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="882"/>
+        <location filename="../src/params/paramslang.cpp" line="883"/>
         <source>mode_yellow_trans</source>
         <translation>Tách vàng, trong</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="883"/>
+        <location filename="../src/params/paramslang.cpp" line="884"/>
         <source>mode_yellow_yellow_reverse</source>
         <translation>Ngược vàng, trong</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="884"/>
+        <location filename="../src/params/paramslang.cpp" line="885"/>
         <source>mode_yellow_white_reverse</source>
         <translation>Ngược tổng hợp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="885"/>
+        <location filename="../src/params/paramslang.cpp" line="886"/>
         <source>mode_user_defined</source>
         <translation>Chưa có c.trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="886"/>
+        <location filename="../src/params/paramslang.cpp" line="887"/>
         <source>detect_wait</source>
         <translation>Chờ dò</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="889"/>
+        <location filename="../src/params/paramslang.cpp" line="890"/>
         <source>bad_discolor</source>
         <translation>Độ nhạy tối</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="890"/>
+        <location filename="../src/params/paramslang.cpp" line="891"/>
         <source>bad_area</source>
         <translation>Độ rộng lỗi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="891"/>
+        <location filename="../src/params/paramslang.cpp" line="892"/>
         <source>auto_set</source>
         <translation>Chỉnh tự động</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="892"/>
+        <location filename="../src/params/paramslang.cpp" line="893"/>
         <source>super_brain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="893"/>
+        <location filename="../src/params/paramslang.cpp" line="894"/>
         <source>eject_set</source>
         <translation>cài bép</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="894"/>
+        <location filename="../src/params/paramslang.cpp" line="895"/>
         <source>set_by_times</source>
         <translation>cài cùng nhau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="895"/>
+        <location filename="../src/params/paramslang.cpp" line="896"/>
         <source>set_alone</source>
         <translation>Cài lẻ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="896"/>
+        <location filename="../src/params/paramslang.cpp" line="897"/>
         <source>arith_scale</source>
         <translation>Tính kích cỡ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="897"/>
+        <location filename="../src/params/paramslang.cpp" line="898"/>
         <source>arith_shape</source>
         <translation>Tính hình dạng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="901"/>
+        <location filename="../src/params/paramslang.cpp" line="902"/>
         <source>channel_biasing</source>
         <translation>Phân cực kênh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="902"/>
+        <location filename="../src/params/paramslang.cpp" line="903"/>
         <source>odd_biasing</source>
         <translation>Phân cực lẻ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="903"/>
+        <location filename="../src/params/paramslang.cpp" line="904"/>
         <source>even_biasing</source>
         <translation>Phân cực chẵn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="904"/>
+        <location filename="../src/params/paramslang.cpp" line="905"/>
         <source>channel_range</source>
         <translation>Sắp xếp pixel</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="905"/>
+        <location filename="../src/params/paramslang.cpp" line="906"/>
         <source>channel_cross</source>
         <translation>Chồng lấn pixel</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="906"/>
+        <location filename="../src/params/paramslang.cpp" line="907"/>
         <source>gain_target</source>
         <translation>Đích độ lợi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="907"/>
+        <location filename="../src/params/paramslang.cpp" line="908"/>
         <source>eject_times</source>
         <translation>Tỷ lệ bắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="908"/>
+        <location filename="../src/params/paramslang.cpp" line="909"/>
         <source>image_capture</source>
         <translation>Chụp hình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="911"/>
+        <location filename="../src/params/paramslang.cpp" line="912"/>
         <source>lamp_protect</source>
         <translation>bảo trì đèn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="912"/>
+        <location filename="../src/params/paramslang.cpp" line="913"/>
         <source>feeder_biasing</source>
         <translation>Phân cực c.liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="913"/>
+        <location filename="../src/params/paramslang.cpp" line="914"/>
         <source>system_test</source>
         <translation>K.tra h.thống</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="914"/>
+        <location filename="../src/params/paramslang.cpp" line="915"/>
         <source>assist_camera_enable</source>
         <translation>C.phép camera phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="915"/>
+        <location filename="../src/params/paramslang.cpp" line="916"/>
         <source>advanced_parameters</source>
         <translation>T.số cao cấp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="916"/>
+        <location filename="../src/params/paramslang.cpp" line="917"/>
         <source>exit_list</source>
         <translation>Exit list</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="917"/>
+        <location filename="../src/params/paramslang.cpp" line="918"/>
         <source>exposure_time</source>
         <translation>Thời gian rọi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="918"/>
+        <location filename="../src/params/paramslang.cpp" line="919"/>
         <source>lens_select</source>
         <translation>Chọn thấu kính</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="919"/>
+        <location filename="../src/params/paramslang.cpp" line="920"/>
         <source>time_short</source>
         <translation>Ngắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="920"/>
+        <location filename="../src/params/paramslang.cpp" line="921"/>
         <source>time_middle</source>
         <translation>Trung bình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="921"/>
+        <location filename="../src/params/paramslang.cpp" line="922"/>
         <source>time_long</source>
         <translation>Dài</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="922"/>
+        <location filename="../src/params/paramslang.cpp" line="923"/>
         <source>delay_biasing</source>
         <translation>Phân cực delay</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="923"/>
+        <location filename="../src/params/paramslang.cpp" line="924"/>
         <source>degauss_time</source>
         <translation>T.gian khử từ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="924"/>
+        <location filename="../src/params/paramslang.cpp" line="925"/>
         <source>truncation_time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="925"/>
+        <location filename="../src/params/paramslang.cpp" line="926"/>
         <source>clear_total</source>
         <translation>Xóa đếm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="926"/>
+        <location filename="../src/params/paramslang.cpp" line="927"/>
         <source>preheat_time</source>
         <translation>T.gian làm nóng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="927"/>
+        <location filename="../src/params/paramslang.cpp" line="928"/>
         <source>machine_type_select</source>
         <translation>Cài sản phẩm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="928"/>
+        <location filename="../src/params/paramslang.cpp" line="929"/>
         <source>times_allocation</source>
         <translation>Ấn định lệnh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="929"/>
+        <location filename="../src/params/paramslang.cpp" line="930"/>
         <source>pass_allocation</source>
         <translation>Ấn định kênh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="930"/>
+        <location filename="../src/params/paramslang.cpp" line="931"/>
         <source>feeder_control</source>
         <translation>Kiểm soát c.liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="931"/>
+        <location filename="../src/params/paramslang.cpp" line="932"/>
         <source>feeder_control_enable</source>
         <translation>C.phép kiểm c.liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="932"/>
+        <location filename="../src/params/paramslang.cpp" line="933"/>
         <source>feeder_remote_control</source>
         <translation>Đ.khiểnC.liệutừ xa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="933"/>
+        <location filename="../src/params/paramslang.cpp" line="934"/>
         <source>forward_direction</source>
         <translation>chuyển hướng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="934"/>
+        <location filename="../src/params/paramslang.cpp" line="935"/>
         <source>opposite_direction</source>
         <translation>Hướng đối diện</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="936"/>
+        <location filename="../src/params/paramslang.cpp" line="937"/>
         <source>identify_analysis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="939"/>
+        <location filename="../src/params/paramslang.cpp" line="940"/>
         <source>test_pass_num</source>
         <translation>Thử các kênh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="940"/>
+        <location filename="../src/params/paramslang.cpp" line="941"/>
         <source>weight_test_before</source>
         <translation>Cân trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="941"/>
+        <location filename="../src/params/paramslang.cpp" line="942"/>
         <source>weight_test_after</source>
         <translation>Cân sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="942"/>
+        <location filename="../src/params/paramslang.cpp" line="943"/>
         <source>single_pass_output</source>
         <translation>Đầu ra từng kênh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="943"/>
+        <location filename="../src/params/paramslang.cpp" line="944"/>
         <source>auto_running</source>
         <translation>Chạy tự động</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="944"/>
+        <location filename="../src/params/paramslang.cpp" line="945"/>
         <source>output_test_set</source>
         <translation>Cài k.tra đầu ra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="945"/>
+        <location filename="../src/params/paramslang.cpp" line="946"/>
         <source>output_test_start</source>
         <translation>bắt đầu k.tra đầu ra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="948"/>
+        <location filename="../src/params/paramslang.cpp" line="949"/>
         <source>grey</source>
         <translation>Lỗi đen</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="949"/>
+        <location filename="../src/params/paramslang.cpp" line="950"/>
         <source>matter_area</source>
         <translation>Vùng nguyênliệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="950"/>
+        <location filename="../src/params/paramslang.cpp" line="951"/>
         <source>image_derive</source>
         <translation>xuất hình ảnh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="951"/>
+        <location filename="../src/params/paramslang.cpp" line="952"/>
         <source>rice_sum</source>
         <translation>Tổng lượng hàng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="952"/>
+        <location filename="../src/params/paramslang.cpp" line="953"/>
         <source>broken_rice_num</source>
         <translation>Tổng lượng bể</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="953"/>
+        <location filename="../src/params/paramslang.cpp" line="954"/>
         <source>broken_rice_ratio</source>
         <translation>Tỷ lệ bể</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="956"/>
+        <location filename="../src/params/paramslang.cpp" line="957"/>
         <source>video starting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="957"/>
+        <location filename="../src/params/paramslang.cpp" line="958"/>
         <source>video stoping</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="958"/>
+        <location filename="../src/params/paramslang.cpp" line="959"/>
         <source>output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="959"/>
+        <location filename="../src/params/paramslang.cpp" line="960"/>
         <source>dirt per</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="962"/>
+        <location filename="../src/params/paramslang.cpp" line="963"/>
         <source>current_feeder</source>
         <translation>Cấp liệu hiện hành</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="963"/>
+        <location filename="../src/params/paramslang.cpp" line="964"/>
         <source>fixed_feeder</source>
         <translation>C.liệu cố định</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="964"/>
+        <location filename="../src/params/paramslang.cpp" line="965"/>
         <source>reference_chute</source>
         <translation>máng tham khảo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="965"/>
+        <location filename="../src/params/paramslang.cpp" line="966"/>
         <source>special_for_deep</source>
         <translation>Chỉ tách hạt đen</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="968"/>
+        <location filename="../src/params/paramslang.cpp" line="969"/>
         <source>pale_yellow_area</source>
         <translation>vùng đốm vàng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="969"/>
+        <location filename="../src/params/paramslang.cpp" line="970"/>
         <source>bad_width</source>
         <translation>vùng chấm kim</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="972"/>
+        <location filename="../src/params/paramslang.cpp" line="973"/>
         <source>infrared_set</source>
         <translation>Cài hồng ngoại</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="973"/>
+        <location filename="../src/params/paramslang.cpp" line="974"/>
         <source>special_for_glass</source>
         <translation>chỉ bắn thủy tinh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="974"/>
+        <location filename="../src/params/paramslang.cpp" line="975"/>
         <source>follow_lower_limit</source>
         <translation>Giới hạn theo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="977"/>
+        <location filename="../src/params/paramslang.cpp" line="978"/>
         <source>front_sort</source>
         <translation>Trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="978"/>
+        <location filename="../src/params/paramslang.cpp" line="979"/>
         <source>rear_sort</source>
         <translation>Sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="981"/>
+        <location filename="../src/params/paramslang.cpp" line="982"/>
         <source>sampling_time</source>
         <translation>T,gian mẫu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="982"/>
+        <location filename="../src/params/paramslang.cpp" line="983"/>
         <source>eject_times_limit</source>
         <translation>Giới hạn bép đơn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="985"/>
+        <location filename="../src/params/paramslang.cpp" line="986"/>
         <source>white_board_adjust</source>
         <translation>Chỉnh bo trắng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="986"/>
+        <location filename="../src/params/paramslang.cpp" line="987"/>
         <source>adjust_start</source>
         <translation>Bắt đầu chỉnh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="987"/>
+        <location filename="../src/params/paramslang.cpp" line="988"/>
         <source>adjust_finish</source>
         <translation>Kết thúc chỉnh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="988"/>
+        <location filename="../src/params/paramslang.cpp" line="989"/>
         <source>auto_copy</source>
         <translation>Chép tự động</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="989"/>
+        <location filename="../src/params/paramslang.cpp" line="990"/>
         <source>co_capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="990"/>
+        <location filename="../src/params/paramslang.cpp" line="991"/>
         <source>cuteoff_bg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="991"/>
+        <location filename="../src/params/paramslang.cpp" line="992"/>
         <source>adjust_copy</source>
         <translation>Chỉnh copy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="992"/>
+        <location filename="../src/params/paramslang.cpp" line="993"/>
         <source>adjust_wave</source>
         <translation>Chỉnh t.số sóng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="993"/>
+        <location filename="../src/params/paramslang.cpp" line="994"/>
         <source>channel</source>
         <translation>Kênh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="996"/>
+        <location filename="../src/params/paramslang.cpp" line="997"/>
         <source>msg_input_weight_before</source>
         <translation>Xin nhập tr.lượng trước</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="997"/>
+        <location filename="../src/params/paramslang.cpp" line="998"/>
         <source>msg_input_weight_after</source>
         <translation>Xin nhập tr.lượng sau</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="998"/>
+        <location filename="../src/params/paramslang.cpp" line="999"/>
         <source>msg_system_testing</source>
         <translation>Đang kiểm tra, xin chờ...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="999"/>
+        <location filename="../src/params/paramslang.cpp" line="1000"/>
         <source>msg_insert_white_board</source>
         <translation>Xin đặt bo trắng</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1000"/>
+        <location filename="../src/params/paramslang.cpp" line="1001"/>
         <source>msg_white_board_adjusting</source>
         <translation>Đang cân chỉnh, xin chờ...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1001"/>
+        <location filename="../src/params/paramslang.cpp" line="1002"/>
         <source>msg_remove_white_board</source>
         <translation>Xin lấy bo trắng ra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1004"/>
+        <location filename="../src/params/paramslang.cpp" line="1005"/>
         <source>scheme_cur</source>
         <translation>C. trình hiện hành</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1005"/>
+        <location filename="../src/params/paramslang.cpp" line="1006"/>
         <source>scheme_des</source>
         <translation>C. trình đích</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1006"/>
+        <location filename="../src/params/paramslang.cpp" line="1007"/>
         <source>scheme_all</source>
         <translation>Tất cả C. trình</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1009"/>
+        <location filename="../src/params/paramslang.cpp" line="1010"/>
         <source>pmt_run</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1010"/>
+        <location filename="../src/params/paramslang.cpp" line="1011"/>
         <source>pmt_front_frame</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1011"/>
+        <location filename="../src/params/paramslang.cpp" line="1012"/>
         <source>pmt_rear_frame</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1012"/>
+        <location filename="../src/params/paramslang.cpp" line="1013"/>
         <source>pmt_enable_red1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1013"/>
+        <location filename="../src/params/paramslang.cpp" line="1014"/>
         <source>pmt_enable_red2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1014"/>
+        <location filename="../src/params/paramslang.cpp" line="1015"/>
         <source>pmt_enable_green</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1015"/>
+        <location filename="../src/params/paramslang.cpp" line="1016"/>
         <source>pmt_enable_blue</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1016"/>
+        <location filename="../src/params/paramslang.cpp" line="1017"/>
         <source>pmt_ctrl_voltage</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1017"/>
+        <location filename="../src/params/paramslang.cpp" line="1018"/>
         <source>pmt_ctrl</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1020"/>
+        <location filename="../src/params/paramslang.cpp" line="1021"/>
         <source>feeder_AI</source>
         <translation>Tựđộng cấpliệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1021"/>
+        <location filename="../src/params/paramslang.cpp" line="1022"/>
         <source>eject_stat_enable</source>
         <translation>Cho phép</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1022"/>
+        <location filename="../src/params/paramslang.cpp" line="1023"/>
         <source>current_eject_freq</source>
         <translation>Tần số bép</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1023"/>
+        <location filename="../src/params/paramslang.cpp" line="1024"/>
         <source>feeder_range</source>
         <translation>Phạm vi C.liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1024"/>
+        <location filename="../src/params/paramslang.cpp" line="1025"/>
         <source>ejector_range</source>
         <translation>Phạm vi bắn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1027"/>
+        <location filename="../src/params/paramslang.cpp" line="1028"/>
         <source>Log</source>
         <translation>Log</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1028"/>
+        <location filename="../src/params/paramslang.cpp" line="1029"/>
         <source>From</source>
         <translation>Từ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1029"/>
+        <location filename="../src/params/paramslang.cpp" line="1030"/>
         <source>To</source>
         <translation>Tới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1030"/>
+        <location filename="../src/params/paramslang.cpp" line="1031"/>
         <source>Load</source>
         <translation>nạp</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1031"/>
+        <location filename="../src/params/paramslang.cpp" line="1032"/>
         <source>All</source>
         <translation>Tất cả</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1032"/>
+        <location filename="../src/params/paramslang.cpp" line="1033"/>
         <source>Power Switch</source>
         <translation>C.tắc nguồn</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1033"/>
+        <location filename="../src/params/paramslang.cpp" line="1034"/>
         <source>Feeder Switch</source>
         <translation>C.tắc cấp liệu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1034"/>
+        <location filename="../src/params/paramslang.cpp" line="1035"/>
         <source>Machine</source>
         <translation>máy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1035"/>
+        <location filename="../src/params/paramslang.cpp" line="1036"/>
         <source>Profile</source>
         <translation>Sơ lược </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1036"/>
+        <location filename="../src/params/paramslang.cpp" line="1037"/>
         <source>Camera</source>
         <translation>Camera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1037"/>
+        <location filename="../src/params/paramslang.cpp" line="1038"/>
         <source>Backgroud</source>
         <translation>Thanh nền</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1038"/>
+        <location filename="../src/params/paramslang.cpp" line="1039"/>
         <source>Arith</source>
         <translation>Thuật toán</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1039"/>
+        <location filename="../src/params/paramslang.cpp" line="1040"/>
         <source>Reject</source>
         <translation>Loại bỏ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1040"/>
+        <location filename="../src/params/paramslang.cpp" line="1041"/>
         <source>Wipe</source>
         <translation>Quét kính</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1042"/>
+        <location filename="../src/params/paramslang.cpp" line="1043"/>
         <source>Debug</source>
         <translation>Tìm lỗi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1045"/>
+        <location filename="../src/params/paramslang.cpp" line="1046"/>
         <source>upper_master</source>
         <translation>Trên -phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1046"/>
+        <location filename="../src/params/paramslang.cpp" line="1047"/>
         <source>upper_slave</source>
         <translation>Trên-phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1047"/>
+        <location filename="../src/params/paramslang.cpp" line="1048"/>
         <source>lower_master</source>
         <translation>Dưới-phải</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1048"/>
+        <location filename="../src/params/paramslang.cpp" line="1049"/>
         <source>lower_slave</source>
         <translation>Dưới phụ</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1049"/>
+        <location filename="../src/params/paramslang.cpp" line="1050"/>
         <source>upper same as lower</source>
         <translation>Trên giống dưới</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1050"/>
+        <location filename="../src/params/paramslang.cpp" line="1051"/>
         <source>Master-Page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1051"/>
+        <location filename="../src/params/paramslang.cpp" line="1052"/>
         <source>Slave-Pge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1052"/>
+        <location filename="../src/params/paramslang.cpp" line="1053"/>
         <source>upper_L_begin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1053"/>
+        <location filename="../src/params/paramslang.cpp" line="1054"/>
         <source>upper_L_end</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1054"/>
+        <location filename="../src/params/paramslang.cpp" line="1055"/>
         <source>upper_R_begin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1055"/>
+        <location filename="../src/params/paramslang.cpp" line="1056"/>
         <source>upper_R_end</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1056"/>
+        <location filename="../src/params/paramslang.cpp" line="1057"/>
         <source>lower_L_begin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1057"/>
+        <location filename="../src/params/paramslang.cpp" line="1058"/>
         <source>lower_L_end</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1058"/>
+        <location filename="../src/params/paramslang.cpp" line="1059"/>
         <source>lower_R_begin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1059"/>
+        <location filename="../src/params/paramslang.cpp" line="1060"/>
         <source>lower_R_end</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1060"/>
+        <location filename="../src/params/paramslang.cpp" line="1061"/>
         <source>Unused</source>
         <translation>Chờ một phút!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1063"/>
+        <location filename="../src/params/paramslang.cpp" line="1064"/>
         <source>color_select_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1064"/>
+        <location filename="../src/params/paramslang.cpp" line="1065"/>
         <source>set_color_select_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1065"/>
+        <location filename="../src/params/paramslang.cpp" line="1066"/>
         <source>black_tea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1066"/>
+        <location filename="../src/params/paramslang.cpp" line="1067"/>
         <source>white_bar_tea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1067"/>
+        <location filename="../src/params/paramslang.cpp" line="1068"/>
         <source>yeloow_green_bar_piece</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1068"/>
+        <location filename="../src/params/paramslang.cpp" line="1069"/>
         <source>red_bar_red_piece</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1071"/>
+        <location filename="../src/params/paramslang.cpp" line="1072"/>
         <source>bigData</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1072"/>
+        <location filename="../src/params/paramslang.cpp" line="1073"/>
         <source>state</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1073"/>
+        <location filename="../src/params/paramslang.cpp" line="1074"/>
         <source>state_info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1074"/>
+        <location filename="../src/params/paramslang.cpp" line="1075"/>
         <source>backgroud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1075"/>
+        <location filename="../src/params/paramslang.cpp" line="1076"/>
         <source>material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1076"/>
+        <location filename="../src/params/paramslang.cpp" line="1077"/>
         <source>backgroud_statistic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1077"/>
+        <location filename="../src/params/paramslang.cpp" line="1078"/>
         <source>identify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1078"/>
+        <location filename="../src/params/paramslang.cpp" line="1079"/>
         <source>identify_statistic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1079"/>
+        <location filename="../src/params/paramslang.cpp" line="1080"/>
         <source>eject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1080"/>
+        <location filename="../src/params/paramslang.cpp" line="1081"/>
         <source>eject_statistic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1081"/>
+        <location filename="../src/params/paramslang.cpp" line="1082"/>
         <source>histogram</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1082"/>
+        <location filename="../src/params/paramslang.cpp" line="1083"/>
         <source>histogram_statistic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1083"/>
+        <location filename="../src/params/paramslang.cpp" line="1084"/>
         <source>configration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1084"/>
+        <location filename="../src/params/paramslang.cpp" line="1085"/>
         <source>cameraReference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1085"/>
+        <location filename="../src/params/paramslang.cpp" line="1086"/>
         <source>cameraLine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1086"/>
+        <location filename="../src/params/paramslang.cpp" line="1087"/>
         <source>cameraList</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1087"/>
+        <location filename="../src/params/paramslang.cpp" line="1088"/>
         <source>time_statistic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1088"/>
+        <location filename="../src/params/paramslang.cpp" line="1089"/>
         <source>material_total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1089"/>
+        <location filename="../src/params/paramslang.cpp" line="1090"/>
         <source>material_bad_total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1092"/>
+        <location filename="../src/params/paramslang.cpp" line="1093"/>
         <source>common</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1093"/>
+        <location filename="../src/params/paramslang.cpp" line="1094"/>
         <source>accurate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1094"/>
+        <location filename="../src/params/paramslang.cpp" line="1095"/>
         <source>eject_width_max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1095"/>
+        <location filename="../src/params/paramslang.cpp" line="1096"/>
         <source>eject_width_min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1096"/>
+        <location filename="../src/params/paramslang.cpp" line="1097"/>
         <source>eject_width_dif</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1097"/>
+        <location filename="../src/params/paramslang.cpp" line="1098"/>
         <source>rounds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1098"/>
+        <location filename="../src/params/paramslang.cpp" line="1099"/>
         <source>tick_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1099"/>
+        <location filename="../src/params/paramslang.cpp" line="1100"/>
         <source>tick_sort_mode_warm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1101"/>
+        <location filename="../src/params/paramslang.cpp" line="1102"/>
         <source>contra_test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1102"/>
+        <location filename="../src/params/paramslang.cpp" line="1103"/>
         <source>bias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1103"/>
+        <location filename="../src/params/paramslang.cpp" line="1104"/>
         <source>correct</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1104"/>
+        <location filename="../src/params/paramslang.cpp" line="1105"/>
         <source>send_bias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1105"/>
+        <location filename="../src/params/paramslang.cpp" line="1106"/>
         <source>msg_accept_data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1106"/>
+        <location filename="../src/params/paramslang.cpp" line="1107"/>
         <source>msg_receiving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1108"/>
+        <location filename="../src/params/paramslang.cpp" line="1109"/>
         <source>pic_customer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6327,7 +6648,7 @@ Before Calibration,Please Do Something As Follows:</translatorcomment>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/qdatabase.cpp" line="76"/>
+        <location filename="../src/qdatabase.cpp" line="86"/>
         <source>Table Create failed</source>
         <translation type="unfinished"></translation>
     </message>

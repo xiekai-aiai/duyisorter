@@ -622,17 +622,17 @@ void StatusInfoPage::CreateGeneralPage()
 
     // AI状态
     const QStringList ROW_LABELS = {
-        "通道",
-        "前视丢包数",
-        "后视丢包数",
-        "前视平均推理耗时(ms)",
-        "后视平均推理耗时(ms)",
-        "前视延迟超时数",
-        "后视延迟超时数"
+        myLan.channel,
+        myLan.ai_front_discard_num,
+        myLan.ai_rear_discard_num,
+        myLan.ai_front_infer_cost,
+        myLan.ai_rear_infer_cost,
+        myLan.ai_front_delay_num,
+        myLan.ai_rear_delay_num
     };
 
 
-    aiInfoGroup = new myGroupBox("AI状态信息");
+    aiInfoGroup = new myGroupBox(myLan.ai_status_info);
     aiGridLayout = new QGridLayout(aiInfoGroup);
     aiGridLayout->setContentsMargins(12, 8, 12, 8);
     aiGridLayout->setHorizontalSpacing(24);
@@ -716,8 +716,7 @@ void StatusInfoPage::CreateGeneralPage()
         statusTabBar->setStyleSheet("QTabBar::tab{""min-height:35;min-width:100;}");
     }
     statusTabBar->addTab(myLan.state);
-    // xktodo 国际化
-    statusTabBar->addTab("AI检测状态");
+    statusTabBar->addTab(myLan.ai_det_status);
 
     LOG_TRACE_STM("myLan.state:" << myLan.state.toStdString() << ",myLan.state_info:" << myLan.state_info.toStdString());
 

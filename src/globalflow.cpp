@@ -759,7 +759,7 @@ void  GlobalFlow::getArithmeticName()
     myString.sArithmeticName[ARITH_MAIZE] = myLan.material_maize_param;
     myString.sArithmeticName[ARITH_RESERVED] = myLan.material_reserved;
     myString.sArithmeticName[ARITH_CANDY] = "糖果算法";
-    myString.sArithmeticName[ARITH_PISTACHIO] = "AI智能算法";
+    myString.sArithmeticName[ARITH_PISTACHIO] = myLan.material_ai_alg;
 
 
     if (struCnfe.nEnableMaizeDoubleView == 1)
@@ -2659,7 +2659,7 @@ void GlobalFlow::resetAiModel()
 
     if (!applyAiModel(model_id))
     {
-        return ;
+        return;
     }
 
     applyAiModelCls(model_id);

@@ -129,20 +129,20 @@ void factorySet::setAiParams()
     imgInferHeightEdit->setReadOnly(true);
     imgInferHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
-    // 图像预览高度配置 xktodo 国际化
-    imgPicHeightLbl = new myLabel("图片高度", setAiWidget);
+    // 图像预览高度配置 
+    imgPicHeightLbl = new myLabel(myLan.ai_pic_view_h, setAiWidget);
     imgPicHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.img_view_height_), setAiWidget);
     imgPicHeightEdit->setReadOnly(true);
     imgPicHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
-    // 视频预览高度配置 xktodo国际化
-    imgVideoHeightLbl = new myLabel("视频高度", setAiWidget);
+    // 视频预览高度配置 
+    imgVideoHeightLbl = new myLabel(myLan.ai_video_view_h, setAiWidget);
     imgVideoHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.video_view_height_), setAiWidget);
     imgVideoHeightEdit->setReadOnly(true);
     imgVideoHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
 
-    // 高精度复选高度配置 xktodo国际化
-    imgSliderHeightLbl = new myLabel("复选高度", setAiWidget);
+    // 高精度复选高度配置
+    imgSliderHeightLbl = new myLabel(myLan.ai_slider_h, setAiWidget);
     imgSliderHeightEdit = new myLineEdit(QString("%1").arg(ai_cfg_info.sliding_step_), setAiWidget);
     imgSliderHeightEdit->setReadOnly(true);
     imgSliderHeightEdit->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
