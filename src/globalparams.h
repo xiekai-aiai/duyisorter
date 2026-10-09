@@ -30,6 +30,8 @@ class MyGlobalString;
 // 模型最大类别数量
 #define MODEL_MAX_CLS_NUM 10
 
+#define ASSIST_BASE_ADDR 32
+
 /* ----------------------------------------------------------*/
 /* 平台配置相关 */
 #define PLATFORM_6410 0

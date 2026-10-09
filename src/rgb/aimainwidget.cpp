@@ -19,7 +19,6 @@
  // #include <opencv2/opencv.hpp>
 #endif
 
-
 /*!
  * \brief AIMainWidget::AIMainWidget
  * \param parent
@@ -251,6 +250,10 @@ void AIMainWidget::createAIMainWidget()
     m_setVBLayout->addStretch(0);
     m_setVBLayout->addWidget(m_AIStudyBtn);
 
+    m_AIParamsSetBtn->hide();
+    m_impurityNameLe->show();
+    m_channelGBox->setFixedHeight(300);
+
     // init buttons of down groupbox
     m_startCapBtn = new myPushButton(myLan.ai_capture, QIcon(), m_AIMainWidget);
     m_delImgBtn = new myPushButton(myLan.ai_delete, QIcon(), m_AIMainWidget);
@@ -391,7 +394,11 @@ void AIMainWidget::createAIArithListWidget()
  */
 void AIMainWidget::initAIMainWidget()
 {
-    m_nLevelToTal = struCnfg.nLevelTotal;
+    LOG_TRACE_STM("struCnfe.nMachine:" << struCnfe.nMachine << ",struCnfg.nLevelTotal:" << struCnfg.nLevelTotal
+        << ", device type:" << struCnfe.nDerivedDevType);
+    //m_nLevelToTal = struCnfg.nLevelTotal;
+    m_nLevelToTal = 2;
+    m_layerBtnAdd->setHidden(true);
     updateLayerStat();
 }
 
@@ -512,6 +519,14 @@ void AIMainWidget::updateLayerStat()
     m_channelGridLayout->removeWidget(m_plusChanNumBtn);
     m_channelGridLayout->removeWidget(m_chanNum);
     m_channelGridLayout->removeWidget(m_minusChanNUmBtn);
+
+    m_chanNum->setMaximumSize(QSize(ICON_WID + 16, ICON_HEI + 16));
+    m_channelGridLayout->addWidget(m_layerBtn, 0, 0, 1, 1);
+    m_channelGridLayout->addWidget(m_chanNum, 0, 1, 1, 1);
+    m_channelGridLayout->addWidget(m_layerBtnAdd, 0, 2, 1, 1);
+    m_channelGridLayout->addWidget(m_minusChanNUmBtn, 1, 0, 1, 1);
+    m_channelGridLayout->addWidget(m_plusChanNumBtn, 1, 1, 1, 1);
+    m_layerBtnAdd->hide();
 
     if (struGsh.nUnit % 2 == 0)
     {
@@ -668,7 +683,15 @@ void AIMainWidget::onLayerBtnPressedSltAdd()
  */
 void AIMainWidget::updateChuteLCDStatMaize()
 {
-    m_chanNum->display(struGsh.nUnit / 2 + 1);
+    LOG_TRACE_STM("struGsh.nUnit:" << struGsh.nUnit);
+    if (struGsh.nUnit < ASSIST_BASE_ADDR)
+    {
+        m_chanNum->display(struGsh.nUnit / 2 + 1);
+    }
+    else
+    {
+        m_chanNum->display((struGsh.nUnit - ASSIST_BASE_ADDR) / 2 + 1);
+    }
 }
 /*!
  * \brief AIMainWidget::onPlusChanNumPressedSltMaize
@@ -681,6 +704,11 @@ void AIMainWidget::onPlusChanNumPressedSltMaize()
     tmp = (struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal + 2) / 4;//后视单排相机数
     plusSpecialNum[0] = (tmp - 1) * 2;                            //前下
     plusSpecialNum[1] = (tmp - 1) * 2 + 1;                         //后下
+    plusSpecialNum[2] = ASSIST_BASE_ADDR + (tmp - 2) * 2;     //前上
+    plusSpecialNum[3] = ASSIST_BASE_ADDR + (tmp - 2) * 2 + 1; //后上
+
+    LOG_TRACE_STM("struGsh.nUnit:" << struGsh.nUnit << ",0:" << plusSpecialNum[0] << ",1:" << plusSpecialNum[1]
+        << ",2:" << plusSpecialNum[2] << ",3:" << plusSpecialNum[3]);
 
     for (int i = 0; i < 2; i++)
     {
@@ -690,6 +718,18 @@ void AIMainWidget::onPlusChanNumPressedSltMaize()
             break;
         }
     }
+
+    for (int i = 2; i < 4; i++)
+    {
+        if (struGsh.nUnit == plusSpecialNum[i])
+        {
+            struGsh.nUnit -= ASSIST_BASE_ADDR;
+            isSpecialNum = 0;
+            break;
+        }
+    }
+
+    LOG_TRACE_STM("struGsh.nUnit:" << struGsh.nUnit << ",isSpecialNum: " << isSpecialNum);
 
     if (isSpecialNum == 0)
     {
@@ -732,8 +772,10 @@ void AIMainWidget::onMinusChanNumPressedSltMaize()
     int minuSpecialNum[4] = { 0 };//4排相机的起始序号
     minuSpecialNum[0] = 0; //前下
     minuSpecialNum[1] = 1; //后下
+    minuSpecialNum[2] = ASSIST_BASE_ADDR;//前上
+    minuSpecialNum[3] = ASSIST_BASE_ADDR + 1;//后上
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 4; i++)
     {
         if (struGsh.nUnit == minuSpecialNum[i])
         {
@@ -1058,42 +1100,6 @@ void AIMainWidget::getAllUnitsAddrForOneChuteForTwoViewPerLayer(QList <int>& qln
 }
 
 /*!
- * \brief AIMainWidget::getAllUnitsAddrForOneChuteForFourViewPerLayer
- * \see getAllUnitsAddrForOneChute();
- */
-void AIMainWidget::getAllUnitsAddrForOneChuteForFourViewPerLayer(QList <int>& qlnUnit, int nUnitElem)
-{
-    if ((nUnitElem & 0x01) == 0x01)
-    {   //奇数地址
-        qlnUnit << nUnitElem - 1;
-        qlnUnit << nUnitElem;
-    }
-    else
-    {                            //偶数地址
-        qlnUnit << nUnitElem;
-        qlnUnit << nUnitElem + 1;
-    }
-}
-
-/*!
- * \brief AIMainWidget::getAllUnitsForOneChute
- * \see setCaptureAttr();
- */
-void AIMainWidget::getAllUnitsAddrForOneChuteForFourViewForRSC(QList<int>& qlnUnit, int nUnitElem)
-{
-    if ((nUnitElem & 0x01) == 0x01)
-    {   //奇数地址
-        qlnUnit << nUnitElem - 1;//前视主配
-        qlnUnit << nUnitElem;//后视主配
-    }
-    else
-    {                            //偶数地址
-        qlnUnit << nUnitElem;
-        qlnUnit << nUnitElem + 1;
-    }
-}
-
-/*!
  * \brief AIMainWidget::getAllUnitsForOneChute
  * \see setCaptureAttr();
  */
@@ -1108,14 +1114,29 @@ void AIMainWidget::getAllUnitsAddrForOneChute(QList <int>& qlnUnit, int nUnitEle
  */
 int AIMainWidget::getUnitViewNum(int nUnit)
 {
+    LOG_TRACE_STM("nUnit:" << nUnit);
     int viewNum = VIEW_ZERO;
-    if ((nUnit & 0x01) == 0x01)
+    if (nUnit < ASSIST_BASE_ADDR)
     {
-        viewNum = VIEW_ONE;
+        if ((nUnit & 0x01) == 0x01)
+        {
+            viewNum = VIEW_ONE;
+        }
+        else
+        {
+            viewNum = VIEW_ZERO;
+        }
     }
     else
     {
-        viewNum = VIEW_ZERO;
+        if ((nUnit & 0x01) == 0x01)
+        {
+            viewNum = VIEW_THREE;
+        }
+        else
+        {
+            viewNum = VIEW_TWO;
+        }
     }
     return viewNum;
 }
@@ -1336,7 +1357,7 @@ void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
     foreach(CaptureConfig tmp, qlCaptureConfig)
     {
 
-        // todo 发送upd抓拍图片指令
+        // xktodo 发送upd抓拍图片指令
         myFlow.msleep(50);
 
         if (tmp.result == ERR_USB_INIT)
