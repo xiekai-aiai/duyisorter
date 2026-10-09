@@ -111,7 +111,7 @@ void factorySet::setAiParams()
 
     AiCfgInfo ai_cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
 
-    aiEnbaleChx = new myCustomCheckBox(myLan.enable + "AI", ai_cfg_info.enable_ai_);
+    aiEnbaleChx = new myCustomCheckBox(myLan.enable + "AI", struCnfp.enableAi);
     setAiSureBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);
     setAiSureBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     setAiBackbtn = new myPushButton(myLan.back, myIcon.Action_Back);
@@ -212,7 +212,7 @@ void factorySet::setAiParams()
 void factorySet::onSetAiSureBtnClicked()
 {
     AiCfgInfo cfg_info;
-    cfg_info.enable_ai_ = aiEnbaleChx->getChecked();
+    struCnfp.enableAi = aiEnbaleChx->getChecked();
     cfg_info.collect_height_ = imgFetchHeightEdit->text().toShort();
     cfg_info.infer_height_ = imgInferHeightEdit->text().toShort();
     cfg_info.img_view_height_ = imgPicHeightEdit->text().toShort();
@@ -231,6 +231,7 @@ void factorySet::onSetAiBackBtnClicked()
 void factorySet::onAiEnbaleChxBtnClicked()
 {
     LOG_INFO_STM("ai enable:" << aiEnbaleChx->getChecked());
+    struCnfp.enableAi = aiEnbaleChx->getChecked();
 }
 
 void factorySet::onImgFetchHeightEditPressedSlt()
@@ -1485,7 +1486,7 @@ void factorySet::onAiSetBtnPressedSlt()
 
     AiCfgInfo ai_cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
 
-    aiEnbaleChx->setChecked(ai_cfg_info.enable_ai_);
+    aiEnbaleChx->setChecked(struCnfp.enableAi);
     imgFetchHeightEdit->setText(QString("%1").arg(ai_cfg_info.collect_height_));
     imgInferHeightEdit->setText(QString("%1").arg(ai_cfg_info.infer_height_));
     imgPicHeightEdit->setText(QString("%1").arg(ai_cfg_info.img_view_height_));

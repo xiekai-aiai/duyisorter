@@ -2301,7 +2301,7 @@ void GlobalFlow::materialAiModelParaSet(int nLevelId, int nGroupId)
         << ", model Id:" << QString::fromUtf8(struCnfp.struGroupIdentify[nLevelId][nGroupId].struAi.modelId).toStdString()
         << ", count:" << struCnfg.struLevelInfo[nLevelId].struIdentifyGroupInfo[nGroupId].nUnitCount);
 
-    
+
     // xknote: 每次阈值调整，调用次数太多，可能是根据不同次进行配置，暂时不在这里设置
 }
 
@@ -2762,10 +2762,6 @@ void GlobalFlow::materialParamsCopy(int nLevelIdSrc, int nGroupIdSrc, int nLevel
                 memcpy(struCnfp.struGroupIdentify[l2][k2].struAi.modelId, struCnfp.struGroupIdentify[l1][k1].struAi.modelId,
                     sizeof(struCnfp.struGroupIdentify[l1][k1].struAi.modelId));
                 materialAiModelParaCopy(l2, k2, l1, k1);
-                //               struCnfp.struGroupIdentify[l2][k2].struPistachio.nAreaMin = struCnfp.struGroupIdentify[l1][k1].struPistachio.nAreaMin;
-                //               struCnfp.struGroupIdentify[l2][k2].struPistachio.nGrayThreshold_1 = struCnfp.struGroupIdentify[l1][k1].struPistachio.nGrayThreshold_1;
-                //               struCnfp.struGroupIdentify[l2][k2].struPistachio.nGrayThreshold_2 = struCnfp.struGroupIdentify[l1][k1].struPistachio.nGrayThreshold_2;
-                //               struCnfp.struGroupIdentify[l2][k2].struPistachio.nGrayThreshold_3 = struCnfp.struGroupIdentify[l1][k1].struPistachio.nGrayThreshold_3;
                 break;
             default:
                 break;
@@ -2776,49 +2772,8 @@ void GlobalFlow::materialParamsCopy(int nLevelIdSrc, int nGroupIdSrc, int nLevel
 
 void GlobalFlow::materialAiModelParaCopy(int nLevelId, int nGroupId, int nOldLevelId, int nOldGroupId)
 {
-    int k2 = nLevelId;
-    int l2 = nGroupId;
-    int k1 = nOldLevelId;
-    int l1 = nOldGroupId;
-    QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[l2][k2].struAi.modelId);
-    QString threshold, isApply, id;
-    QSqlQuery query;
-    query.prepare("SELECT modelId, id, zhName, enName, threshold, isApply, chgTime FROM modelParaInfo  "
-        "where modelId = ?  and levelTotal = ? and identifyGroupTotal = ? order by id asc");
-
-    query.bindValue(0, modelId);
-    query.bindValue(1, l1);
-    query.bindValue(2, k1);
-    int modeParaCount = 0;
-
-    if (!query.exec())
-    {
-        qDebug() << "查询失败：" << query.lastError();
-    }
-    else
-    {
-        while (query.next())
-        {
-            id = query.value(1).toString();
-            threshold = query.value(4).toString();
-            isApply = query.value(5).toString();
-            modeParaCount++;
-
-            QSqlQuery sql_update;
-            sql_update.prepare("update  modelParaInfo  set threshold = ? , isApply = ? WHERE modelId = ? and id =? and levelTotal = ? and identifyGroupTotal = ? ");
-            sql_update.bindValue(2, modelId);
-            sql_update.bindValue(4, l2);
-            sql_update.bindValue(5, k2);
-
-            sql_update.bindValue(0, threshold);
-            sql_update.bindValue(1, isApply);
-            sql_update.bindValue(3, id);
-            if (!sql_update.exec())
-            {
-                qDebug() << "update modelParaInfo 失败" << sql_update.lastError();;
-            }
-        }
-    }
+    LOG_TRACE_STM("copy ai nLevelId:" << nLevelId << ",nGroupId:" << nGroupId << ", nOldLevelId:" << nOldLevelId << ",nOldGroupId:" << nOldGroupId);
+    // xknote: 现在不复制
 }
 
 /***************************************************************************************************

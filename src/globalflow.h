@@ -35,19 +35,9 @@
 #include "common/myusb/myusb.h"
 #endif
 
-struct MODEL_PARA_INFO
-{
-    QString id;             // id
-    int levelTotal;
-    int unit;
-    QString name;       // name
-    QString threshold;      // threshold
-    QString isApply;       // isApply
-};
-
-/*!
- * \brief 全局流程类
- */
+ /*!
+  * \brief 全局流程类
+  */
 class GlobalFlow : public QObject           // 必须从QObject继承，否则不能用tr("")方式显示文字
 {
     Q_OBJECT
@@ -251,6 +241,7 @@ public:
     void setTsBackLight(int flag);      // 设置触摸屏背光
     void sendTsBackLightOn();           // 背光控制
     void resetLamp();                   // 重置灯光设置
+    void resetAiModel();                // 重置AI模型参数
     void updateLampTotal(void);         //! 更新灯控总数
     void updateLightSrcLampNum(void);   //! 更新每隔恒流源板灯控数量
 
@@ -278,12 +269,14 @@ public:
     void checkSlaveCommStat(void);      //! 检查网络通信状态
     void getSlaveList(void);            //! 获取从设备列表
 
+    bool applyAiModel(const QString& model_id);                // 应用AI模型
+    bool applyAiModelCls(const QString& model_id);             // 应用AI模型分类阈值
+
 signals:
     void backlightOnSig();   // 关背光后，点亮背光需要输入密码
 
 private:
     qint64 turnOnTime;      // 开机时刻
-    MODEL_PARA_INFO   modeParaStr[10];
 };
 
 extern GlobalFlow myFlow;

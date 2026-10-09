@@ -27,6 +27,8 @@ class MyGlobalString;
 
 #define MAX_UART	3
 #define MAX_NAME	128
+// 模型最大类别数量
+#define MODEL_MAX_CLS_NUM 10
 
 /* ----------------------------------------------------------*/
 /* 平台配置相关 */
@@ -123,7 +125,6 @@ enum
 #define DOWN_LEVEL              22      // 下层
 
 #define ONE_LEVEL               0       // 通道式色选机层序号，如CF、LD2、RS、RC-C等机型的层序号都为0
-#define MAX_PARA                10      // 最大参数个数
 
 /*!
  * \brief 识别组名称索引
@@ -851,19 +852,27 @@ typedef struct stru_pistachio
     int nGrayThreshold_3;      // 灰度阈值3
 }stu_pistachio;
 
+/**
+* AI模型类别参数配置
+*/
+typedef struct stru_ai_cls_para
+{
+    quint8 cls_id_;                              // 类别id
+    quint8 threshold_;                           // 类别阈值
+    bool is_apply_;                              // 是否应用
+    quint8 area_model_;                          // 面积模型(0: 不开启 1: 选大 2: 选小)
+    quint16 area_threshold_;                     // 面积阈值
+}stu_ai_cls_para;
+
+/**
+ * AI模型信息
+ */
 typedef struct stru_ai
 {
-    char modelId[MAX_NAME];            // model id
-    //    stu_aipara struAiPara[MAX_PARA]; // model para
-}stu_ai;
+    char modelId[MAX_NAME];                               // AI模型ID
+    stu_ai_cls_para struAiClsPara[MODEL_MAX_CLS_NUM];     // AI模型类别参数
+} stu_ai;
 
-
-typedef struct stru_aipara
-{
-    int id;                       // model para id
-    char materialName[MAX_NAME];  // model para name
-    int threshold;                // model para threshold
-}stu_aipara;
 
 /* **********************************************************************************
  *                          参数文件保存状态
@@ -1316,6 +1325,8 @@ struct struCnfProfile
     int nCameraRef;                   // 参考相机的全局编号
 
     int nArithEdgeCut[MAX_UNIT][ARITHMETIC_TOTAL]; // 算法边缘切除圈数
+
+    bool enableAi;                    // 是否使能AI
 };
 
 

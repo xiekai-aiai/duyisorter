@@ -716,7 +716,7 @@ void StatusInfoPage::CreateGeneralPage()
         statusTabBar->setStyleSheet("QTabBar::tab{""min-height:35;min-width:100;}");
     }
     statusTabBar->addTab(myLan.state);
-    // xktodo
+    // xktodo 国际化
     statusTabBar->addTab("AI检测状态");
 
     LOG_TRACE_STM("myLan.state:" << myLan.state.toStdString() << ",myLan.state_info:" << myLan.state_info.toStdString());
@@ -2932,7 +2932,7 @@ void StatusInfoPage::versionUpdateCameraCF()
         str += myLan.rear_view.leftJustified(WIDTH_MAX_IDX, QChar(' '));
     }
 
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (struCnfp.enableAi)
     {
         QString tmp1 = "AI" + myLan.front_view;
         str += tmp1.leftJustified(WIDTH_MAX_IDX, QChar(' '));
@@ -3030,7 +3030,7 @@ void StatusInfoPage::versionUpdateCameraCF()
             strChuteVerTmp[3] = QString("").leftJustified(WIDTH_MAX_IDX, QChar(' '));
         }
 
-        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+        if (struCnfp.enableAi)
         {
             int ai_idx = i * 2;
             LOG_INFO_STM("i:" << ai_idx << ", ai version:" << struGsh.aiResult[ai_idx].toStdString()
@@ -3384,13 +3384,13 @@ void StatusInfoPage::createPageWifiWidget()
     connect(ycprocess, SIGNAL(readyReadStandardError()), this, SLOT(result()));
     // wifi.sh 跑完后（无论成功失败）启动 DHCP IP 轮询
     connect(ycprocess, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(onWifiProcessFinished(int, QProcess::ExitStatus)));
+        this, SLOT(onWifiProcessFinished(int, QProcess::ExitStatus)));
 
     // 扫描专用 QProcess：iwlist scan 耗时数秒，必须异步，
     // 且不能复用 ycprocess（连接流程正在用它）
     m_wifiScanProcess = new QProcess(this);
     connect(m_wifiScanProcess, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(onWifiScanFinished(int, QProcess::ExitStatus)));
+        this, SLOT(onWifiScanFinished(int, QProcess::ExitStatus)));
 
     // wifi IP 轮询定时器：3 秒一次，最多 60 次
     m_wifiIpPollTimer = new QTimer(this);
@@ -3454,7 +3454,7 @@ void StatusInfoPage::createPageWifiWidget()
 
     // 用户在 ssidComboBox 里切换选中的 SSID → 自动填密码框（known 里存过的）
     connect(ssidComboBox, SIGNAL(currentTextChanged(QString)),
-            this, SLOT(onSsidComboTextChanged(QString)));
+        this, SLOT(onSsidComboTextChanged(QString)));
 
     // 预填：wifi.cnf [known] 的历史 SSID → 下拉框；[last] 的 SSID → 选中 + 自动填密码
     reloadSsidCombo();
@@ -3481,7 +3481,8 @@ void StatusInfoPage::onWifiScanBtnPressed()
 {
     // 原来用 system() 同步跑 iwlist（要数秒）会把 UI 卡死；
     // 改为独立 QProcess 异步执行，结果在 onWifiScanFinished 里解析填充
-    if (m_wifiScanProcess->state() != QProcess::NotRunning) {
+    if (m_wifiScanProcess->state() != QProcess::NotRunning)
+    {
         connectResultEdit->append("[SCAN] scanning in progress, please wait...");
         return;
     }
@@ -3496,7 +3497,8 @@ void StatusInfoPage::onWifiScanFinished(int exitCode, QProcess::ExitStatus /*exi
     QString out = QString::fromLocal8Bit(m_wifiScanProcess->readAllStandardOutput());
     QString cur = ssidComboBox->currentText();
     int added = 0;
-    foreach (const QString& raw, out.split('\n')) {
+    foreach(const QString & raw, out.split('\n'))
+    {
         QString ssid = raw.trimmed();
         if (ssid.isEmpty()) continue;
         ssid = convertHexInString(ssid);    // 中文 SSID 在 iwlist 输出里是 \xNN 转义
@@ -3508,13 +3510,14 @@ void StatusInfoPage::onWifiScanFinished(int exitCode, QProcess::ExitStatus /*exi
     // 空列表添加第一项时 Qt 会自动选中它并触发 currentTextChanged；
     // 若原来已有选中项，这里兜底恢复，避免被扫描结果顶掉
     int idx = cur.isEmpty() ? -1 : ssidComboBox->findText(cur);
-    if (idx >= 0 && idx != ssidComboBox->currentIndex()) {
+    if (idx >= 0 && idx != ssidComboBox->currentIndex())
+    {
         ssidComboBox->blockSignals(true);
         ssidComboBox->setCurrentIndex(idx);
         ssidComboBox->blockSignals(false);
     }
     connectResultEdit->append(QString("[SCAN] done (exit=%1), %2 new SSID(s)")
-                              .arg(exitCode).arg(added));
+        .arg(exitCode).arg(added));
 }
 
 // 将十六进制字符串转换为字节
@@ -3583,14 +3586,15 @@ void StatusInfoPage::onWifiConnectBtnPressed()
         QString password = passWordLineEdit->text();
 
         // 自动连接还在跑时 ycprocess->start() 会静默失败，先把旧的停掉
-        if (ycprocess->state() != QProcess::NotRunning) {
+        if (ycprocess->state() != QProcess::NotRunning)
+        {
             ycprocess->kill();
             ycprocess->waitForFinished(2000);
         }
         // 直接用参数数组启动，不经过字符串拆分和引号解析：
         // 字符串形式（尤其带单引号）会把引号当字面参数传给 wifi.sh → 连接失败
         ycprocess->start("./wifi.sh", QStringList() << "-i" << "wlan0"
-                         << "-s" << ssid << "-p" << password);
+            << "-s" << ssid << "-p" << password);
         wifiDisconnectBtn->setEnabled(true);
 
         // 先存内存，等真正拿到 IP 再覆盖写 wifi.cnf
@@ -3630,7 +3634,8 @@ void StatusInfoPage::onWifiDisonnectBtnPressed()
 void StatusInfoPage::onWifiProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     qDebug() << "wifi.sh exitCode =" << exitCode;
-    if (exitStatus == QProcess::CrashExit) {
+    if (exitStatus == QProcess::CrashExit)
+    {
         // 被 kill（例如用户点 Connect 强制重启 wifi.sh）→ 不算连接失败，不报错不重试
         m_wifiConnecting = false;
         m_pendingSsid.clear();
@@ -3638,12 +3643,15 @@ void StatusInfoPage::onWifiProcessFinished(int exitCode, QProcess::ExitStatus ex
         qDebug() << "[wifi] wifi.sh killed, ignore";
         return;
     }
-    if (exitCode == 0) {
+    if (exitCode == 0)
+    {
         connectResultEdit->append("[OK] wifi.sh done, starting IP polling...");
         startWifiIpPoll();
         // 一次成功 → 重置自动连接重试计数
         m_wifiAutoRetryCount = 0;
-    } else {
+    }
+    else
+    {
         connectResultEdit->append("[FAIL] wifi.sh returned non-zero, connect failed");
         wifiDisconnectBtn->setEnabled(false);
         // 连接失败 → 放弃挂起的 cnf 写入（密码错了 / ssid 错了都不会被存进去）
@@ -3652,9 +3660,10 @@ void StatusInfoPage::onWifiProcessFinished(int exitCode, QProcess::ExitStatus ex
         m_pendingPassword.clear();
 
         // 自动连接触发的失败 → 1 秒后重试（最多 3 次）
-        if (m_wifiAutoRetryCount > 0 && m_wifiAutoRetryCount < 3) {
+        if (m_wifiAutoRetryCount > 0 && m_wifiAutoRetryCount < 3)
+        {
             qDebug() << "[wifi autoconfig] will retry in 1s ("
-                     << m_wifiAutoRetryCount << "/3)";
+                << m_wifiAutoRetryCount << "/3)";
             QTimer::singleShot(1000, this, SLOT(autoConnectWifi()));
         }
     }
@@ -3671,37 +3680,46 @@ void StatusInfoPage::onWifiIpPollTimeout()
     QString curIp = getVpnIpAddress();
     m_wifiPollCountdown--;
 
-    if (!curIp.isEmpty() && curIp != m_lastWifiIp) {
+    if (!curIp.isEmpty() && curIp != m_lastWifiIp)
+    {
         wifiAddrLineEdit->setText(curIp);
         m_lastWifiIp = curIp;
         qDebug() << "[wifi poll] got IP =" << curIp
-                 << "（剩余" << m_wifiPollCountdown << "次）";
+            << "（剩余" << m_wifiPollCountdown << "次）";
 
         // 第一次拿到 IP → 才算真正连接成功，覆盖写 wifi.cnf
-        if (m_wifiConnecting) {
+        if (m_wifiConnecting)
+        {
             markWifiConnectedSuccess();
         }
-    } else if (!curIp.isEmpty()) {
+    }
+    else if (!curIp.isEmpty())
+    {
         // IP 稳定，不用再刷
-    } else {
+    }
+    else
+    {
         qDebug() << "[wifi poll] no IP yet, remain"
-                 << m_wifiPollCountdown << "times";
+            << m_wifiPollCountdown << "times";
     }
 
-    if (m_wifiPollCountdown <= 0) {
+    if (m_wifiPollCountdown <= 0)
+    {
         stopWifiIpPoll();
         // 只有真实连接流程（手动/自动）超时才提示；进页面刷新显示的短轮询
         // 查不到 IP 是正常情况（本来就没连），不要误报 DHCP 失败
-        if (curIp.isEmpty() && m_wifiConnecting) {
+        if (curIp.isEmpty() && m_wifiConnecting)
+        {
             connectResultEdit->append("[TIMEOUT] no IP obtained, DHCP may have a problem");
             m_wifiConnecting = false;
             m_pendingSsid.clear();
             m_pendingPassword.clear();
 
             // 自动连接触发的 IP 超时 → 1 秒后重试（最多 3 次）
-            if (m_wifiAutoRetryCount > 0 && m_wifiAutoRetryCount < 3) {
+            if (m_wifiAutoRetryCount > 0 && m_wifiAutoRetryCount < 3)
+            {
                 qDebug() << "[wifi autoconfig] IP timeout, retry in 1s ("
-                         << m_wifiAutoRetryCount << "/3)";
+                    << m_wifiAutoRetryCount << "/3)";
                 QTimer::singleShot(1000, this, SLOT(autoConnectWifi()));
             }
         }
@@ -3744,7 +3762,8 @@ void StatusInfoPage::stopWifiIpPoll()
 // ════════════════════════════════════════════════════════════
 void StatusInfoPage::buildWifiCnfPath()
 {
-    if (m_wifiCnfPath.isEmpty()) {
+    if (m_wifiCnfPath.isEmpty())
+    {
         QDir dir(QCoreApplication::applicationDirPath() + "/cnf");
         if (!dir.exists()) dir.mkpath(".");
         m_wifiCnfPath = dir.filePath("wifi.cnf");
@@ -3820,7 +3839,8 @@ void StatusInfoPage::reloadSsidCombo()
     QString cur = ssidComboBox->currentText();
 
     ssidComboBox->blockSignals(true);   // 批量填充期间不触发"自动填密码"
-    foreach (const QString& ssid, knownList) {
+    foreach(const QString & ssid, knownList)
+    {
         if (!ssid.isEmpty() && ssidComboBox->findText(ssid) < 0)
             ssidComboBox->addItem(ssid);
     }
@@ -3835,9 +3855,11 @@ void StatusInfoPage::reloadSsidCombo()
 
     // 同步选中项的密码到密码框 + struGsh（进页面/点 Connect 直接可用）
     QString sel = ssidComboBox->currentText();
-    if (!sel.isEmpty()) {
+    if (!sel.isEmpty())
+    {
         QString pwd = lookupKnownPassword(sel);
-        if (!pwd.isEmpty()) {
+        if (!pwd.isEmpty())
+        {
             passWordLineEdit->setText(pwd);
             struGsh.wifiPassWord = pwd;
         }
@@ -3850,12 +3872,14 @@ void StatusInfoPage::onSsidComboTextChanged(const QString& ssid)
 {
     if (ssid.isEmpty()) return;
     QString pwd = lookupKnownPassword(ssid);
-    if (!pwd.isEmpty()) {
-        if (passWordLineEdit->text() != pwd) {
+    if (!pwd.isEmpty())
+    {
+        if (passWordLineEdit->text() != pwd)
+        {
             passWordLineEdit->setText(pwd);
         }
         qDebug() << "onSsidComboTextChanged:" << ssid
-                 << "(known password filled)";
+            << "(known password filled)";
     }
 }
 
@@ -3873,16 +3897,19 @@ void StatusInfoPage::autoConnectWifi()
 #if defined(__aarch64__)
     QString ssid, password;
     // 只自动连最近一次成功的（[last] 组），不遍历 known 里所有历史
-    if (!readLastSuccess(ssid, password)) {
+    if (!readLastSuccess(ssid, password))
+    {
         qDebug() << "[wifi autoconfig] no last.success in wifi.cnf, skip";
         return;
     }
-    if (isWifiAlreadyConnected()) {
+    if (isWifiAlreadyConnected())
+    {
         qDebug() << "[wifi autoconfig] wlan0 already has IP, skip";
         return;
     }
     // 最多 3 次，每次间隔 1 秒
-    if (m_wifiAutoRetryCount >= 3) {
+    if (m_wifiAutoRetryCount >= 3)
+    {
         qDebug() << "[wifi autoconfig] retry exceeded (3), give up";
         m_wifiAutoRetryCount = 0;   // 清零，下次启动再来
         return;
@@ -3890,7 +3917,7 @@ void StatusInfoPage::autoConnectWifi()
     QStringList args;
     args << "-i" << "wlan0" << "-s" << ssid << "-p" << password;
     qDebug() << "[wifi autoconfig] try" << (m_wifiAutoRetryCount + 1) << "/3:"
-             << "./wifi.sh" << args;
+        << "./wifi.sh" << args;
     m_wifiConnecting = true;
     m_pendingSsid = ssid;
     m_pendingPassword = password;
@@ -4033,7 +4060,8 @@ QString StatusInfoPage::getVpnIpAddress()
     process.start("sh", QStringList() << "-c" << "ip addr show wlan0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1");
     // ⚠️ 默认 waitForFinished 超时 30 秒，网卡驱动没 ready 时会把 UI 主线程卡死
     //    查 IP 正常只需几百毫秒，给 3 秒余量足够
-    if (!process.waitForFinished(3000)) {
+    if (!process.waitForFinished(3000))
+    {
         qDebug() << "getVpnIpAddress: timeout (3s), wlan0 may not be ready";
         process.kill();
         return "";

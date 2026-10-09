@@ -1578,7 +1578,7 @@ void setColorCamera::calDivChannelParams(int beginCh, int endCh)
             struCnfc.struLevelCamera[struGsh.nLevel].nChannelEjectorEnd[struGsh.nUnit][i] % 256, 3);
     }
 
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (struCnfp.enableAi)
     {
         LOG_INFO_STM("Set pix info, cam no:" << struGsh.nUnit << ", begin pix :" << struCnfc.struLevelCamera[struGsh.nLevel].nChannelBegin[struGsh.nUnit]
             << ", end pix:" << struCnfc.struLevelCamera[struGsh.nLevel].nChannelEnd[struGsh.nUnit]);
@@ -3901,7 +3901,7 @@ void setColorCamera::onDivChannelListResetBtnClicked(int type)
                     struCnfc.struLevelCamera[i].nChannelEjectorEnd[nUnitAddr][k] / 256,
                     struCnfc.struLevelCamera[i].nChannelEjectorEnd[nUnitAddr][k] % 256, 3);
             }
-            if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+            if (struCnfp.enableAi)
             {
                 LOG_INFO_STM("Set pix info, cam no:" << nUnitAddr << ", begin pix :" << struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr]
                     << ", end pix:" << struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr]);
@@ -3969,7 +3969,7 @@ void setColorCamera::onDivChannelListResetBtnClicked2(int type)
                     struCnfc.struLevelCamera[i].nChannelEjectorEnd[nUnitAddr][k] / 256,
                     struCnfc.struLevelCamera[i].nChannelEjectorEnd[nUnitAddr][k] % 256, 3);
             }
-            if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+            if (struCnfp.enableAi)
             {
                 LOG_INFO_STM("Set pix info, cam no:" << nUnitAddr << ", begin pix :" << struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr]
                     << ", end pix:" << struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr]);

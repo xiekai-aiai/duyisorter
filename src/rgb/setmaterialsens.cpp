@@ -197,6 +197,7 @@ void setMaterialSens::updateModeParaInfo()
 {
     int levelTotal = struGsh.nLevel;
     int identifyGroupTotal = currentChan;
+    // 获取当前方案对应的模型ID
     QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.modelId);
     LOG_INFO_STM("current level:" << levelTotal << ",identify total:" << identifyGroupTotal << ", modelId:" << modelId.toStdString());
 
@@ -225,6 +226,16 @@ void setMaterialSens::updateModeParaInfo()
     {
         LOG_ERROR_STM("model id:" << modelId.toStdString() << " cls num:" << cls_vec.size() << " > " << MODEL_MAX_CLS_NUM);
         return;
+    }
+
+    // 使用方案保存里的参数覆盖数据库里的参数
+    for (int idx = 0; idx < cls_vec.size(); idx++)
+    {
+        ModelClsParam& item = cls_vec[idx];
+        item.is_apply_ = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[idx].is_apply_;
+        item.threshold_ = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[idx].threshold_;
+        item.area_model_ = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[idx].area_model_;
+        item.area_threshold_ = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[idx].area_threshold_;
     }
 
     std::sort(cls_vec.begin(), cls_vec.end(),
@@ -277,12 +288,9 @@ void setMaterialSens::setModeParaInfo()
         << modelId.toStdString() << ", modeParaCount:" << modeParaCount);
 
     // 应用模型参数
-    QVector<ModelClsParam> cls_vec;
     QVector<ModelParam> param_vec;
     for (int i = 0; i < modeParaCount; i++)
     {
-        cls_vec.append(modeParaArr[i]);
-
         if (modeParaArr[i].is_apply_)
         {
             ModelParam item;
@@ -337,10 +345,17 @@ void setMaterialSens::setModeParaInfo()
         return;
     }
 
-    if (!SQLiteMgr::Instance().UpdateModelClsParam(cls_vec))
+    // 将当前设置的模型分类参数保存到方案中
+    for (int i = 0; i < modeParaCount; ++i)
     {
-        QMessageBox::warning(this, "应用警告", "模型阈值配置失败！");
-        return;
+        LOG_TRACE_STM("level:" << struGsh.nLevel << ", currentChan:" << currentChan << ",modelId:" << modelId.toStdString() << ", cls id:" << (int)modeParaArr[i].cls_id_ << ", threshold:" << (int)modeParaArr[i].threshold_
+            << ", is_apply:" << (int)modeParaArr[i].is_apply_ << ", area_model:" << (int)modeParaArr[i].area_model_
+            << ", area_threshold:" << (int)modeParaArr[i].area_threshold_);
+        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[i].cls_id_ = modeParaArr[i].cls_id_;
+        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[i].threshold_ = modeParaArr[i].threshold_;
+        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[i].is_apply_ = modeParaArr[i].is_apply_;
+        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[i].area_model_ = modeParaArr[i].area_model_;
+        struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.struAiClsPara[i].area_threshold_ = modeParaArr[i].area_threshold_;
     }
 
     myFlow.materialCopyAssemble(struGsh.nLevel, currentChan, 0, ARITH_PISTACHIO, 0);
@@ -1170,10 +1185,10 @@ void setMaterialSens::getGeneralIndex(int index)
         int rowColMax;
         if (index / generalSensNum == ARITH_CROSS)
             rowColMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nRow
-                      * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn;
+            * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCross.nColumn;
         else
             rowColMax = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nRow
-                      * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn;
+            * struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struGreyColor[index / generalSensNum].nColumn;
         myInputPanel inputDlg3(intType, 1, rowColMax, nPercent[index / generalSensNum]);
         ret = inputDlg3.exec();
         if (ret == QDialog::Accepted)

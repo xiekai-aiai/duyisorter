@@ -146,10 +146,10 @@ bool PageAi::setIntelParams()
     /* write params to memory */
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {
-        int step = struCnfg.struLevelInfo[i].nIdentifyGroupTotal;
-        for (int j = 0; j < step; j++)
+        for (int j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++)
         {
-            struCnfp.struGroupIdentify[i][j] = m_struGroupIdentify[i * step + j];
+            const char* charArray = model_id.toUtf8().constData();
+            strcpy(struCnfp.struGroupIdentify[i][j].struAi.modelId, charArray);
         }
     }
 
@@ -157,23 +157,13 @@ bool PageAi::setIntelParams()
     myFlow.materialResetGroupAssemble(struGsh.nLevel, tabBar->currentIndex(), 0, ARITH_PISTACHIO, 0);
 
     LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
-        << ", model id:" << model_id.toStdString() << " apply model successful!");
+        << ", model id:" << model_id.toStdString() << " apply model successful! tabBar currentIndex:" << tabBar->currentIndex());
     return true;
 }
 
 /* 重置当前智能参数固化页面设置 */
 void PageAi::resetIntelParams()
 {
-    /* reset params */
-    for (int i = 0; i < struCnfg.nLevelTotal; i++)
-    {
-        int step = struCnfg.struLevelInfo[i].nIdentifyGroupTotal;
-        for (int j = 0; j < step; j++)
-        {
-            m_struGroupIdentify[i * step + j] = struCnfp.struGroupIdentify[i][j];
-        }
-    }
-
     /* reset page */
     emit pageUpdated();
 }
@@ -230,8 +220,6 @@ void PageAi::onCurrentRowChanged(int index)
 
     QString model_name = modelListWidget->currentItem()->text();
     QString model_id = modelListWidget->currentItem()->data(Qt::UserRole).toString();
-    const char* charArray = model_id.toUtf8().constData();
-    strcpy(m_struGroupIdentify[tabIndex].struAi.modelId, charArray);
     LOG_INFO_STM("current model name:" << model_name.toStdString() << ", model id:" << model_id.toStdString());
 
 }
@@ -266,7 +254,7 @@ void PageAi::updateListWidget()
         modelListWidget->addItem(modelListItem);
         modelListWidget->setSpacing(1);
 
-        if (item.is_apply_)
+        if (item.model_id_ == QString::fromUtf8(struCnfp.struGroupIdentify[0][0].struAi.modelId))
         {
             modelListWidget->setCurrentRow(idx);
         }

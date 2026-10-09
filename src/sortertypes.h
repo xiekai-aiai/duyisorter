@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-28 15:52:14
+ * @LastEditTime: 2026-10-08 16:20:14
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -13,7 +13,7 @@
 #include <QVector>
 #include "globalparams.h"
 
-// 最大接收缓冲区(4M)
+ // 最大接收缓冲区(4M)
 #define MAX_SOCKET_RCV_BUFFER 33554432
 
 // 本地发送udp命令端口
@@ -52,8 +52,6 @@
 // 下载设备数量
 #define AI_SFTP_DEV_NUM 2
 
-// 模型最大类别数量
-#define MODEL_MAX_CLS_NUM 10
 
  // A类包包头和包尾
 #define PKGA_HEAD0 0xA5
@@ -280,7 +278,6 @@ typedef struct __valve_mode_param_
 
 typedef struct __ai_cfg_info_
 {
-    bool enable_ai_{ false };                 // 使能ai
     quint16 infer_height_{ 0 };               // 推理图像高度
     quint16 collect_height_{ 0 };             // 采集图像高度
     quint16 img_view_height_{ 0 };            // 图像显示高度

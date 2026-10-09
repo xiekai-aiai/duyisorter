@@ -1411,7 +1411,7 @@ void MainWidget::onOprTypeBtnClickedSlt()
     {
         customOprButton->show();
         highSetOprButton->show();
-        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+        if (struCnfp.enableAi)
         {
             aiSetBtn->show();
             aiModelSetBtn->show();
@@ -1436,7 +1436,7 @@ void MainWidget::onOprTypeBtnClickedSlt()
             operateButton[5]->setEnabled(true);
             customOprButton->show();
             highSetOprButton->show();
-            if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+            if (struCnfp.enableAi)
             {
                 aiSetBtn->show();
                 aiModelSetBtn->show();
@@ -3412,7 +3412,7 @@ void MainWidget::ejectPageDisplayLcdNumerSlt()
  */
 void MainWidget::ejectPageThreadStartSlt()
 {
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (!struCnfp.enableAi)
     {
         if (threadStart->isRunning())
         {

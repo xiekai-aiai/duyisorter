@@ -10,6 +10,7 @@
 #include "cmdworker.h"
 #include "configmgr.h"
 #include "cmdudpmanager.h"
+#include "sqlitemgr.h"
 #include "sortertypes.h"
 
 struct struCnfEngineer struCnfe, _t_struCnfe;
@@ -620,6 +621,14 @@ void GlobalFlow::getGroupIdentify()
 
             memcpy(struCnfp.struGroupIdentify[i][j].struAi.modelId, "default", sizeof("default"));
 
+            for (int k = 0; k < MODEL_MAX_CLS_NUM; k++)
+            {
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].is_apply_ = 0;
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].cls_id_ = k;
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].threshold_ = 0;
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_model_ = 0;
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_threshold_ = 0;
+            }
         }
     }
 }
@@ -2534,6 +2543,126 @@ void GlobalFlow::initAIParamsRSC(int nGroup, int* pVal)
     nSign = pVal[9] > 0 ? 0 : 1;
     struCnfp.struGroupIdentify[ONE_LEVEL][nGroup].struIntel[0].nConsDfl[0] = nSign;
     struCnfp.struGroupIdentify[ONE_LEVEL][nGroup].struIntel[0].nConsDfl[1] = abs(pVal[9]);
+}
+
+bool GlobalFlow::applyAiModel(const QString& model_id)
+{
+    ModelInfo model_info;
+    if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, model_info))
+    {
+        LOG_ERROR_STM("Failed to get model info, model id:" << model_id.toStdString());
+        return false;
+    }
+
+    LOG_INFO_STM("model apply:" << model_id.toStdString() << ", model name:" << model_info.model_name_.toStdString());
+
+    // 给所有的AI板卡发送开始模型应用命令
+    ModelApply model_apply;
+    model_apply.model_name_ = model_info.model_name_;
+    QByteArray request = cmdworker::ModelApplyRequest(model_apply);
+
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            LOG_ERROR_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            return false;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            LOG_ERROR_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            return false;
+        }
+
+        int code = cmdworker::CommResponse(cmd_pkg).code_;
+
+        if (AI_RESPONSE_SUCCESS != code)
+        {
+            LOG_ERROR_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+                << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+            return false;
+        }
+
+        LOG_INFO_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+    }
+
+    return true;
+}
+
+bool GlobalFlow::applyAiModelCls(const QString& model_id)
+{
+    QVector<ModelParam> param_vec;
+    for (int idx = 0; idx < MODEL_MAX_CLS_NUM; idx++)
+    {
+        if (struCnfp.struGroupIdentify[0][0].struAi.struAiClsPara[idx].is_apply_)
+        {
+            ModelParam item;
+            item.cls_id_ = struCnfp.struGroupIdentify[0][0].struAi.struAiClsPara[idx].cls_id_;
+            item.threshold_ = struCnfp.struGroupIdentify[0][0].struAi.struAiClsPara[idx].threshold_;
+            param_vec.append(item);
+            LOG_INFO_STM("model cls apply, model id:" << model_id.toStdString() << ", cls id:" << (int)item.cls_id_
+                << ", threshold:" << (int)item.threshold_);
+        }
+    }
+
+    QByteArray request = cmdworker::ModelParamRequest(param_vec);
+    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    {
+        QByteArray response;
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
+            response, AI_RESPONSE_TIMEOUT);
+
+        if (!ok)
+        {
+            LOG_ERROR_STM("model cls threshold opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            return false;
+        }
+
+        CmdPackage cmd_pkg;
+        ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
+        if (!ok)
+        {
+            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+                << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            return false;
+        }
+
+        int code = cmdworker::CommResponse(cmd_pkg).code_;
+        if (AI_RESPONSE_SUCCESS != code)
+        {
+            LOG_ERROR_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+                << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+            return false;
+        }
+
+        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
+    }
+
+    return true;
+}
+
+void GlobalFlow::resetAiModel()
+{
+    QString model_id = QString::fromUtf8(struCnfp.struGroupIdentify[0][0].struAi.modelId);
+
+    if (!applyAiModel(model_id))
+    {
+        return ;
+    }
+
+    applyAiModelCls(model_id);
 }
 
 /* 发送振动量 */
@@ -4623,7 +4752,7 @@ void GlobalFlow::initUdpImagPara()
     // 向AI板卡发送推理高度、采集高度等参数
     AiCfgInfo cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
 
-    if (!cfg_info.enable_ai_)
+    if (!struCnfp.enableAi)
     {
         LOG_INFO_STM("ai enable is false!");
         return;
@@ -4672,7 +4801,7 @@ void GlobalFlow::initUdpImagPara()
 
 void GlobalFlow::initPixelImagPara()
 {
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (!struCnfp.enableAi)
     {
         return;
     }
@@ -4725,7 +4854,7 @@ void GlobalFlow::initPixelImagPara()
 
 void GlobalFlow::initEjectorDelayPara()
 {
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (!struCnfp.enableAi)
     {
         return;
     }
@@ -4789,7 +4918,7 @@ void GlobalFlow::initEjectorModePara()
     // 向AI板卡发送推理模式参数
 
     // 开启AI模式
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (struCnfp.enableAi)
     {
         model |= MODEL_VAVLE_AI;
     }
@@ -4803,7 +4932,7 @@ void GlobalFlow::initEjectorModePara()
         }
     }
 
-    LOG_INFO_STM("model:" << model << ", enable_ai:" << ConfigMgr::Instance().GetAiCfgInfo().enable_ai_
+    LOG_INFO_STM("model:" << model << ", enable_ai:" << struCnfp.enableAi
         << ", arithmetic total:" << struCnfe.nArithmeticTotal << ", level total:" << struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal);
 
     ValveModeParam info;
@@ -4931,7 +5060,7 @@ void GlobalFlow::stopAiCollect()
 
 void GlobalFlow::startAiInfer()
 {
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_ || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
+    if (!struCnfp.enableAi || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
     {
         LOG_INFO_STM("Ai enable is false or struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = " << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]
             << ",so don't send start ai infer!");
@@ -4983,7 +5112,7 @@ void GlobalFlow::startAiInfer()
 
 void GlobalFlow::stopAiInfer()
 {
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_ || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
+    if (!struCnfp.enableAi || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
     {
         LOG_INFO_STM("Ai enable is false or struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = " << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]
             << ", so don't send stop ai infer!");
@@ -5034,7 +5163,7 @@ void GlobalFlow::stopAiInfer()
 
 void GlobalFlow::startAiWorker(bool onOff)
 {
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (!struCnfp.enableAi)
     {
         LOG_INFO_STM("Ai enable is false!");
         return;
@@ -5068,7 +5197,7 @@ void GlobalFlow::startAiWorker(bool onOff)
 
 int  GlobalFlow::initAiCommunication()
 {
-    if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (!struCnfp.enableAi)
     {
         LOG_INFO_STM("enable ai is false!");
         return 0;
@@ -5126,4 +5255,6 @@ void GlobalFlow::sendAllParamsRgb()
     resetSortParams();          // 重置色选参数
 
     resetControl();             // 重置控制板参数
+
+    resetAiModel();             // 重置AI参数
 }

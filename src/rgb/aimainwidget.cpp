@@ -1205,7 +1205,7 @@ int AIMainWidget::getUnitProtocal(int nUnit)
     {
         proto = PROTOCAL_3;
     }
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (struCnfp.enableAi)
     {
         proto = PROTOCAL_4;
     }
@@ -2244,7 +2244,7 @@ void AIMainWidget::processImageDataFromCamera(CaptureConfig& captureConfig)
     }
     else if (captureConfig.nTransType == 1)
     {
-        if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+        if (struCnfp.enableAi)
         {
             processImageDataFromCameraByAIEN(captureConfig);
         }

@@ -190,7 +190,7 @@ void communicationList::commuUpdateCamera()
     cameraListLabel[0][0]->setText(myLan.chute);
     cameraListLabel[0][1]->setText(myLan.front_view);
     cameraListLabel[0][2]->setText(myLan.rear_view);
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (struCnfp.enableAi)
     {
         cameraListLabel[0][3]->setText("AI" + myLan.front_view);
         cameraListLabel[0][4]->setText("AI" + myLan.rear_view);
@@ -220,7 +220,7 @@ void communicationList::commuUpdateCamera()
                 cameraListLabel[row_no][col_no]->setStyleSheet("color:red");
             }
 
-            if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+            if (struCnfp.enableAi)
             {
                 // AI前视对应列号3， AI后视对应列号4
                 col_no = ((cam_no % 2) == 0) ? 3 : 4;

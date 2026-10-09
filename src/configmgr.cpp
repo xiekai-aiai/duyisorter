@@ -25,15 +25,8 @@ void ConfigMgr::InitAiCfgInfo(const QMap<QString, ConfigItem>& cfg_map)
 {
     AiCfgInfo info;
 
-    // 使能AI
-    QString key = QString(GROUP_NAME_AI) + ".enable_ai";
-    if (cfg_map.contains(key))
-    {
-        info.enable_ai_ = (cfg_map[key].param_value_ == "true") ? true : false;
-    }
-
     // 采集高度
-    key = QString(GROUP_NAME_AI) + ".collect_height";
+    QString key = QString(GROUP_NAME_AI) + ".collect_height";
     if (cfg_map.contains(key))
     {
         info.collect_height_ = cfg_map[key].param_value_.toUShort();
@@ -77,18 +70,14 @@ AiCfgInfo ConfigMgr::GetAiCfgInfo()
 
 bool ConfigMgr::SetAiCfgInfo(const AiCfgInfo& info)
 {
-    LOG_INFO_STM("enable ai:" << info.enable_ai_ << ", collect height:" << info.collect_height_ << ", infer height:" << info.infer_height_
+    LOG_INFO_STM("collect height:" << info.collect_height_ << ", infer height:" << info.infer_height_
         << ", img view height:" << info.img_view_height_ << ", video view height:" << info.video_view_height_
         << ", sliding step:" << info.sliding_step_);
 
     QVector<ConfigItem> cfg_items;
-    // 使能AI
+    // 采集高度
     ConfigItem ci;
     ci.group_name_ = GROUP_NAME_AI;
-    ci.param_name_ = "enable_ai";
-    ci.param_value_ = info.enable_ai_ ? "true" : "false";
-    cfg_items.append(ci);
-    // 采集高度
     ci.param_name_ = "collect_height";
     ci.param_value_ = QString::number(info.collect_height_);
     cfg_items.append(ci);
