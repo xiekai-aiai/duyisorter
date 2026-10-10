@@ -51,7 +51,7 @@ void PageAi::onUploadModel()
     info.model_name_ = model_name;
     if (!modelUpload(info))
     {
-        QMessageBox::warning(this, "应用警告", "模型上传失败！");
+        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_upload_failed);
         return;
     }
 
@@ -75,22 +75,21 @@ void PageAi::onDeleteModel()
     LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
         << ", model id:" << model_id.toStdString());
 
-    ModelInfo info;
-    if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, info))
+    if (model_id == QString::fromUtf8(struCnfp.struGroupIdentify[0][0].struAi.modelId))
     {
-        QMessageBox::warning(this, "应用警告", "模型删除失败！");
+        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_applying + myLan.mdl_del_failed);
         return;
     }
 
-    if (info.is_apply_)
+    ModelInfo info;
+    if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, info))
     {
-        QMessageBox::warning(this, "应用警告", "模型应用中，删除失败！");
         return;
     }
 
     if (!modelDelete(info))
     {
-        QMessageBox::warning(this, "应用警告", "模型删除失败！");
+        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_del_failed);
         return;
     }
 
@@ -119,29 +118,23 @@ bool PageAi::setIntelParams()
     ModelInfo info;
     if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, info))
     {
-        QMessageBox::warning(this, "应用警告", "模型加载失败！");
+        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_load_failed);
         return false;
     }
 
     if (!modelUpload(info))
     {
-        QMessageBox::warning(this, "应用警告", "模型上传失败！");
+        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_upload_failed);
         return false;
     }
 
     if (!modelApply(info))
     {
-        QMessageBox::warning(this, "应用警告", "模型应用失败！");
+        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_apply_failed);
         return false;
     }
 
-    if (!SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true)
-        || !SQLiteMgr::Instance().UpdateModelInfoApplyFlag(model_id, true))
-    {
-        QMessageBox::warning(this, "应用警告", "模型应用持久化失败！");
-        return false;
-    }
-
+    SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true);
 
     /* write params to memory */
     for (int i = 0; i < struCnfg.nLevelTotal; i++)

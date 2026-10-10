@@ -1252,6 +1252,13 @@ public:
   QString ai_front_delay_num;                      // 前视延迟数
   QString ai_rear_delay_num;                       // 后视延迟数
   QString ai_status_info;                          // AI状态信息
+  QString app_warn;                                // 应用告警
+  QString mdl_prm_app_failed;                      // 模型参数应用失败
+  QString mdl_upload_failed;                       // 模型上传失败
+  QString mdl_del_failed;                          // 模型删除失败
+  QString mdl_applying;                            // 模型应用中
+  QString mdl_load_failed;                         // 模型加载失败
+  QString mdl_apply_failed;                        // 模型应用失败
 };
 
 extern MyLanguage myLan;

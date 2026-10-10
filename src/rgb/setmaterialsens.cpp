@@ -341,7 +341,7 @@ void setMaterialSens::setModeParaInfo()
 
     if (!success)
     {
-        QMessageBox::warning(this, "应用警告", "模型阈值配置失败！");
+        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_prm_app_failed);
         return;
     }
 

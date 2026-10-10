@@ -1214,6 +1214,13 @@ void GlobalFlow::initLan()
     myLan.ai_front_delay_num = tr("ai_front_delay_num");
     myLan.ai_rear_delay_num = tr("ai_rear_delay_num");
     myLan.ai_status_info = tr("ai_status_info");
+    myLan.app_warn = tr("app_warn");
+    myLan.mdl_prm_app_failed = tr("mdl_prm_app_failed");
+    myLan.mdl_upload_failed = tr("mdl_upload_failed");
+    myLan.mdl_del_failed = tr("mdl_del_failed");
+    myLan.mdl_applying = tr("mdl_applying");
+    myLan.mdl_load_failed = tr("mdl_load_failed");
+    myLan.mdl_apply_failed = tr("mdl_apply_failed");
 
     myLan.rename = tr("rename");
     myLan.add = tr("add");

@@ -2879,72 +2879,107 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/params/paramslang.cpp" line="1217"/>
+        <source>app_warn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/params/paramslang.cpp" line="1218"/>
-        <source>rename</source>
+        <source>mdl_prm_app_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1219"/>
-        <source>add</source>
+        <source>mdl_upload_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1220"/>
-        <source>model</source>
+        <source>mdl_del_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1221"/>
-        <source>id_blank</source>
+        <source>mdl_applying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1222"/>
-        <source>json_file</source>
+        <source>mdl_load_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1223"/>
-        <source>dlc_file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/params/paramslang.cpp" line="1224"/>
-        <source>content</source>
+        <source>mdl_apply_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1225"/>
-        <source>open</source>
+        <source>rename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1226"/>
-        <source>notexist</source>
+        <source>add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1227"/>
-        <source>upload</source>
+        <source>model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1228"/>
-        <source>model_exist_msg</source>
+        <source>id_blank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1229"/>
+        <source>json_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1230"/>
-        <source>spray_valve_number</source>
+        <source>dlc_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1231"/>
-        <source>nozzle_number</source>
+        <source>content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1232"/>
+        <source>open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1233"/>
+        <source>notexist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1234"/>
+        <source>upload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1235"/>
+        <source>model_exist_msg</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1237"/>
+        <source>spray_valve_number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1238"/>
+        <source>nozzle_number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1239"/>
         <source>spray_time_interval</source>
         <translation type="unfinished"></translation>
     </message>

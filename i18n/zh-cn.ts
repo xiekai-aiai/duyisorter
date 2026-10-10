@@ -3439,85 +3439,120 @@
         <translation type="unfinished">AI状态信息</translation>
     </message>
     <message>
+        <location filename="../src/params/paramslang.cpp" line="1217"/>
+        <source>app_warn</source>
+        <translation type="unfinished">应用告警</translation>
+    </message>
+    <message>
         <location filename="../src/params/paramslang.cpp" line="1218"/>
+        <source>mdl_prm_app_failed</source>
+        <translation type="unfinished">模型参数应用失败!</translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1219"/>
+        <source>mdl_upload_failed</source>
+        <translation type="unfinished">模型上传失败!</translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1220"/>
+        <source>mdl_del_failed</source>
+        <translation type="unfinished">模型删除失败!</translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1221"/>
+        <source>mdl_applying</source>
+        <translation type="unfinished">模型应用中!</translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1222"/>
+        <source>mdl_load_failed</source>
+        <translation type="unfinished">模型加载失败!</translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1223"/>
+        <source>mdl_apply_failed</source>
+        <translation type="unfinished">模型应用失败!</translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1225"/>
         <source>rename</source>
         <translatorcomment>重命名</translatorcomment>
         <translation type="unfinished">重命名</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1219"/>
+        <location filename="../src/params/paramslang.cpp" line="1226"/>
         <source>add</source>
         <translatorcomment>新增</translatorcomment>
         <translation type="unfinished">新增</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1220"/>
+        <location filename="../src/params/paramslang.cpp" line="1227"/>
         <source>model</source>
         <translatorcomment>模型</translatorcomment>
         <translation type="unfinished">模型</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1221"/>
+        <location filename="../src/params/paramslang.cpp" line="1228"/>
         <source>id_blank</source>
         <translatorcomment>id为空</translatorcomment>
         <translation type="unfinished">id为空</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1222"/>
+        <location filename="../src/params/paramslang.cpp" line="1229"/>
         <source>json_file</source>
         <translatorcomment>json文件</translatorcomment>
         <translation type="unfinished">json文件</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1223"/>
+        <location filename="../src/params/paramslang.cpp" line="1230"/>
         <source>dlc_file</source>
         <translatorcomment>dlc文件</translatorcomment>
         <translation type="unfinished">dlc文件</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1224"/>
+        <location filename="../src/params/paramslang.cpp" line="1231"/>
         <source>content</source>
         <translatorcomment>内容</translatorcomment>
         <translation type="unfinished">内容</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1225"/>
+        <location filename="../src/params/paramslang.cpp" line="1232"/>
         <source>open</source>
         <translatorcomment>打开</translatorcomment>
         <translation type="unfinished">打开</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1226"/>
+        <location filename="../src/params/paramslang.cpp" line="1233"/>
         <source>notexist</source>
         <translatorcomment>不存在</translatorcomment>
         <translation type="unfinished">不存在</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1227"/>
+        <location filename="../src/params/paramslang.cpp" line="1234"/>
         <source>upload</source>
         <translatorcomment>上传</translatorcomment>
         <translation type="unfinished">上传</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1228"/>
+        <location filename="../src/params/paramslang.cpp" line="1235"/>
         <source>model_exist_msg</source>
         <translatorcomment>模型已存在，无法新增，仅更新模型</translatorcomment>
         <translation type="unfinished">模型已存在，无法新增，仅更新模型</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1230"/>
+        <location filename="../src/params/paramslang.cpp" line="1237"/>
         <source>spray_valve_number</source>
         <translatorcomment>喷阀编号</translatorcomment>
         <translation type="unfinished">喷阀编号</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1231"/>
+        <location filename="../src/params/paramslang.cpp" line="1238"/>
         <source>nozzle_number</source>
         <translatorcomment>喷嘴编号</translatorcomment>
         <translation type="unfinished">喷嘴编号</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1232"/>
+        <location filename="../src/params/paramslang.cpp" line="1239"/>
         <source>spray_time_interval</source>
         <translatorcomment>喷阀间隔</translatorcomment>
         <translation type="unfinished">喷阀间隔</translation>
