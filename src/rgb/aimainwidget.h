@@ -35,7 +35,7 @@
 #include "aiinputparams.h"
 #include "upgradefpga/selectfiledialog.h"
 #ifdef Q_OS_UNIX
-    #include "common/myusb/myusb.h"
+#include "common/myusb/myusb.h"
 #endif
 
 #define TEST    1
@@ -50,14 +50,16 @@
 #define BUFFER_SIZE 10*1024*1024  // 修正缓冲区大小计算（10MB）
 #define FRAME_HEADER 0xA6A66A6A   // 帧头常量（便于对比）
 
-struct classQuo{
+struct classQuo
+{
     float nCons;                     /*!<< 常数 */
     float nQuo[MAX_MUL_QUO];         /*!<< 系数数组 */
     float nMax[MAX_MUL_QUO];         /*!<< 最大值数组 */
     float nMin[MAX_MUL_QUO];         /*!<< 最小值数组 */
 };
 
-typedef struct {
+typedef struct
+{
     int nUnitAddr;                          /*!<< 执行本次抓拍的相机地址 */
     int nSeq;                               /*!<< 执行本次抓拍的相机顺序,从1开始*/
     int nProtoType;                         /*!<< 执行本次抓拍的相机与上位机数据传输协议类型 */
@@ -76,46 +78,45 @@ class AIMainWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AIMainWidget(QWidget *parent = 0);
+    explicit AIMainWidget(QWidget* parent = 0);
     void updateLayerStat();
     void updateLayerStatMaize();
     void updateChuteLCDStatMaize();
     int  multipleClassAICalForSoleView(int indexOfTrain);    /*!<< 智能学习单个背景组 */
-    void displayCalResult(QList<int> &list);                 /*!<< 打印学习结果 */
+    void displayCalResult(QList<int>& list);                 /*!<< 打印学习结果 */
     void getImage();                                         /*!<< 新拍照功能函数*/
     int  getUnitProtocal(int nUnit);                         /*!<< 获取该相机的图片数据传输协议 */
-    void setDataLenByProtocal(int proto, int &dataLenTotal, int &dataDeepth);   /*!<< 根据图片数据传输协议获取协议包长 */
-    void setCaptureAttr(QList <CaptureConfig> &qlCaptureConfig, int nUnitElem); /*!<< 设置拍照相机的相关参数 */
+    void setDataLenByProtocal(int proto, int& dataLenTotal, int& dataDeepth);   /*!<< 根据图片数据传输协议获取协议包长 */
+    void setCaptureAttr(QList <CaptureConfig>& qlCaptureConfig, int nUnitElem); /*!<< 设置拍照相机的相关参数 */
     int  getUnitCameraType(int nUnit);                                          /*!<< 获取该相机的相机类型 */
     int  getUnitViewNum(int nUnit);                                             /*!<< 获取该相机的背景组编号 */
     void autoCopyIntellArgs();                                                  /*!<< 自动复制参数到其他智能模式 */
 
-    void getAllUnitsAddrForOneChute(QList <int> &qlnUnit, int nUnitElem);       /*!<< 获取该相机所在通道的所有相机编号 */
-    void getAllUnitsAddrForOneChuteForII(QList <int> &qlnUnit, int nUnitElem);
-    void getAllUnitsAddrForOneChuteForOneViewPerLayer(QList <int> &qlnUnit, int nUnitElem);
-    void getAllUnitsAddrForOneChuteForTwoViewPerLayer(QList <int> &qlnUnit, int nUnitElem);
-    void getAllUnitsAddrForOneChuteForFourViewPerLayer(QList <int> &qlnUnit, int nUnitElem);
-    void getAllUnitsAddrForOneChuteForFourViewForRSC(QList <int> &qlnUnit, int nUnitElem);
-    void startCapture(QList <CaptureConfig> &qlCaptureConfig);                  /*!<< 下发拍照命令 */
-    int  checkFrame(const char *data, int dataLen);                             /*!<< 校验包 */
-    int  swapData(char *data, int blockLen, int blockCount);                    /*!<< 翻转数据包 */
-    int  getAutoBackgroundData(char *data, CaptureConfig &captureConfig);        //从图片取自动背景数据
-    int  stripFrameData(char *data, CaptureConfig &captureConfig);              /*!<< 将数据包转换成纯图片数据 */
-    void displayImgInfo(char *data, CaptureConfig &captureConfig);              /*!<< 图片的保存、显示 */
-    void processImageDataFromCameraByUART(CaptureConfig &captureConfig);        /*!<< 数据的接收函数 */
-    void processImageDataFromCameraByUSB(CaptureConfig &captureConfig);         /*!<< 数据的接收函数 */
-    void processImageDataFromCamera(CaptureConfig &captureConfig);              /*!<< 数据的接收函数 */
-    void processCaptureResult(QList<CaptureConfig> &qlCaptureConfig);           /*!<< 拍照功能完成之后的相关处理 */
-    bool pixelIsBackground(uchar r, uchar g, uchar b,int nUnitAddr);            /*!<< 拍照时根据背景确定物料在哪一侧*/
+    void getAllUnitsAddrForOneChute(QList <int>& qlnUnit, int nUnitElem);       /*!<< 获取该相机所在通道的所有相机编号 */
+    void getAllUnitsAddrForOneChuteForII(QList <int>& qlnUnit, int nUnitElem);
+    void getAllUnitsAddrForOneChuteForOneViewPerLayer(QList <int>& qlnUnit, int nUnitElem);
+    void getAllUnitsAddrForOneChuteForTwoViewPerLayer(QList <int>& qlnUnit, int nUnitElem);
+    void startCapture(QList <CaptureConfig>& qlCaptureConfig);                  /*!<< 下发拍照命令 */
+    int  checkFrame(const char* data, int dataLen);                             /*!<< 校验包 */
+    int  swapData(char* data, int blockLen, int blockCount);                    /*!<< 翻转数据包 */
+    int  getAutoBackgroundData(char* data, CaptureConfig& captureConfig);        //从图片取自动背景数据
+    int  stripFrameData(char* data, CaptureConfig& captureConfig);              /*!<< 将数据包转换成纯图片数据 */
+    void displayImgInfo(char* data, CaptureConfig& captureConfig);              /*!<< 图片的保存、显示 */
+    void processImageDataFromCameraByUART(CaptureConfig& captureConfig);        /*!<< 数据的接收函数 */
+    void processImageDataFromCameraByUSB(CaptureConfig& captureConfig);         /*!<< 数据的接收函数 */
+    void processImageDataFromCamera(CaptureConfig& captureConfig);              /*!<< 数据的接收函数 */
+    void processCaptureResult(QList<CaptureConfig>& qlCaptureConfig);           /*!<< 拍照功能完成之后的相关处理 */
+    bool pixelIsBackground(uchar r, uchar g, uchar b, int nUnitAddr);            /*!<< 拍照时根据背景确定物料在哪一侧*/
     void refreshImpurityName(void);                                             /*!<< 更新杂质名称*/
-    void processImageDataFromCameraByAIEN(CaptureConfig &captureConfig);         /*!<< 数据的接收函数 */
+    void processImageDataFromCameraByAIEN(CaptureConfig& captureConfig);         /*!<< 数据的接收函数 */
 
     void updateParams();                                                        /*!<< 智能参数页面参数更新*/
     void updateAIParamsPage();
     void upTabBar();
 
 public:
-    enum{
+    enum
+    {
         AI_PREPARE_PAGE,                            /*!<< 智能预备页面索引号 */
         AI_MAIN_PAGE,                               /*!<< 智能主页面索引号 */
         AI_PREVIEW_PAGE,                            /*!<< 智能预览页面索引号 */
@@ -123,7 +124,7 @@ public:
         AI_INPUT_PARAMS_PAGE,                               /*!<< 输入智能参数页面索引号 */
         AI_PARAMS_SET_PAGE
     };
-    
+
 signals:
     void goToHomePage();                            /*!<< 信号函数：返回智能主界面 */
     void updatePreviewPageSig();                    /*!<< 信号函数：更新智能预览界面 */
@@ -204,19 +205,22 @@ private:
      * \name 私有枚举
      * \{
      */
-    /*! \enum page level */
-    enum{
+     /*! \enum page level */
+    enum
+    {
         FIRST_PAGE,                             /*!<< 第一页索引号 */
         SECOND_PAGE,                            /*!<< 第二页索引号 */
         THIRD_PAGE                              /*!<< 第三页索引号 */
     };
     /*! \enum the state of sample */
-    enum{
+    enum
+    {
         SAMPLED_NO,                             /*!<< 没取样 */
         SAMPLED_YES                             /*!<< 已取样 */
     };
     /*! \enum 物料属性设置错误返回标志 */
-    enum{
+    enum
+    {
         ERR_NO_BAD,                             /*!<< 返回标志：没有设置坏料 */
         ERR_NO_GOOD,                            /*!<< 返回标志：没有设置好料 */
         ERR_OVERRUN,                            /*!<< 返回标志：设置种类超过最大限制 */
@@ -225,7 +229,8 @@ private:
         ERR_NO_CAL                              /*!<< 返回标志：未计算 */
     };
     /*! \enum 分类数目 */
-    enum{
+    enum
+    {
         NO_GOOD_NO_BAD = 0,                     /*!<< 分类数目：0好0坏 */
         ONE_GOOD_ONE_BAD,                       /*!<< 分类数目：1好1坏 */
         ONE_GOOD_TWO_BAD,                       /*!<< 分类数目：1好2坏 */
@@ -235,13 +240,15 @@ private:
         THREE_GOOD_ONE_BAD                      /*!<< 分类数目：3好1坏 */
     };
     /*! \enum 读取样本标志 */
-    enum {
-        DATA_IMG  = 0,                          /*!<< 读取标志：从图片读取 */
+    enum
+    {
+        DATA_IMG = 0,                          /*!<< 读取标志：从图片读取 */
         DATA_DISK = 1                           /*!<< 读取标志：从本地读取 */
     };
 
     /*! \enum 采集图像功能返回的错误信息 */
-    enum {
+    enum
+    {
         ERR_SUCCESS,        //成功
         ERR_TIMEOUT,        //超时
         ERR_USB_INIT,       //USB初始化失败
@@ -257,93 +264,93 @@ private:
      * \name 控件的私有成员变量
      * \{
      */
-    QStackedWidget  *m_stackedWidget;               /*!<< 指针：智能分析页面堆栈 */
+    QStackedWidget* m_stackedWidget;               /*!<< 指针：智能分析页面堆栈 */
 
-    QWidget         *m_AIArithListWidget;           /*!<< 指针：智能分析预备页面 */
-    QWidget         *m_AIMainWidget;                /*!<< 指针：智能分析主页面 */
-    AIPreviewWidget *m_AIPreviewWidget;             /*!<< 指针：智能分析预览页面 */
-    QWidget         *m_AIImageWidget;               /*!<< 指针：智能分析图像倒入导出页面 */
-    AIInputParams   *m_AIInputParamsWidget;         /*!<< 指针: 输入智能参数页面 */
-    QWidget         *m_AIParamsSetWidget;           /*!<< 指针: 智能参数页面 */
-    QGridLayout    *m_imgListGridLayout;            /*!<< 布局：图片列表 */
-    QGridLayout    *m_channelGridLayout;            /*!<< 布局：通道设置 */
+    QWidget* m_AIArithListWidget;           /*!<< 指针：智能分析预备页面 */
+    QWidget* m_AIMainWidget;                /*!<< 指针：智能分析主页面 */
+    AIPreviewWidget* m_AIPreviewWidget;             /*!<< 指针：智能分析预览页面 */
+    QWidget* m_AIImageWidget;               /*!<< 指针：智能分析图像倒入导出页面 */
+    AIInputParams* m_AIInputParamsWidget;         /*!<< 指针: 输入智能参数页面 */
+    QWidget* m_AIParamsSetWidget;           /*!<< 指针: 智能参数页面 */
+    QGridLayout* m_imgListGridLayout;            /*!<< 布局：图片列表 */
+    QGridLayout* m_channelGridLayout;            /*!<< 布局：通道设置 */
 
-    QVBoxLayout    *m_commVBLayout;                 /*!<< 布局：通信方式 */
-    QVBoxLayout    *m_setVBLayout;                  /*!<< 布局：设置部分（包括通道设置，通信方式，智能设置，智能计算等） */
+    QVBoxLayout* m_commVBLayout;                 /*!<< 布局：通信方式 */
+    QVBoxLayout* m_setVBLayout;                  /*!<< 布局：设置部分（包括通道设置，通信方式，智能设置，智能计算等） */
 
-    QHBoxLayout    *m_upHBLayout;                   /*!<< 布局：上部分（由图片列表与设置部分组成） */
-    QHBoxLayout    *m_downHBLayout;                 /*!<< 布局：下部分（开始采集，返回等按钮组成） */
-    QVBoxLayout    *m_mainVBLayout;                 /*!<< 布局：主要布局（上部分和下部分） */
+    QHBoxLayout* m_upHBLayout;                   /*!<< 布局：上部分（由图片列表与设置部分组成） */
+    QHBoxLayout* m_downHBLayout;                 /*!<< 布局：下部分（开始采集，返回等按钮组成） */
+    QVBoxLayout* m_mainVBLayout;                 /*!<< 布局：主要布局（上部分和下部分） */
 
-    myGroupBox     *m_imgListGBox;                  /*!<< 组：图片列表 */
-    myGroupBox     *m_channelGBox;                  /*!<< 组：通道设置（包括当前通道，增加与减少） */
-    myGroupBox     *m_commGBox;                     /*!<< 组：通信方式 */
+    myGroupBox* m_imgListGBox;                  /*!<< 组：图片列表 */
+    myGroupBox* m_channelGBox;                  /*!<< 组：通道设置（包括当前通道，增加与减少） */
+    myGroupBox* m_commGBox;                     /*!<< 组：通信方式 */
 
-    myPushButton   *m_imgListBtn[MAX_PER_LIST];     /*!<< 按钮：图片列表按钮 */
-    myPushButton   *m_imgPropertyBtn[MAX_PER_LIST]; /*!<< 按钮：图片列表属性 */
+    myPushButton* m_imgListBtn[MAX_PER_LIST];     /*!<< 按钮：图片列表按钮 */
+    myPushButton* m_imgPropertyBtn[MAX_PER_LIST]; /*!<< 按钮：图片列表属性 */
 
-    myPushButton   *m_layerBtn;                     /*!<< 按钮：前后视（CF），上下层（其他）按钮 */
-    myPushButton   *m_layerBtnAdd;                  /*!<< 按钮： m_layerBtn的补充按钮，如对于LDS2表示前后视*/
-    QLCDNumber     *m_chanNum;                      /*!<< LCD: 通道数目 */
-    myPushButton   *m_plusChanNumBtn;               /*!<< 按钮：增加通道数目 */
-    myPushButton   *m_minusChanNUmBtn;              /*!<< 按钮：减少通道数目 */
-    myPushButton   *m_exportImgBtn;                 /*!<< 按钮：导出图片按钮 */
+    myPushButton* m_layerBtn;                     /*!<< 按钮：前后视（CF），上下层（其他）按钮 */
+    myPushButton* m_layerBtnAdd;                  /*!<< 按钮： m_layerBtn的补充按钮，如对于LDS2表示前后视*/
+    QLCDNumber* m_chanNum;                      /*!<< LCD: 通道数目 */
+    myPushButton* m_plusChanNumBtn;               /*!<< 按钮：增加通道数目 */
+    myPushButton* m_minusChanNUmBtn;              /*!<< 按钮：减少通道数目 */
+    myPushButton* m_exportImgBtn;                 /*!<< 按钮：导出图片按钮 */
 
-    myPushButton   *m_calSetBtn;                    /*!<< 按钮：智能参数设置按钮 */
-    myPushButton   *m_classModeBtn;                 /*!<< 按钮：智能模式设置按钮 */
-    myPushButton   *m_AIParamsSetBtn;               /*!<< 按钮：智能模式设置按钮 */
-    myPushButton   *m_AIStudyBtn;                   /*!<< 按钮：一键智能设置按钮 */
+    myPushButton* m_calSetBtn;                    /*!<< 按钮：智能参数设置按钮 */
+    myPushButton* m_classModeBtn;                 /*!<< 按钮：智能模式设置按钮 */
+    myPushButton* m_AIParamsSetBtn;               /*!<< 按钮：智能模式设置按钮 */
+    myPushButton* m_AIStudyBtn;                   /*!<< 按钮：一键智能设置按钮 */
 
-    myPushButton   *m_startCapBtn;                  /*!<< 按钮：开始采集按钮 */
-    myPushButton   *m_delImgBtn;                    /*!<< 按钮：删除图片按钮 */
-    myPushButton   *m_preListBtn;                   /*!<< 按钮：上一页按钮 */
-    myPushButton   *m_nextListBtn;                  /*!<< 按钮：下一页按钮 */
-    myPushButton   *m_backBtn;                      /*!<< 按钮：返回主界面按钮 */
+    myPushButton* m_startCapBtn;                  /*!<< 按钮：开始采集按钮 */
+    myPushButton* m_delImgBtn;                    /*!<< 按钮：删除图片按钮 */
+    myPushButton* m_preListBtn;                   /*!<< 按钮：上一页按钮 */
+    myPushButton* m_nextListBtn;                  /*!<< 按钮：下一页按钮 */
+    myPushButton* m_backBtn;                      /*!<< 按钮：返回主界面按钮 */
 
-    QSignalMapper  *m_imgListSMapper;               /*!<< 信号栈：图片列表信号栈 */
+    QSignalMapper* m_imgListSMapper;               /*!<< 信号栈：图片列表信号栈 */
 
-    myPushButton    *m_imgImportBtn;                /*!<< 按钮：图像导入按钮 */
-    myPushButton    *m_imgExportBtn;                /*!<< 按钮：图像导出按钮 */
-    myPushButton    *m_inputParamsBtn;              /*!<< 按钮：输入智能参数按钮 */
-    myLabel         *m_imgThresholdLabel;           /*!<< 文本: 像素阈值  */
-    myLineEdit      *m_imgThresholdLineEdit;        /*!<< 输入框: 像素阈值*/
-    myLabel         *m_rangeLbl;                    /*!< 文本: 象元范围 */
-    myLineEdit      *m_beginChLe;                   /*!< 输入框: 起始象元 */
-    myLineEdit      *m_endChLe;                     /*!< 输入框: 终止象元 */
-    myCustomCheckBox *m_highSpeedCbx;               /*!<< 选择框: 高速 */
-    myCustomCheckBox *m_lowSpeedCbx;                /*!<< 选择框: 低速 */
-    myCustomCheckBox *m_AIParaAutoCopy;             /*!<< 选择框: 自动复制 */
-    myCustomCheckBox *m_AICaptureAllView;           /*!<< 选择框: 全视角拍照 */
-    myCustomCheckBox *m_AICuteOffBgCBx;             /*!<< 选择框: 去背景拍照*/
-    myPushButton    *m_imgBackBtn;                  /*!<< 按钮：图像返回按钮 */
-    myLineEdit      *m_impurityNameLe;              /*!< 输入框: 杂质名称 */
+    myPushButton* m_imgImportBtn;                /*!<< 按钮：图像导入按钮 */
+    myPushButton* m_imgExportBtn;                /*!<< 按钮：图像导出按钮 */
+    myPushButton* m_inputParamsBtn;              /*!<< 按钮：输入智能参数按钮 */
+    myLabel* m_imgThresholdLabel;           /*!<< 文本: 像素阈值  */
+    myLineEdit* m_imgThresholdLineEdit;        /*!<< 输入框: 像素阈值*/
+    myLabel* m_rangeLbl;                    /*!< 文本: 象元范围 */
+    myLineEdit* m_beginChLe;                   /*!< 输入框: 起始象元 */
+    myLineEdit* m_endChLe;                     /*!< 输入框: 终止象元 */
+    myCustomCheckBox* m_highSpeedCbx;               /*!<< 选择框: 高速 */
+    myCustomCheckBox* m_lowSpeedCbx;                /*!<< 选择框: 低速 */
+    myCustomCheckBox* m_AIParaAutoCopy;             /*!<< 选择框: 自动复制 */
+    myCustomCheckBox* m_AICaptureAllView;           /*!<< 选择框: 全视角拍照 */
+    myCustomCheckBox* m_AICuteOffBgCBx;             /*!<< 选择框: 去背景拍照*/
+    myPushButton* m_imgBackBtn;                  /*!<< 按钮：图像返回按钮 */
+    myLineEdit* m_impurityNameLe;              /*!< 输入框: 杂质名称 */
 
-    myCustomCheckBox *m_enableAIAuto1CBx;           /*!< 选择框：使能1 */
-    myCustomCheckBox *m_enableAIAuto2CBx;           /*!< 选择框：使能2 */
-    myLabel          *m_reservedSensLabel;          /*!< 文本：腹白保留 */
-    myLineEdit       *m_reservedSensLbe;            /*!< 输入框：腹白保留 */
-    myLabel          *m_materPer1Label;             /*!< 文本：物料含杂1 */
-    myLineEdit       *m_materPer1Lbe;               /*!< 输入框：物料含杂1 */
-    myLabel          *m_materPer2Label;             /*!< 文本：物料含杂2 */
-    myLineEdit       *m_materPer2Lbe;               /*!< 输入框：物料含杂2 */
-    myLabel          *m_materPer3Label;             /*!< 文本：物料含杂3 */
-    myLineEdit       *m_materPer3Lbe;               /*!< 输入框：物料含杂3 */
+    myCustomCheckBox* m_enableAIAuto1CBx;           /*!< 选择框：使能1 */
+    myCustomCheckBox* m_enableAIAuto2CBx;           /*!< 选择框：使能2 */
+    myLabel* m_reservedSensLabel;          /*!< 文本：腹白保留 */
+    myLineEdit* m_reservedSensLbe;            /*!< 输入框：腹白保留 */
+    myLabel* m_materPer1Label;             /*!< 文本：物料含杂1 */
+    myLineEdit* m_materPer1Lbe;               /*!< 输入框：物料含杂1 */
+    myLabel* m_materPer2Label;             /*!< 文本：物料含杂2 */
+    myLineEdit* m_materPer2Lbe;               /*!< 输入框：物料含杂2 */
+    myLabel* m_materPer3Label;             /*!< 文本：物料含杂3 */
+    myLineEdit* m_materPer3Lbe;               /*!< 输入框：物料含杂3 */
 
-    myGroupBox *arithAIGroup;
-    QVBoxLayout *vBoxBtnLayout;
-    QVBoxLayout *m_preVboxlayout;
+    myGroupBox* arithAIGroup;
+    QVBoxLayout* vBoxBtnLayout;
+    QVBoxLayout* m_preVboxlayout;
 
-    QVector<MyCheckBox *> aiBox;
-    QVector<myPushButton *> aiBtn;
-    QVector<QFormLayout *> boxBtnLayout;
+    QVector<MyCheckBox*> aiBox;
+    QVector<myPushButton*> aiBtn;
+    QVector<QFormLayout*> boxBtnLayout;
 
-    QSignalMapper *sigBoxMapper;
-    QSignalMapper *sigBtnMapper;
-    myPushButton *okButton;
-    myPushButton *cancelButton;
+    QSignalMapper* sigBoxMapper;
+    QSignalMapper* sigBtnMapper;
+    myPushButton* okButton;
+    myPushButton* cancelButton;
 
-    MyButtonGroup *m_colorSpaceBtnGp;
-    MyButtonGroup *m_dimensionBtnGp;
+    MyButtonGroup* m_colorSpaceBtnGp;
+    MyButtonGroup* m_dimensionBtnGp;
 
     /*!
      * \name 私有参数
@@ -365,7 +372,7 @@ private:
     int  m_nLayer;                                   /*!<< 参数：层数或只前后视 */
     bool m_bIsAutoGetData;                           /*!<< 参数：是否自动从图片读取数据 */
     int  m_nLevelToTal;                              /*!<< 参数：前后视标志（CF，LD），层数设置（LDS，TD） */
-    uchar m_cRGBStat[IMAGE_WIDTH*IMAGE_HEIGHT][3];   /*!<< 参数：RGB状态 */
+    uchar m_cRGBStat[IMAGE_WIDTH * IMAGE_HEIGHT][3];   /*!<< 参数：RGB状态 */
     int  m_nRGBNum;
     bool m_bIsImageRecvTerminate;                    /*!<< 参数：终止图像采集的标志 */
     int m_nIndexOfArithIntel;                        /*!<< 参数：当前智能计算对应的智能算法序号，A:0,B:1,C:2,D:3 */
@@ -381,20 +388,20 @@ private:
     int m_algorithmType;                              //0:当前列表为可见，1：红外
 
     //智能参数设置页面控件
-    QTabBar         *tabBar;
-    myGroupBox      *nameGroup;
-    myLineEdit      *nameValue;
-    myGroupBox      *AISensListCbx;
-    myLabel         *AISensLabel;
-    myLineEdit      *AISensLbe;
-    myLabel         *AIRowLabel;
-    myLineEdit      *AIRowLbe;
-    myLabel         *AIPercentLabel;
-    myLineEdit      *AIPercentLbe;
+    QTabBar* tabBar;
+    myGroupBox* nameGroup;
+    myLineEdit* nameValue;
+    myGroupBox* AISensListCbx;
+    myLabel* AISensLabel;
+    myLineEdit* AISensLbe;
+    myLabel* AIRowLabel;
+    myLineEdit* AIRowLbe;
+    myLabel* AIPercentLabel;
+    myLineEdit* AIPercentLbe;
 
-    myPushButton    *AIParamsBackBtn;
+    myPushButton* AIParamsBackBtn;
 
-    QTimer *delTimer;
+    QTimer* delTimer;
 
     /*!
      * \name 最大值与最小值
@@ -429,22 +436,22 @@ private:
     void displayCurImg(int indexOfImg);               /*!<< 私有函数：显示当前图片状态 */
     void deleteCurImg(int indexOfImg);                /*!<< 私有函数：删除当前图片 */
     void updateImgListStat(void);                     /*!<< 私有函数：更新当前图片状态，选中：变绿 */
-    char *getHead(const char *mem, int size, const char *str);          /*!<< 私有函数：获取一帧数据的头指针 */
+    char* getHead(const char* mem, int size, const char* str);          /*!<< 私有函数：获取一帧数据的头指针 */
     bool getImageFromUSB(void);                                         /*!<< 私有函数：通过USB获取图片(1024*3) */
     bool getImageFromUSB_2048_All(void);                                    /*!<< 私有函数：通过USB获取图片 */
-    void saveBMPFile(QString name, int width, int height, uchar *data); /*!<< 私有函数：将图片数据保存为BMP文件 */
-    void saveBMPFileForMono(QString name, int width, int height, uchar *data);
-    bool pixelIsEdgeImage(QImage *image,int x, int y);                  /*!<< 私有函数：优化取样时判断像素点是否为边缘点 */
-    bool multipleClassAICal(int indexOfTrain=0);                        /*!<< 私有函数：多分类智能计算 */
+    void saveBMPFile(QString name, int width, int height, uchar* data); /*!<< 私有函数：将图片数据保存为BMP文件 */
+    void saveBMPFileForMono(QString name, int width, int height, uchar* data);
+    bool pixelIsEdgeImage(QImage* image, int x, int y);                  /*!<< 私有函数：优化取样时判断像素点是否为边缘点 */
+    bool multipleClassAICal(int indexOfTrain = 0);                        /*!<< 私有函数：多分类智能计算 */
     void usualClassAICal(void);                                         /*!<< 私有函数：传统智能计算 */
     bool AIClassComputer(int classMode, int indexOfTrain);              /*!<< 私有函数：智能计算 */
     bool setGlobalAIParam(int classMode, int indexOfTrain); /*!<< 私有函数：direct,0:将智能计算结果设置全局参数,1:A全局复制到B,2:B全局复制到A*/
     int  getUnitGroup(int level, int unit);                             /*!<< 私有函数：智能算法参数复制设别组号设置 */
-    void getGlobalAIParam(int classMode,int levelNum, int groupNum, int indexOfTrain);  /*!<< 私有函数：获取全局智能参数 */
-    void getDataMaxMin(int index,int r, int g, int b);                  /*!<< 私有函数：获取最大值与最小值 */
+    void getGlobalAIParam(int classMode, int levelNum, int groupNum, int indexOfTrain);  /*!<< 私有函数：获取全局智能参数 */
+    void getDataMaxMin(int index, int r, int g, int b);                  /*!<< 私有函数：获取最大值与最小值 */
     void resetDataMaxMin(int index);                                    /*!<< 私有函数：恢复最大值与最小值为默认值 */
-    bool saveDataMaxMin(int classMode,int indexOfTrain);                /*!<< 私有函数：保存最大最小值 */
-    bool saveDataFromImg(int nDataFrom,int classMode,int classLevel, int indexOfImg, int indexOfTrain); /*!<< 私有函数：保存样本参数 */
+    bool saveDataMaxMin(int classMode, int indexOfTrain);                /*!<< 私有函数：保存最大最小值 */
+    bool saveDataFromImg(int nDataFrom, int classMode, int classLevel, int indexOfImg, int indexOfTrain); /*!<< 私有函数：保存样本参数 */
     int enableAICal();                                                  /*!<< 私有函数：检查图片类别属性设置 */
     bool enableAIArithmetic(int classMode);                             /*!<< 私有函数：根据需要使能智能算法 */
     bool IsRGBExit(uchar r, uchar g, uchar b);                          /*!<< 私有函数：判断样本点是否存在*/

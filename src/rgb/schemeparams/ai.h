@@ -70,7 +70,6 @@ private:
 private:
     MyTabBar* tabBar;
     myListWidget* modelListWidget;
-    stu_group_identify m_struGroupIdentify[MAX_LEVEL * MAX_GROUP_IDTNTIFY];
     QMap<QString, SftpWorker*> sftp_worker_map;
 
 };

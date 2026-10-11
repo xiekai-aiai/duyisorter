@@ -127,7 +127,7 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     }
 
     progressDlg = new QProgressDialog(this);
-    progressDlg->setWindowTitle("Down Image");
+    progressDlg->setWindowTitle(myLan.download_image);
     progressDlg->setWindowModality(Qt::WindowModal);
     progressDlg->setAutoClose(false);
     progressDlg->setAutoReset(false);

@@ -26,8 +26,12 @@ bool GlobalFlow::getProfileSetting(const QString& fileName)
     /* sensor mode */
     struCnfp.nSensorMode = setting.value(QString("%1-%2").arg(3).arg(7), struCnfp.nSensorMode).toInt();
 
-    /* background */
+    // 是否使能AI
+    struCnfp.enableAi = setting.value(QString("%1-%2").arg(3).arg(20), struCnfp.enableAi).toBool();
 
+    LOG_INFO_STM("get profile settring:" << fileName.toStdString() << ", enable AI:" << struCnfp.enableAi);
+
+    /* background */
     for (int i = 0; i < MAX_LEVEL; i++)
     {
         for (int j = 0; j < MAX_BACKGROUND_GROUP; j++)
@@ -521,17 +525,33 @@ bool GlobalFlow::getProfileSetting(const QString& fileName)
             memcpy(struCnfp.struGroupIdentify[i][j].struAi.modelId,
                 setting.value(QString("%1-%2-%3-%4-%5-%6").arg(3).arg(14).arg(i).arg(j).arg(17).arg(0),
                     struCnfp.struGroupIdentify[i][j].struAi.modelId).toString().toLocal8Bit().constData(), sizeof(struCnfp.struGroupIdentify[i][j].struAi.modelId));
-            //            for(int k=0; k<MAX_PARA; k++){
-            //                struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].id    = setting.value(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(1).arg(k),
-            //                                                                                        struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].id).toInt();
-            //                memcpy(struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].materialName,
-            //                       setting.value(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(0).arg(2).arg(k),
-            //                                     struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].materialName).toString().toLocal8Bit().constData(), sizeof(struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].materialName));
-            //                struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].threshold    = setting.value(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(3).arg(k),
-            //                                                                                        struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].threshold).toInt();
 
-            //            }
+            // 读取AI模型分类配置
+            for (int k = 0; k < MODEL_MAX_CLS_NUM; k++)
+            {
+                // 类别阈值: 是否启用,类别id,类别阈值,面积模式,面积阈值
+                QString cls_param = setting.value(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(1).arg(k), "").toString();
+                QStringList cls_list = cls_param.split(",");
+                if (cls_list.size() != 5)
+                {
+                    struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].is_apply_ = false;
+                    struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].cls_id_ = k;
+                    struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].threshold_ = 0;
+                    struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_model_ = 0;
+                    struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_threshold_ = 0;
+                    continue;
+                }
 
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].is_apply_ = cls_list[0].toInt();
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].cls_id_ = cls_list[1].toInt();
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].threshold_ = cls_list[2].toInt();
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_model_ = cls_list[3].toInt();
+                struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_threshold_ = cls_list[4].toInt();
+
+                LOG_TRACE_STM("model id:" << struCnfp.struGroupIdentify[i][j].struAi.modelId << ", cls id:" << (int)struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].cls_id_
+                    << ", is applyP:" << (int)struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].is_apply_ << ", threshold:" << (int)struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].threshold_
+                    << ",  area model:" << (int)struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_model_ << ", area threshold:" << (int)struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_threshold_);
+            }
         }
     }
 
@@ -884,6 +904,7 @@ bool GlobalFlow::getProfileSetting(const QString& fileName)
 /* 保存当前色选参数至方案配置文件 */
 bool GlobalFlow::saveProfileSetting(const QString& fileName)
 {
+    LOG_INFO_STM("save profile settring:" << fileName.toStdString() << ", enable AI:" << struCnfp.enableAi);
     /* construct setting file */
     QSettings setting(fileName, QSettings::IniFormat);
     /* save parameters */
@@ -926,6 +947,8 @@ bool GlobalFlow::saveProfileSetting(const QString& fileName)
     {
         setting.setValue(QString("%1-%2").arg(3).arg(7), struCnfp.nSensorMode);
     }
+
+    setting.setValue(QString("%1-%2").arg(3).arg(20), struCnfp.enableAi);
 
     /* background */
     for (int i = 0; i < MAX_LEVEL; i++)
@@ -2390,21 +2413,29 @@ bool GlobalFlow::saveProfileSetting(const QString& fileName)
                     struCnfp.struGroupIdentify[i][j].struAi.modelId);
             }
 
-            //            for(int k=0; k<MAX_PARA; k++){
-            //                if (struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].id != _t_struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].id) {
-            //                    setting.setValue(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(1).arg(k),
-            //                            struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].id);
-            //                }
-            //                if (memcmp(struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].materialName,_t_struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].materialName,
-            //                           sizeof(struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].materialName)) != 0) {
-            //                    setting.setValue(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(2).arg(k),
-            //                            struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].materialName);
-            //                }
-            //                if (struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].threshold != _t_struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].threshold) {
-            //                    setting.setValue(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(3).arg(k),
-            //                            struCnfp.struGroupIdentify[i][j].struAi.struAiPara[k].threshold);
-            //            }
-            //          }
+            for (int k = 0; k < MODEL_MAX_CLS_NUM; k++)
+            {
+                // 类别阈值: 是否启用,类别id,类别阈值,面积模式,面积阈值
+                QString key = QString("%1,%2,%3,%4,%5").arg(struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].is_apply_)
+                    .arg(struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].cls_id_)
+                    .arg(struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].threshold_)
+                    .arg(struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_model_)
+                    .arg(struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_threshold_);
+
+                QString oldKey = QString("%1,%2,%3,%4,%5").arg(_t_struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].is_apply_)
+                    .arg(_t_struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].cls_id_)
+                    .arg(_t_struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].threshold_)
+                    .arg(_t_struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_model_)
+                    .arg(_t_struCnfp.struGroupIdentify[i][j].struAi.struAiClsPara[k].area_threshold_);
+
+                if (key != oldKey)
+                {
+                    setting.setValue(QString("%1-%2-%3-%4-%5-%6-%7").arg(3).arg(14).arg(i).arg(j).arg(17).arg(1).arg(k),
+                        key);
+
+                    LOG_TRACE_STM("cls id:" << k << ", param:" << key.toStdString());
+                }
+            }
         }
     }
 

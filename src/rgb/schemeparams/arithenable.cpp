@@ -425,7 +425,7 @@ void PageIdentify::updateArithmeticState()
                 arithmeticBox[i]->setChecked(true);
                 arithmeticBtn[i]->setEnabled(true);
                 //只展示，没法使能，同时置算法使能为否
-                if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+                if (!struCnfp.enableAi)
                 {
                     if (arithmeticSeq[i] == ARITH_PISTACHIO)
                     {
@@ -445,7 +445,7 @@ void PageIdentify::updateArithmeticState()
                 arithmeticBox[i]->setChecked(false);
                 arithmeticBtn[i]->setEnabled(false);
                 //只展示，没法使能，同时置算法使能为否
-                if (!ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+                if (!struCnfp.enableAi)
                 {
                     if (arithmeticSeq[i] == ARITH_PISTACHIO)
                     {
@@ -589,7 +589,7 @@ void PageIdentify::updateArithmeticLayout()
         else
             gridLayout->addLayout(arithmeticLayout[i], i / 2 + 1, 2, Qt::AlignRight);
 
-}
+    }
 #endif
 }
 

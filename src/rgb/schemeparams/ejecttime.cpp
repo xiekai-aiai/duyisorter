@@ -446,7 +446,7 @@ void PageEjectTime::updatePage()
     updateTabBar(this->tabBar, false, false);
     refreshEjectSetDisplay();
 
-    if (ConfigMgr::Instance().GetAiCfgInfo().enable_ai_)
+    if (struCnfp.enableAi)
     {
         aiEjectorDelayLbl->show();
         aiEjectorDelayEdit->show();
