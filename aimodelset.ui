@@ -105,16 +105,16 @@
   <widget class="QLabel" name="tipLabel">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>5</x>
      <y>690</y>
-     <width>471</width>
+     <width>621</width>
      <height>21</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>HarmonyOS Sans Medium</family>
-     <pointsize>7</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
    <property name="text">
@@ -374,7 +374,7 @@ QPushButton:pressed {
   <widget class="QPushButton" name="importImgPushButton">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>5</x>
      <y>620</y>
      <width>111</width>
      <height>51</height>
@@ -409,7 +409,7 @@ QPushButton:pressed {
   <widget class="QPushButton" name="mergeImgPushButton">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>125</x>
      <y>620</y>
      <width>111</width>
      <height>51</height>
@@ -1006,7 +1006,7 @@ QPushButton:pressed {
   <widget class="QPushButton" name="batchValidImgPushButton">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>245</x>
      <y>620</y>
      <width>111</width>
      <height>51</height>
@@ -1048,7 +1048,7 @@ QPushButton:checked {
   <widget class="QPushButton" name="validvsAnnoImgPushButton">
    <property name="geometry">
     <rect>
-     <x>370</x>
+     <x>365</x>
      <y>620</y>
      <width>111</width>
      <height>51</height>

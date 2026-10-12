@@ -168,12 +168,12 @@ void PageEjectTime::setEjectTimeSlt(int index)
         break;
     case Index_Assist_Duration:
         nMin = 0;
-        nMax = 10;
+        nMax = 25;
         type = floatType;
         break;
     case Index_Assist_Delay:
         nMin = 1;
-        nMax = 13;
+        nMax = 120;
         type = floatType;
         break;
     case Index_Infra_Delay:
