@@ -62,15 +62,15 @@ private:
     MyCheckBox* ejectorOnCheckBox;
 
     myLabel* aiEjectorDelayLbl;
-    myLineEdit* aiEjectorDelayEdit;
+    myLineEdit* aiEjectorDelayEdit;                        // AI固定延迟 
     myLabel* aiEjectorDynamicDelayLbl;
-    myLineEdit* aiEjectorDynamicDelayEdit;
+    myLineEdit* aiEjectorDynamicDelayEdit;                 // AI动态延迟
     myLabel* aiEjectorBlowTimeLbl;
-    myLineEdit* aiEjectorBlowTimeEdit;
+    myLineEdit* aiEjectorBlowTimeEdit;                     // AI吹气时间
 
     int m_nAiEjectTime[MAX_LEVEL * MAX_GROUP_TICK][3];
     int m_nEjectTime[MAX_LEVEL * MAX_GROUP_TICK][6];
-    int m_nEjectTimeCent[MAX_LEVEL * MAX_GROUP_TICK][6];//时间精度中的百分位
+    int m_nEjectTimeCent[MAX_LEVEL * MAX_GROUP_TICK][6];   // 时间精度中的百分位
 };
 
 #endif // EJECTTIME_H
