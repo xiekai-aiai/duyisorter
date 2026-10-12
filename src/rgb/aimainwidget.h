@@ -34,6 +34,7 @@
 #include "myvideo.h"
 #include "aiinputparams.h"
 #include "upgradefpga/selectfiledialog.h"
+#include "udpimagereceiver.h"
 #ifdef Q_OS_UNIX
 #include "common/myusb/myusb.h"
 #endif
@@ -113,6 +114,7 @@ public:
     void updateParams();                                                        /*!<< 智能参数页面参数更新*/
     void updateAIParamsPage();
     void upTabBar();
+    void onViewRequest(int idx, bool is_start);
 
 public:
     enum
@@ -130,7 +132,8 @@ signals:
     void updatePreviewPageSig();                    /*!<< 信号函数：更新智能预览界面 */
     void deleteCurImgSig();                         /*!<< 信号函数：删除图片 */
     void deleteAllImgSig();                         /*!<< 信号函数：删除全部图片 */
-    void goToIdentifyPagesig();                 /*!<< 信号函数：返回识别参数主界面 */
+    void goToIdentifyPagesig();                     /*!<< 信号函数：返回识别参数主界面 */
+    void imgReceivedSig();                          /*!<< 信号函数：图片接收完成 */
 
 public slots:
     void onStackedWidgetIndexChangedSlt(int index); /*!<< 槽函数：页面切换*/
@@ -199,6 +202,7 @@ public slots:
     void onAIParamsBackBtnPressedSlt();     /*!< 槽函数：智能参数页面返回*/
     void onColorSpaceBtnGpIndexChangedSlt(int nIndex);      /*!< 槽函数：颜色空间 */
     void onDimensionBtnGpIndexChangedSlt(int nIndex);       /*!< 槽函数：维度 */
+    void onImageRead(const QImage& img);
 
 private:
     /*!
@@ -402,6 +406,9 @@ private:
     myPushButton* AIParamsBackBtn;
 
     QTimer* delTimer;
+
+    UdpImageReceiver* udp_img_receiver;
+
 
     /*!
      * \name 最大值与最小值
