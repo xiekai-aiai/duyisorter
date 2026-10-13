@@ -11,6 +11,9 @@
 #include <vector>
 #include "unilog.h"
 #include "configmgr.h"
+#include "aihelper.h"
+#include "cmdworker.h"
+#include "cmdudpmanager.h"
 #ifdef Q_OS_UNIX
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -104,6 +107,9 @@ AIMainWidget::AIMainWidget(QWidget* parent) :
     m_stackedWidget->addWidget(m_AIParamsSetWidget);
     createAIModeParamsWidget();
 
+    udp_img_receiver = new UdpImageReceiver(SELF_UPD_VIDEO_PORT, CAM_PIXEL_WIDTH, 64);
+    connect(udp_img_receiver, &UdpImageReceiver::imageReady, this, &AIMainWidget::onImageRead);
+
     connect(m_stackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onStackedWidgetIndexChangedSlt(int)));
     connect(m_AIPreviewWidget, SIGNAL(backToAIMainPageSig()), this, SLOT(goBackToMainWidget()));
     connect(this, SIGNAL(deleteCurImgSig()), m_AIPreviewWidget, SLOT(onDelCurImgSlt()));
@@ -112,6 +118,15 @@ AIMainWidget::AIMainWidget(QWidget* parent) :
     connect(m_AIInputParamsWidget, SIGNAL(backToHomePageSig()), this, SLOT(goBackToAIImageWidget()));
 
     m_stackedWidget->setCurrentIndex(AI_MAIN_PAGE);
+}
+
+void AIMainWidget::onImageRead(const QImage& img)
+{
+    QImage scaledImg = img.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QString  imageName = QString("%1.png").arg(m_nNumOfImg);
+    scaledImg.save(QString("/tmp/%1").arg(imageName), "PNG", 50);
+
+    emit imgReceivedSig();
 }
 
 /*!
@@ -1325,45 +1340,59 @@ void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
     int nBegin = m_beginChLe->text().toInt();
     int nEnd = m_endChLe->text().toInt();
 
-    foreach(CaptureConfig tmp, qlCaptureConfig)
+    for (int i = 0; i < qlCaptureConfig.size(); ++i)
     {
+        CaptureConfig& tmp = qlCaptureConfig[i];
+
         LOG_INFO_STM("nUnitAddr:" << tmp.nUnitAddr << ", nSeq:" << tmp.nSeq << ", protoType:" << tmp.nProtoType
             << ", nViewNum:" << tmp.nViewNum << ", data len:" << tmp.dataLen << ", datadep:" << tmp.dataDepth
-            << ", result:" << tmp.result << ", unitName:" << tmp.unitViewName.toStdString());
-        if (tmp.nTransType == 1)
-        {  //USB需要初始化
-//            if (isUSBInit) {
-//                if (qlCaptureConfig.first().result == ERR_USB_INIT) {
-//                    tmp.result = ERR_USB_INIT;
-//                }
-//            }
+            << ", result:" << tmp.result << ", unitName:" << tmp.unitViewName.toStdString() << ", nTransType:"
+            << tmp.nTransType << ", size:" << qlCaptureConfig.size());
 
-//            if(!isUSBInit) {
-//#ifdef Q_OS_UNIX
-//                if(myUsbDev != NULL){
-//                    usb.myusbFree();
-//                }
-//                usb.myusbInit();
-//                if(myUsbDev == NULL){
-//                    tmp.result = ERR_USB_INIT;
-//                }
-//#endif
-//                isUSBInit = true;
-//            }
-            qlCaptureConfig.replace(tmp.nSeq - 1, tmp);
+        if (tmp.nTransType == 1)
+        {
+            // note: 暂时不考虑usb方式
+#if 0
+            // USB需要初始化, 
+            if (isUSBInit)
+            {
+                if (qlCaptureConfig.first().result == ERR_USB_INIT)
+                {
+                    tmp.result = ERR_USB_INIT;
+                }
+            }
+
+            if (!isUSBInit)
+            {
+                if (myUsbDev != NULL)
+                {
+                    usb.myusbFree();
+                }
+                usb.myusbInit();
+                if (myUsbDev == NULL)
+                {
+                    tmp.result = ERR_USB_INIT;
+                }
+                isUSBInit = true;
+            }
+#endif
         }
     }
 
     foreach(CaptureConfig tmp, qlCaptureConfig)
     {
-
-        // xktodo 发送upd抓拍图片指令
         myFlow.msleep(50);
-
         if (tmp.result == ERR_USB_INIT)
-        { //USB初始化失败
+        {
+            //USB初始化失败
             return;
         }
+
+        // 启动抓包, 通知AI板卡准备接收
+        udp_img_receiver->SetImageHegiht(ConfigMgr::Instance().GetAiCfgInfo().img_view_height_);
+        udp_img_receiver->start();
+        onViewRequest(tmp.nUnitAddr, true);
+
         MySerial.com1Write(CMD_INT_IMAGE_CAPTURE_MODE, INT, struGsh.nLevel, tmp.nUnitAddr, 0, 0, (tmp.dataDepth - 1) / 256, (tmp.dataDepth - 1) % 256, tmp.nTransType, 3);
         MySerial.com1Write(CMD_UNIT_IMG_BURST, UNIT, struGsh.nLevel, tmp.nUnitAddr, 0, m_bIsCuteOffBg, 0x01, struGsh.nIntelSampBurst / 256, struGsh.nIntelSampBurst % 256, 1);
         if (myFlow.getProductLineNo() != 0)
@@ -1911,180 +1940,41 @@ EXIT:
 void AIMainWidget::processImageDataFromCameraByAIEN(CaptureConfig& captureConfig)
 {
 
-    char* data = NULL;
+    // 目前框架实现是阻塞的，所以这里通过QEventLoop做阻塞实现 
+    QEventLoop loop;
+    QTimer timer;
 
+    bool received = false;
+    timer.setSingleShot(true);
 
+    // 收到数据后，通知函数 A 退出等待
+    QMetaObject::Connection dataConn =
+        connect(this, &AIMainWidget::imgReceivedSig,
+            &loop, [&]() {
+                received = true;
+                loop.quit();
+            });
 
-    //    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    //    int buf_size = BUFFER_SIZE;
-    //    struct sockaddr_in serv_addr;
-    //    struct sockaddr_in client_addr;
-    //    socklen_t addr_len;
-    //    uint32_t image_len;
-        // 用vector作为动态缓冲区（便于处理剩余数据）
-    //    std::vector<unsigned char> buffer;
-    //    buffer.reserve(BUFFER_SIZE);  // 预分配内存提升效率
-    //    std::vector<unsigned char> img_vec;
+    // 3000ms 超时后，通知函数 A 退出等待
+    connect(&timer, &QTimer::timeout,
+        &loop, &QEventLoop::quit);
 
-    //    // 设置超时时间：3秒
-    //    struct timeval timeout;
-    //    timeout.tv_sec = 3;   // 秒
-    //    timeout.tv_usec = 0;  // 微秒（0表示不使用）
+    // 启动超时计时
+    timer.start(3000);
 
-    //    // 1. 创建UDP套接字并检查错误
-    //    if (sockfd < 0) {
-    ////        std::cerr << "创建套接字失败: " << strerror(errno) << std::endl;
-    //        printf("创建套接字失败.\n");
-    //        captureConfig.result = ERR_UNKOWN;
-    //        goto EXIT;
-    //    }
-
-    //    // 应用超时设置到套接字
-    //    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-    //        printf("设置超时失败.\n");
-    //        ::close(sockfd);
-    //        captureConfig.result = ERR_UNKOWN;
-    //        goto EXIT;
-    //    }
-
-    //    // 2. 设置接收缓冲区大小并检查
-    //    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &buf_size, sizeof(buf_size)) < 0) {
-    ////        std::cerr << "设置缓冲区失败: " << strerror(errno) << std::endl;
-    //        printf("设置缓冲区失败.\n");
-    //        ::close(sockfd);
-    //        captureConfig.result = ERR_MALLOC_FAILED;
-    //        goto EXIT;
-    //    }
-
-    //    memset(&serv_addr, 0, sizeof(serv_addr));
-    //    serv_addr.sin_family = AF_INET;
-    //    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    //    serv_addr.sin_port = htons(AI_UDP_IMG_PORT);
-
-    //    // 3. 绑定地址和端口并检查
-    //    if (bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-    ////        std::cerr << "绑定失败: " << strerror(errno) << std::endl;
-    //        printf("绑定失败.\n");
-    //        ::close(sockfd);
-    //        captureConfig.result = ERR_UNKOWN;
-    //        goto EXIT;
-    //    }
-
-    //    std::cout << "UDP服务器启动，监听端口 9196...缓冲区大小:" << BUFFER_SIZE << "字节" << std::endl;
-
-    //    std::vector<unsigned char> buffer;
-    struct sockaddr_in client_addr;
-    socklen_t addr_len;
-    addr_len = sizeof(client_addr);
-    // 用vector作为动态缓冲区（便于处理剩余数据）
-    std::vector<unsigned char> buffer;
-    buffer.reserve(BUFFER_SIZE);  // 预分配内存提升效率
-    std::vector<unsigned char> img_vec;
-    uint32_t image_len;
-    QByteArray jpegData;
-    QImage image;
-    // 开始计时
-    QElapsedTimer timer;
-    timer.start();
-
-    while (true)
+    // 如果启动抓包期间已经收到数据，则不再进入等待
+    if (!received)
     {
-        // 检查是否超时（4秒）
-        if (timer.elapsed() > 4000)
-        {
-            std::cout << "耗时timer.elapsed(): " << timer.elapsed() << " ms" << std::endl;
-            printf("总处理时间超过4秒，超时退出\n");
-            //            ::close(sockfd);
-            captureConfig.result = ERR_TIMEOUT;
-            goto EXIT;
-        }
-
-        // 临时缓冲区用于接收单次数据
-        unsigned char temp_buf[40960];  // 单次接收4KB，避免大数组
-        // xktodo 接收抓拍图片数据 
-        ssize_t recv_len;
-        // = recvfrom(MyUpd.getSockfd(), temp_buf, sizeof(temp_buf), 0, (struct sockaddr*)&client_addr, &addr_len);
-
-        // 处理接收结果（关键错误检查）
-        if (recv_len < 0)
-        {
-            //            std::cerr << "接收失败: " << strerror(errno) << std::endl;
-            printf("接收失败.\n");
-            continue;  // 跳过错误，继续接收
-        }
-        else if (recv_len == 0)
-        {
-            std::cout << "客户端关闭连接" << std::endl;
-            continue;
-        }
-
-        // 将新接收的数据追加到全局缓冲区（保持数据连续性）
-        buffer.insert(buffer.end(), temp_buf, temp_buf + recv_len);
-        std::cout << "已接收 " << recv_len << " 字节，累计: " << buffer.size() << " 字节" << std::endl;
-
-        // 数据处理：检查是否有完整的头部（至少12字节）
-        if (buffer.size() >= 12)
-        {
-            // 验证魔术字（0xA6A66A6A）
-            if (buffer[0] == 0xA6 && buffer[1] == 0xA6 &&
-                buffer[2] == 0x6A && buffer[3] == 0x6A)
-            {
-
-                // 解析图像长度（注意网络字节序转主机字节序）
-                image_len = ntohl(*(reinterpret_cast<int*>(buffer.data() + 4)));
-                std::cout << "检测到图像头部，图像长度: " << image_len << " 字节" << std::endl;
-
-
-                // 检查是否接收完整（头部8字节 + 图像数据）
-                if (buffer.size() >= 8 + image_len)
-                {
-                    try
-                    {
-                        // 提取图像数据
-                        img_vec.assign(buffer.begin() + 8, buffer.begin() + 8 + image_len);
-
-                        // 解码并保存图像
-//                        cv::Mat img_mat = cv::imdecode(img_vec, cv::IMREAD_COLOR);
-//                        if (!img_mat.empty()) {
-//                            std::string filename = "received_image.jpg";
-//                            if (cv::imwrite(filename, img_mat)) {
-//                                std::cout << "图像保存成功: " << filename << std::endl;
-//                            } else {
-//                                std::cerr << "图像保存失败" << std::endl;
-//                            }
-//                        } else {
-//                            std::cerr << "图像解码失败（数据可能损坏）" << std::endl;
-//                        }
-
-                        // 移除已处理的数据，保留剩余字节（可能是下一个图像）
-                        buffer.erase(buffer.begin(), buffer.begin() + 8 + 4 + image_len);
-                        goto OK;
-                    }
-                    catch (const std::exception& e)
-                    {
-                        std::cerr << "图像处理出错: " << e.what() << std::endl;
-                        buffer.clear();  // 出错时清空缓冲区，避免后续异常
-                    }
-                }
-            }
-        }
+        loop.exec();
     }
 
-OK:
-    //图片图标显示处理
-//    displayImgInfo(reinterpret_cast<char*>(img_vec.data()),captureConfig);
-    jpegData = QByteArray(reinterpret_cast<const char*>(img_vec.data()), img_vec.size());
-    if (!image.loadFromData(jpegData, "JPEG"))
-    {
-        qWarning("Failed to load image from JPEG data");
-        return;
-    }
-    else
-    {
-        QImage scaledImg = image.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        QString  imageName = QString("%1.png").arg(m_nNumOfImg);
-        scaledImg.save(QString("/tmp/%1").arg(imageName), "PNG", 50);
+    // 清理连接并停止定时器
+    QObject::disconnect(dataConn);
+    timer.stop();
 
+    if (received)
+    {
+        LOG_INFO_STM("image receive!");
         if (m_nNumOfImg / MAX_PER_LIST == m_nIndexOfPage)
         {    //本页有显示格则显示
             displayCurImg(m_nNumOfImg % MAX_PER_LIST);
@@ -2098,15 +1988,14 @@ OK:
         }
         updateBtnStatus();
     }
-
-EXIT:
-    fflush(0);
-    if (data != NULL)
+    else
     {
-        free(data);
-        data = NULL;
+        LOG_INFO_STM("image timeout!");
+        captureConfig.result = ERR_TIMEOUT;
     }
 
+    udp_img_receiver->stop();
+    onViewRequest(captureConfig.nUnitAddr, false);
 }
 
 /*!
@@ -2259,6 +2148,7 @@ EXIT:
  */
 void AIMainWidget::processImageDataFromCamera(CaptureConfig& captureConfig)
 {
+    LOG_TRACE_STM("nTransType:" << captureConfig.nTransType << ", enable Ai:" << struCnfp.enableAi);
     if (captureConfig.nTransType == 0)
     {
         processImageDataFromCameraByUART(captureConfig);
@@ -2376,7 +2266,8 @@ void AIMainWidget::getImage()
     startCapture(qlCaptureConfig);                              //! 相机开始拍照,所有相机一起准备拍照
 
     foreach(CaptureConfig tmp, qlCaptureConfig)
-    {               //! 从每个相机逐个获取
+    {
+        //! 从每个相机逐个获取
         infoWidget->setLabelText(myLan.ai_image_capturing + QString("%1/%2").arg(tmp.nSeq).arg(qlCaptureConfig.count()));
         infoWidget->delayShow();
         processImageDataFromCamera(tmp);                        //! 图像数据传输获取及页面显示
@@ -5562,4 +5453,21 @@ void AIMainWidget::upTabBar()
             }
         }
     }
+}
+
+void AIMainWidget::onViewRequest(int idx, bool is_start)
+{
+    ViewParam vp;
+    vp.flag_ = is_start ? 1 : 2;
+
+    QByteArray request = cmdworker::ViewParamRequest2(vp);
+    QString ip = ai_helper::GetAiIpByIndex(idx);
+
+    bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request);
+    if (!ok)
+    {
+        LOG_ERROR_STM("video view opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+        return;
+    }
+    LOG_INFO_STM("video view opr index:" << idx << " ip:" << ip.toStdString() << " send command successful! requst body:" << request.toHex(' ').toUpper().toStdString());
 }

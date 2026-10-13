@@ -1,5 +1,6 @@
 #include "ejecttime.h"
 #include "configmgr.h"
+#include "unilog.h"
 
 /* 构造喷阀时间设置页面 */
 PageEjectTime::PageEjectTime(QWidget* parent)
@@ -231,18 +232,15 @@ void PageEjectTime::createPage()
     /* eject time group */
     QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     for (int i = 0; i < 6; i++)
-    {//第六个是I机型红外延迟时间设置
+    {
+        // 第六个是I机型红外延迟时间设置
         ejectTimeLabel.append(new myLabel(""));
         ejectTimeValue.append(new myLineEdit(""));
         ejectTimeValue[i]->setSizePolicy(sizePolicy);
         ejectTimeValue[i]->setMinimumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+        ejectTimeLabel[i]->hide();
+        ejectTimeValue[i]->hide();
     }
-
-    ejectTimeLabel[2]->hide();
-    ejectTimeValue[2]->hide();
-    //红外延迟默认隐藏
-    ejectTimeLabel[5]->hide();
-    ejectTimeValue[5]->hide();
 
     aiEjectorDelayLbl = new myLabel("Ai " + myLan.fixed_delay + "(ms)");
     aiEjectorDelayEdit = new myLineEdit("");
@@ -356,6 +354,7 @@ void PageEjectTime::displayPage()
 
     for (int i = 0; i < ejectTimeLabel.size(); i++)
     {
+        LOG_TRACE_STM("ject label:" << i << ", text:" << list[i].toStdString());
         ejectTimeLabel[i]->setText(list[i]);
     }
 }
@@ -413,7 +412,7 @@ void PageEjectTime::refreshEjectSetDisplay()
  */
 bool PageEjectTime::checkContainAssist(int nTick)
 {
-    return true;
+    return false;
 }
 
 /*!
@@ -454,10 +453,10 @@ void PageEjectTime::updatePage()
         aiEjectorDynamicDelayEdit->show();
         aiEjectorBlowTimeLbl->show();
         aiEjectorBlowTimeEdit->show();
-        ejectTimeLabel[0]->hide();
-        ejectTimeValue[0]->hide();
-        ejectTimeLabel[1]->hide();
-        ejectTimeValue[1]->hide();
+        ejectTimeLabel[0]->show();
+        ejectTimeValue[0]->show();
+        ejectTimeLabel[1]->show();
+        ejectTimeValue[1]->show();
     }
     else
     {

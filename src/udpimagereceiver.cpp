@@ -30,7 +30,7 @@ void UdpImageReceiver::SetImageWidth(int width)
 
 void UdpImageReceiver::SetImageHegiht(int heigth)
 {
-    LOG_INFO_STM("is runnning:" << is_running_ << ", set heigth:" << height_);
+    LOG_INFO_STM("is runnning:" << is_running_ << ", set heigth:" << heigth);
     height_ = heigth;
 }
 
@@ -70,9 +70,9 @@ void UdpImageReceiver::start()
     // 创建第一张图片
     cur_image_ = QImage(width_, height_,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-                        QImage::Format_BGR888);
+        QImage::Format_BGR888);
 #else
-                        QImage::Format_RGB888);
+        QImage::Format_RGB888);
 #endif
     cur_image_.fill(Qt::black);
 
@@ -248,9 +248,9 @@ void UdpImageReceiver::processDatagram(const QByteArray& datagram)
         // 准备接收下一张图片
         cur_image_ = QImage(width_, height_,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-                            QImage::Format_BGR888);
+            QImage::Format_BGR888);
 #else
-                            QImage::Format_RGB888);
+            QImage::Format_RGB888);
 #endif
         cur_image_.fill(Qt::black);
         cur_row_ = 0;
