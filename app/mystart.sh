@@ -102,9 +102,19 @@ cd /opt/app
 
 if [ -e duyiSorter_v1.00.tar.xz ]; then
         echo "软件升级开始"
+        # 先备份生产数据库，防止 tar 包里的空库覆盖现场配置
+        if [ -e userdata/db/sorter.db ]; then
+                cp -f userdata/db/sorter.db /tmp/sorter.db.bak
+        fi
         tar -xvf duyiSorter_v1.00.tar.xz
         mv -f tar_app/* .
         rm -rf tar_app
+        # 如果之前有备份，恢复（tar 包里不应带 sorter.db；即使带了也覆盖回现场库）
+        if [ -e /tmp/sorter.db.bak ]; then
+                mkdir -p userdata/db
+                cp -f /tmp/sorter.db.bak userdata/db/sorter.db
+                rm -f /tmp/sorter.db.bak
+        fi
         rm duyiSorter_v1.00.tar.xz
         echo "软件升级结束"
 else

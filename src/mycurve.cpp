@@ -705,13 +705,13 @@ void MyAxis::drawIdeResult(QPainter &painter)
     }
 
     //! 智能A
-    if (struCnfp.nArithmeticEnable[ARITH_INTEL_A] == 1
+    if (myFlow.getArithEnable(struGsh.nLevel, 0, ARITH_INTEL_A) == 1
             && struGsh.struResult[struGsh.nUnit].nEn[IDE_RESULT_INTEL_A]) {
         drawSingleResult(painter, IDE_RESULT_INTEL_A);
     }
 
     //! 智能B
-    if (struCnfp.nArithmeticEnable[ARITH_INTEL_B] == 1
+    if (myFlow.getArithEnable(struGsh.nLevel, 0, ARITH_INTEL_B) == 1
             && struGsh.struResult[struGsh.nUnit].nEn[IDE_RESULT_INTEL_B]) {
         drawSingleResult(painter, IDE_RESULT_INTEL_B);
     }

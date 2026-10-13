@@ -437,12 +437,12 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_DIFF_POSITIVE_SORT)
                         {
                             //! 选病斑
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
                             //! 选黄
-                            if (struCnfp.nArithmeticEnable[ARITH_DISCOLOR_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_DISCOLOR_A))
                             {
                                 getGlobalAIParam(ARITH_DISCOLOR_A, struGsh.nLevel, j, ARITH_DISCOLOR_A);
                             }
@@ -467,11 +467,11 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_DIFF_NEGATIVE_SORT)
                         {
                             //! 选透
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_B);
                             }
@@ -496,12 +496,12 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_WHITE_POSITIVE_SORT)
                         {
                             //! 选全白
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_B);
                             }
                             //! 选腹白
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_A);
                             }
@@ -537,11 +537,11 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_WHITE_NEGATIVE_SORT)
                         {
                             //! 选透
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_B);
                             }
@@ -566,7 +566,7 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_YELLOW_WHITE_SORT)
                         {
                             //! 病斑
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
@@ -586,11 +586,11 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                                 }
                             }
                             //! 选白
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_A);
                             }
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_B);
                             }
@@ -610,7 +610,7 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                                 }
                             }
                             //! 选黄
-                            if (struCnfp.nArithmeticEnable[ARITH_DISCOLOR_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_DISCOLOR_A))
                             {
                                 getGlobalAIParam(ARITH_DISCOLOR_A, struGsh.nLevel, j, ARITH_DISCOLOR_A);
                             }
@@ -620,11 +620,11 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_YELLOW_TRANS_SORT)
                         {
                             //! 选透
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_B);
                             }
@@ -643,7 +643,7 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                                 }
                             }
                             //! 选病斑
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_A);
                             }
@@ -680,12 +680,12 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_DIFF_POSITIVE_SORT)
                         {
                             //! 选病斑
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
                             //! 选黄
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_B);
                             }
@@ -721,11 +721,11 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_DIFF_NEGATIVE_SORT)
                         {
                             //! 选透
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_B);
                             }
@@ -750,12 +750,12 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_WHITE_POSITIVE_SORT)
                         {
                             //! 选全白
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_B);
                             }
                             //! 选腹白
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_A);
                             }
@@ -790,7 +790,7 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         //! 乳白粒反选
 //                            if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_WHITE_NEGATIVE_SORT){
 //                                //! 选透
-//                                if (struCnfp.nArithmeticEnable[ARITH_GREY_A]) {
+//                                if (myFlow.getArithEnable(i, j, ARITH_GREY_A)) {
 //                                    getGlobalAIParam(ARITH_GREY_A,struGsh.nLevel,j,ARITH_GREY_B);
 //                                }
 //                            }
@@ -799,7 +799,7 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_YELLOW_WHITE_SORT)
                         {
                             //! 病斑
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_A);
                             }
@@ -819,11 +819,11 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                                 }
                             }
                             //! 选白
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 nSens = getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_A);
                             }
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_B);
                             }
@@ -848,12 +848,12 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
                         if (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_YELLOW_TRANS_SORT)
                         {
                             //! 选黄
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_A])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_A))
                             {
                                 getGlobalAIParam(ARITH_GREY_A, struGsh.nLevel, j, ARITH_GREY_B);
                             }
                             //! 选病斑
-                            if (struCnfp.nArithmeticEnable[ARITH_GREY_B])
+                            if (myFlow.getArithEnable(i, j, ARITH_GREY_B))
                             {
                                 getGlobalAIParam(ARITH_GREY_B, struGsh.nLevel, j, ARITH_GREY_A);
                             }
@@ -1708,7 +1708,7 @@ void UnsupervisedAIMainWidget::updateSimImg()
                     nRowEnd = IMAGE_HEIGHT - 1;
 
                 int nBadPixelNum = 0;
-                if (struCnfp.nArithmeticEnable[ARITH_INTEL_A])
+                if (myFlow.getArithEnable(i, j, ARITH_INTEL_A))
                 {
                     for (int m = nRowBegin; m <= nRowEnd; m++)
                     {
@@ -1738,7 +1738,7 @@ void UnsupervisedAIMainWidget::updateSimImg()
                     }
                 }
 
-                if (struCnfp.nArithmeticEnable[ARITH_DISCOLOR_A])
+                if (myFlow.getArithEnable(i, j, ARITH_DISCOLOR_A))
                 {
                     nBadPixelNum = 0;
                     for (int m = nRowBegin; m <= nRowEnd; m++)

@@ -295,6 +295,7 @@ int main(int argc, char *argv[])
    a.setFont(getFont());
 
 
+
 //   for (int i = 0; i <= 100; i=i+10) {
 //       if(i==10){
 //            label->show();

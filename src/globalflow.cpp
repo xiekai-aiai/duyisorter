@@ -1009,10 +1009,8 @@ void GlobalFlow::getArithDelayEdge()
 /* 计算获取物料算法尺寸延迟时间 */
 void GlobalFlow::getDelayMaterialSize()
 {
-    int i, j, k, m, tmp, nMaxValue = 0;
+    int i, j, m, k, tmp, nMaxValue = 0, nUnitAddr;
     int nMaxSize[MAX_LEVEL][MAX_GROUP_IDTNTIFY];
-    int nUnitAddr;
-    int nArithmeticEnable[MAX_LEVEL][ARITHMETIC_TOTAL];
 
     for (i = 0; i < struCnfg.nLevelTotal; i++)
     {
@@ -1029,22 +1027,13 @@ void GlobalFlow::getDelayMaterialSize()
         }
     }
 
-    memset(nArithmeticEnable, 0, sizeof(nArithmeticEnable));
-    for (i = 0; i < MAX_LEVEL; i++)
-    {
-        for (j = 0; j < ARITHMETIC_TOTAL; j++)
-        {
-            nArithmeticEnable[i][j] = struCnfp.nArithmeticEnable[j];
-        }
-    }
-
     for (i = 0; i < struCnfg.nLevelTotal; i++)
     {
         for (j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++)
         {
             for (m = 0; m < 4; m++)
             {       //  灰度A、灰度B、色差A、色差B
-                if (nArithmeticEnable[i][m + ARITH_GREY_A] == 1)
+                if (getArithEnable(i, j, m + ARITH_GREY_A) == 1)
                 {
                     nMaxValue = 10001;
                     if ((struCnfp.struGroupIdentify[i][j].struGreyColor[m].nMode == 0 && struCnfp.struGroupIdentify[i][j].struGreyColor[m].nSensMin > 0)
@@ -1056,7 +1045,7 @@ void GlobalFlow::getDelayMaterialSize()
                 }
             }
 
-            if (nArithmeticEnable[i][ARITH_CROSS] == 1)
+            if (getArithEnable(i, j, ARITH_CROSS) == 1)
             {   // 差分
                 if (struCnfp.struGroupIdentify[i][j].struCross.nSens < 1001)
                 {
@@ -1064,7 +1053,7 @@ void GlobalFlow::getDelayMaterialSize()
                         ? struCnfp.struGroupIdentify[i][j].struCross.nRow : nMaxSize[i][j];
                 }
             }
-            if (nArithmeticEnable[i][ARITH_CANDY])
+            if (getArithEnable(i, j, ARITH_CANDY))
             {        // 糖果
                 nMaxSize[i][j] = (nMaxSize[i][j] < struCnfp.struGroupIdentify[i][j].struCandy.nRow)
                     ? struCnfp.struGroupIdentify[i][j].struCandy.nRow : nMaxSize[i][j];
@@ -1072,7 +1061,7 @@ void GlobalFlow::getDelayMaterialSize()
 
             for (m = 0; m < 2; m++)
             {
-                if (nArithmeticEnable[i][m + ARITH_BUD_1] == 1)
+                if (getArithEnable(i, j, m + ARITH_BUD_1) == 1)
                 {   // 选芽1、选芽2
                     if (struCnfp.struGroupIdentify[i][j].struBud[m].nPercent > struCnfp.struGroupIdentify[i][j].struBud[m].nPercentLimit)
                     {
@@ -1084,7 +1073,7 @@ void GlobalFlow::getDelayMaterialSize()
 
             for (m = 0; m < 3; m++)
             {
-                if (nArithmeticEnable[i][m + ARITH_PEANUT_A] == 1)
+                if (getArithEnable(i, j, m + ARITH_PEANUT_A) == 1)
                 {    // A、B、C类
                     nMaxValue = 1001;
                     if (((struCnfp.struGroupIdentify[i][j].struPeanutAbcd[m].nMode == 0) && (struCnfp.struGroupIdentify[i][j].struPeanutAbcd[m].nSensMin > 0))
@@ -1099,7 +1088,7 @@ void GlobalFlow::getDelayMaterialSize()
             {  // 普通自学习
                 for (m = 0; m < 4; m++)
                 {
-                    if (nArithmeticEnable[i][m + ARITH_INTEL_A] == 1)
+                    if (getArithEnable(i, j, m + ARITH_INTEL_A) == 1)
                     {     // 智能模式A、B、C、D
                         if ((struCnfp.struGroupIdentify[i][j].struIntel[m].nCons[0] != 0) || (struCnfp.struGroupIdentify[i][j].struIntel[m].nQuo1[0] != 0)
                             || (struCnfp.struGroupIdentify[i][j].struIntel[m].nQuo2[0] != 0)
@@ -1116,7 +1105,7 @@ void GlobalFlow::getDelayMaterialSize()
                 {
                     for (m = 0; m < 2; m++)
                     {
-                        if (nArithmeticEnable[i][ARITH_INTEL_A + m] == 1)
+                        if (getArithEnable(i, j, ARITH_INTEL_A + m) == 1)
                         {     // 智能模式
                             if (struCnfp.struGroupIdentify[i][j].struIntel[m].nIntelType == 0)
                             {// 普通智能模式
@@ -1160,7 +1149,7 @@ void GlobalFlow::getDelayMaterialSize()
                 {
                     for (m = 0; m < 2; m++)
                     {
-                        if (nArithmeticEnable[i][ARITH_INTEL_A + m] == 1)
+                        if (getArithEnable(i, j, ARITH_INTEL_A + m) == 1)
                         {
                             if (struCnfp.struGroupIdentify[i][j].struIntel[m].nIntelType == 0)
                             {// 普通智能模式
@@ -1184,23 +1173,23 @@ void GlobalFlow::getDelayMaterialSize()
                 }
             }
 
-            if (((nArithmeticEnable[i][ARITH_SHAPE] == 1)
-                || (nArithmeticEnable[i][ARITH_SHAPE_LENGTH]) == 1)
-                || (nArithmeticEnable[i][ARITH_SCALE] == 1)
-                || (nArithmeticEnable[i][ARITH_SCALE_B] == 1))
+            if (((getArithEnable(i, j, ARITH_SHAPE) == 1)
+                || (getArithEnable(i, j, ARITH_SHAPE_LENGTH)) == 1)
+                || (getArithEnable(i, j, ARITH_SCALE) == 1)
+                || (getArithEnable(i, j, ARITH_SCALE_B) == 1))
             { // 形状算法+大小算法
                 nMaxSize[i][j] = (nMaxSize[i][j] < 3) ? 3 : nMaxSize[i][j];
             }
 
-            if ((nArithmeticEnable[i][ARITH_RESERVED] == 1) || nArithmeticEnable[i][ARITH_MAIZE] == 1)
+            if ((getArithEnable(i, j, ARITH_RESERVED) == 1) || getArithEnable(i, j, ARITH_MAIZE) == 1)
             { // 玉米算法或者保留算法
                 nMaxSize[i][j] = (nMaxSize[i][j] < 10) ? 10 : nMaxSize[i][j];
             }
-            if (nArithmeticEnable[i][ARITH_SHAPE_POLE_A] == 1 || nArithmeticEnable[i][ARITH_SHAPE_POLE_B] == 1)
+            if (getArithEnable(i, j, ARITH_SHAPE_POLE_A) == 1 || getArithEnable(i, j, ARITH_SHAPE_POLE_B) == 1)
             { // 选杆算法
                 nMaxSize[i][j] = (nMaxSize[i][j] < 25) ? 25 : nMaxSize[i][j];
             }
-            if (((nArithmeticEnable[i][ARITH_BUD_1] == 1 || nArithmeticEnable[i][ARITH_BUD_2]) == 1) && (struCnfc.nSensorType == SENSOR_T_2564))
+            if (((getArithEnable(i, j, ARITH_BUD_1) == 1 || getArithEnable(i, j, ARITH_BUD_2)) == 1) && (struCnfc.nSensorType == SENSOR_T_2564))
             { // 选芽算法
                 nMaxSize[i][j] = struGsh.maxRowNumber;
             }
@@ -1589,75 +1578,76 @@ void GlobalFlow::resetTick()
     resetReverseSort();
 }
 
+/* 根据物料参数设置模式, 获取某 level/group 下的算法使能 */
+int GlobalFlow::getArithEnable(int level, int groupId, int arith)
+{
+    if (level < 0 || level >= MAX_LEVEL) return 0;
+    if (groupId < 0 || groupId >= MAX_GROUP_IDTNTIFY) return 0;
+    if (arith < 0 || arith >= ARITHMETIC_TOTAL) return 0;
+
+    int mode = struCnfp.nMatAssembleMode;
+    switch (mode) {
+    case PARAMS_ALL_SAME:
+        return struCnfp.nArithmeticEnableGroup[level][0][arith];
+    case PARAMS_FRONT_REAR_SAME:
+        // 同一次内前后视相同：groupId 的低位置 0 得到前视 groupId
+        return struCnfp.nArithmeticEnableGroup[level][groupId & ~1][arith];
+    case PARAMS_FIRST_SECOND_SAME:
+        // 按前后视相同：所有前视 groupId%2==0，所有后视 groupId%2==1
+        return struCnfp.nArithmeticEnableGroup[level][groupId % 2][arith];
+    case PARAMS_ALL_SEPARATE:
+    default:
+        return struCnfp.nArithmeticEnableGroup[level][groupId][arith];
+    }
+}
+
 /* 发送算法使能状态 */
 void GlobalFlow::resetArithmeticEnable()
 {
     int i, j;
     int nUnitAddr;
-    char sParam1[MAX_LEVEL] = {}, sParam2[MAX_LEVEL] = {}, sParam3[MAX_LEVEL] = {};
-    int nArithmeticEnable[MAX_LEVEL][ARITHMETIC_TOTAL];
-
-    memset(nArithmeticEnable, 0, sizeof(nArithmeticEnable));
+    char sParam1, sParam2, sParam3;
+    int nGroupID;
 
     for (i = 0; i < struCnfg.nLevelTotal; i++)
     {
-        for (j = 0; j < struCnfe.nArithmeticTotal; j++)
-        {
-            nArithmeticEnable[i][j] = struCnfp.nArithmeticEnable[j];
-        }
-
-        sParam1[i] = (nArithmeticEnable[i][ARITH_BUD_1] << 7) | (nArithmeticEnable[i][ARITH_SCALE] << 6)
-            | (nArithmeticEnable[i][ARITH_SHAPE] << 5) | (nArithmeticEnable[i][ARITH_CROSS] << 4)
-            | ((nArithmeticEnable[i][ARITH_DISCOLOR_B] | nArithmeticEnable[i][ARITH_PEANUT_D]) << 3)
-            | (nArithmeticEnable[i][ARITH_DISCOLOR_A] << 2) | (nArithmeticEnable[i][ARITH_GREY_B] << 1)
-            | nArithmeticEnable[i][ARITH_GREY_A];
-
-        sParam2[i] = (nArithmeticEnable[i][ARITH_INTEL_D] << 7) | (nArithmeticEnable[i][ARITH_INTEL_C] << 6)
-            | (nArithmeticEnable[i][ARITH_INTEL_B] << 5) | (nArithmeticEnable[i][ARITH_INTEL_A] << 4)
-            | (nArithmeticEnable[i][ARITH_PEANUT_C] << 3) | (nArithmeticEnable[i][ARITH_PEANUT_B] << 2)
-            | (nArithmeticEnable[i][ARITH_PEANUT_A] << 1) | nArithmeticEnable[i][ARITH_BUD_2];
-        sParam3[i] = (nArithmeticEnable[i][ARITH_CANDY] << 7) | (nArithmeticEnable[i][ARITH_RESERVED] << 6) | (nArithmeticEnable[i][ARITH_SCALE_B] << 5) | (nArithmeticEnable[i][ARITH_SHAPE_LEAF] << 4)
-            | (nArithmeticEnable[i][ARITH_SHAPE_SLICE] << 3)
-            | ((nArithmeticEnable[i][ARITH_SHAPE_POLE_A] | nArithmeticEnable[i][ARITH_SHAPE_POLE_B]) << 2)
-            | (nArithmeticEnable[i][ARITH_MAIZE] << 1) | (nArithmeticEnable[i][ARITH_SHAPE_LENGTH]);
-    }
-
-    for (i = 0; i < struCnfg.nLevelTotal; i++)
-    {
-        char tmp = sParam2[i];
         for (j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
         {
             nUnitAddr = struCnfg.struLevelInfo[i].nUnitId[j];
-            int nGroupID = getIdentifyGroupID(nUnitAddr, 0);
-            sParam2[i] = tmp;
-            if (nGroupID > -1 && nGroupID < MAX_GROUP_IDTNTIFY)
-            {
-                if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[0].nModeDfl == -1)
-                {  // 智能A禁用
-                    sParam2[i] &= 0xef;
-                }
+            nGroupID = getIdentifyGroupID(nUnitAddr, 0);
+            if (nGroupID < 0 || nGroupID >= MAX_GROUP_IDTNTIFY)
+                continue;
 
-                if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[1].nModeDfl == -1)
-                {  // 智能B禁用
-                    sParam2[i] &= 0xdf;
-                }
+            int ae[ARITHMETIC_TOTAL];
+            for (int k = 0; k < ARITHMETIC_TOTAL; k++)
+                ae[k] = getArithEnable(i, nGroupID, k);
 
-                if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[2].nModeDfl == -1)
-                {  // 智能C禁用
-                    sParam2[i] &= 0xbf;
-                }
+            sParam1 = (ae[ARITH_BUD_1] << 7) | (ae[ARITH_SCALE] << 6)
+                | (ae[ARITH_SHAPE] << 5) | (ae[ARITH_CROSS] << 4)
+                | ((ae[ARITH_DISCOLOR_B] | ae[ARITH_PEANUT_D]) << 3)
+                | (ae[ARITH_DISCOLOR_A] << 2) | (ae[ARITH_GREY_B] << 1)
+                | ae[ARITH_GREY_A];
 
-                if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[3].nModeDfl == -1)
-                {  // 智能D禁用
-                    sParam2[i] &= 0x7f;
-                }
-            }
+            sParam2 = (ae[ARITH_INTEL_D] << 7) | (ae[ARITH_INTEL_C] << 6)
+                | (ae[ARITH_INTEL_B] << 5) | (ae[ARITH_INTEL_A] << 4)
+                | (ae[ARITH_PEANUT_C] << 3) | (ae[ARITH_PEANUT_B] << 2)
+                | (ae[ARITH_PEANUT_A] << 1) | ae[ARITH_BUD_2];
+            sParam3 = (ae[ARITH_CANDY] << 7) | (ae[ARITH_RESERVED] << 6) | (ae[ARITH_SCALE_B] << 5) | (ae[ARITH_SHAPE_LEAF] << 4)
+                | (ae[ARITH_SHAPE_SLICE] << 3)
+                | ((ae[ARITH_SHAPE_POLE_A] | ae[ARITH_SHAPE_POLE_B]) << 2)
+                | (ae[ARITH_MAIZE] << 1) | ae[ARITH_SHAPE_LENGTH];
+
+            if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[0].nModeDfl == -1)
+                sParam2 &= 0xef;  // 智能A禁用
+            if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[1].nModeDfl == -1)
+                sParam2 &= 0xdf;  // 智能B禁用
+            if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[2].nModeDfl == -1)
+                sParam2 &= 0xbf;  // 智能C禁用
+            if (struCnfp.struGroupIdentify[i][nGroupID].struIntel[3].nModeDfl == -1)
+                sParam2 &= 0x7f;  // 智能D禁用
+
             MySerial.com1Write(CMD_UNIT_ARITHMETIC_ENABLE, UNIT, i, nUnitAddr,
-                0, 0, sParam3[i], sParam2[i], sParam1[i], 3);
-
-            //            MySerial.com1Write(CMD_UNIT_PISTACHIO, UNIT, i, nUnitAddr, struCnfp.nArithmeticEnable[ARITH_PISTACHIO], struCnfp.struGroupIdentify[i][nGroupID].struPistachio.nGrayThreshold_3, struCnfp.struGroupIdentify[i][nGroupID].struPistachio.nAreaMin,
-            //                               struCnfp.struGroupIdentify[i][nGroupID].struPistachio.nGrayThreshold_2,
-            //                               struCnfp.struGroupIdentify[i][nGroupID].struPistachio.nGrayThreshold_1,3);
+                0, 0, sParam3, sParam2, sParam1, 3);
         }
     }
 
@@ -4923,12 +4913,19 @@ void GlobalFlow::initEjectorModePara()
         model |= MODEL_VAVLE_AI;
     }
 
-    for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
+    // 按三维数组检查是否任何算法被使能（任意 level+group 有即可）
+    for (int lv = 0; lv < struCnfg.nLevelTotal && !(model & MODEL_VALVE_TRADITIONAL); lv++)
     {
-        if (struCnfp.nArithmeticEnable[i] == 1)
+        for (int gd = 0; gd < struCnfg.struLevelInfo[lv].nIdentifyGroupTotal && !(model & MODEL_VALVE_TRADITIONAL); gd++)
         {
-            model |= MODEL_VALVE_TRADITIONAL;
-            break;
+            for (int i = 0; i < struCnfe.nArithmeticTotal; i++)
+            {
+                if (getArithEnable(lv, gd, i) == 1)
+                {
+                    model |= MODEL_VALVE_TRADITIONAL;
+                    break;
+                }
+            }
         }
     }
 

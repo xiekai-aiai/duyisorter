@@ -70,7 +70,7 @@ private:
     QVector<QFormLayout *>  InfParamsLayout;
 
     int m_nMatMode;
-    int m_nArithmeticEnable[MAX_LEVEL][ARITHMETIC_TOTAL];
+    int m_nArithmeticEnable[MAX_LEVEL][MAX_GROUP_IDTNTIFY][ARITHMETIC_TOTAL];  // 三维：level × group × arith
 };
 
 #endif // ARITHENABLE_H

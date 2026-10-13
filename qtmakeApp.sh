@@ -319,18 +319,24 @@ cp -rf $path_cur/$APP_DIR/norm_train     tar_app/
 cp -rf $path_cur/$APP_DIR/i18n           tar_app/
 cp -rf $path_cur/$APP_DIR/lib            tar_app/
 cp -rf $path_cur/$APP_DIR/OpenVPN        tar_app/
-cp -rf $path_cur/$APP_DIR/db/*           tar_app/userdata/db/
+
+# 方案配置目录 (cnf + cnf.board) —— 初始配置/方案模板，不是运行时生产数据
+# 必须打包，否则全新部署的板卡没有初始方案文件
+if [ -d "$path_cur/$APP_DIR/cnf" ]; then
+  cp -rf $path_cur/$APP_DIR/cnf          tar_app/
+fi
+if [ -d "$path_cur/$APP_DIR/cnf.board" ]; then
+  cp -rf $path_cur/$APP_DIR/cnf.board    tar_app/
+fi
+
+# 注意: userdata/db 是运行时生产数据（sorter.db 里有方案、AI模型、用户配置），
+# 不应打包！否则用户升级时会把板卡上正在用的 sorter.db 覆盖成空库。
+# tar_app/userdata/db 目录只创建空目录（保证路径存在），不复制任何文件。
 
 # 校验: 关键文件不能缺 (cp 失败时立刻退出, 避免出坏包)
 MISSING=""
-for f in DuySorter mystart.sh env.sh myrestart.sh lib/DuySorter.conf; do
-  # 注意 DuySorter.conf 在 lib/ 里？不在！是 $APP_DIR/DuySorter.conf 直接 cp 到 tar_app/
-  case "$f" in
-    DuySorter) [ -e "tar_app/DuySorter" ] || MISSING="$MISSING $f" ;;
-    mystart.sh) [ -e "tar_app/mystart.sh" ] || MISSING="$MISSING $f" ;;
-    env.sh) [ -e "tar_app/env.sh" ] || MISSING="$MISSING $f" ;;
-    myrestart.sh) [ -e "tar_app/myrestart.sh" ] || MISSING="$MISSING $f" ;;
-  esac
+for f in DuySorter DuySorter.conf mystart.sh myrestart.sh env.sh lib i18n log.properties; do
+  [ -e "tar_app/$f" ] || MISSING="$MISSING $f"
 done
 if [ -n "$MISSING" ]; then
   echo "❌ 关键文件缺失:$MISSING"

@@ -1882,7 +1882,7 @@
     <message>
         <location filename="../src/params/paramslang.cpp" line="294"/>
         <source>first_second</source>
-        <translation>一二次相同</translation>
+        <translation>前视相同后视相同</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="295"/>

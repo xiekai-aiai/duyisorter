@@ -48,6 +48,37 @@ bool GlobalFlow::getProfileSetting(const QString& fileName)
         struCnfp.nArithmeticEnable[i] = setting.value(QString("%1-%2-%3").arg(3).arg(11).arg(i), struCnfp.nArithmeticEnable[i]).toInt();
     }
 
+    /* arithmetic enable per group (3-40-level-group-arith); fallback to 3-38-level-arith (2D), then to 3-11-arith (1D) */
+    // 注意: level 维与 group 维都必须用硬常量 (MAX_LEVEL / MAX_GROUP_IDTNTIFY),
+    // 不能用 struCnfg.nLevelTotal 或 struLevelInfo[lv].nIdentifyGroupTotal!
+    // 因为 getProfileSetting() 在 initAll() 的 getProfile() 阶段就执行了,
+    // 而机型层级信息 (getLevelInfo_* 设置 nLevelTotal / nIdentifyGroupTotal)
+    // 在其后的 initMachineType() 里才初始化。此刻这两个字段仍是 0,
+    // 若用它们做循环上界, 循环根本不进, nArithmeticEnableGroup 全为 0,
+    // 表现为: 已保存方案里的算法勾选在重启/加载后全部丢失。
+    // (旧的 3-38 二维读取在下方也同样使用 MAX_LEVEL, 与此保持一致)
+    for (int lv = 0; lv < MAX_LEVEL; lv++)
+    {
+        for (int g = 0; g < MAX_GROUP_IDTNTIFY; g++)
+        {
+            for (int a = 0; a < ARITHMETIC_TOTAL; a++)
+            {
+                QString key3d = QString("%1-%2-%3-%4-%5").arg(3).arg(40).arg(lv).arg(g).arg(a);
+                QString key2d = QString("%1-%2-%3-%4").arg(3).arg(38).arg(lv).arg(a);
+                QString key1d = QString("%1-%2-%3").arg(3).arg(11).arg(a);
+
+                int def = struCnfp.nArithmeticEnableLevel[lv][a];
+                if (def == 0) def = struCnfp.nArithmeticEnable[a];
+
+                int v = setting.value(key3d, -1).toInt();
+                if (v == -1)
+                    v = setting.value(key2d, setting.value(key1d, def).toInt()).toInt();
+
+                struCnfp.nArithmeticEnableGroup[lv][g][a] = v;
+            }
+        }
+    }
+
     /* intel mode */
     struCnfp.nIntelMode = setting.value(QString("%1-%2").arg(3).arg(12), struCnfp.nIntelMode).toInt();
 
@@ -984,6 +1015,24 @@ bool GlobalFlow::saveProfileSetting(const QString& fileName)
             setting.setValue(QString("%1-%2-%3").arg(3).arg(11).arg(i), struCnfp.nArithmeticEnable[i]);
             LOG_INFO_FMT("arith name :%s, enable status: %d", myString.sArithmeticName[i].toStdString(),
                 struCnfp.nArithmeticEnable[i]);
+        }
+    }
+
+    /* arithmetic enable per group (3-40-level-group-arith) */
+    // level/group 维都用硬常量, 与读取循环范围严格一致, 不会漏存;
+    // 多余的 level/group 与其备份值相同, 不会产生多余写入
+    for (int lv = 0; lv < MAX_LEVEL; lv++)
+    {
+        for (int g = 0; g < MAX_GROUP_IDTNTIFY; g++)
+        {
+            for (int a = 0; a < ARITHMETIC_TOTAL; a++)
+            {
+                if (struCnfp.nArithmeticEnableGroup[lv][g][a] != _t_struCnfp.nArithmeticEnableGroup[lv][g][a])
+                {
+                    setting.setValue(QString("%1-%2-%3-%4-%5").arg(3).arg(40).arg(lv).arg(g).arg(a),
+                        struCnfp.nArithmeticEnableGroup[lv][g][a]);
+                }
+            }
         }
     }
 

@@ -543,8 +543,10 @@ enum
 #define CNF_MY                  APP_PATH "/DuySorter.conf"                    // 全局配置文件
 #define CNF_LOG_CFG             APP_PATH "/log.properties"                    // 日志配置文件
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN32)
 #define LANG_DIR                "../../DuySorter_rk3566/app/i18n/"   // 语言文件目录 *.qm
+#elif defined(__x86_64__)
+#define LANG_DIR                "/mnt/hgfs/duyisorter/app/i18n/"    // x86_64 调试: 直接指向源码目录
 #else
 #define LANG_DIR                APP_PATH "/i18n/"
 #endif
@@ -1281,8 +1283,9 @@ struct struCnfProfile
     int nBackgroundColorValue[MAX_LEVEL][MAX_BACKGROUND_GROUP];           // 背景阈值
     int nBackgroundColorPer[MAX_LEVEL][MAX_BACKGROUND_GROUP];             // 颜色比例
 
-    int nArithmeticEnable[ARITHMETIC_TOTAL];             // 物料算法使能状态
-    int nArithmeticEnableLevel[MAX_LEVEL][ARITHMETIC_TOTAL];    // 物料算法使能状态(分层独立设置，限茶叶机型使用)
+    int nArithmeticEnable[ARITHMETIC_TOTAL];             // 物料算法使能状态（兼容旧方案文件，全局共享，不推荐运行时使用）
+    int nArithmeticEnableLevel[MAX_LEVEL][ARITHMETIC_TOTAL];    // 物料算法使能状态(分层独立设置，限茶叶机型使用，兼容旧方案文件)
+    int nArithmeticEnableGroup[MAX_LEVEL][MAX_GROUP_IDTNTIFY][ARITHMETIC_TOTAL];  // 物料算法使能状态(按识别组独立，次×前后视粒度) —— 运行时主用
     int nIntelMode;                                 // 自学习模式， 0： 普通自学习， 1： 多分类自学习
     stu_it_mat struIntelMat[4];                     // 智能模式物料名称，好坏
 

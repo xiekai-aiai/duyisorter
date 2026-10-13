@@ -196,6 +196,7 @@ public:
     void resetArithmeticEnable();                           // 重置算法使能
     void resetFrontRearRelation();                          // 重置前后视算法关系
     void resetReverseSort();                                // 重置正选/反选功能
+    int  getArithEnable(int level, int groupId, int arith); // 获取某 level/group 下的算法使能（根据模式自动同步）
     int  getIdentifyGroupID(int nUnit, int spliceType);     // 根据相机地址及分割类型获取识别组ID
     void getUnitsForBkg(QList<int>& qlUnits, int nUnit);    // 根据相机地址获取该相机所在背景组的所有相机地址
     int  getIdentifyGroupAddr(int nLevelId, int nGroupId, int nUnitIndex);   // 获取识别组发送模块地址
