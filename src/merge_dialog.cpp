@@ -46,14 +46,14 @@ MergeDialog::~MergeDialog() {}
 
 void MergeDialog::initUi()
 {
-    setWindowTitle("合并标注目录");
+    setWindowTitle(tr("合并标注目录"));
     setMinimumSize(700, 480);
     resize(800, 560);
 
     auto* mainLayout = new QVBoxLayout(this);
 
     // ── 源目录组 ──────────────────────────────────────────────
-    auto* srcGroup = new QGroupBox("源目录（最多 10 个）", this);
+    auto* srcGroup = new QGroupBox(tr("源目录（最多 10 个）"), this);
     auto* srcLayout = new QVBoxLayout(srcGroup);
 
     m_srcScroll = new QScrollArea(this);
@@ -69,7 +69,7 @@ void MergeDialog::initUi()
     srcLayout->addWidget(m_srcScroll);
 
     auto* btnRow = new QHBoxLayout();
-    m_btnAddSource = new QPushButton("+ 添加源目录", this);
+    m_btnAddSource = new QPushButton(tr("+ 添加源目录"), this);
     connect(m_btnAddSource, &QPushButton::clicked, this, &MergeDialog::onAddSourceClicked);
     btnRow->addWidget(m_btnAddSource);
     btnRow->addStretch();
@@ -77,12 +77,12 @@ void MergeDialog::initUi()
     mainLayout->addWidget(srcGroup);
 
     // ── 目标目录组 ────────────────────────────────────────────
-    auto* tgtGroup = new QGroupBox("合并输出目录", this);
+    auto* tgtGroup = new QGroupBox(tr("合并输出目录"), this);
     auto* tgtLayout = new QVBoxLayout(tgtGroup);
     auto* tgtRow = new QHBoxLayout();
-    tgtRow->addWidget(new QLabel("输出路径："));
+    tgtRow->addWidget(new QLabel(tr("输出路径：")));
     m_tgtPathEdit = new QLineEdit(this);
-    m_tgtPathEdit->setPlaceholderText("请选择或等待自动生成...");
+    m_tgtPathEdit->setPlaceholderText(tr("请选择或等待自动生成..."));
     m_tgtPathEdit->setFocusPolicy(Qt::NoFocus);  // ⭐ 阻止系统虚拟键盘
     // ⭐ 板卡上点击弹软键盘
     {
@@ -101,20 +101,21 @@ void MergeDialog::initUi()
                 return QObject::eventFilter(o, e);
             }
         };
-        m_tgtPathEdit->installEventFilter(new KbFilter("输出路径", this));
+        m_tgtPathEdit->installEventFilter(new KbFilter(
+            QCoreApplication::translate("MergeDialog", "输出路径"), this));
     }
     tgtRow->addWidget(m_tgtPathEdit, 1);
-    auto* btnBrowseTarget = new QPushButton("浏览...", this);
+    auto* btnBrowseTarget = new QPushButton(tr("浏览..."), this);
     connect(btnBrowseTarget, &QPushButton::clicked, this, &MergeDialog::onBrowseTarget);
     tgtRow->addWidget(btnBrowseTarget);
     tgtLayout->addLayout(tgtRow);
     mainLayout->addWidget(tgtGroup);
 
     // ── 拷贝模式组 ────────────────────────────────────────────
-    auto* modeGroup = new QGroupBox("拷贝模式", this);
+    auto* modeGroup = new QGroupBox(tr("拷贝模式"), this);
     auto* modeLayout = new QVBoxLayout(modeGroup);
-    m_radioAll = new QRadioButton("拷贝全部图片（bg_ 无标注也拷）", this);
-    m_radioLabeled = new QRadioButton("仅拷贝有标注的图片（txt 配对成功的）", this);
+    m_radioAll = new QRadioButton(tr("拷贝全部图片（bg_ 无标注也拷）"), this);
+    m_radioLabeled = new QRadioButton(tr("仅拷贝有标注的图片（txt 配对成功的）"), this);
     m_radioAll->setChecked(true);
     auto* grp = new QButtonGroup(this);
     grp->addButton(m_radioAll, 0);
@@ -136,11 +137,11 @@ void MergeDialog::initUi()
     // ── 底部按钮 ──────────────────────────────────────────────
     auto* bottomLayout = new QHBoxLayout();
     bottomLayout->addStretch();
-    m_btnMerge = new QPushButton("执行合并", this);
+    m_btnMerge = new QPushButton(tr("执行合并"), this);
     m_btnMerge->setMinimumHeight(36);
     connect(m_btnMerge, &QPushButton::clicked, this, &MergeDialog::onStartMerge);
     bottomLayout->addWidget(m_btnMerge);
-    m_btnClose = new QPushButton("关闭", this);
+    m_btnClose = new QPushButton(tr("关闭"), this);
     m_btnClose->setMinimumHeight(36);
     connect(m_btnClose, &QPushButton::clicked, this, &MergeDialog::close);
     bottomLayout->addWidget(m_btnClose);
@@ -165,7 +166,7 @@ void MergeDialog::onAddSourceClicked()
     rowLayout->addWidget(lbl);
 
     auto* pathEdit = new QLineEdit(rowWidget);
-    pathEdit->setPlaceholderText("请选择源目录...");
+    pathEdit->setPlaceholderText(tr("请选择源目录..."));
     pathEdit->setFocusPolicy(Qt::NoFocus);  // ⭐ 阻止系统虚拟键盘
     // ⭐ 板卡上点击弹软键盘
     {
@@ -184,17 +185,18 @@ void MergeDialog::onAddSourceClicked()
                 return QObject::eventFilter(o, e);
             }
         };
-        pathEdit->installEventFilter(new KbFilter("源目录路径", rowWidget));
+        pathEdit->installEventFilter(new KbFilter(
+            QCoreApplication::translate("MergeDialog", "源目录路径"), rowWidget));
     }
     rowLayout->addWidget(pathEdit, 1);
 
-    auto* btnBrowse = new QPushButton("浏览", rowWidget);
+    auto* btnBrowse = new QPushButton(tr("浏览"), rowWidget);
     connect(btnBrowse, &QPushButton::clicked, this, [this, pathEdit]() {
         onBrowseSource(pathEdit);
     });
     rowLayout->addWidget(btnBrowse);
 
-    auto* btnRemove = new QPushButton("移除", rowWidget);
+    auto* btnRemove = new QPushButton(tr("移除"), rowWidget);
     connect(btnRemove, &QPushButton::clicked, this, [this, rowWidget]() {
         onRemoveSource(rowWidget);
     });
@@ -219,7 +221,7 @@ void MergeDialog::onBrowseSource(QLineEdit* pathEdit)
     const QString startDir = resolveStartDir(pathEdit->text());
     // ⭐ 必须加 DontUseNativeDialog：板卡上 GTK3 原生对话框无 transient parent 会卡死
     QString d = QFileDialog::getExistingDirectory(
-        this, "选择源目录", startDir,
+        this, tr("选择源目录"), startDir,
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
             | QFileDialog::DontUseNativeDialog
     );
@@ -254,7 +256,7 @@ void MergeDialog::onBrowseTarget()
     const QString startDir = resolveStartDir(m_tgtPathEdit->text());
     // ⭐ 必须加 DontUseNativeDialog：板卡上 GTK3 原生对话框无 transient parent 会卡死
     QString d = QFileDialog::getExistingDirectory(
-        this, "选择输出目录", startDir,
+        this, tr("选择输出目录"), startDir,
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
             | QFileDialog::DontUseNativeDialog
     );
@@ -299,13 +301,13 @@ void MergeDialog::onStartMerge()
 {
     QStringList sourceDirs = collectSourceDirs();
     if (sourceDirs.isEmpty()) {
-        QMessageBox::warning(this, "警告", "请先添加至少一个有效源目录");
+        QMessageBox::warning(this, tr("警告"), tr("请先添加至少一个有效源目录"));
         return;
     }
 
     QString targetDir = m_tgtPathEdit->text().trimmed();
     if (targetDir.isEmpty()) {
-        QMessageBox::warning(this, "警告", "请指定合并输出目录");
+        QMessageBox::warning(this, tr("警告"), tr("请指定合并输出目录"));
         return;
     }
 
@@ -314,15 +316,15 @@ void MergeDialog::onStartMerge()
     ScanResult scan = worker.preScan();
 
     if (scan.dirScans.isEmpty()) {
-        QMessageBox::information(this, "提示", "未收集到任何图片，请检查源目录");
+        QMessageBox::information(this, tr("提示"), tr("未收集到任何图片，请检查源目录"));
         return;
     }
 
     QString summary = QString(
-        "源目录：%1 个\n"
-        "收集图片：%2 张\n"
-        "配对成功 txt：%3 个\n"
-        "目标输出：%4")
+        tr("源目录：%1 个\n"
+           "收集图片：%2 张\n"
+           "配对成功 txt：%3 个\n"
+           "目标输出：%4"))
         .arg(scan.dirScans.size())
         .arg(scan.totalPairs)
         .arg([&]{ int t=0; for(const auto& d:scan.dirScans) t+=d.txtCount; return t; }())
@@ -330,28 +332,28 @@ void MergeDialog::onStartMerge()
 
     // 尺寸检查
     if (!scan.sizeMismatches.isEmpty()) {
-        summary += QString("\n\n⚠️ 发现 %1 张图片尺寸与参考 %2x%3 不一致：\n")
+        summary += QString(tr("\n\n⚠️ 发现 %1 张图片尺寸与参考 %2x%3 不一致：\n"))
             .arg(scan.sizeMismatches.size())
             .arg(scan.refSize.width()).arg(scan.refSize.height());
         int showCount = qMin(scan.sizeMismatches.size(), 10);
-        for (int i = 0; i < showCount; ++i) summary += "  · " + scan.sizeMismatches[i] + "\n";
+        for (int i = 0; i < showCount; ++i) summary += tr("  · ") + scan.sizeMismatches[i] + "\n";
         if (scan.sizeMismatches.size() > 10)
-            summary += QString("  ... 还有 %1 张未列出\n").arg(scan.sizeMismatches.size() - 10);
-        summary += "\n是否继续合并？";
-        int ret = QMessageBox::warning(this, "尺寸不一致警告", summary,
+            summary += QString(tr("  ... 还有 %1 张未列出\n")).arg(scan.sizeMismatches.size() - 10);
+        summary += tr("\n是否继续合并？");
+        int ret = QMessageBox::warning(this, tr("尺寸不一致警告"), summary,
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (ret != QMessageBox::Yes) return;
     } else {
-        int ret = QMessageBox::question(this, "确认合并", summary + "\n\n开始合并？",
+        int ret = QMessageBox::question(this, tr("确认合并"), summary + tr("\n\n开始合并？"),
             QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if (ret != QMessageBox::Yes) return;
     }
 
     // ═══ 显示进度 label，初始化 ═══
     m_progressLabel->show();
-    QString initText = "开始合并：\n";
+    QString initText = tr("开始合并：\n");
     for (int i = 0; i < scan.dirScans.size(); ++i) {
-        initText += QString("  目录%1(%2): 0 / %3\n")
+        initText += QString(tr("  目录%1(%2): 0 / %3\n"))
             .arg(i + 1).arg(scan.dirScans[i].dirName)
             .arg(scan.dirScans[i].pairs.size());
     }
@@ -382,11 +384,11 @@ void MergeDialog::onStartMerge()
             if (srcIdx >= 0 && srcIdx < dirCurrents.size()) {
                 dirCurrents[srcIdx] = cur;
             }
-            QString text = "正在拷贝：\n";
+            QString text = tr("正在拷贝：\n");
             for (int i = 0; i < scan.dirScans.size(); ++i) {
                 int c = dirCurrents[i];
                 int t = scan.dirScans[i].pairs.size();
-                text += QString("  目录%1(%2): %3 / %4\n")
+                text += QString(tr("  目录%1(%2): %3 / %4\n"))
                     .arg(i + 1).arg(scan.dirScans[i].dirName)
                     .arg(c).arg(t);
             }
@@ -414,19 +416,19 @@ void MergeDialog::onStartMerge()
     m_merging = false;
 
     // 完成
-    QString finalText = "完成！\n";
+    QString finalText = tr("完成！\n");
     for (int i = 0; i < scan.dirScans.size(); ++i) {
-        finalText += QString("  目录%1(%2): %3 / %4\n")
+        finalText += QString(tr("  目录%1(%2): %3 / %4\n"))
             .arg(i + 1).arg(scan.dirScans[i].dirName)
             .arg(dirCurrents[i]).arg(scan.dirScans[i].pairs.size());
     }
     m_progressLabel->setText(finalText.trimmed());
 
     if (!errorMsg.isEmpty()) {
-        QMessageBox::critical(this, "错误", QString("合并失败：%1").arg(errorMsg));
+        QMessageBox::critical(this, tr("错误"), QString(tr("合并失败：%1")).arg(errorMsg));
     } else {
-        QMessageBox::information(this, "完成",
-            QString("合并完成！\n成功拷贝 %1 张图片。\n输出目录：%2")
+        QMessageBox::information(this, tr("完成"),
+            QString(tr("合并完成！\n成功拷贝 %1 张图片。\n输出目录：%2"))
             .arg(copiedCount).arg(targetDir));
     }
 }

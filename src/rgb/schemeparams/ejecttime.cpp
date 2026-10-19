@@ -242,17 +242,17 @@ void PageEjectTime::createPage()
         ejectTimeValue[i]->hide();
     }
 
-    aiEjectorDelayLbl = new myLabel("Ai " + myLan.fixed_delay + "(ms)");
+    aiEjectorDelayLbl = new myLabel("AI " + myLan.fixed_delay + "(ms)");
     aiEjectorDelayEdit = new myLineEdit("");
     aiEjectorDelayEdit->setSizePolicy(sizePolicy);
     aiEjectorDelayEdit->setMinimumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
-    aiEjectorDynamicDelayLbl = new myLabel("Ai " + myLan.dynamic_delay + "(ms)");
+    aiEjectorDynamicDelayLbl = new myLabel("AI " + myLan.dynamic_delay + "(ms)");
     aiEjectorDynamicDelayEdit = new myLineEdit("");
     aiEjectorDynamicDelayEdit->setSizePolicy(sizePolicy);
     aiEjectorDynamicDelayEdit->setMinimumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
-    aiEjectorBlowTimeLbl = new myLabel("Ai " + myLan.eject_time + "(ms)");
+    aiEjectorBlowTimeLbl = new myLabel("AI " + myLan.eject_time + "(ms)");
     aiEjectorBlowTimeEdit = new myLineEdit("");
     aiEjectorBlowTimeEdit->setSizePolicy(sizePolicy);
     aiEjectorBlowTimeEdit->setMinimumSize(QSize(BTN_WIDTH, BTN_HEIGHT));

@@ -51,6 +51,7 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QDialogButtonBox>
+#include <QAbstractButton>
 #include <QComboBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -250,7 +251,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
                         int minV = 1;
                         int maxV = 99999;
                         myInputPanel kb(intType, minV, maxV, le->text().toInt());
-                        kb.setTitle("跳转页码");
+                        kb.setTitle(QCoreApplication::translate("AiModelSet", "跳转页码"));
                         if (kb.exec() == QDialog::Accepted) {
                             le->setText(QString::number(kb.getValue()));
                             le->returnPressed();  // 触发 gotoPage
@@ -329,10 +330,10 @@ AiModelSet::AiModelSet(QWidget *parent) :
         };
         ui->m_areaThresholdlineEdit->setFocusPolicy(Qt::NoFocus);
         ui->m_areaThresholdlineEdit->setValidator(new QIntValidator(1, 9999, this));
-        ui->m_areaThresholdlineEdit->installEventFilter(new KbFilter("面积阈值", true, this));
+        ui->m_areaThresholdlineEdit->installEventFilter(new KbFilter(tr("面积阈值"), true, this));
         ui->m_colorDiffThresholdlineEdit->setFocusPolicy(Qt::NoFocus);
         ui->m_colorDiffThresholdlineEdit->setValidator(new QIntValidator(1, 9999, this));
-        ui->m_colorDiffThresholdlineEdit->installEventFilter(new KbFilter("色差阈值", true, this));
+        ui->m_colorDiffThresholdlineEdit->installEventFilter(new KbFilter(tr("色差阈值"), true, this));
     }
 
     // draw 和 selcet 模式是互斥的
@@ -401,11 +402,11 @@ AiModelSet::AiModelSet(QWidget *parent) :
         // ⭐ 轮询阶段的网络波动：允许重试 3 次（15 秒超时 × 3 = 45 秒足够判断）
         if (m_pollTimer && m_pollTimer->isActive()) {
             m_pollFailCount++;
-            showTip(QString("训练服务连接波动（%1/3）：%2").arg(m_pollFailCount).arg(errMsg), true);
+            showTip(tr("训练服务连接波动（%1/3）：%2").arg(m_pollFailCount).arg(errMsg), true);
             if (m_pollFailCount >= 3) {
                 m_pollTimer->stop();
                 resetTrainingState();
-                showTip("训练服务连接连续失败 3 次，已停止轮询", true);
+                showTip(tr("训练服务连接连续失败 3 次，已停止轮询"), true);
             }
             return;
         }
@@ -419,11 +420,11 @@ AiModelSet::AiModelSet(QWidget *parent) :
     // [1] 训练启动成功 → 启动 QTimer 轮询进度（每 5 秒一次）
     connect(m_modelApi, &ModelApi::startTrainResult, this, [this](const TrainStartResponse& response) {
         if (!response.isSuccess()) {
-            showTip(QString("训练启动失败：%1（错误码：%2）").arg(response.message).arg(response.code), true);
+            showTip(tr("训练启动失败：%1（错误码：%2）").arg(response.message).arg(response.code), true);
             resetTrainingState();
             return;
         }
-        showTip(QString("训练任务已提交，开始查询进度..."));
+        showTip(tr("训练任务已提交，开始查询进度..."));
         m_pollFailCount = 0;
         m_pollTimer->start();  // 每 5s 触发 queryTrainProgress
     });
@@ -435,7 +436,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(m_modelApi, &ModelApi::downloadProgress, this, [this](qint64 received, qint64 total) {
         if (total <= 0) return;
         int p = (received * 100) / total;
-        showTip(QString("模型下载中：%1%（%2/%3）").arg(p).arg(formatFileSize(received)).arg(formatFileSize(total)));
+        showTip(tr("模型下载中：%1%（%2/%3）").arg(p).arg(formatFileSize(received)).arg(formatFileSize(total)));
     });
     
     // [3.5] 硬件架构查询结果 → 先下载 JSON（取 md5），再下载 .bin/.dlc 并校验
@@ -452,7 +453,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         m_modelArch = arch;
         QString savePath = ai_helper::GetModelRootPath() + downLoadModelName + ".json";
         LOG_DEBUG_STM("[下载流程] archResult 触发：arch=" << arch << "downLoadModelName=" << downLoadModelName << "savePath=" << savePath);
-        showTip(QString("硬件架构：%1，先下载 JSON：%2.json").arg(arch).arg(downLoadModelName));
+        showTip(tr("硬件架构：%1，先下载 JSON：%2.json").arg(arch).arg(downLoadModelName));
         QTimer::singleShot(0, this, [this, savePath]() {
             m_modelApi->downloadModelJson(this->downLoadModelName + ".json", savePath);
         });
@@ -462,7 +463,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(m_modelApi, &ModelApi::downloadJsonFinished, this, [this](bool success, const QString& errorMsg) {
         LOG_DEBUG_STM("[下载流程] downloadJsonFinished 触发：success=" << success << "errorMsg=" << errorMsg << "downLoadModelName=" << downLoadModelName);
         if (!success) {
-            showTip(QString("JSON 下载失败：%1").arg(errorMsg), true);
+            showTip(tr("JSON 下载失败：%1").arg(errorMsg), true);
             resetTrainingState();
             return;
         }
@@ -497,7 +498,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
         QString ext = (m_modelArch == "snpe") ? "dlc" : "bin";
         QString fileName = downLoadModelName + "." + ext;
         QString savePath = ai_helper::GetModelRootPath() + fileName;
-        showTip(QString("JSON 已下载，开始下载模型：%1").arg(fileName));
+        showTip(tr("JSON 已下载，开始下载模型：%1").arg(fileName));
         QTimer::singleShot(0, this, [this, fileName, savePath]() {
             m_modelApi->downloadModel(fileName, savePath);
         });
@@ -506,7 +507,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
     // [5] 模型下载完成 → md5 校验 → 训练流程结束
     connect(m_modelApi, &ModelApi::downloadFinished, this, [this](bool success, const QString& errorMsg) {
         if (!success) {
-            showTip(QString("模型下载失败：%1").arg(errorMsg), true);
+            showTip(tr("模型下载失败：%1").arg(errorMsg), true);
             resetTrainingState();
             return;
         }
@@ -527,14 +528,14 @@ AiModelSet::AiModelSet(QWidget *parent) :
         if (!m_expectedModelMd5.isEmpty() && !actualMd5.isEmpty()
             && m_expectedModelMd5.compare(actualMd5, Qt::CaseInsensitive)) {
             // MD5 不一致 → 红字报错 + 终止（不要回写 JSON）
-            showTip(QString("✗ 模型 MD5 校验失败！expected=%1 actual=%2")
+            showTip(tr("✗ 模型 MD5 校验失败！expected=%1 actual=%2")
                     .arg(m_expectedModelMd5).arg(actualMd5), true);
             resetTrainingState();
             return;
         }
 
         // md5 一致或 JSON 无 md5 字段 → 视为下载成功
-        showTip(QString("模型下载完成"));
+        showTip(tr("模型下载完成"));
 
         // ⭐ 把用户在"新建模型"里设置的类别名写回下载下来的 JSON
         //    这样下次切模型 → 加载 JSON 时就能读到真实名称（不再是 "1"/"2"）
@@ -624,11 +625,11 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
     qInfo() << "[SFTP] ⭐ onCreateDirTrainResult：success=" << response.isSuccess()
             << "msg=" << response.message << "code=" << response.code;
     if (!response.isSuccess()) {
-        showTip(QString("创建远程目录失败：%1（错误码：%2）").arg(response.message).arg(response.code), true);
+        showTip(tr("创建远程目录失败：%1（错误码：%2）").arg(response.message).arg(response.code), true);
         resetTrainingState();
         return;
     }
-    showTip("远程目录已创建，准备 SFTP 上传...");
+    showTip(tr("远程目录已创建，准备 SFTP 上传..."));
 
     // 构造路径（存到成员变量，供后续信号槽使用）
     QString tmpDir = QDir(QCoreApplication::applicationDirPath()).filePath("tmp");
@@ -652,20 +653,20 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
     // [0.1] SftpWorker 单文件上传进度 → showTip
     // m_sftpUploadPhase 语义：0=图片上传中，1=标签上传中，2=classes 上传中
     connect(m_sftpWorker, &SftpWorker::progressChanged, this, [this](int current, int total) {
-        QString phaseLabel = (m_sftpUploadPhase == 0) ? "图片上传"
-                           : (m_sftpUploadPhase == 1) ? "标签上传"
-                           : "classes 上传";
+        QString phaseLabel = (m_sftpUploadPhase == 0) ? tr("图片上传")
+                           : (m_sftpUploadPhase == 1) ? tr("标签上传")
+                           : tr("classes 上传");
         showTip(QString("%1 %2|%3").arg(phaseLabel).arg(current).arg(total));
     });
     connect(m_sftpWorker, &SftpWorker::fileUploadCompleted, this,
         [this](const QString& localFile, const QString& remoteFile, bool success) {
         if (!success) {
             QFileInfo fi(localFile);
-            showTip(QString("上传失败: %1").arg(fi.fileName()), true);
+            showTip(tr("上传失败: %1").arg(fi.fileName()), true);
         }
     });
     connect(m_sftpWorker, &SftpWorker::error, this, [this](const QString& msg) {
-        showTip(QString("SFTP 错误：%1").arg(msg), true);
+        showTip(tr("SFTP 错误：%1").arg(msg), true);
     });
     // [0.2] SftpWorker 一批上传完成 → 串联下一个（image → label → classes → startTrain）
     connect(m_sftpWorker, &SftpWorker::allUploadCompleted, this, &AiModelSet::onSftpUploadCompleted);
@@ -675,11 +676,11 @@ void AiModelSet::onCreateDirTrainResult(const TrainStartResponse& response)
     // 2. 主线程 connect（服务器端会在 startTrain 时自动准备好 /ftp/{taskId}/raw/ 目录结构）
     qInfo() << "[SFTP] ⭐ step2: m_sftpWorker->connect()";
     if (!m_sftpWorker->connect()) {
-        showTip(QString("SFTP connect 失败：%1:%2").arg(m_trainServerIp).arg(m_trainSftpPort), true);
+        showTip(tr("SFTP connect 失败：%1:%2").arg(m_trainServerIp).arg(m_trainSftpPort), true);
         resetTrainingState();
         return;
     }
-    showTip("SFTP 已连接，开始上传训练数据...");
+    showTip(tr("SFTP 已连接，开始上传训练数据..."));
 
     // 3. moveToThread + 启动上传（session 已建立，moveToThread 后继续复用）
     m_sftpThread = new QThread(this);
@@ -708,7 +709,7 @@ void AiModelSet::onSftpUploadCompleted(bool success)
             << "lastMethod=" << m_sftpLastUploadMethod;
     LOG_DEBUG_STM("[SFTP] onSftpUploadCompleted：phase=" << m_sftpUploadPhase << " success=" << success);
     if (!success) {
-        showTip("SFTP 上传出现错误，继续验证...", true);
+        showTip(tr("SFTP 上传出现错误，继续验证..."), true);
     }
 
     // 图片/标签/classes 每个阶段上传完后都做验证
@@ -721,13 +722,13 @@ void AiModelSet::onSftpUploadCompleted(bool success)
 
     if (m_sftpUploadPhase == 0) {
         remoteDir = m_sftpRemoteImgDir;
-        phaseName = "图片";
+        phaseName = tr("图片");
         uploadMethod = "onUploadLocalDir";
         uploadArg1 = m_sftpLocalImgDir;
         uploadArg2 = m_sftpRemoteImgDir;
     } else if (m_sftpUploadPhase == 1) {
         remoteDir = m_sftpRemoteLblDir;
-        phaseName = "标签";
+        phaseName = tr("标签");
         uploadMethod = "onUploadLocalDir";
         uploadArg1 = m_sftpLocalLblDir;
         uploadArg2 = m_sftpRemoteLblDir;
@@ -748,7 +749,7 @@ void AiModelSet::onSftpUploadCompleted(bool success)
 
     // 发起 remoteList 验证
     m_sftpVerifying = true;
-    showTip(QString("%1上传完成，正在验证...").arg(phaseName));
+    showTip(tr("%1上传完成，正在验证...").arg(phaseName));
     LOG_DEBUG_STM("[SFTP] 开始验证 phase=" << m_sftpUploadPhase << " remoteDir=" << remoteDir);
     QMetaObject::invokeMethod(m_sftpWorker, "onRemoteList", Qt::QueuedConnection,
                               Q_ARG(QString, remoteDir));
@@ -756,7 +757,7 @@ void AiModelSet::onSftpUploadCompleted(bool success)
 
 TRAIN_START:
     // ── 全部上传验证通过 → disconnect + quit + startTrain ──
-    showTip("训练数据上传验证通过，正在启动远程训练...");
+    showTip(tr("训练数据上传验证通过，正在启动远程训练..."));
     QMetaObject::invokeMethod(m_sftpWorker, "disconnect", Qt::QueuedConnection);
     QTimer::singleShot(0, m_sftpThread, [this]() {
         if (m_sftpThread) m_sftpThread->quit();
@@ -780,9 +781,9 @@ void AiModelSet::onSftpRemoteListCompleted(const QStringList& remoteFiles)
     }
 
     int remoteCount = remoteFiles.size();
-    QString phaseName = (m_sftpVerifyPhase == 0) ? "图片"
-                       : (m_sftpVerifyPhase == 1) ? "标签"
-                                                  : "classes.txt";
+    QString phaseName = (m_sftpVerifyPhase == 0) ? tr("图片")
+                       : (m_sftpVerifyPhase == 1) ? tr("标签")
+                                                  : QStringLiteral("classes.txt");
 
     LOG_DEBUG_STM("[SFTP] 验证 phase=" << m_sftpVerifyPhase
                   << " localCount=" << localCount << " remoteCount=" << remoteCount
@@ -790,7 +791,7 @@ void AiModelSet::onSftpRemoteListCompleted(const QStringList& remoteFiles)
 
     if (remoteCount >= localCount && localCount > 0) {
         // ✅ 验证通过，进入下一 phase
-        showTip(QString("%1验证通过（%2/%3）").arg(phaseName).arg(remoteCount).arg(localCount));
+        showTip(tr("%1验证通过（%2/%3）").arg(phaseName).arg(remoteCount).arg(localCount));
         m_sftpUploadPhase++;
         // 递归触发下一个阶段（直接调 onSftpUploadCompleted，它会根据 phase 决定是验证还是 startTrain）
         onSftpUploadCompleted(true);
@@ -800,7 +801,7 @@ void AiModelSet::onSftpRemoteListCompleted(const QStringList& remoteFiles)
     // 远程文件数 < 本地期望 → 重试上传（最多 3 次）
     if (m_sftpVerifyRetry < 3) {
         m_sftpVerifyRetry++;
-        showTip(QString("%1验证失败（远程%2 < 本地%3），重试上传 (%4/3)...")
+        showTip(tr("%1验证失败（远程%2 < 本地%3），重试上传 (%4/3)...")
                     .arg(phaseName).arg(remoteCount).arg(localCount).arg(m_sftpVerifyRetry), true);
         if (m_sftpLastUploadMethod == "onUploadLocalDir") {
             QMetaObject::invokeMethod(m_sftpWorker, "onUploadLocalDir", Qt::QueuedConnection,
@@ -815,7 +816,7 @@ void AiModelSet::onSftpRemoteListCompleted(const QStringList& remoteFiles)
     }
 
     // ❌ 3 次重试都失败 → 报错 + 终止
-    showTip(QString("%1上传验证失败（远程%2 < 本地%3），重试 3 次仍不通过，终止训练")
+    showTip(tr("%1上传验证失败（远程%2 < 本地%3），重试 3 次仍不通过，终止训练")
                 .arg(phaseName).arg(remoteCount).arg(localCount), true);
     resetTrainingState();
 }
@@ -903,7 +904,7 @@ void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
     if (!response.isSuccess()) {
         m_pollTimer->stop();   // 服务端已返回错误，立即停止轮询
         resetTrainingState();
-        showTip(QString("训练服务错误：%1（错误码：%2）").arg(response.message).arg(response.code), true);
+        showTip(tr("训练服务错误：%1（错误码：%2）").arg(response.message).arg(response.code), true);
         return;
     }
     m_pollFailCount = 0;
@@ -911,19 +912,19 @@ void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
     // 排队 / 训练中 / 完成 三种状态
     QString stateText;
     if (response.number > 0) {
-        stateText = QString("排队中（前面还有 %1 个任务）").arg(response.number);
+        stateText = tr("排队中（前面还有 %1 个任务）").arg(response.number);
     } else if (response.progress >= 100) {
-        stateText = "训练完成";
+        stateText = tr("训练完成");
     } else if (response.progress == 0) {
-        stateText = "数据准备中";
+        stateText = tr("数据准备中");
     } else if (response.progress == 90) {
-        stateText = "模型转换中";
+        stateText = tr("模型转换中");
     } else {
-        stateText = "训练中";
+        stateText = tr("训练中");
     }
 
     // ⭐ 训练过程中如果服务端返回了 message（可能是错误/警告/状态），一并显示到 tipLabel
-    QString tipMsg = QString("训练进度：%1% | %2").arg(response.progress).arg(stateText);
+    QString tipMsg = tr("训练进度：%1% | %2").arg(response.progress).arg(stateText);
     if (!response.message.isEmpty() && response.progress < 100) {
         tipMsg += QString(" | %1").arg(response.message);
     }
@@ -936,7 +937,7 @@ void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
         downLoadModelName = QFileInfo(response.model_name).completeBaseName();
         m_modelRemoteDir = response.model_dir;   // 保存 SFTP 远程目录
         m_modelApi->setModelRemoteDir(response.model_dir);  // 传给 ModelApi 用于 SFTP get
-        showTip(QString("训练完成！开始下载模型：%1").arg(response.model_name));
+        showTip(tr("训练完成！开始下载模型：%1").arg(response.model_name));
 
         // 先查询硬件架构，决定下载 .bin（x5）还是 .dlc（snpe）
         m_modelApi->queryArch();
@@ -1045,7 +1046,7 @@ void AiModelSet::onClassButtonClicked()
 
     // QButtonGroup exclusive 模式自动互斥，不需要手动取消其他按钮
     m_currentAnnotType = annotTypeFromClassId(classId);
-    showTip(QString("当前标注类型：%1").arg(className));
+    showTip(tr("当前标注类型：%1").arg(className));
 }
 
 // 刷新每个类别按钮下的标注计数（统计所有训练图片的标签，非当前图片）
@@ -1118,7 +1119,7 @@ void AiModelSet::onOneKeyAnnoBtnClicked()
 {
     // ⭐ 一次性触发：点击立即执行，不保持按下态，也不改变 m_anno_mode
     if (m_currentAnnotType == AnnotationType::TYPE_NONE) {
-        showTip("请先选一个类别 checkbox", true);
+        showTip(tr("请先选一个类别 checkbox"), true);
         return;
     }
     if (!m_currentImagePath.isEmpty()) {
@@ -1126,7 +1127,7 @@ void AiModelSet::onOneKeyAnnoBtnClicked()
         getFgRects();
     }
     if (m_fg_rects.isEmpty()) {
-        showTip("未检测到前景框，无法一键标注", true);
+        showTip(tr("未检测到前景框，无法一键标注"), true);
         return;
     }
     // 所有前景框 → annotation，类别 = 当前 checkbox
@@ -1140,7 +1141,7 @@ void AiModelSet::onOneKeyAnnoBtnClicked()
         m_annotations.append(a);
         m_activate_class_ids.insert(classIdFromAnnotType(a.type));
     }
-    showTip(QString("一键标注完成，共 %1 个框（类别 %2）")
+    showTip(tr("一键标注完成，共 %1 个框（类别 %2）")
         .arg(m_fg_rects.size()).arg(getAnnotLabelByType(m_currentAnnotType)));
     updateClassAnnotCounts();
     update();
@@ -1153,12 +1154,12 @@ void AiModelSet::onSelectAnnoBtnClicked()
         // 没选类别：回弹按钮 + 红色提示
         ui->selectAnnoPushButton->setChecked(false);
         m_anno_mode = AnnotaionMode::MODE_NONE;
-        showTip("请先选择类别 checkbox", true);
+        showTip(tr("请先选择类别 checkbox"), true);
         return;
     }
     if (isActive) _clearOtherBtn(ui->drawAnnoPushButton);  // 选中 select 时取消 draw
     m_anno_mode = isActive ? AnnotaionMode::MODE_SELECT : AnnotaionMode::MODE_NONE;
-    if (isActive) showTip("点击前景框 → 标记为当前类别");
+    if (isActive) showTip(tr("点击前景框 → 标记为当前类别"));
 }
 
 void AiModelSet::onDrawAnnoBtnClicked()
@@ -1168,12 +1169,12 @@ void AiModelSet::onDrawAnnoBtnClicked()
         // 没选类别：回弹按钮 + 红色提示
         ui->drawAnnoPushButton->setChecked(false);
         m_anno_mode = AnnotaionMode::MODE_NONE;
-        showTip("请先选择类别 checkbox", true);
+        showTip(tr("请先选择类别 checkbox"), true);
         return;
     }
     if (isActive) _clearOtherBtn(ui->selectAnnoPushButton);  // 选中 draw 时取消 select
     m_anno_mode = isActive ? AnnotaionMode::MODE_DRAW : AnnotaionMode::MODE_NONE;
-    if (isActive) showTip("按住鼠标左键拖动 → 手动画框");
+    if (isActive) showTip(tr("按住鼠标左键拖动 → 手动画框"));
 }
 
 
@@ -1280,7 +1281,7 @@ void AiModelSet::onDeleteAnnotBtnClicked()
         updateClassAnnotCounts();
         update();
     } else {
-        showTip("请先选中标注", true);
+        showTip(tr("请先选中标注"), true);
     }
 }
 
@@ -1367,8 +1368,8 @@ QColor AiModelSet::getAnnotColorByType(AnnotationType type)
 QString AiModelSet::getAnnotLabelByType(AnnotationType type)
 {
     int classId = classIdFromAnnotType(type);
-    if (classId < 0) return "未知类型";
-    return QString("类型%1").arg(classId);
+    if (classId < 0) return tr("未知类型");
+    return tr("类型%1").arg(classId);
 }
 
 // 规范化矩形（确保左上角为起点，宽高为正）
@@ -1403,7 +1404,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) return;
 
     if (m_currentPixmap.isNull()) {
-        showTip("请先选择图片", true);
+        showTip(tr("请先选择图片"), true);
         return;
     }
 
@@ -1415,7 +1416,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
     int offsetY = (ui->imgLabel->height() - scaledPixmap.height()) / 2;
     QRect imageDisplayRect(offsetX, offsetY, scaledPixmap.width(), scaledPixmap.height());
     if (!imageDisplayRect.contains(labelPos)) {
-        showTip("请在图片内操作", true);
+        showTip(tr("请在图片内操作"), true);
         return;
     }
     QPoint imageRelativePos = labelPos - QPoint(offsetX, offsetY);
@@ -1425,7 +1426,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
     // ── MODE_SELECT：点框改类别 + 切换为选中态 ──────────────────
     case AnnotaionMode::MODE_SELECT: {
         if (m_currentAnnotType == AnnotationType::TYPE_NONE) {
-            showTip("请先选择类别 checkbox", true);
+            showTip(tr("请先选择类别 checkbox"), true);
             return;
         }
         // ① 点中已有 annotation → 改类别/颜色 + 设为选中（实线）
@@ -1439,16 +1440,16 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
             annot.label = getAnnotLabelByType(m_currentAnnotType);
             m_activate_class_ids.insert(classIdFromAnnotType(m_currentAnnotType));
             ui->annotationInfoEdit->setText(
-                QString("选中标注 %1: x=%2 y=%3 w=%4 h=%5")
+                tr("选中标注 %1: x=%2 y=%3 w=%4 h=%5")
                 .arg(annot.label).arg(annot.rect.x()).arg(annot.rect.y())
                 .arg(annot.rect.width()).arg(annot.rect.height()));
-            showTip(QString("已改为类别 %1").arg(annot.label));
+            showTip(tr("已改为类别 %1").arg(annot.label));
             update();
             return;  // ⭐ 点中已有 annotation 就不再找前景框
         }
         // ② 没点中 annotation → 找前景框变成新标注
         if (!m_show_fg_rects || m_fg_rects.isEmpty()) {
-            showTip("请先点「前景目标」显示自动标注框", true);
+            showTip(tr("请先点「前景目标」显示自动标注框"), true);
             return;
         }
         int hitIdx = -1;
@@ -1459,7 +1460,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
             }
         }
         if (hitIdx == -1) {
-            showTip("请点击一个前景框或已有标注", true);
+            showTip(tr("请点击一个前景框或已有标注"), true);
             return;
         }
         AnnotationData a;
@@ -1471,7 +1472,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
         m_annotations.append(a);
         m_activate_class_ids.insert(classIdFromAnnotType(a.type));
         m_selectedAnnotIndex = m_annotations.size() - 1;  // ⭐ 新建后自动选中
-        showTip(QString("点击标注：类别 %1").arg(a.label));
+        showTip(tr("点击标注：类别 %1").arg(a.label));
         updateClassAnnotCounts();
         update();
         return;
@@ -1480,14 +1481,14 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
     // ── MODE_DRAW：手动拉框 ────────────────────────────────────────
     case AnnotaionMode::MODE_DRAW: {
         if (m_currentAnnotType == AnnotationType::TYPE_NONE) {
-            showTip("请先选一个类别 checkbox", true);
+            showTip(tr("请先选一个类别 checkbox"), true);
             return;
         }
         m_selectedAnnotIndex = hitTestAnnotation(imageRelativePos);
         if (m_selectedAnnotIndex != -1) {
             const AnnotationData& annot = m_annotations[m_selectedAnnotIndex];
             ui->annotationInfoEdit->setText(
-                QString("选中标注：%1  x=%2 y=%3 w=%4 h=%5")
+                tr("选中标注：%1  x=%2 y=%3 w=%4 h=%5")
                 .arg(annot.label).arg(annot.rect.x()).arg(annot.rect.y())
                 .arg(annot.rect.width()).arg(annot.rect.height()));
             update();
@@ -1505,7 +1506,7 @@ void AiModelSet::mousePressEvent(QMouseEvent *event)
         if (m_selectedAnnotIndex != -1) {
             const AnnotationData& annot = m_annotations[m_selectedAnnotIndex];
             ui->annotationInfoEdit->setText(
-                QString("选中标注：%1  x=%2 y=%3 w=%4 h=%5")
+                tr("选中标注：%1  x=%2 y=%3 w=%4 h=%5")
                 .arg(annot.label).arg(annot.rect.x()).arg(annot.rect.y())
                 .arg(annot.rect.width()).arg(annot.rect.height()));
         } else {
@@ -1538,9 +1539,9 @@ void AiModelSet::mouseMoveEvent(QMouseEvent *event)
                     bool ok = true;
                     int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
                     if (ok && t > 0) thresh = t;
-                    showTip(QString("标注[%1] 前景像素=%2 %3")
+                    showTip(tr("标注[%1] 前景像素=%2 %3")
                         .arg(m_annotations[i].label).arg(cnt)
-                        .arg(cnt >= thresh ? "≥阈值 ✓" : "<阈值 ✗"));
+                        .arg(cnt >= thresh ? tr("≥阈值 ✓") : tr("<阈值 ✗")));
                     return;
                 }
             }
@@ -1552,9 +1553,9 @@ void AiModelSet::mouseMoveEvent(QMouseEvent *event)
                     bool ok = true;
                     int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
                     if (ok && t > 0) thresh = t;
-                    showTip(QString("前景框[%1] 前景像素=%2 %3")
+                    showTip(tr("前景框[%1] 前景像素=%2 %3")
                         .arg(i).arg(cnt)
-                        .arg(cnt >= thresh ? "≥阈值 ✓" : "<阈值 ✗"));
+                        .arg(cnt >= thresh ? tr("≥阈值 ✓") : tr("<阈值 ✗")));
                     return;
                 }
             }
@@ -1569,9 +1570,9 @@ void AiModelSet::mouseMoveEvent(QMouseEvent *event)
                     bool ok = true;
                     int t = ui->m_areaThresholdlineEdit->text().toInt(&ok);
                     if (ok && t > 0) thresh = t;
-                    showTip(QString("预测框[%1] 前景像素=%2 %3")
+                    showTip(tr("预测框[%1] 前景像素=%2 %3")
                         .arg(oi.cls_id_).arg(cnt)
-                        .arg(cnt >= thresh ? "≥阈值 ✓" : "<阈值 ✗"));
+                        .arg(cnt >= thresh ? tr("≥阈值 ✓") : tr("<阈值 ✗")));
                     return;
                 }
             }
@@ -1619,7 +1620,7 @@ void AiModelSet::mouseReleaseEvent(QMouseEvent *event)
     
    // 过滤过小矩形
    if (newAnnotRect.width() < 10 || newAnnotRect.height() < 10) {
-       showTip("标注矩形过小，请重新绘制", true);
+       showTip(tr("标注矩形过小，请重新绘制"), true);
        return;
    }
 
@@ -1636,7 +1637,7 @@ void AiModelSet::mouseReleaseEvent(QMouseEvent *event)
    m_selectedAnnotIndex = m_annotations.size() - 1;
 
    m_activate_class_ids.insert(classIdFromAnnotType(newAnnot.type)); // 更新实际出现的标签
-   QString info = QString("标注完成：类型：%1; 边框：x=%2, y=%3, 宽=%4, 高=%5; 中心：x=%6, y=%7")
+   QString info = tr("标注完成：类型：%1; 边框：x=%2, y=%3, 宽=%4, 高=%5; 中心：x=%6, y=%7")
        .arg(newAnnot.label)
        .arg(newAnnot.rect.x()).arg(newAnnot.rect.y()).arg(newAnnot.rect.width()).arg(newAnnot.rect.height())
        .arg(newAnnot.center().x()).arg(newAnnot.center().y());
@@ -1798,7 +1799,7 @@ void AiModelSet::paintEvent(QPaintEvent *event)
             painter.setPen(pen);
             painter.drawRect(drawRect);
             painter.setPen(Qt::black);
-            painter.drawText(drawRect.topLeft() + QPoint(5, 15), "绘制中...");
+            painter.drawText(drawRect.topLeft() + QPoint(5, 15), tr("绘制中..."));
             needUpdatePixmap = true;
         }
 
@@ -2072,7 +2073,7 @@ void AiModelSet::removeNestedBoxes(QVector<QRect>& rects)
 void AiModelSet::addTrainListPushButtonPressed(){
     // 空值校验：未加载图片时不添加
     if (m_currentImagePath.isEmpty()) {
-        showTip("请先加载图片", true);
+        showTip(tr("请先加载图片"), true);
         return;
     }
     // 去重：已在训练集则跳过
@@ -2099,7 +2100,7 @@ void AiModelSet::delTrainListPushButtonPressed(){
 void AiModelSet::delTrainListAllPushButtonPressed()
 {
     if (m_train_lists.isEmpty()) {
-        showTip("训练集已为空", true);
+        showTip(tr("训练集已为空"), true);
         return;
     }
     int n = m_train_lists.size();
@@ -2108,14 +2109,14 @@ void AiModelSet::delTrainListAllPushButtonPressed()
     refreshThumbnails();     // 缩略图四周绿框消失
     updateImgLabelBorder();  // 大图绿框消失
     updateClassAnnotCounts();  // ⭐ 清空训练集后刷新全局类别计数
-    showTip(QString("已从训练集移除 %1 张图片").arg(n));
+    showTip(tr("已从训练集移除 %1 张图片").arg(n));
 }
 
 // ⭐ 一键添加所有「有标注文件」的图片到训练集（自动去重）
 void AiModelSet::addAllLabeledTrainListPushButtonPressed()
 {
     if (m_allImagePaths.isEmpty()) {
-        showTip("请先导入图片", true);
+        showTip(tr("请先导入图片"), true);
         return;
     }
 
@@ -2142,7 +2143,7 @@ void AiModelSet::addAllLabeledTrainListPushButtonPressed()
     updateClassAnnotCounts();  // ⭐ 批量加入后刷新全局类别计数
 
     showTip(
-        QString("批量添加完成：新增 %1 张，跳过 %2 张")
+        tr("批量添加完成：新增 %1 张，跳过 %2 张")
             .arg(added).arg(skipped)
     );
 }
@@ -2250,7 +2251,7 @@ void AiModelSet::onModelSelPushButtonClicked()
     }
 
     QDialog dlg(this);
-    dlg.setWindowTitle("加载模型");
+    dlg.setWindowTitle(tr("加载模型"));
     dlg.setWindowModality(Qt::ApplicationModal);
     dlg.resize(700, 400);
     dlg.setMinimumWidth(600);
@@ -2281,7 +2282,7 @@ void AiModelSet::onModelSelPushButtonClicked()
     }
 
     if (binNames.isEmpty()) {
-        new QListWidgetItem("(该目录下没有 .bin 模型文件)", listWidget);
+        new QListWidgetItem(tr("(该目录下没有 .bin 模型文件)"), listWidget);
     } else {
         // 默认选中第一个模型
         listWidget->setCurrentRow(0);
@@ -2362,9 +2363,9 @@ void AiModelSet::onModelSelPushButtonClicked()
 
         if (binOk || jsonOk || dbOk) {
             QStringList parts;
-            if (binOk) parts << binPath;      else parts << "(bin 删除失败)";
-            if (jsonOk) parts << jsonPath;     else parts << "(json 不存在)";
-            if (dbOk)   parts << "(数据库已清除)"; else parts << "(数据库清除失败)";
+            if (binOk) parts << binPath;      else parts << tr("(bin 删除失败)");
+            if (jsonOk) parts << jsonPath;     else parts << tr("(json 不存在)");
+            if (dbOk)   parts << tr("(数据库已清除)"); else parts << tr("(数据库清除失败)");
             QMessageBox::information(&dlg, tr("提示"), tr("已删除: %1\n%2")
                 .arg(baseName).arg(parts.join("\n")));
             // 如果删的是当前正在用的模型 → 清空 modelNameLabel
@@ -2605,13 +2606,13 @@ void AiModelSet::onModelSelPushButtonClicked()
             if (jsonOk && classCount > 0) {
                 modelCategoryNum = classCount;
                 setupClassCheckBoxes(classCount, classNames);
-                showTip(QString("加载模型: %1  (%2 类)").arg(modelName).arg(classCount));
+                showTip(tr("加载模型: %1  (%2 类)").arg(modelName).arg(classCount));
             } else {
                 // json 读不到，默认 1 类
                 modelCategoryNum = 1;
                 m_classNames.clear();
                 setupClassCheckBoxes(1);
-                showTip(QString("加载模型: %1 (json 读取失败, 默认 1 类)").arg(modelName), true);
+                showTip(tr("加载模型: %1 (json 读取失败, 默认 1 类)").arg(modelName), true);
                 LOG_WARN_STM("⚠️ json 读取失败:" << jsonPath);
             }
         }
@@ -2626,18 +2627,21 @@ static void removeDirInFileDialog(QFileDialog *dlg)
 {
     if (!dlg) return;
 
+    // 本函数是文件级 static 自由函数（无 this），必须用显式 translate 指定上下文
     const QString sel = dlg->selectedFiles().value(0);
     if (sel.isEmpty() || !QFileInfo(sel).isDir()) {
-        QMessageBox::warning(dlg, "提示", "请先在列表中选择要删除的目录");
+        QMessageBox::warning(dlg, QCoreApplication::translate("AiModelSet", "提示"),
+                             QCoreApplication::translate("AiModelSet", "请先在列表中选择要删除的目录"));
         return;
     }
     // 保护图片根目录，避免误删整个数据目录
     if (QDir(sel) == QDir(ai_helper::GetAcqImgRootPath())) {
-        QMessageBox::warning(dlg, "提示", "不能删除图片根目录：\n" + sel);
+        QMessageBox::warning(dlg, QCoreApplication::translate("AiModelSet", "提示"),
+                             QCoreApplication::translate("AiModelSet", "不能删除图片根目录：\n%1").arg(sel));
         return;
     }
-    if (QMessageBox::question(dlg, "删除目录",
-            QString("确定删除该目录及其全部内容吗？此操作不可恢复！\n\n%1").arg(sel),
+    if (QMessageBox::question(dlg, QCoreApplication::translate("AiModelSet", "删除目录"),
+            QCoreApplication::translate("AiModelSet", "确定删除该目录及其全部内容吗？此操作不可恢复！\n\n%1").arg(sel),
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes) {
         return;
     }
@@ -2648,7 +2652,8 @@ static void removeDirInFileDialog(QFileDialog *dlg)
         dlg->setDirectory(fi.absolutePath());   // 回到父目录并刷新列表
     } else {
         LOG_WARN_STM("⚠️ 删除目录失败:" << sel);
-        QMessageBox::warning(dlg, "删除失败", "无法删除目录：\n" + sel);
+        QMessageBox::warning(dlg, QCoreApplication::translate("AiModelSet", "删除失败"),
+                             QCoreApplication::translate("AiModelSet", "无法删除目录：\n%1").arg(sel));
     }
 }
 
@@ -2765,7 +2770,7 @@ void AiModelSet::onImportImgPushButtonClicked(){
              << "AA_DontUseNativeDialogs="
              << QCoreApplication::testAttribute(Qt::AA_DontUseNativeDialogs);
 
-    QFileDialog dlg(this, "选择图片文件夹", initDir);
+    QFileDialog dlg(this, tr("选择图片文件夹"), initDir);
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setOption(QFileDialog::ShowDirsOnly, true);
     dlg.setOption(QFileDialog::DontResolveSymlinks, true);
@@ -2784,8 +2789,25 @@ void AiModelSet::onImportImgPushButtonClicked(){
     QDialogButtonBox *box = dlg.findChild<QDialogButtonBox*>("buttonBox");
     if (box) {
         box->setOrientation(Qt::Horizontal);
-        QPushButton *delBtn = box->addButton("Delete", QDialogButtonBox::DestructiveRole);
-        QPushButton *exportBtn = box->addButton("Export", QDialogButtonBox::ActionRole);
+
+        // ⭐ 清理 Qt 原生 Choose/Cancel 按钮：去掉系统主题图标 + 快捷键括号（如 取消(&C)）
+        for (QAbstractButton *btn : box->buttons()) {
+            switch (box->buttonRole(btn)) {
+            case QDialogButtonBox::AcceptRole:
+                btn->setIcon(QIcon());
+                btn->setText(tr("选择"));
+                break;
+            case QDialogButtonBox::RejectRole:
+                btn->setIcon(QIcon());
+                btn->setText(tr("取消"));
+                break;
+            default:
+                break;
+            }
+        }
+
+        QPushButton *delBtn = box->addButton(tr("删除"), QDialogButtonBox::DestructiveRole);
+        QPushButton *exportBtn = box->addButton(tr("导出"), QDialogButtonBox::ActionRole);
         connect(delBtn, &QPushButton::clicked, &dlg, [&dlg]() {
             removeDirInFileDialog(&dlg);
         });
@@ -2805,7 +2827,7 @@ void AiModelSet::onImportImgPushButtonClicked(){
     FLOW("import 弹框后 dirPath=" << dirPath);
     if (dirPath.isEmpty()) return;
     m_currentDir = dirPath;
-    showTip("扫描中...");
+    showTip(tr("扫描中..."));
     
     // 先干净地停掉上一次的扫描（如果有）
     cleanupScanThread();
@@ -2819,7 +2841,7 @@ void AiModelSet::onImportImgPushButtonClicked(){
     // 扫描进度 + 完成信号（Worker 子线程 emit，UI 线程 QueuedConnection 接收）
     connect(m_scanWorker, &ImageScanWorker::scanProgress,
             this, [this](int count) {
-                showTip(QString("扫描中：已找到 %1 张").arg(count));
+                showTip(tr("扫描中：已找到 %1 张").arg(count));
             }, Qt::QueuedConnection);
 
     connect(m_scanWorker, &ImageScanWorker::scanFinished,
@@ -2931,13 +2953,13 @@ void AiModelSet::onScanFinished(const QStringList& imagePaths)
 
     if (m_bgCount < 2) {
         // 警告：bg_ 图片不足 2 张
-        showTip(QString("导入目录必须包含 2 张以上 bg_ 开头的背景图像（当前 %1 张）").arg(m_bgCount), true);
-        QMessageBox::warning(this, "警告",
-            QString("导入目录必须包含 2 张以上 bg_ 开头的背景图像\n当前目录仅有 %1 张 bg_ 图片").arg(m_bgCount));
+        showTip(tr("导入目录必须包含 2 张以上 bg_ 开头的背景图像（当前 %1 张）").arg(m_bgCount), true);
+        QMessageBox::warning(this, tr("警告"),
+            tr("导入目录必须包含 2 张以上 bg_ 开头的背景图像\n当前目录仅有 %1 张 bg_ 图片").arg(m_bgCount));
         // 清空数据 + 返回
         m_allImagePaths.clear();
         m_bgPaths.clear();
-        showTip("bg_ 图片不足，导入取消");
+        showTip(tr("bg_ 图片不足，导入取消"));
         ui->m_prevBtn->setEnabled(false);
         ui->m_nextBtn->setEnabled(false);
         clearImageList();
@@ -2982,13 +3004,13 @@ void AiModelSet::onScanFinished(const QStringList& imagePaths)
 
     // 更新状态和按钮状态
     if (m_allImagePaths.isEmpty()) {
-        showTip("未找到支持的图片文件", true);
+        showTip(tr("未找到支持的图片文件"), true);
 
         ui->m_prevBtn->setEnabled(false);
         ui->m_nextBtn->setEnabled(false);
         clearImageList();
     } else {
-        showTip(QString("共找到 %1 张图片").arg(m_allImagePaths.size()));
+        showTip(tr("共找到 %1 张图片").arg(m_allImagePaths.size()));
         ui->m_prevBtn->setEnabled(false);  // 第1页禁用上一页
         ui->m_nextBtn->setEnabled(m_totalPages > 1);  // 超过1页才启用下一页
         showPage(m_currentPage);  // 显示第1页
@@ -3039,7 +3061,7 @@ void AiModelSet::showPage(int page)
             }
             item->setIcon(QIcon(QPixmap::fromImage(thumb)));
         } else {
-            item->setText(fileInfo.fileName() + " (加载失败)");
+            item->setText(fileInfo.fileName() + tr(" (加载失败)"));
         }
     }
     FLOW("showPage 缩略图加载完成");
@@ -3113,7 +3135,7 @@ void AiModelSet::loadFirstImage(const QString& path)
 void AiModelSet::updatePageInfo()
 {
     ui->m_pageInfoLabel->setText(
-        QString("第%1页/共%2页 | 当前第%3张/共%4张")
+        tr("第%1页/共%2页 | 当前第%3张/共%4张")
             .arg(m_currentPage).arg(m_totalPages)
             .arg(m_currentImg).arg(m_totalImg));
     ui->m_curPagelineEdit->setText(QString("%1").arg(m_currentPage));
@@ -3163,12 +3185,12 @@ void AiModelSet::gotoPage()
     bool ok = false;
     int page = ui->m_curPagelineEdit->text().toInt(&ok);
     if (!ok) {
-        showTip("请输入有效页码", true);
+        showTip(tr("请输入有效页码"), true);
         ui->m_curPagelineEdit->setText(QString("%1").arg(m_currentPage));
         return;
     }
     if (m_totalPages <= 0) {
-        showTip("暂无图片，无法跳转", true);
+        showTip(tr("暂无图片，无法跳转"), true);
         ui->m_curPagelineEdit->setText(QString("%1").arg(m_currentPage));
         return;
     }
@@ -3190,7 +3212,7 @@ void AiModelSet::saveMyAnnotation(const QString& imgPath)
     QString txtPath = imgFileInfo.absolutePath() + "/" + txtFileName; // 拼接路径：H:/labels/xxx.txt
     QFile txtFile(txtPath);
     if (!txtFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        showTip(QString("保存标注失败：无法打开文件 %1").arg(txtPath), true);
+        showTip(tr("保存标注失败：无法打开文件 %1").arg(txtPath), true);
         return;
     }
     QTextStream out(&txtFile);
@@ -3211,7 +3233,7 @@ void AiModelSet::saveMyAnnotation(const QString& imgPath)
             << bboxH << "\n";
     }
     txtFile.close();
-    showTip(QString("标注已保存：%1").arg(txtPath));
+    showTip(tr("标注已保存：%1").arg(txtPath));
     m_annotations.clear();
 }
 
@@ -3228,12 +3250,12 @@ void AiModelSet::LoadMyAnnotation(const QString& imgPath)
 
     QFile txtFile(txtPath);
     if (!txtFile.exists()) {
-        showTip(QString("标注文件不存在：%1").arg(txtPath), true);
+        showTip(tr("标注文件不存在：%1").arg(txtPath), true);
         return;
     }
 
     if (!txtFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        showTip(QString("无法打开标注文件：%1").arg(txtPath), true);
+        showTip(tr("无法打开标注文件：%1").arg(txtPath), true);
         return;
     }
 
@@ -3266,7 +3288,7 @@ void AiModelSet::LoadMyAnnotation(const QString& imgPath)
     }
 
     txtFile.close();
-    showTip(QString("标注已加载：%1").arg(QFileInfo(txtPath).fileName()));
+    showTip(tr("标注已加载：%1").arg(QFileInfo(txtPath).fileName()));
     updateClassAnnotCounts();
 
 }
@@ -3292,14 +3314,14 @@ void AiModelSet::onImageItemClicked(QListWidgetItem* item)
 
 
     if (m_currentImagePath.isEmpty()) {
-        showTip("图片路径无效", true);
+        showTip(tr("图片路径无效"), true);
         return;
     }
 
     // 2. 加载原图（支持大图片，避免内存溢出）
     QImage image(m_currentImagePath);
     if (image.isNull()) {
-        showTip("图片加载失败", true);
+        showTip(tr("图片加载失败"), true);
         return;
     }
 
@@ -3510,17 +3532,17 @@ bool AiModelSet::prepareTrain()
             for (int i : missing) ms << QString::number(i);
             for (int i : extra) es << QString::number(i);
 
-            QString warnMsg = QString(
+            QString warnMsg = tr(
                 "当前模型类别数为 %1（0 ~ %2），但标注中扫描到的类别不匹配：\n\n"
             ).arg(modelCategoryNum).arg(modelCategoryNum - 1);
 
             if (!missing.isEmpty())
-                warnMsg += QString("❌ 缺少类别：%1\n").arg(ms.join(", "));
+                warnMsg += tr("❌ 缺少类别：%1\n").arg(ms.join(", "));
             if (!extra.isEmpty())
-                warnMsg += QString("⚠️  存在超范围类别：%1\n").arg(es.join(", "));
+                warnMsg += tr("⚠️  存在超范围类别：%1\n").arg(es.join(", "));
 
             QMessageBox::critical(this, tr("类别不匹配，无法提交训练"), warnMsg);
-            showTip("类别不匹配，请检查标注文件后重试", true);
+            showTip(tr("类别不匹配，请检查标注文件后重试"), true);
             return false;
         }
 
@@ -3545,21 +3567,21 @@ void AiModelSet::onShowFgRectsBtnClicked()
     // ⭐ 没有图片时禁用
     if (m_currentPixmap.isNull()) {
         ui->fgPushButton->setChecked(false);
-        showTip("请先加载图片", true);
+        showTip(tr("请先加载图片"), true);
         return;
     }
     bool willShow = ui->fgPushButton->isChecked();
     // 按下（要显示前景）但还没选类别 → 回弹 + 红色提示
     if (willShow && m_currentAnnotType == AnnotationType::TYPE_NONE) {
         ui->fgPushButton->setChecked(false);
-        showTip("请先选择类别 checkbox", true);
+        showTip(tr("请先选择类别 checkbox"), true);
         return;
     }
     m_show_fg_rects = willShow;
 
     if (willShow) {
         getFgRects();     // ⭐ 立即对当前图片计算前景框
-        showTip(QString("前景目标显示中（%1 个框）").arg(m_fg_rects.size()));
+        showTip(tr("前景目标显示中（%1 个框）").arg(m_fg_rects.size()));
     } else {
         m_fg_rects.clear();  // 关闭时清空残留
     }
@@ -3576,7 +3598,7 @@ void AiModelSet::onAreaThresholdAnnoPushButtonClicked()
 {
     if (m_currentPixmap.isNull()) {
         ui->areaThresholdAnnoPushButton->setChecked(false);
-        showTip("请先加载图片", true);
+        showTip(tr("请先加载图片"), true);
         return;
     }
     m_show_fg_pixel_count = ui->areaThresholdAnnoPushButton->isChecked();
@@ -3586,7 +3608,7 @@ void AiModelSet::onAreaThresholdAnnoPushButtonClicked()
         if (m_fg_rects.isEmpty()) getFgRects();
         computeFgPixelCounts();
         int total = m_fg_pixel_counts.size() + m_emulate_pixel_counts.size();
-        showTip(QString("前景像素过滤开启（%1 个框已统计）").arg(total));
+        showTip(tr("前景像素过滤开启（%1 个框已统计）").arg(total));
     } else {
         m_fg_pixel_counts.clear();
         m_emulate_pixel_counts.clear();
@@ -3734,23 +3756,23 @@ bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
 
     // 前置：本地必须有 .bin
     if (!QFile::exists(localBin)) {
-        showTip(QString("本地模型文件不存在: %1").arg(localBin), true);
+        showTip(tr("本地模型文件不存在: %1").arg(localBin), true);
         return false;
     }
 
-    showTip(QString("连接板卡上传模型 %1 ...").arg(modelName));
+    showTip(tr("连接板卡上传模型 %1 ...").arg(modelName));
     QApplication::processEvents();
 
     // 1. 连接板卡
     QString boardIp = getBoardIp();
     SftpWorker w(boardIp, AI_DEV_USER, AI_DEV_PWD, 22);
     if (!w.connect()) {
-        showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
+        showTip(tr("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
         return false;
     }
     // 2. 确保目录存在
     if (!w.mkdir_p(boardDir)) {
-        showTip(QString("板卡创建目录失败 %1").arg(boardDir), true);
+        showTip(tr("板卡创建目录失败 %1").arg(boardDir), true);
         w.disconnect();
         return false;
     }
@@ -3769,12 +3791,12 @@ bool AiModelSet::ensureBoardModelUploaded(const QString& modelName)
     w.disconnect();
 
     if (!uploadOk) {
-        showTip(QString("板卡模型 %1 上传失败").arg(modelName), true);
+        showTip(tr("板卡模型 %1 上传失败").arg(modelName), true);
         return false;
     }
 
     LOG_DEBUG_STM("[板卡模型] 覆盖上传完成:" << uploadFiles);
-    showTip(QString("板卡模型 %1 上传完成").arg(modelName));
+    showTip(tr("板卡模型 %1 上传完成").arg(modelName));
     return true;
 }
 
@@ -3791,7 +3813,7 @@ bool AiModelSet::runEmulateOnce()
 
     // ═══ 先把当前图片 SFTP 上传到板卡的仿真目录（用 SftpWorker 临时对象） ═══
     QString boardImgDir = "/ftp/emulate";
-    showTip(QString("上传图片到板卡：%1 → %2 ...").arg(imgFileName).arg(boardImgDir));
+    showTip(tr("上传图片到板卡：%1 → %2 ...").arg(imgFileName).arg(boardImgDir));
     QApplication::processEvents();
 
     // ⭐ 关键：记录 SftpWorker 实际上传到板卡的远程文件名 basename
@@ -3800,7 +3822,7 @@ bool AiModelSet::runEmulateOnce()
     {
         SftpWorker w(boardIp, AI_DEV_USER, AI_DEV_PWD, 22);
         if (!w.connect()) {
-            showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
+            showTip(tr("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
             return false;
         }
         w.mkdir_p(boardImgDir);
@@ -3815,7 +3837,7 @@ bool AiModelSet::runEmulateOnce()
         w.onUploadFiles(QStringList{m_currentImagePath}, boardImgDir);
         w.disconnect();
         if (!uploadOk) {
-            showTip(QString("图片上传到板卡失败：%1").arg(imgFileName), true);
+            showTip(tr("图片上传到板卡失败：%1").arg(imgFileName), true);
             return false;
         }
     }
@@ -3862,7 +3884,7 @@ bool AiModelSet::runEmulateOnce()
     QByteArray request = cmdworker::EmulateParamRequest(info);
     QByteArray response;
 
-    showTip(QString("仿真中：model=%1, img=%2 ...").arg(modelBinName).arg(actualRemoteBaseName));
+    showTip(tr("仿真中：model=%1, img=%2 ...").arg(modelBinName).arg(actualRemoteBaseName));
     QApplication::processEvents();
 
     // UDP 发送到板卡 :AI_UPD_CMD_PORT（3s 超时）
@@ -3874,7 +3896,7 @@ bool AiModelSet::runEmulateOnce()
         3000);
 
     if (!ok) {
-        showTip(QString("仿真通信失败：板卡 %1:%2 无响应").arg(boardIp).arg(AI_UPD_CMD_PORT), true);
+        showTip(tr("仿真通信失败：板卡 %1:%2 无响应").arg(boardIp).arg(AI_UPD_CMD_PORT), true);
         return false;
     }
 
@@ -3882,20 +3904,20 @@ bool AiModelSet::runEmulateOnce()
     CmdPackage cmdPkg;
     ok = cmdworker::ParseCmdPkg(response, cmdPkg);
     if (!ok) {
-        showTip("仿真响应解析失败", true);
+        showTip(tr("仿真响应解析失败"), true);
         return false;
     }
 
     EmulateResInfo resInfo = cmdworker::EmulateParamResponse(cmdPkg);
     if (resInfo.code_ != 1) {
-        showTip(QString("仿真执行失败（板卡返回 code=%1，可能图片/模型路径问题）").arg(resInfo.code_), true);
+        showTip(tr("仿真执行失败（板卡返回 code=%1，可能图片/模型路径问题）").arg(resInfo.code_), true);
         return false;
     }
 
     // 存结果 + 重绘
     m_emulateObjInfos = resInfo.obj_infos_;
     saveEmulateResultToFile(m_currentImagePath, m_emulateObjInfos);  // 保存 pred txt
-    showTip(QString("仿真完成：检测到 %1 个目标").arg(m_emulateObjInfos.size()));
+    showTip(tr("仿真完成：检测到 %1 个目标").arg(m_emulateObjInfos.size()));
     update();
     return true;
 }
@@ -3972,7 +3994,7 @@ void AiModelSet::onValidImgPushButtonClicked()
     if (!willShow) {
         m_emulating = false;
         m_emulateObjInfos.clear();
-        showTip("仿真查看已关闭");
+        showTip(tr("仿真查看已关闭"));
         update();
         return;
     }
@@ -4004,7 +4026,7 @@ void AiModelSet::onValidImgPushButtonClicked()
         #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
         ui->validImgPushButton->setChecked(false);
         #endif
-        showTip("请先加载图片", true);
+        showTip(tr("请先加载图片"), true);
         return;
     }
 
@@ -4012,7 +4034,7 @@ void AiModelSet::onValidImgPushButtonClicked()
     m_emulating = true;
     m_emulateObjInfos.clear();
     if (loadEmulateResultFromFile(m_currentImagePath, m_emulateObjInfos)) {
-        showTip(QString("仿真查看（从缓存加载，%1 个目标）").arg(m_emulateObjInfos.size()));
+        showTip(tr("仿真查看（从缓存加载，%1 个目标）").arg(m_emulateObjInfos.size()));
         update();
         return;
     }
@@ -4075,7 +4097,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     int total = m_allImagePaths.size();
     if (total == 0) {
         ui->batchValidImgPushButton->setChecked(false);
-        showTip("图片列表为空，请先导入图片目录", true);
+        showTip(tr("图片列表为空，请先导入图片目录"), true);
         return;
     }
 
@@ -4099,7 +4121,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     bool allCached = (cachedCount == total && cachedCount > 0);
 
     if (allCached) {
-        showTip(QString("批量仿真已完成（从缓存加载，共 %1 张）").arg(cachedCount));
+        showTip(tr("批量仿真已完成（从缓存加载，共 %1 张）").arg(cachedCount));
         ui->batchValidImgPushButton->setChecked(true);
         ui->batchValidImgPushButton->setEnabled(true);
         #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
@@ -4127,7 +4149,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     QString boardIp = getBoardIp();
     SftpWorker w(boardIp, AI_DEV_USER, AI_DEV_PWD, 22);
     if (!w.connect()) {
-        showTip(QString("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
+        showTip(tr("板卡 SFTP 连接失败 %1:22").arg(boardIp), true);
         ui->batchValidImgPushButton->setChecked(false);
         for (auto* b : allBtns) b->setEnabled(true);
         return;
@@ -4177,14 +4199,14 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
                 loadEmulateResultFromFile(imgPath, m_emulateObjInfos);
                 update();
             }
-            showTip(QString("批量仿真 %1/%2（%3%）%4 [已缓存]")
+            showTip(tr("批量仿真 %1/%2（%3%）%4 [已缓存]")
                         .arg(i+1).arg(total).arg(int((i+1)*100.0/total)).arg(imgFileName));
             QApplication::processEvents();
             continue;
         }
 
         // 进度显示
-        showTip(QString("批量仿真 %1/%2（%3%） %4")
+        showTip(tr("批量仿真 %1/%2（%3%） %4")
                     .arg(i+1).arg(total)
                     .arg(int((i+1)*100.0/total))
                     .arg(imgFileName));
@@ -4252,8 +4274,8 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     loadEmulateResultFromFile(m_currentImagePath, m_emulateObjInfos);
     update();
 
-    showTip(QString("批量仿真完成：成功 %1 / 总计 %2（失败 %3）").arg(successCount).arg(total).arg(failCount)
-                + QString("   [仿真查看模式：%1 按钮开启中]").arg(ui->batchValidImgPushButton->text()));
+    showTip(tr("批量仿真完成：成功 %1 / 总计 %2（失败 %3）").arg(successCount).arg(total).arg(failCount)
+                + tr("   [仿真查看模式：%1 按钮开启中]").arg(ui->batchValidImgPushButton->text()));
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -4287,7 +4309,7 @@ void AiModelSet::onValidvsAnnoImgPushButtonClicked()
     m_emulateObjInfos.clear();
 
     // ① 遍历全目录，筛选出有错标的图片
-    showTip("筛选错标图片中...");
+    showTip(tr("筛选错标图片中..."));
     QApplication::processEvents();
     QStringList mismatchList;
     int checked = 0;
@@ -4296,12 +4318,12 @@ void AiModelSet::onValidvsAnnoImgPushButtonClicked()
         checked++;
         if (hasMismatch(path, modelName)) mismatchList.append(path);
         if (checked % 20 == 0) {
-            showTip(QString("筛选错标图片中... %1/%2（%3 张错标）")
+            showTip(tr("筛选错标图片中... %1/%2（%3 张错标）")
                         .arg(checked).arg(total).arg(mismatchList.size()));
             QApplication::processEvents();
         }
     }
-    showTip(QString("筛选完成：%1 张图片有错标 / 总计 %2 张").arg(mismatchList.size()).arg(total));
+    showTip(tr("筛选完成：%1 张图片有错标 / 总计 %2 张").arg(mismatchList.size()).arg(total));
 
     // ② 没找到错标 → 弹框提示，取消按钮
     if (mismatchList.isEmpty()) {
@@ -4333,30 +4355,30 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     // 防重入：训练正在进行时 → 主动查询进度（不提交新训练）
     if (m_trainingBusy) {
         if (!m_currentTaskId.isEmpty()) {
-            showTip("正在训练，查询最新进度...");
+            showTip(tr("正在训练，查询最新进度..."));
             m_modelApi->queryTrainProgress(m_currentTaskId);
         } else {
-            showTip("训练流程正在进行中，请等待完成");
+            showTip(tr("训练流程正在进行中，请等待完成"));
         }
         return;
     }
 
     // 空训练集校验
     if (m_train_lists.isEmpty()) {
-        showTip("训练集为空，请先添加训练图片", true);
+        showTip(tr("训练集为空，请先添加训练图片"), true);
         return;
     }
     if (m_train_lists.size() <= 20) {
-        showTip(QString("训练图片数量不足（当前 %1 张，需超过 20 张，不含背景图）").arg(m_train_lists.size()), true);
+        showTip(tr("训练图片数量不足（当前 %1 张，需超过 20 张，不含背景图）").arg(m_train_lists.size()), true);
         return;
     }
     if (modelName.isEmpty()) {
-        showTip("模型名为空，请先创建或加载模型", true);
+        showTip(tr("模型名为空，请先创建或加载模型"), true);
         return;
     }
 
     // 1. 准备训练数据（本地 tmp 目录）
-    showTip(QString("准备训练数据（%1 张图片）...").arg(m_train_lists.size()));
+    showTip(tr("准备训练数据（%1 张图片）...").arg(m_train_lists.size()));
     if (!prepareTrain()) {
         // 类别校验没通过且用户点了 No，已经弹过告警了
         return;
@@ -4367,10 +4389,10 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     int realImgs = QDir(QDir(tmpDir).filePath("image")).entryInfoList(QDir::Files).size();
     int realLbls = QDir(QDir(tmpDir).filePath("label")).entryInfoList(QDir::Files).size();
     if (realImgs == 0) {
-        showTip("prepareTrain 失败：tmp/image 为空，请检查训练图片路径", true);
+        showTip(tr("prepareTrain 失败：tmp/image 为空，请检查训练图片路径"), true);
         return;
     }
-    showTip(QString("训练数据准备完成：%1 张图片 + %2 个标签").arg(realImgs).arg(realLbls));
+    showTip(tr("训练数据准备完成：%1 张图片 + %2 个标签").arg(realImgs).arg(realLbls));
 
     // 3. 初始化轮询定时器（第一次进的时候创建）
     if (!m_pollTimer) {
@@ -4394,7 +4416,7 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     ui->batchValidImgPushButton->setEnabled(false);
     ui->validvsAnnoImgPushButton->setEnabled(false);
     m_pollFailCount = 0;
-    showTip(QString("正在创建远程训练任务目录... 任务ID：%1").arg(m_currentTaskId));
+    showTip(tr("正在创建远程训练任务目录... 任务ID：%1").arg(m_currentTaskId));
     m_modelApi->createDirTrain(m_currentTaskId);
 }
 
@@ -4402,16 +4424,16 @@ void AiModelSet::onModelNewPushButtonClicked()
 {
     // ── 创建对话框 ──
     QDialog dlg(this);
-    dlg.setWindowTitle("新建模型");
+    dlg.setWindowTitle(tr("新建模型"));
     dlg.setWindowModality(Qt::ApplicationModal);
     dlg.setMinimumWidth(480);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
 
     // ── 第一栏: 模型名称 ──
-    QLabel *nameLabel = new QLabel("模型名称:", &dlg);
+    QLabel *nameLabel = new QLabel(tr("模型名称:"), &dlg);
     QLineEdit *nameEdit = new QLineEdit(&dlg);
-    nameEdit->setPlaceholderText("仅允许英文字母、数字、下划线 _");
+    nameEdit->setPlaceholderText(tr("仅允许英文字母、数字、下划线 _"));
     nameEdit->setFocusPolicy(Qt::NoFocus);  // ⭐ 阻止系统虚拟键盘自动弹出，只用 myInputMethod
     // ⭐ 板卡上点击 QLineEdit 弹软键盘
     struct KbFilter : QObject {
@@ -4429,7 +4451,7 @@ void AiModelSet::onModelNewPushButtonClicked()
             return QObject::eventFilter(o, e);
         }
     };
-    nameEdit->installEventFilter(new KbFilter("新建模型", &dlg));
+    nameEdit->installEventFilter(new KbFilter(tr("新建模型"), &dlg));
 
     // 正则: 英文字母/数字/下划线，不允许中文和其他特殊符号
     QRegularExpression reModelName("^[A-Za-z0-9_]+$");
@@ -4443,7 +4465,7 @@ void AiModelSet::onModelNewPushButtonClicked()
     mainLayout->addLayout(nameRow);
 
     // ── 第二栏: 类别名称列表（动态增删，可编辑名称，最多 8 类） ──
-    QLabel *clsTitle = new QLabel("类别列表:", &dlg);
+    QLabel *clsTitle = new QLabel(tr("类别列表:"), &dlg);
     mainLayout->addWidget(clsTitle);
 
     QScrollArea *clsScroll = new QScrollArea(&dlg);
@@ -4488,14 +4510,14 @@ void AiModelSet::onModelNewPushButtonClicked()
         rowLay->addWidget(r.idLbl);
 
         r.nameEdit = new QLineEdit(initialName, r.row);
-        r.nameEdit->setPlaceholderText(QString("类别%1").arg(clsRows.size() + 1));
+        r.nameEdit->setPlaceholderText(tr("类别%1").arg(clsRows.size() + 1));
         r.nameEdit->setFocusPolicy(Qt::NoFocus);   // ⭐ 阻止系统键盘，只用 myInputMethod
-        r.nameEdit->installEventFilter(new KbFilter(QString("类别%1").arg(clsRows.size() + 1), r.row));
+        r.nameEdit->installEventFilter(new KbFilter(tr("类别%1").arg(clsRows.size() + 1), r.row));
         rowLay->addWidget(r.nameEdit, 1);
 
         r.delBtn = new QPushButton("-", r.row);
         r.delBtn->setFixedSize(26, 24);
-        r.delBtn->setToolTip("删除此类");
+        r.delBtn->setToolTip(tr("删除此类"));
         rowLay->addWidget(r.delBtn);
 
         connect(r.delBtn, &QPushButton::clicked, &dlg, [&, r]() {
@@ -4526,7 +4548,7 @@ void AiModelSet::onModelNewPushButtonClicked()
     for (const QString &n : initNames) addRow(n);
     refreshRowIds();
 
-    QPushButton *addClsBtn = new QPushButton("+ 新增类别", &dlg);
+    QPushButton *addClsBtn = new QPushButton(tr("+ 新增类别"), &dlg);
     addClsBtn->setEnabled(clsRows.size() < 8);
     mainLayout->addWidget(addClsBtn);
     connect(addClsBtn, &QPushButton::clicked, &dlg, [&]() {
@@ -4537,8 +4559,8 @@ void AiModelSet::onModelNewPushButtonClicked()
     // ── 确定 / 取消 ──
     QHBoxLayout *btnRow = new QHBoxLayout();
     btnRow->addStretch(1);
-    QPushButton *okBtn = new QPushButton("确定", &dlg);
-    QPushButton *cancelBtn = new QPushButton("取消", &dlg);
+    QPushButton *okBtn = new QPushButton(tr("确定"), &dlg);
+    QPushButton *cancelBtn = new QPushButton(tr("取消"), &dlg);
     btnRow->addWidget(okBtn);
     btnRow->addWidget(cancelBtn);
     mainLayout->addLayout(btnRow);
@@ -4560,7 +4582,7 @@ void AiModelSet::onModelNewPushButtonClicked()
         QStringList newNames;
         for (const auto &r : clsRows) {
             QString n = r.nameEdit->text().trimmed();
-            if (n.isEmpty()) n = QString("类别%1").arg(newNames.size() + 1);
+            if (n.isEmpty()) n = tr("类别%1").arg(newNames.size() + 1);
             newNames.append(n);
         }
 
@@ -4571,7 +4593,7 @@ void AiModelSet::onModelNewPushButtonClicked()
         // 更新 UI 上的 modelNameLabel
         ui->modelNameLabel->setText(modelName);
 
-        showTip(QString("新建模型: %1, 类别数: %2").arg(modelName).arg(modelCategoryNum));
+        showTip(tr("新建模型: %1, 类别数: %2").arg(modelName).arg(modelCategoryNum));
 
         // 重建类别按钮（用真实名字）
         updateCategoryChenkBox();
@@ -4680,8 +4702,8 @@ bool AiModelSet::ensureTrainServerConfigured()
     }
 
     // 弹配置对话框
-    QMessageBox::information(this, "提示",
-        "训练服务器尚未配置，请先配置训练服务器参数");
+    QMessageBox::information(this, tr("提示"),
+        tr("训练服务器尚未配置，请先配置训练服务器参数"));
     onTrainServerCfgPushButtonClicked();
     // 如果用户取消了对话框，valid 还是 false，但我们没法知道他取消了
     // 简单处理：再检查一次（如果他确定了会同步到成员变量）
@@ -4692,7 +4714,7 @@ bool AiModelSet::ensureTrainServerConfigured()
 void AiModelSet::onTrainServerCfgPushButtonClicked()
 {
     QDialog dlg(this);
-    dlg.setWindowTitle("训练服务器配置");
+    dlg.setWindowTitle(tr("训练服务器配置"));
     dlg.setWindowModality(Qt::ApplicationModal);
     dlg.setMinimumWidth(480);
 
@@ -4730,11 +4752,11 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         };
         le->installEventFilter(new KbFilter(title, &dlg));
     };
-    installKb(ipEdit,        "训练服务器 IP");
-    installKb(httpPortEdit,  "HTTP 端口");
-    installKb(sftpPortEdit,  "SFTP 端口");
-    installKb(userEdit,      "SFTP 用户名");
-    installKb(passEdit,      "SFTP 密码");
+    installKb(ipEdit,        tr("训练服务器 IP"));
+    installKb(httpPortEdit,  tr("HTTP 端口"));
+    installKb(sftpPortEdit,  tr("SFTP 端口"));
+    installKb(userEdit,      tr("SFTP 用户名"));
+    installKb(passEdit,      tr("SFTP 密码"));
 
     // 填入当前值
     ipEdit->setText(m_trainServerIp);
@@ -4746,17 +4768,17 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
     httpPortEdit->setValidator(new QIntValidator(1, 65535, &dlg));
     sftpPortEdit->setValidator(new QIntValidator(1, 65535, &dlg));
 
-    form->addRow("服务器 IP:", ipEdit);
-    form->addRow("HTTP 端口:", httpPortEdit);
-    form->addRow("SFTP 端口:", sftpPortEdit);
-    form->addRow("SFTP 用户名:", userEdit);
-    form->addRow("SFTP 密码:", passEdit);
+    form->addRow(tr("服务器 IP:"), ipEdit);
+    form->addRow(tr("HTTP 端口:"), httpPortEdit);
+    form->addRow(tr("SFTP 端口:"), sftpPortEdit);
+    form->addRow(tr("SFTP 用户名:"), userEdit);
+    form->addRow(tr("SFTP 密码:"), passEdit);
     mainLayout->addLayout(form);
 
     // ── 2 个测试按钮 ──
     QHBoxLayout *testRow = new QHBoxLayout();
-    QPushButton *testHttpBtn  = new QPushButton("测试 HTTP 连接", &dlg);
-    QPushButton *testSftpBtn  = new QPushButton("测试 SFTP 连接", &dlg);
+    QPushButton *testHttpBtn  = new QPushButton(tr("测试 HTTP 连接"), &dlg);
+    QPushButton *testSftpBtn  = new QPushButton(tr("测试 SFTP 连接"), &dlg);
     QLabel *testResultLabel = new QLabel("", &dlg);
     testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
     testResultLabel->setWordWrap(true);
@@ -4772,13 +4794,13 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         QString ip = ipEdit->text().trimmed();
         int port = httpPortEdit->text().toInt();
         if (ip.isEmpty() || port <= 0) {
-            testResultLabel->setText("请先填写有效的 IP 和 HTTP 端口");
+            testResultLabel->setText(tr("请先填写有效的 IP 和 HTTP 端口"));
             testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
             return;
         }
         testHttpBtn->setEnabled(false);
         testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
-        testResultLabel->setText(QString("正在测试 HTTP 连接 %1:%2 ...").arg(ip).arg(port));
+        testResultLabel->setText(tr("正在测试 HTTP 连接 %1:%2 ...").arg(ip).arg(port));
         QApplication::processEvents();
 
         // 用临时 HttpTool 同步测试（短超时）
@@ -4801,14 +4823,14 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
             // 超时
             reply->abort();
             testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
-            testResultLabel->setText(QString("HTTP 连接失败：5 秒超时（%1:%2）").arg(ip).arg(port));
+            testResultLabel->setText(tr("HTTP 连接失败：5 秒超时（%1:%2）").arg(ip).arg(port));
         } else if (reply->error() != QNetworkReply::NoError) {
             testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
-            testResultLabel->setText(QString("HTTP 连接失败：%1").arg(reply->errorString()));
+            testResultLabel->setText(tr("HTTP 连接失败：%1").arg(reply->errorString()));
         } else {
             int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
             testResultLabel->setStyleSheet("color: green; font-size: 8pt;");
-            testResultLabel->setText(QString("HTTP 连接成功（HTTP %1）").arg(code));
+            testResultLabel->setText(tr("HTTP 连接成功（HTTP %1）").arg(code));
         }
         reply->deleteLater();
         testHttpBtn->setEnabled(true);
@@ -4821,23 +4843,23 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         QString user = userEdit->text().trimmed();
         QString pass = passEdit->text();
         if (ip.isEmpty() || port <= 0) {
-            testResultLabel->setText("请先填写有效的 IP 和 SFTP 端口");
+            testResultLabel->setText(tr("请先填写有效的 IP 和 SFTP 端口"));
             testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
             return;
         }
         testSftpBtn->setEnabled(false);
         testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
-        testResultLabel->setText(QString("正在测试 SFTP 连接 %1:%2 ...").arg(ip).arg(port));
+        testResultLabel->setText(tr("正在测试 SFTP 连接 %1:%2 ...").arg(ip).arg(port));
         QApplication::processEvents();
 
         SftpWorker w(ip, user, pass, port);
         if (w.connect()) {
             w.disconnect();
             testResultLabel->setStyleSheet("color: green; font-size: 8pt;");
-            testResultLabel->setText(QString("SFTP 连接成功（%1@%2:%3）").arg(user).arg(ip).arg(port));
+            testResultLabel->setText(tr("SFTP 连接成功（%1@%2:%3）").arg(user).arg(ip).arg(port));
         } else {
             testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
-            testResultLabel->setText(QString("SFTP 连接失败：%1:%2").arg(ip).arg(port));
+            testResultLabel->setText(tr("SFTP 连接失败：%1:%2").arg(ip).arg(port));
         }
         testSftpBtn->setEnabled(true);
     });
@@ -4845,8 +4867,8 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
     // ── OK / Cancel ──
     QHBoxLayout *btnRow = new QHBoxLayout();
     btnRow->addStretch(1);
-    QPushButton *okBtn = new QPushButton("确定", &dlg);
-    QPushButton *cancelBtn = new QPushButton("取消", &dlg);
+    QPushButton *okBtn = new QPushButton(tr("确定"), &dlg);
+    QPushButton *cancelBtn = new QPushButton(tr("取消"), &dlg);
     btnRow->addWidget(okBtn);
     btnRow->addWidget(cancelBtn);
     mainLayout->addLayout(btnRow);
@@ -4857,7 +4879,7 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         int httpPort = httpPortEdit->text().toInt();
         int sftpPort = sftpPortEdit->text().toInt();
         if (ip.isEmpty() || httpPort <= 0 || sftpPort <= 0) {
-            QMessageBox::warning(&dlg, "输入错误", "请填写有效的 IP 和端口");
+            QMessageBox::warning(&dlg, tr("输入错误"), tr("请填写有效的 IP 和端口"));
             return;
         }
         dlg.accept();
@@ -4880,7 +4902,7 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         // arm 版本保存到 JSON
         saveTrainServerConfig();
 
-        showTip(QString("训练服务器已更新：HTTP %1，SFTP %2:%3")
+        showTip(tr("训练服务器已更新：HTTP %1，SFTP %2:%3")
                     .arg(baseUrl).arg(m_trainServerIp).arg(m_trainSftpPort));
     }
 }
@@ -4944,7 +4966,7 @@ void ModelApi::setHttpTimeout(int timeoutMs)
 void ModelApi:: createDirTrain(const QString& taskId)
 {
     if (taskId.isEmpty()) {
-        emit networkError("任务 ID 不能为空");
+        emit networkError(tr("任务 ID 不能为空"));
         return;
     }
     
@@ -4979,7 +5001,7 @@ void ModelApi::startTrain(const QString& taskId)
 {
 
     if (taskId.isEmpty()) {
-        emit networkError("任务 ID 不能为空");
+        emit networkError(tr("任务 ID 不能为空"));
         return;
     }
 
@@ -5010,7 +5032,7 @@ void ModelApi::startTrain(const QString& taskId)
 void ModelApi::queryTrainProgress(const QString& taskId)
 {
     if (taskId.isEmpty()) {
-        emit networkError("任务 ID 不能为空");
+        emit networkError(tr("任务 ID 不能为空"));
         return;
     }
 
@@ -5056,11 +5078,11 @@ void ModelApi::downloadModel(const QString& modelName, const QString& savePath)
     LOG_DEBUG_STM("[DOWNLOAD] ModelApi::downloadModel 入口：modelName=" << modelName << "savePath=" << savePath);
     m_httpTool->setTimeout(120000);  // 下载大文件给 120 秒超时
     if (modelName.isEmpty()) {
-        emit networkError("模型名称不能为空");
+        emit networkError(tr("模型名称不能为空"));
         return;
     }
     if (savePath.isEmpty()) {
-        emit networkError("保存路径不能为空");
+        emit networkError(tr("保存路径不能为空"));
         return;
     }
 
@@ -5079,11 +5101,11 @@ void ModelApi::downloadModel(const QString& modelName, const QString& savePath)
 void ModelApi::downloadModelJson(const QString& modelJson, const QString& savePath){
     LOG_DEBUG_STM("[DOWNLOAD] ModelApi::downloadModelJson 入口：modelJson=" << modelJson << "savePath=" << savePath);
     if (modelJson.isEmpty()) {
-        emit networkError("模型Json不能为空");
+        emit networkError(tr("模型Json不能为空"));
         return;
     }
     if (savePath.isEmpty()) {
-        emit networkError("保存路径不能为空");
+        emit networkError(tr("保存路径不能为空"));
         return;
     }
 
@@ -5114,7 +5136,7 @@ void ModelApi::onHttpRequestSuccess(const QByteArray& responseData, int statusCo
 
     // 严格检查 HTTP 状态码（协议要求 200 正常返回）
     if (statusCode != 200) {
-        emit networkError(QString("HTTP 状态码异常：%1").arg(statusCode));
+        emit networkError(tr("HTTP 状态码异常：%1").arg(statusCode));
         m_currentRequestType = RequestType::None;
         return;
     }
@@ -5164,9 +5186,8 @@ void ModelApi::onHttpRequestFailed(const QString& errorMsg, int errorCode)
         return;
     }
 
-    QString err = QString("[HTTP 失败] 错误码=%1，错误信息=%2").arg(errorCode).arg(errorMsg);
-    LOG_DEBUG_STM(err);
-    emit networkError(err);
+    LOG_DEBUG_STM("[HTTP 失败] 错误码=" << errorCode << "，错误信息=" << errorMsg);
+    emit networkError(tr("[HTTP 失败] 错误码=%1，错误信息=%2").arg(errorCode).arg(errorMsg));
     m_currentRequestType = RequestType::None;
 }
 
@@ -5191,14 +5212,14 @@ TrainStartResponse ModelApi::parseStartTrainResponse(const QByteArray& data)
     // JSON 解析失败
     if (jsonError.error != QJsonParseError::NoError || !doc.isObject()) {
         response.code = -1;
-        response.message = QString("响应解析失败：%1").arg(jsonError.errorString());
+        response.message = tr("响应解析失败：%1").arg(jsonError.errorString());
         return response;
     }
 
     QJsonObject obj = doc.object();
     // 解析字段（严格匹配协议中的 key：code、message）
     response.code = obj.contains("code") ? obj["code"].toInt() : -1;
-    response.message = obj.contains("message") ? obj["message"].toString() : "未知错误";
+    response.message = obj.contains("message") ? obj["message"].toString() : tr("未知错误");
 
     return response;
 }
@@ -5213,7 +5234,7 @@ TrainQueryResponse ModelApi::parseQueryTrainResponse(const QByteArray& data)
     // JSON 解析失败
     if (jsonError.error != QJsonParseError::NoError || !doc.isObject()) {
         response.code = -1;
-        response.message = QString("响应解析失败：%1").arg(jsonError.errorString());
+        response.message = tr("响应解析失败：%1").arg(jsonError.errorString());
         response.progress = 0;
         response.number = -1;
         return response;
@@ -5223,7 +5244,7 @@ TrainQueryResponse ModelApi::parseQueryTrainResponse(const QByteArray& data)
     // 解析字段（严格匹配协议中的 key：code、message、progress、number、model）
     response.task_id = obj.contains("task_id") ? obj["task_id"].toString() : "";
     response.code = obj.contains("code") ? obj["code"].toInt() : -1;
-    response.message = obj.contains("message") ? obj["message"].toString() : "未知错误";
+    response.message = obj.contains("message") ? obj["message"].toString() : tr("未知错误");
     response.progress = obj.contains("progress") ? obj["progress"].toInt() : 0;
     response.number = obj.contains("number") ? obj["number"].toInt() : -1;
     response.model_name = obj.contains("model_name") ? obj["model_name"].toString() : "";

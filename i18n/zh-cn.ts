@@ -4,14 +4,14 @@
 <context>
     <name>AIMainWidget</name>
     <message>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4806"/>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4881"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4697"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4772"/>
         <source>( </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4806"/>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4881"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4697"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="4772"/>
         <source> )</source>
         <translation type="unfinished"></translation>
     </message>
@@ -32,18 +32,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="194"/>
-        <source>开始训练</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../aimodelset.ui" line="1045"/>
-        <source>仿真</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../aimodelset.ui" line="159"/>
         <source>训练配置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="194"/>
+        <source>开始训练</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -102,6 +97,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../aimodelset.ui" line="601"/>
+        <source>返回</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../aimodelset.ui" line="722"/>
         <source>- 从训练删除</source>
         <translation type="unfinished"></translation>
@@ -118,6 +118,8 @@
     </message>
     <message>
         <location filename="../aimodelset.ui" line="839"/>
+        <location filename="../src/aimodelset.cpp" line="4409"/>
+        <location filename="../src/aimodelset.cpp" line="4436"/>
         <source>新建模型</source>
         <translation type="unfinished"></translation>
     </message>
@@ -138,17 +140,24 @@
     </message>
     <message>
         <location filename="../aimodelset.ui" line="962"/>
+        <location filename="../src/aimodelset.cpp" line="332"/>
         <source>面积阈值</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../aimodelset.ui" line="984"/>
+        <location filename="../src/aimodelset.cpp" line="335"/>
         <source>色差阈值</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../aimodelset.ui" line="1000"/>
         <source>30</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../aimodelset.ui" line="1045"/>
+        <source>仿真</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -162,8 +171,368 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="601"/>
-        <source>返回</source>
+        <location filename="../src/aimodelset.cpp" line="253"/>
+        <source>跳转页码</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="404"/>
+        <source>训练服务连接波动（%1/3）：%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="408"/>
+        <source>训练服务连接连续失败 3 次，已停止轮询</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="422"/>
+        <source>训练启动失败：%1（错误码：%2）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="426"/>
+        <source>训练任务已提交，开始查询进度...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="438"/>
+        <source>模型下载中：%1%（%2/%3）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="455"/>
+        <source>硬件架构：%1，先下载 JSON：%2.json</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="465"/>
+        <source>JSON 下载失败：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="500"/>
+        <source>JSON 已下载，开始下载模型：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="509"/>
+        <source>模型下载失败：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="530"/>
+        <source>✗ 模型 MD5 校验失败！expected=%1 actual=%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="537"/>
+        <source>模型下载完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="627"/>
+        <source>创建远程目录失败：%1（错误码：%2）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="631"/>
+        <source>远程目录已创建，准备 SFTP 上传...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="655"/>
+        <source>图片上传</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="656"/>
+        <source>标签上传</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="657"/>
+        <source>classes 上传</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="664"/>
+        <source>上传失败: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="668"/>
+        <source>SFTP 错误：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="678"/>
+        <source>SFTP connect 失败：%1:%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="682"/>
+        <source>SFTP 已连接，开始上传训练数据...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="711"/>
+        <source>SFTP 上传出现错误，继续验证...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="724"/>
+        <location filename="../src/aimodelset.cpp" line="783"/>
+        <source>图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="730"/>
+        <location filename="../src/aimodelset.cpp" line="784"/>
+        <source>标签</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="751"/>
+        <source>%1上传完成，正在验证...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="759"/>
+        <source>训练数据上传验证通过，正在启动远程训练...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="793"/>
+        <source>%1验证通过（%2/%3）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="803"/>
+        <source>%1验证失败（远程%2 &lt; 本地%3），重试上传 (%4/3)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="818"/>
+        <source>%1上传验证失败（远程%2 &lt; 本地%3），重试 3 次仍不通过，终止训练</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="906"/>
+        <source>训练服务错误：%1（错误码：%2）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="914"/>
+        <source>排队中（前面还有 %1 个任务）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="916"/>
+        <source>训练完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="918"/>
+        <source>数据准备中</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="920"/>
+        <source>模型转换中</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="922"/>
+        <source>训练中</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="926"/>
+        <source>训练进度：%1% | %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="939"/>
+        <source>训练完成！开始下载模型：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1048"/>
+        <source>当前标注类型：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1121"/>
+        <location filename="../src/aimodelset.cpp" line="1483"/>
+        <source>请先选一个类别 checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1129"/>
+        <source>未检测到前景框，无法一键标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1143"/>
+        <source>一键标注完成，共 %1 个框（类别 %2）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1156"/>
+        <location filename="../src/aimodelset.cpp" line="1171"/>
+        <location filename="../src/aimodelset.cpp" line="1428"/>
+        <location filename="../src/aimodelset.cpp" line="3559"/>
+        <source>请先选择类别 checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1161"/>
+        <source>点击前景框 → 标记为当前类别</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1176"/>
+        <source>按住鼠标左键拖动 → 手动画框</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1283"/>
+        <source>请先选中标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1370"/>
+        <source>未知类型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1371"/>
+        <source>类型%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1406"/>
+        <source>请先选择图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1418"/>
+        <source>请在图片内操作</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1442"/>
+        <source>选中标注 %1: x=%2 y=%3 w=%4 h=%5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1445"/>
+        <source>已改为类别 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1451"/>
+        <source>请先点「前景目标」显示自动标注框</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1462"/>
+        <source>请点击一个前景框或已有标注</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1474"/>
+        <source>点击标注：类别 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1490"/>
+        <location filename="../src/aimodelset.cpp" line="1508"/>
+        <source>选中标注：%1  x=%2 y=%3 w=%4 h=%5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1541"/>
+        <source>标注[%1] 前景像素=%2 %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1543"/>
+        <location filename="../src/aimodelset.cpp" line="1557"/>
+        <location filename="../src/aimodelset.cpp" line="1574"/>
+        <source>&lt;阈值 ✗</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1543"/>
+        <location filename="../src/aimodelset.cpp" line="1557"/>
+        <location filename="../src/aimodelset.cpp" line="1574"/>
+        <source>≥阈值 ✓</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1555"/>
+        <source>前景框[%1] 前景像素=%2 %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1572"/>
+        <source>预测框[%1] 前景像素=%2 %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1622"/>
+        <source>标注矩形过小，请重新绘制</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1639"/>
+        <source>标注完成：类型：%1; 边框：x=%2, y=%3, 宽=%4, 高=%5; 中心：x=%6, y=%7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1801"/>
+        <source>绘制中...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2075"/>
+        <location filename="../src/aimodelset.cpp" line="3552"/>
+        <location filename="../src/aimodelset.cpp" line="3583"/>
+        <location filename="../src/aimodelset.cpp" line="4011"/>
+        <source>请先加载图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2102"/>
+        <source>训练集已为空</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2111"/>
+        <source>已从训练集移除 %1 张图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2118"/>
+        <source>请先导入图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2145"/>
+        <source>批量添加完成：新增 %1 张，跳过 %2 张</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2253"/>
+        <source>加载模型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2284"/>
+        <location filename="../src/aimodelset.cpp" line="2331"/>
+        <source>(该目录下没有 .bin 模型文件)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -184,19 +553,18 @@
     <message>
         <location filename="../src/aimodelset.cpp" line="2299"/>
         <location filename="../src/aimodelset.cpp" line="2463"/>
+        <location filename="../src/aimodelset.cpp" line="4544"/>
+        <location filename="../src/aimodelset.cpp" line="4852"/>
         <source>确定</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/aimodelset.cpp" line="2300"/>
         <location filename="../src/aimodelset.cpp" line="2464"/>
-        <location filename="../src/aimodelset.cpp" line="2727"/>
+        <location filename="../src/aimodelset.cpp" line="2731"/>
+        <location filename="../src/aimodelset.cpp" line="4545"/>
+        <location filename="../src/aimodelset.cpp" line="4853"/>
         <source>取消</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aimodelset.cpp" line="2331"/>
-        <source>(该目录下没有 .bin 模型文件)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -210,16 +578,19 @@
         <location filename="../src/aimodelset.cpp" line="2446"/>
         <location filename="../src/aimodelset.cpp" line="2480"/>
         <location filename="../src/aimodelset.cpp" line="2554"/>
-        <location filename="../src/aimodelset.cpp" line="2697"/>
-        <location filename="../src/aimodelset.cpp" line="2702"/>
-        <location filename="../src/aimodelset.cpp" line="2708"/>
-        <location filename="../src/aimodelset.cpp" line="2717"/>
-        <location filename="../src/aimodelset.cpp" line="2742"/>
-        <location filename="../src/aimodelset.cpp" line="2744"/>
-        <location filename="../src/aimodelset.cpp" line="2796"/>
-        <location filename="../src/aimodelset.cpp" line="3999"/>
-        <location filename="../src/aimodelset.cpp" line="4070"/>
-        <location filename="../src/aimodelset.cpp" line="4309"/>
+        <location filename="../src/aimodelset.cpp" line="2632"/>
+        <location filename="../src/aimodelset.cpp" line="2638"/>
+        <location filename="../src/aimodelset.cpp" line="2701"/>
+        <location filename="../src/aimodelset.cpp" line="2706"/>
+        <location filename="../src/aimodelset.cpp" line="2712"/>
+        <location filename="../src/aimodelset.cpp" line="2721"/>
+        <location filename="../src/aimodelset.cpp" line="2746"/>
+        <location filename="../src/aimodelset.cpp" line="2748"/>
+        <location filename="../src/aimodelset.cpp" line="2800"/>
+        <location filename="../src/aimodelset.cpp" line="4003"/>
+        <location filename="../src/aimodelset.cpp" line="4074"/>
+        <location filename="../src/aimodelset.cpp" line="4313"/>
+        <location filename="../src/aimodelset.cpp" line="4687"/>
         <source>提示</source>
         <translation type="unfinished"></translation>
     </message>
@@ -241,6 +612,26 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/aimodelset.cpp" line="2365"/>
+        <source>(bin 删除失败)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2366"/>
+        <source>(json 不存在)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2367"/>
+        <source>(数据库已清除)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2367"/>
+        <source>(数据库清除失败)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/aimodelset.cpp" line="2368"/>
         <source>已删除: %1
 %2</source>
@@ -248,6 +639,7 @@
     </message>
     <message>
         <location filename="../src/aimodelset.cpp" line="2379"/>
+        <location filename="../src/aimodelset.cpp" line="2654"/>
         <source>删除失败</source>
         <translation type="unfinished"></translation>
     </message>
@@ -264,14 +656,14 @@
     <message>
         <location filename="../src/aimodelset.cpp" line="2402"/>
         <location filename="../src/aimodelset.cpp" line="2436"/>
-        <location filename="../src/aimodelset.cpp" line="2700"/>
+        <location filename="../src/aimodelset.cpp" line="2704"/>
         <source>检测U盘...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/aimodelset.cpp" line="2405"/>
         <location filename="../src/aimodelset.cpp" line="2438"/>
-        <location filename="../src/aimodelset.cpp" line="2703"/>
+        <location filename="../src/aimodelset.cpp" line="2707"/>
         <source>未检测到U盘！
 请插上U盘后再试。</source>
         <translation type="unfinished"></translation>
@@ -304,12 +696,12 @@
     </message>
     <message>
         <location filename="../src/aimodelset.cpp" line="2430"/>
-        <source>导出失败</source>
+        <source>U盘写入失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/aimodelset.cpp" line="2430"/>
-        <source>U盘写入失败</source>
+        <source>导出失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -349,65 +741,569 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2697"/>
+        <location filename="../src/aimodelset.cpp" line="2608"/>
+        <source>加载模型: %1  (%2 类)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2614"/>
+        <source>加载模型: %1 (json 读取失败, 默认 1 类)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2633"/>
+        <source>请先在列表中选择要删除的目录</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2639"/>
+        <source>不能删除图片根目录：
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2642"/>
+        <source>删除目录</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2643"/>
+        <source>确定删除该目录及其全部内容吗？此操作不可恢复！
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2655"/>
+        <source>无法删除目录：
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2701"/>
         <source>源目录不存在！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2708"/>
+        <location filename="../src/aimodelset.cpp" line="2712"/>
         <source>U盘挂载失败（/udisk 不存在）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2717"/>
+        <location filename="../src/aimodelset.cpp" line="2721"/>
         <source>目录为空，无需导出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2721"/>
+        <location filename="../src/aimodelset.cpp" line="2725"/>
         <source>导出到U盘</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2726"/>
+        <location filename="../src/aimodelset.cpp" line="2730"/>
         <source>准备中...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2742"/>
+        <location filename="../src/aimodelset.cpp" line="2746"/>
         <source>已取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2745"/>
+        <location filename="../src/aimodelset.cpp" line="2749"/>
         <source>导出完成！
 已拷贝到 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2796"/>
+        <location filename="../src/aimodelset.cpp" line="2772"/>
+        <source>选择图片文件夹</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2800"/>
         <source>请先选择要导出的目录！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/aimodelset.cpp" line="2812"/>
+        <source>扫描中...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2826"/>
+        <source>扫描中：已找到 %1 张</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2938"/>
+        <source>导入目录必须包含 2 张以上 bg_ 开头的背景图像（当前 %1 张）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2939"/>
+        <source>警告</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2940"/>
+        <source>导入目录必须包含 2 张以上 bg_ 开头的背景图像
+当前目录仅有 %1 张 bg_ 图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2944"/>
+        <source>bg_ 图片不足，导入取消</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2989"/>
+        <source>未找到支持的图片文件</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="2995"/>
+        <source>共找到 %1 张图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3046"/>
+        <source> (加载失败)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3120"/>
+        <source>第%1页/共%2页 | 当前第%3张/共%4张</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3170"/>
+        <source>请输入有效页码</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3175"/>
+        <source>暂无图片，无法跳转</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3197"/>
+        <source>保存标注失败：无法打开文件 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3218"/>
+        <source>标注已保存：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3235"/>
+        <source>标注文件不存在：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3240"/>
+        <source>无法打开标注文件：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3273"/>
+        <source>标注已加载：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3299"/>
+        <source>图片路径无效</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3306"/>
+        <source>图片加载失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3517"/>
+        <source>当前模型类别数为 %1（0 ~ %2），但标注中扫描到的类别不匹配：
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/aimodelset.cpp" line="3522"/>
+        <source>❌ 缺少类别：%1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3524"/>
+        <source>⚠️  存在超范围类别：%1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3526"/>
         <source>类别不匹配，无法提交训练</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3999"/>
-        <location filename="../src/aimodelset.cpp" line="4070"/>
+        <location filename="../src/aimodelset.cpp" line="3527"/>
+        <source>类别不匹配，请检查标注文件后重试</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3566"/>
+        <source>前景目标显示中（%1 个框）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3593"/>
+        <source>前景像素过滤开启（%1 个框已统计）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3741"/>
+        <source>本地模型文件不存在: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3745"/>
+        <source>连接板卡上传模型 %1 ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3752"/>
+        <location filename="../src/aimodelset.cpp" line="3807"/>
+        <location filename="../src/aimodelset.cpp" line="4134"/>
+        <source>板卡 SFTP 连接失败 %1:22</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3757"/>
+        <source>板卡创建目录失败 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3776"/>
+        <source>板卡模型 %1 上传失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3781"/>
+        <source>板卡模型 %1 上传完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3798"/>
+        <source>上传图片到板卡：%1 → %2 ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3822"/>
+        <source>图片上传到板卡失败：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3869"/>
+        <source>仿真中：model=%1, img=%2 ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3881"/>
+        <source>仿真通信失败：板卡 %1:%2 无响应</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3889"/>
+        <source>仿真响应解析失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3895"/>
+        <source>仿真执行失败（板卡返回 code=%1，可能图片/模型路径问题）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3902"/>
+        <source>仿真完成：检测到 %1 个目标</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="3979"/>
+        <source>仿真查看已关闭</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4003"/>
+        <location filename="../src/aimodelset.cpp" line="4074"/>
         <source>请先在模型加载中选择仿真模型！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4310"/>
+        <location filename="../src/aimodelset.cpp" line="4019"/>
+        <source>仿真查看（从缓存加载，%1 个目标）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4082"/>
+        <source>图片列表为空，请先导入图片目录</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4106"/>
+        <source>批量仿真已完成（从缓存加载，共 %1 张）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4184"/>
+        <source>批量仿真 %1/%2（%3%）%4 [已缓存]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4191"/>
+        <source>批量仿真 %1/%2（%3%） %4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4259"/>
+        <source>批量仿真完成：成功 %1 / 总计 %2（失败 %3）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4260"/>
+        <source>   [仿真查看模式：%1 按钮开启中]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4294"/>
+        <source>筛选错标图片中...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4303"/>
+        <source>筛选错标图片中... %1/%2（%3 张错标）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4308"/>
+        <source>筛选完成：%1 张图片有错标 / 总计 %2 张</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4314"/>
         <source>全部 %1 张图片标注和仿真结果一致，没有错标！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>select</source>
-        <translation type="obsolete">选择</translation>
+        <location filename="../src/aimodelset.cpp" line="4340"/>
+        <source>正在训练，查询最新进度...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4343"/>
+        <source>训练流程正在进行中，请等待完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4350"/>
+        <source>训练集为空，请先添加训练图片</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4354"/>
+        <source>训练图片数量不足（当前 %1 张，需超过 20 张，不含背景图）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4358"/>
+        <source>模型名为空，请先创建或加载模型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4363"/>
+        <source>准备训练数据（%1 张图片）...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4374"/>
+        <source>prepareTrain 失败：tmp/image 为空，请检查训练图片路径</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4377"/>
+        <source>训练数据准备完成：%1 张图片 + %2 个标签</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4401"/>
+        <source>正在创建远程训练任务目录... 任务ID：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4416"/>
+        <source>模型名称:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4418"/>
+        <source>仅允许英文字母、数字、下划线 _</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4450"/>
+        <source>类别列表:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4495"/>
+        <location filename="../src/aimodelset.cpp" line="4497"/>
+        <location filename="../src/aimodelset.cpp" line="4567"/>
+        <source>类别%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4502"/>
+        <source>删除此类</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4533"/>
+        <source>+ 新增类别</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4578"/>
+        <source>新建模型: %1, 类别数: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4688"/>
+        <source>训练服务器尚未配置，请先配置训练服务器参数</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4699"/>
+        <source>训练服务器配置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4737"/>
+        <source>训练服务器 IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4738"/>
+        <source>HTTP 端口</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4739"/>
+        <source>SFTP 端口</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4740"/>
+        <source>SFTP 用户名</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4741"/>
+        <source>SFTP 密码</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4753"/>
+        <source>服务器 IP:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4754"/>
+        <source>HTTP 端口:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4755"/>
+        <source>SFTP 端口:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4756"/>
+        <source>SFTP 用户名:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4757"/>
+        <source>SFTP 密码:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4762"/>
+        <source>测试 HTTP 连接</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4763"/>
+        <source>测试 SFTP 连接</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4779"/>
+        <source>请先填写有效的 IP 和 HTTP 端口</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4785"/>
+        <source>正在测试 HTTP 连接 %1:%2 ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4808"/>
+        <source>HTTP 连接失败：5 秒超时（%1:%2）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4811"/>
+        <source>HTTP 连接失败：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4815"/>
+        <source>HTTP 连接成功（HTTP %1）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4828"/>
+        <source>请先填写有效的 IP 和 SFTP 端口</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4834"/>
+        <source>正在测试 SFTP 连接 %1:%2 ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4841"/>
+        <source>SFTP 连接成功（%1@%2:%3）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4844"/>
+        <source>SFTP 连接失败：%1:%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4864"/>
+        <source>请填写有效的 IP 和端口</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4864"/>
+        <source>输入错误</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="4887"/>
+        <source>训练服务器已更新：HTTP %1，SFTP %2:%3</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -730,10 +1626,6 @@
         <location filename="../src/params/paramslang.cpp" line="49"/>
         <source>engineer_info</source>
         <translation>工程师</translation>
-    </message>
-    <message>
-        <source>maker_info</source>
-        <translation type="obsolete">厂家信息</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="62"/>
@@ -1673,10 +2565,6 @@
         <location filename="../src/params/paramslang.cpp" line="252"/>
         <source>material_watermelon</source>
         <translation>西瓜籽算法</translation>
-    </message>
-    <message>
-        <source>material_yumi</source>
-        <translation type="obsolete">玉米定制机型</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="254"/>
@@ -3558,10 +4446,6 @@
         <translation type="unfinished">喷阀间隔</translation>
     </message>
     <message>
-        <source>helpold_test</source>
-        <translation type="obsolete">老化测试</translation>
-    </message>
-    <message>
         <location filename="../src/params/paramslang.cpp" line="1150"/>
         <source>set_vib_voltage</source>
         <translation type="unfinished">振动器电压</translation>
@@ -3590,10 +4474,6 @@
         <location filename="../src/params/paramslang.cpp" line="1156"/>
         <source>bad_ratio</source>
         <translation type="unfinished">含杂</translation>
-    </message>
-    <message>
-        <source>MessageUs</source>
-        <translation type="obsolete">联系我们</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="527"/>
@@ -3651,10 +4531,6 @@
         <translation>自动获取</translation>
     </message>
     <message>
-        <source>DEV ID</source>
-        <translation type="obsolete">设备 ID</translation>
-    </message>
-    <message>
         <location filename="../src/params/paramslang.cpp" line="587"/>
         <source>turkey</source>
         <translation>土耳其语</translation>
@@ -3693,22 +4569,6 @@
         <location filename="../src/params/paramslang.cpp" line="626"/>
         <source>data_center</source>
         <translation>数据中心</translation>
-    </message>
-    <message>
-        <source>host</source>
-        <translation type="obsolete">主机</translation>
-    </message>
-    <message>
-        <source>t2_series</source>
-        <translation type="obsolete">T2 系</translation>
-    </message>
-    <message>
-        <source>t3_series</source>
-        <translation type="obsolete">T3 系</translation>
-    </message>
-    <message>
-        <source>d2_series</source>
-        <translation type="obsolete">D2 系</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="713"/>
@@ -5145,14 +6005,6 @@
         <translation>斯洛伐克语</translation>
     </message>
     <message>
-        <source>japan</source>
-        <translation type="obsolete">日语</translation>
-    </message>
-    <message>
-        <source>malay</source>
-        <translation type="obsolete">马来语</translation>
-    </message>
-    <message>
         <location filename="../src/params/paramslang.cpp" line="595"/>
         <source>portuguese</source>
         <translation>葡萄牙语</translation>
@@ -5249,25 +6101,9 @@
         <translation>请确认新密码</translation>
     </message>
     <message>
-        <source>cfm_insert_udisk</source>
-        <translation type="obsolete">请确认已插入U盘</translation>
-    </message>
-    <message>
         <location filename="../src/params/paramslang.cpp" line="518"/>
         <source>auto_calibrate_step1</source>
         <translation>1、确保分选室玻璃干净透明。</translation>
-    </message>
-    <message>
-        <source>Machine info</source>
-        <translation type="obsolete">机器信息</translation>
-    </message>
-    <message>
-        <source>Engineer info</source>
-        <translation type="obsolete">工程师信息</translation>
-    </message>
-    <message>
-        <source>Factory info</source>
-        <translation type="obsolete">厂家信息</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="440"/>
@@ -5505,10 +6341,6 @@
         <translation>维吾尔语</translation>
     </message>
     <message>
-        <source>bengal</source>
-        <translation type="obsolete">孟加拉语</translation>
-    </message>
-    <message>
         <location filename="../src/params/paramslang.cpp" line="600"/>
         <source>cfm_change_language</source>
         <translation>更改界面语言将重启显示屏，
@@ -5533,10 +6365,6 @@
         <location filename="../src/params/paramslang.cpp" line="604"/>
         <source>cfm_upgrade_fpga</source>
         <translation>确定升级下位机？</translation>
-    </message>
-    <message>
-        <source>host_address</source>
-        <translation type="obsolete">主机地址</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="627"/>
@@ -5709,10 +6537,6 @@
         <translation>成功</translation>
     </message>
     <message>
-        <source>msg_confirm_insert_udisk</source>
-        <translation type="obsolete">请确认已插入U盘</translation>
-    </message>
-    <message>
         <location filename="../src/params/paramslang.cpp" line="680"/>
         <source>msg_file_open_error</source>
         <translation>文件打开失败</translation>
@@ -5822,14 +6646,6 @@
         <location filename="../src/params/paramslang.cpp" line="707"/>
         <source>sensor</source>
         <translation>CCD设置</translation>
-    </message>
-    <message>
-        <source>k_series</source>
-        <translation type="obsolete">K系</translation>
-    </message>
-    <message>
-        <source>t_series</source>
-        <translation type="obsolete">T系</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="708"/>
@@ -6097,10 +6913,6 @@
         <translation>切换启动模式中，请稍候...</translation>
     </message>
     <message>
-        <source>msg_output_testing</source>
-        <translation type="obsolete">测试产量中，请稍候...</translation>
-    </message>
-    <message>
         <location filename="../src/params/paramslang.cpp" line="844"/>
         <source>msg_change_init_mode</source>
         <translation>请谨慎进行启动模式切换</translation>
@@ -6162,99 +6974,59 @@
     </message>
 </context>
 <context>
-    <name>MyLoggerViewer</name>
+    <name>MainWidget</name>
     <message>
-        <source>From</source>
-        <translation type="obsolete">从:</translation>
-    </message>
-    <message>
-        <source>To</source>
-        <translation type="obsolete">到:</translation>
-    </message>
-    <message>
-        <source>Load</source>
-        <translation type="obsolete">加载</translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation type="obsolete">全部</translation>
-    </message>
-    <message>
-        <source>Power Switch</source>
-        <translation type="obsolete">开关机</translation>
-    </message>
-    <message>
-        <source>Feeder Switch</source>
-        <translation type="obsolete">供料开关</translation>
-    </message>
-    <message>
-        <source>Machine</source>
-        <translation type="obsolete">机型</translation>
-    </message>
-    <message>
-        <source>Profile</source>
-        <translation type="obsolete">方案</translation>
-    </message>
-    <message>
-        <source>Camera</source>
-        <translation type="obsolete">信号</translation>
-    </message>
-    <message>
-        <source>Backgroud</source>
-        <translation type="obsolete">背景</translation>
-    </message>
-    <message>
-        <source>Arith</source>
-        <translation type="obsolete">算法</translation>
-    </message>
-    <message>
-        <source>Reject</source>
-        <translation type="obsolete">剔除</translation>
-    </message>
-    <message>
-        <source>Wipe</source>
-        <translation type="obsolete">清灰</translation>
-    </message>
-    <message>
-        <source>Feeder Set</source>
-        <translation type="obsolete">供料量</translation>
-    </message>
-    <message>
-        <source>Debug</source>
-        <translation type="obsolete">调试</translation>
-    </message>
-    <message>
-        <source>Wait a minute,please!</source>
-        <translation type="obsolete">加载中,请稍后...</translation>
+        <location filename="../src/mainwidget.cpp" line="1473"/>
+        <source>AI 模型</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MyNetConfig</name>
+    <name>ModelApi</name>
     <message>
-        <source>DEV ID</source>
-        <translation type="obsolete">设备 ID</translation>
-    </message>
-</context>
-<context>
-    <name>PageIdentify</name>
-    <message>
-        <source>upper same as lower</source>
-        <translation type="obsolete">上下视相同</translation>
-    </message>
-</context>
-<context>
-    <name>PageTick</name>
-    <message>
-        <source>Enable Default</source>
-        <translation type="obsolete">使能默认传染</translation>
+        <location filename="../src/aimodelset.cpp" line="4951"/>
+        <location filename="../src/aimodelset.cpp" line="4986"/>
+        <location filename="../src/aimodelset.cpp" line="5017"/>
+        <source>任务 ID 不能为空</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Corrupt</source>
-        <translation type="obsolete">腐蚀</translation>
+        <location filename="../src/aimodelset.cpp" line="5063"/>
+        <source>模型名称不能为空</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Expand</source>
-        <translation type="obsolete">膨胀</translation>
+        <location filename="../src/aimodelset.cpp" line="5067"/>
+        <location filename="../src/aimodelset.cpp" line="5090"/>
+        <source>保存路径不能为空</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="5086"/>
+        <source>模型Json不能为空</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="5121"/>
+        <source>HTTP 状态码异常：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="5172"/>
+        <source>[HTTP 失败] 错误码=%1，错误信息=%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="5197"/>
+        <location filename="../src/aimodelset.cpp" line="5219"/>
+        <source>响应解析失败：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="5204"/>
+        <location filename="../src/aimodelset.cpp" line="5229"/>
+        <source>未知错误</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6263,132 +7035,6 @@
         <location filename="../src/qdatabase.cpp" line="86"/>
         <source>Table Create failed</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>StatusInfoPage</name>
-    <message>
-        <source>upper_master_view</source>
-        <translation type="obsolete">上正视</translation>
-    </message>
-    <message>
-        <source>lower_master_view</source>
-        <translation type="obsolete">下正视</translation>
-    </message>
-    <message>
-        <source>upper_slave_view</source>
-        <translation type="obsolete">上侧视</translation>
-    </message>
-    <message>
-        <source>lower_slave_view</source>
-        <translation type="obsolete">下侧视</translation>
-    </message>
-    <message>
-        <source>Log</source>
-        <translation type="obsolete">日志</translation>
-    </message>
-</context>
-<context>
-    <name>communicationList</name>
-    <message>
-        <source>upper_master_view</source>
-        <translation type="obsolete">上正视</translation>
-    </message>
-    <message>
-        <source>lower_master_view</source>
-        <translation type="obsolete">下正视</translation>
-    </message>
-    <message>
-        <source>upper_slave_view</source>
-        <translation type="obsolete">上侧视</translation>
-    </message>
-    <message>
-        <source>lower_slave_view</source>
-        <translation type="obsolete">下侧视</translation>
-    </message>
-</context>
-<context>
-    <name>factorySet</name>
-    <message>
-        <source>farsi</source>
-        <translation type="obsolete">波斯语</translation>
-    </message>
-</context>
-<context>
-    <name>fpga</name>
-    <message>
-        <source>upper_master</source>
-        <translation type="obsolete">上正</translation>
-    </message>
-    <message>
-        <source>upper_slave</source>
-        <translation type="obsolete">上侧</translation>
-    </message>
-    <message>
-        <source>lower_master</source>
-        <translation type="obsolete">下正</translation>
-    </message>
-    <message>
-        <source>lower_slave</source>
-        <translation type="obsolete">下侧</translation>
-    </message>
-</context>
-<context>
-    <name>setColorCamera</name>
-    <message>
-        <source>upper_L_begin</source>
-        <translation type="obsolete">上左起始</translation>
-    </message>
-    <message>
-        <source>upper_L_end</source>
-        <translation type="obsolete">上左截止</translation>
-    </message>
-    <message>
-        <source>upper_R_begin</source>
-        <translation type="obsolete">上右起始</translation>
-    </message>
-    <message>
-        <source>upper_R_end</source>
-        <translation type="obsolete">上右截止</translation>
-    </message>
-    <message>
-        <source>lower_L_begin</source>
-        <translation type="obsolete">下左起始</translation>
-    </message>
-    <message>
-        <source>lower_L_end</source>
-        <translation type="obsolete">下左截止</translation>
-    </message>
-    <message>
-        <source>lower_R_begin</source>
-        <translation type="obsolete">下右起始</translation>
-    </message>
-    <message>
-        <source>lower_R_end</source>
-        <translation type="obsolete">下右截止</translation>
-    </message>
-    <message>
-        <source>Slave-Page</source>
-        <translation type="obsolete">侧视页面</translation>
-    </message>
-    <message>
-        <source>Master-Page</source>
-        <translation type="obsolete">正视页面</translation>
-    </message>
-    <message>
-        <source>Wait a minute,please!</source>
-        <translation type="obsolete">请稍后...</translation>
-    </message>
-    <message>
-        <source>Mater-Page</source>
-        <translation type="obsolete">多页面</translation>
-    </message>
-</context>
-<context>
-    <name>setMaterialSens</name>
-    <message>
-        <source>Unused</source>
-        <translation type="obsolete">禁用</translation>
     </message>
 </context>
 <context>

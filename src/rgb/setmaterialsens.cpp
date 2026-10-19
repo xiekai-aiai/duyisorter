@@ -41,7 +41,7 @@ setMaterialSens::setMaterialSens(QWidget* parent) :
     listWidget->addItem(statusListItem[2]);
 
     // 4： AI智能算法
-    statusListItem[4] = new myListWidgetItem("Ai" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
+    statusListItem[4] = new myListWidgetItem("AI" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
     listWidget->addItem(statusListItem[4]);
 
     // 默认选中第一列
@@ -565,7 +565,7 @@ void setMaterialSens::updateListWidget()
     // 实现AI智能
     if (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] == 1)
     {
-        statusListItem[4] = new myListWidgetItem("Ai" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
+        statusListItem[4] = new myListWidgetItem("AI" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
         listWidget->addItem(statusListItem[4]);
         stackedWidget->addWidget(pageAi);
         LOG_TRACE_STM("struCnfp.nArithmeticEnable[ARITH_PISTACHIO]:" << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]);

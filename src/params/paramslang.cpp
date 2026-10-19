@@ -1313,7 +1313,18 @@ void GlobalFlow::setLang()
         break;
     }
 
+    // Qt 内置翻译：让 QFileDialog / QMessageBox 按钮等标准控件也被翻译
+    // 这些 qt_<lang>.qm 必须拷贝到 app/i18n/（编译时从 Qt sysroot translations/ 同步）
+    QTranslator* qtTrans = new QTranslator;
+    switch (struCnfg.nLang)
+    {
+        case LANG_CHS:    tryLoadQm(qtTrans, "qtbase_zh_CN.qm"); break;
+        case LANG_CHT:    tryLoadQm(qtTrans, "qtbase_zh_TW.qm"); break;
+        default: break;   // 其他语言暂无 qt 翻译包，Qt 默认英文即可
+    }
+
     QCoreApplication::installTranslator(trans);
+    QCoreApplication::installTranslator(qtTrans);
     initLan();
 }
 

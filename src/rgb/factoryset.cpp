@@ -312,7 +312,7 @@ void factorySet::createFactorySetPage()
     setLanguageBtn = new myPushButton(myLan.language, QIcon(), true, true);
     //    setLanguageBtn = new myPushButton("语言设定", QIcon(), true, true);
 
-    setAiBtn = new myPushButton("Ai " + myLan.set, QIcon(), true, true);
+    setAiBtn = new myPushButton("AI " + myLan.set, QIcon(), true, true);
 
     clearRunningTimeBtn = new myPushButton(myLan.clear_running_time, QIcon(), true, true);
     ageingTestBtn = new myPushButton(QString(myLan.old_test), QIcon(), true, true);

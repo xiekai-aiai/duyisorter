@@ -565,7 +565,7 @@ void PageTick::createPage()
 
 /* page update */
     /* signals to slots */
-    connect(tabBar,        SIGNAL(currentChanged(int)), this, SLOT(changeCurrentSlt(int)));
+    connect(tabBar,           SIGNAL(currentChanged(int)), this, SLOT(changeCurrentSlt(int)));
     connect(huffModeValue,    SIGNAL(currentChanged(int)), this, SLOT(setHuffModeSlt(int)));
     connect(logicalModeValue, SIGNAL(currentChanged(int)), this, SLOT(setLogicalModeSlt(int)));
     connect(sortModeValue,    SIGNAL(currentChanged(int)), this, SLOT(setSortModeSlt(int)));

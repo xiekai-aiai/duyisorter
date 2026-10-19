@@ -1463,18 +1463,18 @@ void MainWidget::CreatePageOprTypeWidget()
 {
     customOprButton = new myPushButton(QString(myLan.customer_model), QIcon(), pageOprType);
     highSetOprButton = new myPushButton(QString(myLan.sys_set), QIcon(), pageOprType);
-    // Ai设置
-    aiSetBtn = new myPushButton("AI" + myLan.set, QIcon(""),
+    // AI设置
+    aiSetBtn = new myPushButton(tr("AI设置"), QIcon(""),
         true, true, this);
     aiSetBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
 
-    throughputBtn = new myPushButton("实时产量", QIcon(), pageOprType);
+    throughputBtn = new myPushButton(tr("实时产量"), QIcon(), pageOprType);
     //    videoBtn = new myPushButton(myLan.sorter_manager, QIcon(),pageOprType);
-    aiModelSetBtn = new myPushButton("Ai模型", QIcon(), pageOprType);
+    aiModelSetBtn = new myPushButton(tr("AI模型"), QIcon(), pageOprType);
 
     //    videoBtn->hide();
     throughputBtn->hide();
-
+    
     customOprButton->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
     highSetOprButton->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
     throughputBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
@@ -3424,6 +3424,7 @@ void MainWidget::ejectPageThreadStartSlt()
                 /* 前12个通道喷阀由接口板1控制，12以后的通道喷阀由接口板2控制 */
                 if (currentGroup < MAX_UNIT_PER_INT / 2)
                 {
+                    // 通道64个阀，12x64=768, 2个字节，大端前面，小端后面
                     MySerial.com1Write(CMD_INT_EJTEST, INT, struGsh.nLevel, 0, 0x01, 0, 0,
                         (nDisplayNum - 1) / 256, (nDisplayNum - 1) % 256, 3);
                     myFlow.msleep(ejectTestInterval);

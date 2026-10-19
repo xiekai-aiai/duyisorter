@@ -1476,7 +1476,7 @@
         <location filename="../src/params/paramslang.cpp" line="181"/>
         <source>ai_analysis</source>
         <translatorcomment>AI Analysis</translatorcomment>
-        <translation>Ai Analisis</translation>
+        <translation>AI Analisis</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="182"/>
