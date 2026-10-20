@@ -3547,34 +3547,34 @@ void AIAnalysis::enableAIArithmetic()
 
     switch(ariSum){
     case 0:
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
         break;
     case 1:
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
         break;
     case 2:
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
         break;
     case 3:
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
         break;
     case 4:
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 1;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 1;
         break;
     default:
         break;
@@ -3582,7 +3582,7 @@ void AIAnalysis::enableAIArithmetic()
     /* only for tea */
     for (int i = 0; i < struCnfg.nLevelTotal; i++) {
         for (int j = 0; j < 4; j++) {
-            struCnfp.nArithmeticEnableLevel[i][ARITH_INTEL_A+j] = struCnfp.nArithmeticEnable[ARITH_INTEL_A+j];
+            struCnfp.nArithmeticEnableLevel[i][ARITH_INTEL_A+j] = myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_INTEL_A+j);
         }
     }
     emit updateArithmeticSig();

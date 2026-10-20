@@ -234,7 +234,7 @@ void SensBias::updateList()
 
     /* 刷新算法列表某行对应的算法代号 */
     for(int i=0; i<ARITHMETIC_TOTAL; i++) {
-        if(struCnfp.nArithmeticEnable[i] == 1 && isSensBiasEnable(i)) {
+        if(myFlow.getArithEnable(struGsh.nLevel, 0, i) == 1 && isSensBiasEnable(i)) {
             m_nArithIndex[i] = i;
             m_items[i]->setText(QString("\n%1\n").arg(getArithNameFromId(i)));
             m_items[i]->setHidden(false);

@@ -2677,15 +2677,15 @@ void GlobalFlow::resetFeeder(int flag)
 
     switch (struCnfe.nMachine)
     {
-    case MACHINE_CF:
-        nFeederTotal = struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2 + 1;
-        if (struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2 == 1)
-        {
-            nFeederTotal = 3;
-        }
-        break;
-    default:
-        break;
+        case MACHINE_CF:
+            nFeederTotal = struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2 + 1;
+            if (struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2 == 1)
+            {
+                nFeederTotal = 3;
+            }
+            break;
+        default:
+            break;
     }
 
     //! CG 机型供料控制（带使能及供料偏置）
@@ -5057,9 +5057,9 @@ void GlobalFlow::stopAiCollect()
 
 void GlobalFlow::startAiInfer()
 {
-    if (!struCnfp.enableAi || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
+    if (!struCnfp.enableAi || (getArithEnable(ONE_LEVEL, 0, ARITH_PISTACHIO) != 1))
     {
-        LOG_INFO_STM("Ai enable is false or struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = " << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]
+        LOG_INFO_STM("Ai enable is false or ARITH_PISTACHIO enable = " << getArithEnable(ONE_LEVEL, 0, ARITH_PISTACHIO)
             << ",so don't send start ai infer!");
         return;
     }
@@ -5109,9 +5109,9 @@ void GlobalFlow::startAiInfer()
 
 void GlobalFlow::stopAiInfer()
 {
-    if (!struCnfp.enableAi || (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] != 1))
+    if (!struCnfp.enableAi || (getArithEnable(ONE_LEVEL, 0, ARITH_PISTACHIO) != 1))
     {
-        LOG_INFO_STM("Ai enable is false or struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = " << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]
+        LOG_INFO_STM("Ai enable is false or ARITH_PISTACHIO enable = " << getArithEnable(ONE_LEVEL, 0, ARITH_PISTACHIO)
             << ", so don't send stop ai infer!");
         return;
     }

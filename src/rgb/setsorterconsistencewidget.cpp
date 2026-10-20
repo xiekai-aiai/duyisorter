@@ -495,7 +495,7 @@ void setSorterConsistenceWidget::updateAlgStat(int nAlgId, int nLevel, int nGrou
 {
     //! 灰度
     if (nAlgId == ARITH_GREY_A || nAlgId == ARITH_GREY_B){
-        if (struCnfp.nArithmeticEnable[nAlgId] == 1 && bFlgShow){
+        if (myFlow.getArithEnable(ONE_LEVEL, 0, nAlgId) == 1 && bFlgShow){
             m_sensNameLbe[nAlgId]->setText(QString().fromLocal8Bit(struCnfp.struGroupIdentify[nLevel][nGroup].struGreyColor[nAlgId].sName));
             m_algEnableCbx[nAlgId]->show();
             m_sensNameLbe[nAlgId]->show();
@@ -520,7 +520,7 @@ void setSorterConsistenceWidget::updateAlgStat(int nAlgId, int nLevel, int nGrou
     }
     //! 色差
     if (nAlgId == ARITH_DISCOLOR_A || nAlgId == ARITH_DISCOLOR_B){
-        if (struCnfp.nArithmeticEnable[nAlgId] == 1 && bFlgShow){
+        if (myFlow.getArithEnable(ONE_LEVEL, 0, nAlgId) == 1 && bFlgShow){
             m_sensNameLbe[nAlgId]->setText(QString().fromLocal8Bit(struCnfp.struGroupIdentify[nLevel][nGroup].struGreyColor[nAlgId].sName));
             m_algEnableCbx[nAlgId]->show();
             m_sensNameLbe[nAlgId]->show();
@@ -545,7 +545,7 @@ void setSorterConsistenceWidget::updateAlgStat(int nAlgId, int nLevel, int nGrou
     }
     //! 智能
     if (nAlgId == ARITH_INTEL_A || nAlgId == ARITH_INTEL_B){
-        if (struCnfp.nArithmeticEnable[nAlgId] == 1 && bFlgShow){
+        if (myFlow.getArithEnable(ONE_LEVEL, 0, nAlgId) == 1 && bFlgShow){
             m_sensNameLbe[nAlgId-11]->setText(QString().fromLocal8Bit(struCnfp.struGroupIdentify[nLevel][nGroup].struIntel[nAlgId-15].sName));
             m_algEnableCbx[nAlgId-11]->show();
             m_sensNameLbe[nAlgId-11]->show();
@@ -1071,7 +1071,7 @@ bool setSorterConsistenceWidget::getAlgSim(int nAlgId, int hei, int wid)
     int nRow,nCol,nPur,nBadPixelNum;
     int nRowBegin,nRowEnd,nColBegin,nColEnd;
 
-    if (false == struCnfp.nArithmeticEnable[nAlgId]){
+    if (false == myFlow.getArithEnable(ONE_LEVEL, 0, nAlgId)){
         return false;
     }
 

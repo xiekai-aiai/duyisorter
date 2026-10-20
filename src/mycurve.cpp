@@ -698,7 +698,7 @@ void MyAxis::drawIdeResult(QPainter &painter)
     //! 根据算法使能绘制识别结果
     //! 普通颜色算法:灰度A 灰度B 色差A 色差B
     for (int i = 0; i < 4; i++) {
-        if (struCnfp.nArithmeticEnable[i] == 1
+        if (myFlow.getArithEnable(struGsh.nLevel, 0, i) == 1
                 && struGsh.struResult[struGsh.nUnit].nEn[i]) {
             drawSingleResult(painter, i);
         }

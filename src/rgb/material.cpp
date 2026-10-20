@@ -105,7 +105,7 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
                 struCnfp.struGroupIdentify[nLevelId][nGroupId].struCandy.nRation1, 3);
             break;
         case CMD_UNIT_PISTACHIO:
-            MySerial.com1Write(nCmd, UNIT, nLevelId, nUnitAddr, struCnfp.nArithmeticEnable[ARITH_PISTACHIO], struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_3, struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nAreaMin,
+            MySerial.com1Write(nCmd, UNIT, nLevelId, nUnitAddr, myFlow.getArithEnable(nLevelId, nGroupId, ARITH_PISTACHIO), struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_3, struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nAreaMin,
                 struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_2,
                 struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_1, 3);
             break;
@@ -578,7 +578,7 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
             {
                 if (myFlow.getProductLineNo() == 0)
                 {
-                    if (struCnfp.nArithmeticEnable[ARITH_INTEL_A] == 1)
+                    if (myFlow.getArithEnable(nLevelId, nGroupId, ARITH_INTEL_A) == 1)
                     {
                         MySerial.com1Write(CMD_UNIT_NEW_INTEL_DFL_SIZE, UNIT, nLevelId, nUnitAddr,
                             struCnfp.struGroupIdentify[nLevelId][nGroupId].struIntel[0].nRow - 1,
@@ -587,7 +587,7 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
                             ((struCnfp.struGroupIdentify[nLevelId][nGroupId].struIntel[0].nPercent - 1)) % 256,
                             struCnfp.nColorSpace, 3);
                     }
-                    if (struCnfp.nArithmeticEnable[ARITH_INTEL_B] == 1)
+                    if (myFlow.getArithEnable(nLevelId, nGroupId, ARITH_INTEL_B) == 1)
                     {
                         MySerial.com1Write(CMD_UNIT_NEW_INTEL_DFL_SIZE_B, UNIT, nLevelId, nUnitAddr,
                             struCnfp.struGroupIdentify[nLevelId][nGroupId].struIntel[1].nRow - 1,
@@ -1054,7 +1054,7 @@ void GlobalFlow::materialParamsPacketOrganize(int nCmd, int nLevelId, int nGroup
                 struCnfp.struGroupIdentify[nLevelId][nGroupId].struCandy.nRation1, 3);
             break;
         case CMD_UNIT_PISTACHIO:
-            MySerial.com1Write(nCmd, UNIT, nLevelId, nUnitAddr, struCnfp.nArithmeticEnable[ARITH_PISTACHIO], struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_3, struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nAreaMin,
+            MySerial.com1Write(nCmd, UNIT, nLevelId, nUnitAddr, myFlow.getArithEnable(nLevelId, nGroupId, ARITH_PISTACHIO), struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_3, struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nAreaMin,
                 struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_2,
                 struCnfp.struGroupIdentify[nLevelId][nGroupId].struPistachio.nGrayThreshold_1, 3);
             break;
@@ -1561,7 +1561,7 @@ void GlobalFlow::materialParamsPacketOrganize(int nCmd, int nLevelId, int nGroup
                 MySerial.com1Write(nCmd, UNIT, nLevelId, nUnitAddr, 0, 0, 0, 0, struCnfp.nColorSpace, 3);
                 if (myFlow.getProductLineNo() == 0)
                 {
-                    if (struCnfp.nArithmeticEnable[ARITH_INTEL_A] == 1)
+                    if (myFlow.getArithEnable(nLevelId, nGroupId, ARITH_INTEL_A) == 1)
                     {
                         MySerial.com1Write(CMD_UNIT_NEW_INTEL_DFL_SIZE, UNIT, nLevelId, nUnitAddr,
                             struCnfp.struGroupIdentify[nLevelId][nGroupId].struIntel[0].nRow - 1,
@@ -1570,7 +1570,7 @@ void GlobalFlow::materialParamsPacketOrganize(int nCmd, int nLevelId, int nGroup
                             ((struCnfp.struGroupIdentify[nLevelId][nGroupId].struIntel[0].nPercent - 1)) % 256,
                             struCnfp.nColorSpace, 3);
                     }
-                    if (struCnfp.nArithmeticEnable[ARITH_INTEL_B] == 1)
+                    if (myFlow.getArithEnable(nLevelId, nGroupId, ARITH_INTEL_B) == 1)
                     {
                         MySerial.com1Write(CMD_UNIT_NEW_INTEL_DFL_SIZE_B, UNIT, nLevelId, nUnitAddr,
                             struCnfp.struGroupIdentify[nLevelId][nGroupId].struIntel[1].nRow - 1,
@@ -2076,7 +2076,7 @@ void GlobalFlow::resetMaterial(int nLevelId, int nGroupId, int bIsAllSens, int n
     {
         for (int j = 0; j < struCnfe.nArithmeticTotal; j++)
         {
-            nArithmeticEnable[i][j] = struCnfp.nArithmeticEnable[j];
+            nArithmeticEnable[i][j] = myFlow.getArithEnable(i, 0, j);
         }
     }
 
@@ -2455,7 +2455,7 @@ void GlobalFlow::materialParamsCopy(int nLevelIdSrc, int nGroupIdSrc, int nLevel
     {
         for (int j = 0; j < struCnfe.nArithmeticTotal; j++)
         {
-            nArithmeticEnable[i][j] = struCnfp.nArithmeticEnable[j];
+            nArithmeticEnable[i][j] = myFlow.getArithEnable(i, 0, j);
         }
     }
 

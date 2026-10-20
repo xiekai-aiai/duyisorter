@@ -336,8 +336,8 @@ void MonoFlow::sendCtrlParams()
 void MonoFlow::sendSortParams()
 {
     /* 算法使能 */
-    char cArithEnable = (struCnfp.nArithmeticEnable[ARITH_SCALE] << 1)
-                            | struCnfp.nArithmeticEnable[ARITH_SHAPE_LENGTH];
+    char cArithEnable = (myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_SCALE) << 1)
+                            | myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_SHAPE_LENGTH);
     for (int i = 0; i < struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal; i++) {
         MySerial.com1Write(CMD_UNIT_ARITHMETIC_ENABLE, UNIT, 0, i,
                            struCnfg.nAssistCamEn[i]<<7, 0, 0, 0, cArithEnable, 3);
@@ -407,8 +407,8 @@ void MonoFlow::sendImpuredParams()
 	for (int i = 0; i < struCnfg.nLevelTotal; i++) {
         for (int j = 0; j < struCnfg.struLevelInfo[i].nTickGroupTotal; j++) {
 			if (struCnfp.struGroupTick[i][j].nReverseSort == 1
-				|| struCnfp.nArithmeticEnable[ARITH_SCALE] == 1
-                || struCnfp.nArithmeticEnable[ARITH_SHAPE_LENGTH] == 1) {
+				|| myFlow.getArithEnable(i, j, ARITH_SCALE) == 1
+                || myFlow.getArithEnable(i, j, ARITH_SHAPE_LENGTH) == 1) {
             	struCnfp.struGroupTick[i][j].nImpured = 1;
         	} else {
             	struCnfp.struGroupTick[i][j].nImpured = 0;

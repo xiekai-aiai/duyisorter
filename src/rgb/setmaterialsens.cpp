@@ -482,7 +482,7 @@ void setMaterialSens::updateListWidget()
     bool bFlag = false;
 
     LOG_INFO_STM("stackedWidget size:" << stackedWidget->count() << ", list widget count:"
-        << listWidget->count() << ", ai enable:" << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]);
+        << listWidget->count() << ", ai enable:" << myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO));
 
     listWidget->clear();
     while (stackedWidget->count() > 0)
@@ -495,7 +495,7 @@ void setMaterialSens::updateListWidget()
 
     for (i = 0; i < MAX_GENERAL;i++)
     {
-        if (struCnfp.nArithmeticEnable[i])
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i))
         {
             if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS))
             {
@@ -507,26 +507,26 @@ void setMaterialSens::updateListWidget()
             }
             listWidget->addItem(statusListItem[0]);
             stackedWidget->addWidget(pageGeneral);
-            LOG_TRACE_STM("general i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i] << ", struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
+            LOG_TRACE_STM("general i:" << i << ", alg enable:" << myFlow.getArithEnable(struGsh.nLevel, currentChan, i) << ", struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
             break;
         }
     }
     for (i = MAX_GENERAL; i < MAX_GENERAL + MAX_SHAPE;i++)
     {
-        if (struCnfp.nArithmeticEnable[i] == 1 || struCnfp.nArithmeticEnable[ARITH_SCALE_B] == 1)
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i) == 1 || myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_SCALE_B) == 1)
         {
             statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(BTN_WIDTH - 20, ICON_WID * 2));
             listWidget->addItem(statusListItem[1]);
             stackedWidget->addWidget(pageShape);
-            LOG_TRACE_STM("shape i:" << i << ", alg enable:" << struCnfp.nArithmeticEnable[i]
-                << ", ARITH_SCALE_B:" << struCnfp.nArithmeticEnable[ARITH_SCALE_B]);
+            LOG_TRACE_STM("shape i:" << i << ", alg enable:" << myFlow.getArithEnable(struGsh.nLevel, currentChan, i)
+                << ", ARITH_SCALE_B:" << myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_SCALE_B));
             break;
         }
     }
     for (i = ARITH_INTEL_A; i < ARITH_INTEL_A + MAX_AI;i++)
     {
 
-        if (struCnfp.nArithmeticEnable[i])
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i))
         {
             if (struCnfe.nEnableMaizeDoubleView == 1 && (struCnfg.nLang == LANG_CHS))
             {
@@ -538,7 +538,7 @@ void setMaterialSens::updateListWidget()
             }
             listWidget->addItem(statusListItem[2]);
             stackedWidget->addWidget(pageAI);
-            LOG_TRACE_STM("智能 i:" << i << ",alg enable:" << struCnfp.nArithmeticEnable[i] << ",struCnfg.nLang:" << struCnfg.nLang
+            LOG_TRACE_STM("智能 i:" << i << ",alg enable:" << myFlow.getArithEnable(struGsh.nLevel, currentChan, i) << ",struCnfg.nLang:" << struCnfg.nLang
                 << ",struCnfe.nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView);
             break;
         }
@@ -547,28 +547,28 @@ void setMaterialSens::updateListWidget()
     //! 仅玉米双视图机型增加智能保留参数
     if (struCnfe.nEnableMaizeDoubleView == 1)
     {
-        if (struCnfp.nArithmeticEnable[ARITH_RESERVED])
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_RESERVED))
         {
             statusListItem[6] = new myListWidgetItem(myLan.material_reserved, myIcon.Sorter_RGB, QSize(BTN_WIDTH - 20, ICON_WID * 2));
             listWidget->addItem(statusListItem[6]);
             stackedWidget->addWidget(m_pageGeneralRsv);
         }
-        if (struCnfp.nArithmeticEnable[ARITH_INTEL_A])
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_INTEL_A))
         {
             stackedWidget->addWidget(m_pageAIRsv);
         }
 
-        LOG_TRACE_STM("nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView << ",struCnfp.nArithmeticEnable[ARITH_INTEL_A]:"
-            << struCnfp.nArithmeticEnable[ARITH_INTEL_A] << ",nArithmeticEnable[ARITH_INTEL_A]:" << struCnfp.nArithmeticEnable[ARITH_INTEL_A]);
+        LOG_TRACE_STM("nEnableMaizeDoubleView:" << struCnfe.nEnableMaizeDoubleView << ",myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_INTEL_A):"
+            << myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_INTEL_A) << ",nArithmeticEnable[ARITH_INTEL_A]:" << myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_INTEL_A));
     }
 
     // 实现AI智能
-    if (struCnfp.nArithmeticEnable[ARITH_PISTACHIO] == 1)
+    if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO) == 1)
     {
         statusListItem[4] = new myListWidgetItem("AI" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
         listWidget->addItem(statusListItem[4]);
         stackedWidget->addWidget(pageAi);
-        LOG_TRACE_STM("struCnfp.nArithmeticEnable[ARITH_PISTACHIO]:" << struCnfp.nArithmeticEnable[ARITH_PISTACHIO]);
+        LOG_TRACE_STM("myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO):" << myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO));
 
     }
 
@@ -619,7 +619,7 @@ void setMaterialSens::updateSensBiasBtn()
     /* 若算法列表为空则不显示该按钮 */
     for (int i = 0; i < ARITHMETIC_TOTAL; i++)
     {
-        if (struCnfp.nArithmeticEnable[i] == 1)
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i) == 1)
         {
             switch (i)
             {
@@ -879,7 +879,7 @@ void setMaterialSens::updateGeneralList()
     }
     for (int i = 0; i < MAX_GENERAL;i++)
     {
-        if (struCnfp.nArithmeticEnable[i] == 1)
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i) == 1)
         {
             /*杂质名称*/
             switch (i)
@@ -1312,7 +1312,7 @@ void setMaterialSens::updateShapeList()
     }
     for (int i = 0; i < MAX_SHAPE; i++)
     {
-        if (struCnfp.nArithmeticEnable[MAX_GENERAL + i])
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, MAX_GENERAL + i))
         {
             switch (i)
             {
@@ -1445,7 +1445,7 @@ void setMaterialSens::updateShapeList()
             shapeSensListCbx[i]->show();
         }
     }
-    if (struCnfp.nArithmeticEnable[ARITH_SCALE_B])
+    if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_SCALE_B))
     {
         strShapeList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].sName);
         if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struScale[1].nMode == 0)
@@ -1475,7 +1475,7 @@ void setMaterialSens::updateShapeList()
         shapeSensListCbx[5]->show();
     }
 
-    if (struCnfp.nArithmeticEnable[ARITH_CANDY])
+    if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_CANDY))
     {
         strShapeSens.sprintf("%.1f%%", (255 - struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struCandy.nRation1) * 0.392);
         shapeSensLbe[6]->setText(strShapeSens);
@@ -1492,7 +1492,7 @@ void setMaterialSens::updateShapeList()
         shapeSensListCbx[6]->show();
     }
 
-    //    if(struCnfp.nArithmeticEnable[ARITH_PISTACHIO])
+    //    if(myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO))
     //    {
     //        strShapeSens = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin);
     //        shapeSensLbe[7]->setText(strShapeSens);
@@ -1908,7 +1908,7 @@ void setMaterialSens::updatePeanutList()
     }
     for (int i = 0; i < MAX_PEANUT;i++)
     {
-        if (struCnfp.nArithmeticEnable[ARITH_PEANUT_A + i] == 1)
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PEANUT_A + i) == 1)
         {
             /*杂质名称*/
             strPeanutList = QString().fromLocal8Bit(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPeanutAbcd[i].sName);
@@ -2265,13 +2265,13 @@ void setMaterialSens::updateAIList()
 
     for (int i = 0; i < MAX_AI; i++)
     {
-        if (struCnfp.nArithmeticEnable[ARITH_INTEL_A + i])
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_INTEL_A + i))
         {
             if (myFlow.getProductLineNo() == 0)
             {
                 AISensListCbx[i]->setMinimumHeight(380 / MAX_GENERAL + 75);
                 AISensListCbx[i]->setMaximumHeight(380 / MAX_GENERAL + 120);
-                if (struCnfp.nArithmeticEnable[ARITH_WATERMELON] == 1)
+                if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_WATERMELON) == 1)
                 {
                     AISensListCbx[i]->setMaximumHeight(380 / MAX_GENERAL + 85);
                 }
@@ -3824,7 +3824,7 @@ void setMaterialSens::updateRsvList()
 
     for (int i = 0; i < MAX_RSV;i++)
     {
-        if (struCnfp.nArithmeticEnable[ARITH_RESERVED + i])
+        if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_RESERVED + i))
         {
             strRsvList = QString("%1 (%2)").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struReserved.sName).arg(myString.sArithmeticName[ARITH_RESERVED + i]);
             rsvSensListCbx[i]->setTitle(strRsvList);
@@ -3939,7 +3939,7 @@ void setMaterialSens::updatePageRSC()
         case ARITH_GREY_A:
         case ARITH_GREY_B:
         case ARITH_DISCOLOR_A:
-            if (struCnfp.nArithmeticEnable[i])
+            if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i))
             {
                 generalHBoxLayout[i]->setContentsMargins(350, 0, 300, 2);
                 generalRowLabel[i]->hide();
@@ -3961,7 +3961,7 @@ void setMaterialSens::updatePageRSC()
         case ARITH_SCALE:
         case ARITH_BUD_1:
         case ARITH_BUD_2:
-            if (struCnfp.nArithmeticEnable[i])
+            if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i))
             {
                 shapeBoxLayout[i - ARITH_SHAPE]->setContentsMargins(350, 0, 300, 2);
                 shapeSensListCbx[i - ARITH_SHAPE]->show();
@@ -3975,7 +3975,7 @@ void setMaterialSens::updatePageRSC()
 
         case ARITH_INTEL_A:
         case ARITH_INTEL_B:
-            if (struCnfp.nArithmeticEnable[i])
+            if (myFlow.getArithEnable(struGsh.nLevel, currentChan, i))
             {
                 AIBoxLayout[i - ARITH_INTEL_A]->setContentsMargins(350, 0, 300, 2);
                 AIRowLabel[i - ARITH_INTEL_A]->hide();
@@ -3993,7 +3993,7 @@ void setMaterialSens::updatePageRSC()
             break;
 
         case ARITH_SCALE_B:
-            if (struCnfp.nArithmeticEnable[ARITH_SCALE_B])
+            if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_SCALE_B))
             {
                 shapeBoxLayout[5]->setContentsMargins(350, 0, 300, 2);
                 shapeSensListCbx[5]->show();

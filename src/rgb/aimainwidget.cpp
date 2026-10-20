@@ -340,13 +340,13 @@ void AIMainWidget::createAIArithListWidget()
     aiBtn.append(new myPushButton(myString.sArithmeticName[ARITH_INTEL_B], QIcon(), m_AIArithListWidget));
     for (int i = 0; i < 2; i++)
     {   //大蒜物料支持智能A/B两种算法
-        aiBox.append(new MyCheckBox("", struCnfp.nArithmeticEnable[ARITH_INTEL_A + i]));
+        aiBox.append(new MyCheckBox("", myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_INTEL_A + i)));
         aiBox[i]->setMinimumSize(BTN_HEIGHT, BTN_HEIGHT);
 
         aiBtn[i]->setFocusPolicy(Qt::NoFocus);
         aiBtn[i]->setMinimumSize(BTN_WIDTH, BTN_HEIGHT);
 
-        if (struCnfp.nArithmeticEnable[ARITH_INTEL_A + i] == 1)
+        if (myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_INTEL_A + i) == 1)
         {
             aiBtn[i]->setEnabled(true);
         }
@@ -450,12 +450,12 @@ void AIMainWidget::onBoxMapClicked(int index)
 {
     if (aiBox[index]->isChecked())
     {
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A + index] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A + index] = 1;
         aiBtn[index]->setEnabled(true);
     }
     else
     {
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A + index] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A + index] = 0;
         aiBtn[index]->setEnabled(false);
     }
 
@@ -854,15 +854,15 @@ void AIMainWidget::onClassModeBtnPressedSlt()
     {
     case MODE_MULTIPLE:
         struCnfp.nIntelMode = MODE_NULL;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 0;
         break;
     case MODE_NULL:
         struCnfp.nIntelMode = MODE_MULTIPLE;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
         break;
     default:
         struCnfp.nIntelMode = MODE_NULL;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 0;
         break;
     }
     for (int j = 0; j < m_nLevelToTal; j++)
@@ -2469,7 +2469,7 @@ void AIMainWidget::refreshDisplaySlt()
 {
     for (int i = 0; i < 2; i++)
     {
-        aiBox[i]->setChecked(struCnfp.nArithmeticEnable[ARITH_INTEL_A + i]);
+        aiBox[i]->setChecked(myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_INTEL_A + i));
         if (aiBox[i]->isChecked())
         {
             aiBtn[i]->setEnabled(true);
@@ -3949,34 +3949,34 @@ bool AIMainWidget::enableAIArithmetic(int classMode)
         switch (m_nClassNum[m_nLayer])
         {
         case 0:
-            struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 0;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 0;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 0;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
             break;
         case 1:
-            struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 0;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 0;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
             break;
         case 2:
-            struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 0;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
             break;
         case 3:
-            struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
             break;
         case 4:
-            struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 1;
-            struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 1;
+            struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 1;
             break;
         default:
             break;
@@ -3988,10 +3988,10 @@ bool AIMainWidget::enableAIArithmetic(int classMode)
     }
     else
     {
-        struCnfp.nArithmeticEnable[ARITH_INTEL_A] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_B] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_C] = 0;
-        struCnfp.nArithmeticEnable[ARITH_INTEL_D] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
+        struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_D] = 0;
         struCnfp.nMatIntelSeq = 0;
         m_nClassNum[m_nLayer] = 0;
         updateBtnStatus();
@@ -4002,7 +4002,7 @@ bool AIMainWidget::enableAIArithmetic(int classMode)
     {
         for (int j = 0; j < 4; j++)
         {
-            struCnfp.nArithmeticEnableLevel[i][ARITH_INTEL_A + j] = struCnfp.nArithmeticEnable[ARITH_INTEL_A + j];
+            struCnfp.nArithmeticEnableLevel[i][ARITH_INTEL_A + j] = myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_INTEL_A + j);
         }
     }
 

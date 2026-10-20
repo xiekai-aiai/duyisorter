@@ -313,7 +313,7 @@ bool UnsupervisedAIMainWidget::unsupervisedLearning()
     //! 智能
     m_nLayer = 1;
     struGsh.nUnit = tmpRearUnit;
-    if (struCnfp.nArithmeticEnable[ARITH_INTEL_A] && (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_DIFF_POSITIVE_SORT || struCnfg.nProfileMode[struCnfg.nProfile] == RSC_YELLOW_WHITE_SORT))
+    if (myFlow.getArithEnable(ONE_LEVEL, 0, ARITH_INTEL_A) && (struCnfg.nProfileMode[struCnfg.nProfile] == RSC_DIFF_POSITIVE_SORT || struCnfg.nProfileMode[struCnfg.nProfile] == RSC_YELLOW_WHITE_SORT))
     {
         saveAIConfig(struCnfg.nMaterPer1, m_nImgTotal, nFlagImg, 1, struCnfg.nReservedSens);
 
