@@ -112,7 +112,7 @@ private:
         aiSensNum = 10              //! 智能化算法灵敏度数量
     };
     int algorithmType;  //0:当前列表为可见，1：红外
-    QTabBar* tabBar;
+    MyTabBar* tabBar;
     myListWidget* listWidget;
     myListWidgetItem* statusListItem[8];
 

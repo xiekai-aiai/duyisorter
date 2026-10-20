@@ -3852,30 +3852,6 @@ bool AiModelSet::runEmulateOnce()
                  << ", 预期basename=" << imgFileName
                  << ", 实际上传basename=" << actualRemoteBaseName);
 
-    /*
-    // ═══ 先 ModelApply 加载模型到板卡内存 ═══
-    {
-        ModelApply applyInfo;
-        applyInfo.model_name_ = modelBinName;
-        QByteArray applyReq = cmdworker::ModelApplyRequest(applyInfo);
-        QByteArray applyResp;
-        showTip(QString("加载模型到板卡：%1 ...").arg(modelBinName));
-        QApplication::processEvents();
-        bool applyOk = CmdUdpManager::instance().onSendCommand(
-            QHostAddress(boardIp), AI_UPD_CMD_PORT, applyReq, applyResp, 3000);
-        if (!applyOk) {
-            showTip("模型加载 UDP 通信失败", true);
-            return false;
-        }
-        CmdPackage applyPkg;
-        cmdworker::ParseCmdPkg(applyResp, applyPkg);
-        if (applyPkg.cmd_data_.isEmpty() || applyPkg.cmd_data_.at(0) != 1) {
-            showTip(QString("板卡模型加载失败 code=%1").arg(applyPkg.cmd_data_.isEmpty() ? -1 : applyPkg.cmd_data_.at(0)), true);
-            return false;
-        }
-    }
-    */
-
     // 发送仿真 UDP 请求（img_name_ 用实际上传到板卡的远程文件名！避免分叉计算）
     EmulateParam info;
     info.model_name_ = modelBinName;

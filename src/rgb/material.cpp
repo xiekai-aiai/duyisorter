@@ -578,7 +578,7 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
             {
                 if (myFlow.getProductLineNo() == 0)
                 {
-                    if (myFlow.getArithEnable(nLevelId, nGroupId, ARITH_INTEL_A) == 1)
+                   if (myFlow.getArithEnable(nLevelId, nGroupId, ARITH_INTEL_A) == 1)
                     {
                         MySerial.com1Write(CMD_UNIT_NEW_INTEL_DFL_SIZE, UNIT, nLevelId, nUnitAddr,
                             struCnfp.struGroupIdentify[nLevelId][nGroupId].struIntel[0].nRow - 1,
@@ -2759,8 +2759,6 @@ void GlobalFlow::materialParamsCopy(int nLevelIdSrc, int nGroupIdSrc, int nLevel
                 struCnfp.struGroupIdentify[l2][k2].struCandy.nCycles = struCnfp.struGroupIdentify[l1][k1].struCandy.nCycles;
                 break;
             case ARITH_PISTACHIO:
-                memcpy(struCnfp.struGroupIdentify[l2][k2].struAi.modelId, struCnfp.struGroupIdentify[l1][k1].struAi.modelId,
-                    sizeof(struCnfp.struGroupIdentify[l1][k1].struAi.modelId));
                 materialAiModelParaCopy(l2, k2, l1, k1);
                 break;
             default:
@@ -2773,7 +2771,16 @@ void GlobalFlow::materialParamsCopy(int nLevelIdSrc, int nGroupIdSrc, int nLevel
 void GlobalFlow::materialAiModelParaCopy(int nLevelId, int nGroupId, int nOldLevelId, int nOldGroupId)
 {
     LOG_TRACE_STM("copy ai nLevelId:" << nLevelId << ",nGroupId:" << nGroupId << ", nOldLevelId:" << nOldLevelId << ",nOldGroupId:" << nOldGroupId);
-    // xknote: 现在不复制
+    // 复制方案里的模型ID信息
+    memcpy(struCnfp.struGroupIdentify[nLevelId][nGroupId].struAi.modelId, struCnfp.struGroupIdentify[nOldLevelId][nOldGroupId].struAi.modelId,
+        sizeof(struCnfp.struGroupIdentify[nOldLevelId][nOldGroupId].struAi.modelId));
+
+    // 复制方案里的阈值信息 
+    for (int idx = 0; idx < MODEL_MAX_CLS_NUM; idx++)
+    {
+        struCnfp.struGroupIdentify[nLevelId][nGroupId].struAi.struAiClsPara[idx] =
+            struCnfp.struGroupIdentify[nOldLevelId][nOldGroupId].struAi.struAiClsPara[idx];
+    }
 }
 
 /***************************************************************************************************

@@ -2,13 +2,15 @@
 #define FUNCTIONS_H
 
 #include <QtCore>
+#include <QSet>
 #include "globalflow.h"
 #include "common/mywid.h"
 
 /*!
  * \enum 页面索引
  */
-enum {
+enum
+{
     Page_Params,
     Page_Background,
     Page_Feeder_Adjust,
@@ -54,24 +56,25 @@ enum {
 /*!
  * \enum 算法组合模式
  */
-enum {
+enum
+{
     MatMode_AllSeperate,    /*!< 全部独立 */
     MatMode_AllSame,        /*!< 全部相同 */
     MatMode_FrontRear,      /*!< 前后视相同 */
     MatMode_Sequence        /*!< 前后视不同 */
 };
 
-void removeTabBar(MyTabBar *tabBar);        //! 移除所有标签
+void removeTabBar(MyTabBar* tabBar);        //! 移除所有标签
 
-void updateTabBar(MyTabBar *tabBar, bool bIsIdentify, bool bIsHide);    //! 更新所有标签
+void updateTabBar(MyTabBar* tabBar, bool bIsIdentify, bool bIsHide);    //! 更新所有标签
 
-void setIdIndex (MyTabBar *tabBar);         //! 根据TD机型不同层的前后视配置设置TabBar
+void setIdIndex(MyTabBar* tabBar);         //! 根据TD机型不同层的前后视配置设置TabBar
 
-int getIdIndex(int *idIndex, int index);    //! TD机型根据IdIndex数组值获取对应的识别组真实位置
+int getIdIndex(int* idIndex, int index);    //! TD机型根据IdIndex数组值获取对应的识别组真实位置
 
 int getCurrentLevelIndex(int index);        //! TD机型根据识别组在TabBar中的位置获取当前层
 
-int getCurrentIdetifyGroupIndex(int*idIndex, int index);    //! TD机型根据识别组在TabBar中的位置获取当前识别组位置
+int getCurrentIdetifyGroupIndex(int* idIndex, int index);    //! TD机型根据识别组在TabBar中的位置获取当前识别组位置
 
 int getPageIndex(int nArithIndex);          //! 根据算法索引号获取页面ID
 
@@ -84,5 +87,7 @@ QString getLevelText(int level);            //! 获取层数对应的文本
 QString getReservedText(int nArithIndex);   //! 根据算法索引号获取保留页面的文本显示
 
 int getReservedIndex(int nArithIndex);      //! 根据算法索引号获取保留页面ID
+
+QSet<QString> getAiIpSet(MyTabBar* tarBar); //! 根据tarBar获取对应识别组的IP列表
 
 #endif // FUNCTIONS_H

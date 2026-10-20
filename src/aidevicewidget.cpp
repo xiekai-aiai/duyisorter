@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QMutexLocker>
+#include <QStorageInfo>
 #include "unilog.h"
 #include "aihelper.h"
 #include "sortertypes.h"
@@ -331,6 +332,23 @@ void AiDeviceWidget::onProgressChanged(int idx, int current, int total)
 
 void AiDeviceWidget::onDownBtnPressed()
 {
+    QString img_dir = ai_helper::GetAcqImgRootPath();
+    QStorageInfo storage(img_dir);
+    if (storage.isValid() && storage.isReady())
+    {
+        qint64 total = storage.bytesTotal() / SPACEMB;
+        qint64 available = storage.bytesAvailable() / SPACEMB;
+        qint64 free = storage.bytesFree() / SPACEMB;
+        LOG_INFO_STM("path:" << img_dir.toStdString() << " total:" << total
+            << " MB, availabel:" << available << " MB, free:" << free << " MB");
+        if (free < MIN_DOWN_SPACITY)
+        {
+            LOG_ERROR_STM("path:" << img_dir.toStdString() << " spacity[" << free << "] MB < " << MIN_DOWN_SPACITY << " MB");
+            QMessageBox::warning(this, myLan.app_warn, myLan.disk_space_insufficent);
+            return;
+        }
+    }
+
     // 下载操作
     for (int idx = 0; idx < AI_SFTP_DEV_NUM; idx++)
     {
@@ -345,7 +363,7 @@ void AiDeviceWidget::onDownBtnPressed()
     progressDlg->setValue(0);
     progressDlg->show();   // 调试时屏蔽下载进度弹窗，后台下载仍进行
     QString downDir = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
-    QString downPath = ai_helper::GetAcqImgRootPath() + "/" + downDir;
+    QString downPath = img_dir + "/" + downDir;
     if (!QDir().mkpath(downPath))
     {
         LOG_ERROR_STM("mkdir downPath:" << downPath.toStdString() << " failed!");

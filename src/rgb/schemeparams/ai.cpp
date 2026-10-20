@@ -75,10 +75,17 @@ void PageAi::onDeleteModel()
     LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
         << ", model id:" << model_id.toStdString());
 
-    if (model_id == QString::fromUtf8(struCnfp.struGroupIdentify[0][0].struAi.modelId))
+    for (int idx = 0; idx < struCnfg.nLevelTotal; idx++)
     {
-        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_applying + myLan.mdl_del_failed);
-        return;
+        for (int idy = 0; idy < struCnfg.struLevelInfo[idx].nIdentifyGroupTotal; idy++)
+        {
+            if (model_id == QString::fromUtf8(struCnfp.struGroupIdentify[idx][idy].struAi.modelId))
+            {
+                LOG_INFO_STM("level id:" << idx << ", identify group id:" << idy << " use model id:" << model_id.toStdString() << ", model name:" << model_name.toStdString() << " cannot delete!");
+                QMessageBox::warning(this, myLan.app_warn, myLan.mdl_applying + myLan.mdl_del_failed);
+                return;
+            }
+        }
     }
 
     ModelInfo info;
@@ -102,6 +109,12 @@ void PageAi::onDeleteModel()
 /* 应用当前智能参数固化页面设置 */
 bool PageAi::setIntelParams()
 {
+    if (tabBar->currentIndex() < 0)
+    {
+        LOG_ERROR_STM("tarBar currentIndex [" << tabBar->currentIndex() << "] < 0");
+        return false;
+    }
+
     // 点击应用时，处理模型应用 
     LOG_INFO_STM("save page ai params! count:" << modelListWidget->count());
     if (modelListWidget->currentItem() == NULL)
@@ -136,17 +149,11 @@ bool PageAi::setIntelParams()
 
     SQLiteMgr::Instance().UpdateModelInfoUploadFlag(model_id, true);
 
-    /* write params to memory */
-    for (int i = 0; i < struCnfg.nLevelTotal; i++)
-    {
-        for (int j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++)
-        {
-            const char* charArray = model_id.toUtf8().constData();
-            strcpy(struCnfp.struGroupIdentify[i][j].struAi.modelId, charArray);
-        }
-    }
+    // 更新方案里的AI模型ID
+    const char* charArray = model_id.toUtf8().constData();
+    strcpy(struCnfp.struGroupIdentify[struGsh.nLevel][tabBar->currentIndex()].struAi.modelId, charArray);
 
-    myFlow.materialCopyAssemble(0, tabBar->currentIndex(), 0, ARITH_PISTACHIO, 0);
+    myFlow.materialCopyAssemble(struGsh.nLevel, tabBar->currentIndex(), 0, ARITH_PISTACHIO, 0);
     myFlow.materialResetGroupAssemble(struGsh.nLevel, tabBar->currentIndex(), 0, ARITH_PISTACHIO, 0);
 
     LOG_INFO_STM("modelListWidget current item text : " << model_name.toStdString()
@@ -226,7 +233,6 @@ void PageAi::updateListWidget()
         return;
     }
 
-    int tabIndex = tabBar->currentIndex();
     modelListWidget->clear();
 
     QVector<ModelInfo> model_infos;
@@ -235,6 +241,7 @@ void PageAi::updateListWidget()
         return;
     }
 
+    int tarCurIdx = tabBar->currentIndex();
     for (int idx = 0; idx < model_infos.size(); idx++)
     {
         ModelInfo item = model_infos.at(idx);
@@ -247,8 +254,9 @@ void PageAi::updateListWidget()
         modelListWidget->addItem(modelListItem);
         modelListWidget->setSpacing(1);
 
-        if (item.model_id_ == QString::fromUtf8(struCnfp.struGroupIdentify[0][0].struAi.modelId))
+        if (item.model_id_ == QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][tarCurIdx].struAi.modelId))
         {
+            LOG_INFO_STM("current level:" << struGsh.nLevel << ", current tar idx:" << tarCurIdx << ", model id:" << item.model_id_.toStdString());
             modelListWidget->setCurrentRow(idx);
         }
     }
@@ -291,9 +299,9 @@ bool PageAi::modelUpload(const ModelInfo& info)
     upload_lists.append(ai_helper::GetModelRootPath() + "/" + info.model_name_);
     upload_lists.append(ai_helper::GetModelRootPath() + "/" + name + ".json");
 
-    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    QSet<QString> ipSet = getAiIpSet(tabBar);
+    for (const QString& ip : ipSet)
     {
-        QString ip = ai_helper::GetAiIpByIndex(idx);
         auto it = sftp_worker_map.find(ip);
         if (sftp_worker_map.end() == it)
         {
@@ -302,6 +310,7 @@ bool PageAi::modelUpload(const ModelInfo& info)
         }
 
         bool ret = it.value()->onUploadFilesSync(upload_lists, AI_DEV_MODEL_PATH);
+        LOG_INFO_STM("upload file to [" << ip.toStdString() << "] result:" << ret);
         if (!ret)
         {
             return ret;
@@ -327,21 +336,29 @@ bool PageAi::modelDelete(const ModelInfo& info)
     del_lists.append(AI_DEV_MODEL_PATH + info.model_name_);
     del_lists.append(AI_DEV_MODEL_PATH + name + ".json");
 
-    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    // 遍历每一层
+    for (int idx = 0; idx < struCnfg.nLevelTotal; idx++)
     {
-        QString ip = ai_helper::GetAiIpByIndex(idx);
-        auto it = sftp_worker_map.find(ip);
-        if (sftp_worker_map.end() == it)
+        // 遍历层的每一个相机
+        for (int idy = 0; idy < struCnfg.struLevelInfo[idx].nUnitLevelTotal; idy++)
         {
-            SftpWorker* worker = new SftpWorker(ip, AI_DEV_USER, AI_DEV_PWD);
-            it = sftp_worker_map.insert(ip, worker);
+            int cam_id = struCnfg.struLevelInfo[idx].nUnitId[idy];
+            QString ip = ai_helper::GetAiIpByIndex(cam_id);
+            auto it = sftp_worker_map.find(ip);
+            if (sftp_worker_map.end() == it)
+            {
+                SftpWorker* worker = new SftpWorker(ip, AI_DEV_USER, AI_DEV_PWD);
+                it = sftp_worker_map.insert(ip, worker);
+            }
+
+            bool ret = it.value()->onDeleteFilesSync(del_lists);
+            LOG_INFO_STM("delete file from [" << ip.toStdString() << "] result:" << ret << ", cam id:" << cam_id);
+            if (!ret)
+            {
+                return ret;
+            }
         }
 
-        bool ret = it.value()->onDeleteFilesSync(del_lists);
-        if (!ret)
-        {
-            return ret;
-        }
     }
 
     return true;
@@ -351,29 +368,29 @@ bool PageAi::modelApply(const ModelInfo& info)
 {
     LOG_INFO_STM("model apply:" << info.model_name_.toStdString());
 
-    // 给所有的AI板卡发送开始模型应用命令
     ModelApply model_apply;
     model_apply.model_name_ = info.model_name_;
     QByteArray request = cmdworker::ModelApplyRequest(model_apply);
 
-    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    QSet<QString> ipSet = getAiIpSet(tabBar);
+    for (const QString& ip : ipSet)
     {
         QByteArray response;
-        QString ip = ai_helper::GetAiIpByIndex(idx);
         bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
             response, AI_RESPONSE_TIMEOUT);
 
         if (!ok)
         {
-            LOG_ERROR_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            LOG_ERROR_STM("model apply ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
             return false;
+            continue;
         }
 
         CmdPackage cmd_pkg;
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
         {
-            LOG_ERROR_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+            LOG_ERROR_STM("model apply ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
                 << ", response body:" << response.toHex(' ').toUpper().toStdString());
             return false;
         }
@@ -382,12 +399,12 @@ bool PageAi::modelApply(const ModelInfo& info)
 
         if (AI_RESPONSE_SUCCESS != code)
         {
-            LOG_ERROR_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            LOG_ERROR_STM("model apply  ip:" << ip.toStdString() << " send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
                 << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
             return false;
         }
 
-        LOG_INFO_STM("model apply index:" << idx << " ip:" << ip.toStdString() << " send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+        LOG_INFO_STM("model apply  ip:" << ip.toStdString() << " send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
             << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
     }
 

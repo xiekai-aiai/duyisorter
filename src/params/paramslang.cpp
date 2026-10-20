@@ -1221,6 +1221,7 @@ void GlobalFlow::initLan()
     myLan.mdl_applying = tr("mdl_applying");
     myLan.mdl_load_failed = tr("mdl_load_failed");
     myLan.mdl_apply_failed = tr("mdl_apply_failed");
+    myLan.disk_space_insufficent = tr("disk_space_insufficent");
 
     myLan.rename = tr("rename");
     myLan.add = tr("add");
@@ -1318,9 +1319,9 @@ void GlobalFlow::setLang()
     QTranslator* qtTrans = new QTranslator;
     switch (struCnfg.nLang)
     {
-        case LANG_CHS:    tryLoadQm(qtTrans, "qtbase_zh_CN.qm"); break;
-        case LANG_CHT:    tryLoadQm(qtTrans, "qtbase_zh_TW.qm"); break;
-        default: break;   // 其他语言暂无 qt 翻译包，Qt 默认英文即可
+    case LANG_CHS:    tryLoadQm(qtTrans, "qtbase_zh_CN.qm"); break;
+    case LANG_CHT:    tryLoadQm(qtTrans, "qtbase_zh_TW.qm"); break;
+    default: break;   // 其他语言暂无 qt 翻译包，Qt 默认英文即可
     }
 
     QCoreApplication::installTranslator(trans);
@@ -1346,9 +1347,11 @@ static QStringList buildLangDirs()
 static bool tryLoadQm(QTranslator* trans, const QString& qmName)
 {
     QStringList dirs = buildLangDirs();
-    for (const QString& dir : dirs) {
+    for (const QString& dir : dirs)
+    {
         QString path = dir + qmName;
-        if (QFile::exists(path) && trans->load(path)) {
+        if (QFile::exists(path) && trans->load(path))
+        {
             qDebug() << "[setLang] loaded" << qmName << "from" << dir;
             return true;
         }

@@ -19,7 +19,7 @@
 <context>
     <name>AiDeviceWidget</name>
     <message>
-        <location filename="../src/aidevicewidget.cpp" line="329"/>
+        <location filename="../src/aidevicewidget.cpp" line="330"/>
         <source>Image Downing... %1%</source>
         <translation type="unfinished"></translation>
     </message>
@@ -118,8 +118,8 @@
     </message>
     <message>
         <location filename="../aimodelset.ui" line="842"/>
-        <location filename="../src/aimodelset.cpp" line="4427"/>
-        <location filename="../src/aimodelset.cpp" line="4454"/>
+        <location filename="../src/aimodelset.cpp" line="4403"/>
+        <location filename="../src/aimodelset.cpp" line="4430"/>
         <source>新建模型</source>
         <translation>New Model</translation>
     </message>
@@ -500,7 +500,7 @@
         <location filename="../src/aimodelset.cpp" line="2076"/>
         <location filename="../src/aimodelset.cpp" line="3570"/>
         <location filename="../src/aimodelset.cpp" line="3601"/>
-        <location filename="../src/aimodelset.cpp" line="4029"/>
+        <location filename="../src/aimodelset.cpp" line="4005"/>
         <source>请先加载图片</source>
         <translation>Load images first</translation>
     </message>
@@ -553,8 +553,8 @@
     <message>
         <location filename="../src/aimodelset.cpp" line="2300"/>
         <location filename="../src/aimodelset.cpp" line="2464"/>
-        <location filename="../src/aimodelset.cpp" line="4562"/>
-        <location filename="../src/aimodelset.cpp" line="4870"/>
+        <location filename="../src/aimodelset.cpp" line="4538"/>
+        <location filename="../src/aimodelset.cpp" line="4846"/>
         <source>确定</source>
         <translation>OK</translation>
     </message>
@@ -563,8 +563,8 @@
         <location filename="../src/aimodelset.cpp" line="2465"/>
         <location filename="../src/aimodelset.cpp" line="2732"/>
         <location filename="../src/aimodelset.cpp" line="2802"/>
-        <location filename="../src/aimodelset.cpp" line="4563"/>
-        <location filename="../src/aimodelset.cpp" line="4871"/>
+        <location filename="../src/aimodelset.cpp" line="4539"/>
+        <location filename="../src/aimodelset.cpp" line="4847"/>
         <source>取消</source>
         <translation>Cancel</translation>
     </message>
@@ -588,10 +588,10 @@
         <location filename="../src/aimodelset.cpp" line="2747"/>
         <location filename="../src/aimodelset.cpp" line="2749"/>
         <location filename="../src/aimodelset.cpp" line="2818"/>
-        <location filename="../src/aimodelset.cpp" line="4021"/>
-        <location filename="../src/aimodelset.cpp" line="4092"/>
-        <location filename="../src/aimodelset.cpp" line="4331"/>
-        <location filename="../src/aimodelset.cpp" line="4705"/>
+        <location filename="../src/aimodelset.cpp" line="3997"/>
+        <location filename="../src/aimodelset.cpp" line="4068"/>
+        <location filename="../src/aimodelset.cpp" line="4307"/>
+        <location filename="../src/aimodelset.cpp" line="4681"/>
         <source>提示</source>
         <translation>Notice</translation>
     </message>
@@ -1004,7 +1004,7 @@ Only %1 bg_ images in current directory</translation>
     <message>
         <location filename="../src/aimodelset.cpp" line="3770"/>
         <location filename="../src/aimodelset.cpp" line="3825"/>
-        <location filename="../src/aimodelset.cpp" line="4152"/>
+        <location filename="../src/aimodelset.cpp" line="4128"/>
         <source>板卡 SFTP 连接失败 %1:22</source>
         <translation>Board SFTP connection failed %1:22</translation>
     </message>
@@ -1034,305 +1034,305 @@ Only %1 bg_ images in current directory</translation>
         <translation>Failed to upload image to board: %1</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3887"/>
+        <location filename="../src/aimodelset.cpp" line="3863"/>
         <source>仿真中：model=%1, img=%2 ...</source>
         <translation>Simulating: model=%1, img=%2 ...</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3899"/>
+        <location filename="../src/aimodelset.cpp" line="3875"/>
         <source>仿真通信失败：板卡 %1:%2 无响应</source>
         <translation>Simulation communication failed: no response from board %1:%2</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3907"/>
+        <location filename="../src/aimodelset.cpp" line="3883"/>
         <source>仿真响应解析失败</source>
         <translation>Simulation response parse failed</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3913"/>
+        <location filename="../src/aimodelset.cpp" line="3889"/>
         <source>仿真执行失败（板卡返回 code=%1，可能图片/模型路径问题）</source>
         <translation>Simulation failed (board returned code=%1; check image/model path)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3920"/>
+        <location filename="../src/aimodelset.cpp" line="3896"/>
         <source>仿真完成：检测到 %1 个目标</source>
         <translation>Simulation complete: %1 targets detected</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3997"/>
+        <location filename="../src/aimodelset.cpp" line="3973"/>
         <source>仿真查看已关闭</source>
         <translation>Simulation view closed</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4021"/>
-        <location filename="../src/aimodelset.cpp" line="4092"/>
+        <location filename="../src/aimodelset.cpp" line="3997"/>
+        <location filename="../src/aimodelset.cpp" line="4068"/>
         <source>请先在模型加载中选择仿真模型！</source>
         <translation>Select a simulation model in Model Loading first!</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4037"/>
+        <location filename="../src/aimodelset.cpp" line="4013"/>
         <source>仿真查看（从缓存加载，%1 个目标）</source>
         <translation>Simulation view (%1 targets loaded from cache)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4100"/>
+        <location filename="../src/aimodelset.cpp" line="4076"/>
         <source>图片列表为空，请先导入图片目录</source>
         <translation>Image list empty, import an image directory first</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4124"/>
+        <location filename="../src/aimodelset.cpp" line="4100"/>
         <source>批量仿真已完成（从缓存加载，共 %1 张）</source>
         <translation>Batch simulation already complete (%1 loaded from cache)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4202"/>
+        <location filename="../src/aimodelset.cpp" line="4178"/>
         <source>批量仿真 %1/%2（%3%）%4 [已缓存]</source>
         <translation>Batch simulation %1/%2 (%3%) %4 [cached]</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4209"/>
+        <location filename="../src/aimodelset.cpp" line="4185"/>
         <source>批量仿真 %1/%2（%3%） %4</source>
         <translation>Batch simulation %1/%2 (%3%) %4</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4277"/>
+        <location filename="../src/aimodelset.cpp" line="4253"/>
         <source>批量仿真完成：成功 %1 / 总计 %2（失败 %3）</source>
         <translation>Batch simulation complete: %1 succeeded / %2 total (%3 failed)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4278"/>
+        <location filename="../src/aimodelset.cpp" line="4254"/>
         <source>   [仿真查看模式：%1 按钮开启中]</source>
         <translation>   [Simulation view mode: %1 button is on]</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4312"/>
+        <location filename="../src/aimodelset.cpp" line="4288"/>
         <source>筛选错标图片中...</source>
         <translation>Filtering mismatched images...</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4321"/>
+        <location filename="../src/aimodelset.cpp" line="4297"/>
         <source>筛选错标图片中... %1/%2（%3 张错标）</source>
         <translation>Filtering mismatched images... %1/%2 (%3 mismatches)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4326"/>
+        <location filename="../src/aimodelset.cpp" line="4302"/>
         <source>筛选完成：%1 张图片有错标 / 总计 %2 张</source>
         <translation>Filter complete: %1 mismatched images / %2 total</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4332"/>
+        <location filename="../src/aimodelset.cpp" line="4308"/>
         <source>全部 %1 张图片标注和仿真结果一致，没有错标！</source>
         <translation>All %1 images&apos; annotations match simulation results, no mismatches!</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4358"/>
+        <location filename="../src/aimodelset.cpp" line="4334"/>
         <source>正在训练，查询最新进度...</source>
         <translation>Training in progress, querying latest progress...</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4361"/>
+        <location filename="../src/aimodelset.cpp" line="4337"/>
         <source>训练流程正在进行中，请等待完成</source>
         <translation>Training is in progress, please wait</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4368"/>
+        <location filename="../src/aimodelset.cpp" line="4344"/>
         <source>训练集为空，请先添加训练图片</source>
         <translation>Training set is empty, add training images first</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4372"/>
+        <location filename="../src/aimodelset.cpp" line="4348"/>
         <source>训练图片数量不足（当前 %1 张，需超过 20 张，不含背景图）</source>
         <translation>Not enough training images (currently %1, need more than 20 excluding background images)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4376"/>
+        <location filename="../src/aimodelset.cpp" line="4352"/>
         <source>模型名为空，请先创建或加载模型</source>
         <translation>Model name is empty, create or load a model first</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4381"/>
+        <location filename="../src/aimodelset.cpp" line="4357"/>
         <source>准备训练数据（%1 张图片）...</source>
         <translation>Preparing training data (%1 images)...</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4392"/>
+        <location filename="../src/aimodelset.cpp" line="4368"/>
         <source>prepareTrain 失败：tmp/image 为空，请检查训练图片路径</source>
         <translation>prepareTrain failed: tmp/image is empty, check training image paths</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4395"/>
+        <location filename="../src/aimodelset.cpp" line="4371"/>
         <source>训练数据准备完成：%1 张图片 + %2 个标签</source>
         <translation>Training data ready: %1 images + %2 labels</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4419"/>
+        <location filename="../src/aimodelset.cpp" line="4395"/>
         <source>正在创建远程训练任务目录... 任务ID：%1</source>
         <translation>Creating remote training task directory... Task ID: %1</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4434"/>
+        <location filename="../src/aimodelset.cpp" line="4410"/>
         <source>模型名称:</source>
         <translation>Model Name:</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4436"/>
+        <location filename="../src/aimodelset.cpp" line="4412"/>
         <source>仅允许英文字母、数字、下划线 _</source>
         <translation>English letters, digits and underscore _ only</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4468"/>
+        <location filename="../src/aimodelset.cpp" line="4444"/>
         <source>类别列表:</source>
         <translation>Categories:</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4513"/>
-        <location filename="../src/aimodelset.cpp" line="4515"/>
-        <location filename="../src/aimodelset.cpp" line="4585"/>
+        <location filename="../src/aimodelset.cpp" line="4489"/>
+        <location filename="../src/aimodelset.cpp" line="4491"/>
+        <location filename="../src/aimodelset.cpp" line="4561"/>
         <source>类别%1</source>
         <translation>Class %1</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4520"/>
+        <location filename="../src/aimodelset.cpp" line="4496"/>
         <source>删除此类</source>
         <translation>Delete this category</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4551"/>
+        <location filename="../src/aimodelset.cpp" line="4527"/>
         <source>+ 新增类别</source>
         <translation>+ Add Category</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4596"/>
+        <location filename="../src/aimodelset.cpp" line="4572"/>
         <source>新建模型: %1, 类别数: %2</source>
         <translation>New model: %1, category count: %2</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4706"/>
+        <location filename="../src/aimodelset.cpp" line="4682"/>
         <source>训练服务器尚未配置，请先配置训练服务器参数</source>
         <translation>Training server is not configured yet, please configure it first</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4717"/>
+        <location filename="../src/aimodelset.cpp" line="4693"/>
         <source>训练服务器配置</source>
         <translation>Training Server Config</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4755"/>
+        <location filename="../src/aimodelset.cpp" line="4731"/>
         <source>训练服务器 IP</source>
         <translation>Training Server IP</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4756"/>
+        <location filename="../src/aimodelset.cpp" line="4732"/>
         <source>HTTP 端口</source>
         <translation>HTTP Port</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4757"/>
+        <location filename="../src/aimodelset.cpp" line="4733"/>
         <source>SFTP 端口</source>
         <translation>SFTP Port</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4758"/>
+        <location filename="../src/aimodelset.cpp" line="4734"/>
         <source>SFTP 用户名</source>
         <translation>SFTP Username</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4759"/>
+        <location filename="../src/aimodelset.cpp" line="4735"/>
         <source>SFTP 密码</source>
         <translation>SFTP Password</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4771"/>
+        <location filename="../src/aimodelset.cpp" line="4747"/>
         <source>服务器 IP:</source>
         <translation>Server IP:</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4772"/>
+        <location filename="../src/aimodelset.cpp" line="4748"/>
         <source>HTTP 端口:</source>
         <translation>HTTP Port:</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4773"/>
+        <location filename="../src/aimodelset.cpp" line="4749"/>
         <source>SFTP 端口:</source>
         <translation>SFTP Port:</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4774"/>
+        <location filename="../src/aimodelset.cpp" line="4750"/>
         <source>SFTP 用户名:</source>
         <translation>SFTP Username:</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4775"/>
+        <location filename="../src/aimodelset.cpp" line="4751"/>
         <source>SFTP 密码:</source>
         <translation>SFTP Password:</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4780"/>
+        <location filename="../src/aimodelset.cpp" line="4756"/>
         <source>测试 HTTP 连接</source>
         <translation>Test HTTP Connection</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4781"/>
+        <location filename="../src/aimodelset.cpp" line="4757"/>
         <source>测试 SFTP 连接</source>
         <translation>Test SFTP Connection</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4797"/>
+        <location filename="../src/aimodelset.cpp" line="4773"/>
         <source>请先填写有效的 IP 和 HTTP 端口</source>
         <translation>Enter a valid IP and HTTP port first</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4803"/>
+        <location filename="../src/aimodelset.cpp" line="4779"/>
         <source>正在测试 HTTP 连接 %1:%2 ...</source>
         <translation>Testing HTTP connection %1:%2 ...</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4826"/>
+        <location filename="../src/aimodelset.cpp" line="4802"/>
         <source>HTTP 连接失败：5 秒超时（%1:%2）</source>
         <translation>HTTP connection failed: 5s timeout (%1:%2)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4829"/>
+        <location filename="../src/aimodelset.cpp" line="4805"/>
         <source>HTTP 连接失败：%1</source>
         <translation>HTTP connection failed: %1</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4833"/>
+        <location filename="../src/aimodelset.cpp" line="4809"/>
         <source>HTTP 连接成功（HTTP %1）</source>
         <translation>HTTP connection succeeded (HTTP %1)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4846"/>
+        <location filename="../src/aimodelset.cpp" line="4822"/>
         <source>请先填写有效的 IP 和 SFTP 端口</source>
         <translation>Enter a valid IP and SFTP port first</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4852"/>
+        <location filename="../src/aimodelset.cpp" line="4828"/>
         <source>正在测试 SFTP 连接 %1:%2 ...</source>
         <translation>Testing SFTP connection %1:%2 ...</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4859"/>
+        <location filename="../src/aimodelset.cpp" line="4835"/>
         <source>SFTP 连接成功（%1@%2:%3）</source>
         <translation>SFTP connection succeeded (%1@%2:%3)</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4862"/>
+        <location filename="../src/aimodelset.cpp" line="4838"/>
         <source>SFTP 连接失败：%1:%2</source>
         <translation>SFTP connection failed: %1:%2</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4882"/>
+        <location filename="../src/aimodelset.cpp" line="4858"/>
         <source>请填写有效的 IP 和端口</source>
         <translation>Enter a valid IP and port</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4882"/>
+        <location filename="../src/aimodelset.cpp" line="4858"/>
         <source>输入错误</source>
         <translation>Input Error</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4905"/>
+        <location filename="../src/aimodelset.cpp" line="4881"/>
         <source>训练服务器已更新：HTTP %1，SFTP %2:%3</source>
         <translation>Training server updated: HTTP %1, SFTP %2:%3</translation>
     </message>
@@ -5854,85 +5854,104 @@ Before Calibration,Please Do Something As Follows:</translation>
         <translation type="unfinished">Failed to apply model!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1225"/>
+        <location filename="../src/params/paramslang.cpp" line="1224"/>
+        <source>disk_space_insufficent</source>
+        <translation type="unfinished">
+￼
+￼
+￼
+参考知识
+￼
+7/1000
+Insufficient disk space!
+￼
+划译
+￼
+￼
+机翻 · 通用领域
+￼
+Insufficient disk space!</translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1226"/>
         <source>rename</source>
         <translatorcomment>Rename </translatorcomment>
         <translation type="unfinished">Rename </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1226"/>
+        <location filename="../src/params/paramslang.cpp" line="1227"/>
         <source>add</source>
         <translatorcomment>Add </translatorcomment>
         <translation type="unfinished">Add </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1227"/>
+        <location filename="../src/params/paramslang.cpp" line="1228"/>
         <source>model</source>
         <translatorcomment> model</translatorcomment>
         <translation type="unfinished"> model </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1228"/>
+        <location filename="../src/params/paramslang.cpp" line="1229"/>
         <source>id_blank</source>
         <translatorcomment>id blank</translatorcomment>
         <translation type="unfinished">id blank</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1229"/>
+        <location filename="../src/params/paramslang.cpp" line="1230"/>
         <source>json_file</source>
         <translatorcomment>json file </translatorcomment>
         <translation type="unfinished">json file </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1230"/>
+        <location filename="../src/params/paramslang.cpp" line="1231"/>
         <source>dlc_file</source>
         <translatorcomment>dlc file </translatorcomment>
         <translation type="unfinished">dlc file </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1231"/>
+        <location filename="../src/params/paramslang.cpp" line="1232"/>
         <source>content</source>
         <translatorcomment>content </translatorcomment>
         <translation type="unfinished">content </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1232"/>
+        <location filename="../src/params/paramslang.cpp" line="1233"/>
         <source>open</source>
         <translatorcomment>open </translatorcomment>
         <translation type="unfinished">open </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1233"/>
+        <location filename="../src/params/paramslang.cpp" line="1234"/>
         <source>notexist</source>
         <translatorcomment>not exist</translatorcomment>
         <translation type="unfinished">not exist</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1234"/>
+        <location filename="../src/params/paramslang.cpp" line="1235"/>
         <source>upload</source>
         <translatorcomment>Upload</translatorcomment>
         <translation type="unfinished">Upload </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1235"/>
+        <location filename="../src/params/paramslang.cpp" line="1236"/>
         <source>model_exist_msg</source>
         <translatorcomment>The model already exists. New addition is not possible. Only model update is allowed.</translatorcomment>
         <translation type="unfinished">The model already exists. New addition is not possible. Only model update is allowed.</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1237"/>
+        <location filename="../src/params/paramslang.cpp" line="1238"/>
         <source>spray_valve_number</source>
         <translatorcomment>spray valve number</translatorcomment>
         <translation type="unfinished">spray valve number</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1238"/>
+        <location filename="../src/params/paramslang.cpp" line="1239"/>
         <source>nozzle_number</source>
         <translatorcomment>nozzle number</translatorcomment>
         <translation type="unfinished">nozzle number</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1239"/>
+        <location filename="../src/params/paramslang.cpp" line="1240"/>
         <source>spray_time_interval</source>
         <translatorcomment>spray time interval</translatorcomment>
         <translation type="unfinished">spray time interval</translation>
@@ -7780,47 +7799,47 @@ Output: %2</translation>
 <context>
     <name>ModelApi</name>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4969"/>
-        <location filename="../src/aimodelset.cpp" line="5004"/>
-        <location filename="../src/aimodelset.cpp" line="5035"/>
+        <location filename="../src/aimodelset.cpp" line="4945"/>
+        <location filename="../src/aimodelset.cpp" line="4980"/>
+        <location filename="../src/aimodelset.cpp" line="5011"/>
         <source>任务 ID 不能为空</source>
         <translation>Task ID must not be empty</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5081"/>
+        <location filename="../src/aimodelset.cpp" line="5057"/>
         <source>模型名称不能为空</source>
         <translation>Model name must not be empty</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5085"/>
-        <location filename="../src/aimodelset.cpp" line="5108"/>
+        <location filename="../src/aimodelset.cpp" line="5061"/>
+        <location filename="../src/aimodelset.cpp" line="5084"/>
         <source>保存路径不能为空</source>
         <translation>Save path must not be empty</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5104"/>
+        <location filename="../src/aimodelset.cpp" line="5080"/>
         <source>模型Json不能为空</source>
         <translation>Model JSON must not be empty</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5139"/>
+        <location filename="../src/aimodelset.cpp" line="5115"/>
         <source>HTTP 状态码异常：%1</source>
         <translation>Unexpected HTTP status code: %1</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5190"/>
+        <location filename="../src/aimodelset.cpp" line="5166"/>
         <source>[HTTP 失败] 错误码=%1，错误信息=%2</source>
         <translation>[HTTP failed] code=%1, message=%2</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5215"/>
-        <location filename="../src/aimodelset.cpp" line="5237"/>
+        <location filename="../src/aimodelset.cpp" line="5191"/>
+        <location filename="../src/aimodelset.cpp" line="5213"/>
         <source>响应解析失败：%1</source>
         <translation>Response parse failed: %1</translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5222"/>
-        <location filename="../src/aimodelset.cpp" line="5247"/>
+        <location filename="../src/aimodelset.cpp" line="5198"/>
+        <location filename="../src/aimodelset.cpp" line="5223"/>
         <source>未知错误</source>
         <translation>Unknown error</translation>
     </message>

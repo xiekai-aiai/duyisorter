@@ -270,8 +270,9 @@ public:
     void checkSlaveCommStat(void);      //! 检查网络通信状态
     void getSlaveList(void);            //! 获取从设备列表
 
-    bool applyAiModel(const QString& model_id);                // 应用AI模型
-    bool applyAiModelCls(const QString& model_id);             // 应用AI模型分类阈值
+    bool applyAiModel(const QString& model_id, const QString& ip);                // 应用AI模型
+    bool applyAiModelCls(const QString& model_id, const QString& ip,
+        int level, int grp_id);                                                   // 应用AI模型分类阈值
 
 signals:
     void backlightOnSig();   // 关背光后，点亮背光需要输入密码

@@ -1,13 +1,16 @@
 #include "functions.h"
+#include "unilog.h"
+#include "aihelper.h"
 
 /**
  * @brief removeTab
  * @param tabBar
  * remove all the tabs
  */
-void removeTabBar(MyTabBar *tabBar)
+void removeTabBar(MyTabBar* tabBar)
 {
-    for (int i = tabBar->count()-1; i >= 0; i--) {
+    for (int i = tabBar->count() - 1; i >= 0; i--)
+    {
         tabBar->removeTab(i);
     }
 }
@@ -18,56 +21,80 @@ void removeTabBar(MyTabBar *tabBar)
  * @param bIsIdentify
  * update all the tabs
  */
-void updateTabBar(MyTabBar *tabBar, bool bIsIdentify, bool bIsHide)
+void updateTabBar(MyTabBar* tabBar, bool bIsIdentify, bool bIsHide)
 {
     /* clear all the items */
     removeTabBar(tabBar);
 
+    LOG_INFO_STM("ai bIsIdentify:" << bIsIdentify << ", isHide:" << bIsHide << ", tar count:" << tabBar->count()
+        << ", bar type:" << tabBar->getTabBarType() << ", nMatAssembleMode:" << struCnfp.nMatAssembleMode
+        << ",level num:" << struCnfg.nLevelTotal);
+
     /* refresh */
-    if(bIsIdentify == false) {
-        for (int i = 0; i < struCnfg.nLevelTotal; i++) {
-            for (int j = 0; j < struCnfg.struLevelInfo[i].nTickGroupTotal; j++) {
-                tabBar->insertTab(i*struCnfg.struLevelInfo[i].nTickGroupTotal+j, myString.sTickGroupName[i][j]);
+    if (bIsIdentify == false)
+    {
+        // 遍历所有层
+        for (int i = 0; i < struCnfg.nLevelTotal; i++)
+        {
+            // 遍历每个层的剔除组
+            for (int j = 0; j < struCnfg.struLevelInfo[i].nTickGroupTotal; j++)
+            {
+                tabBar->insertTab(i * struCnfg.struLevelInfo[i].nTickGroupTotal + j, myString.sTickGroupName[i][j]);
             }
         }
-    } else {
-        for (int i = 0; i < struCnfg.nLevelTotal; i++) {
-            for (int j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++) {
-                tabBar->insertTab(i*struCnfg.struLevelInfo[i].nIdentifyGroupTotal+j, myString.sIdentifyGroupName[i][j]);
+    }
+    else
+    {
+        // 遍历所有层
+        for (int i = 0; i < struCnfg.nLevelTotal; i++)
+        {
+            // 遍历每个层的识别组
+            for (int j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++)
+            {
+                tabBar->insertTab(i * struCnfg.struLevelInfo[i].nIdentifyGroupTotal + j, myString.sIdentifyGroupName[i][j]);
+                LOG_TRACE_STM("i:" << i << ", j:" << j << ", name:" << myString.sIdentifyGroupName[i][j].toStdString() << ", tar count:"
+                    << tabBar->count());
             }
         }
 
         int  caseValue = 0;
-        if (tabBar->getTabBarType() == 0) {         //可见光
+        if (tabBar->getTabBarType() == 0)
+        {   //可见光
             caseValue = struCnfp.nMatAssembleMode;
         }
 
-        switch (caseValue) {
+        switch (caseValue)
+        {
         case PARAMS_ALL_SEPARATE:
-            for (int i = 0; i < tabBar->count(); i++) {
+            for (int i = 0; i < tabBar->count(); i++)
+            {
                 tabBar->setTabEnabled(i, true);
             }
             break;
         case PARAMS_FRONT_REAR_SAME:
-            for (int i = 0; i < tabBar->count(); i++) {
-                if (i%2 == 0)
+            for (int i = 0; i < tabBar->count(); i++)
+            {
+                if (i % 2 == 0)
                     tabBar->setTabEnabled(i, true);
                 else
                     tabBar->setTabEnabled(i, false);
             }
             break;
         case PARAMS_FIRST_SECOND_SAME:
-            for (int j = 0; j < struCnfg.nLevelTotal; j++) {
-                for (int i = 0;i < tabBar->count()/struCnfg.nLevelTotal;i++) {
+            for (int j = 0; j < struCnfg.nLevelTotal; j++)
+            {
+                for (int i = 0;i < tabBar->count() / struCnfg.nLevelTotal;i++)
+                {
                     if (i < 2)
-                        tabBar->setTabEnabled(i+j*(tabBar->count()/struCnfg.nLevelTotal) ,true);
+                        tabBar->setTabEnabled(i + j * (tabBar->count() / struCnfg.nLevelTotal), true);
                     else
-                        tabBar->setTabEnabled(i+j*(tabBar->count()/struCnfg.nLevelTotal),false);
+                        tabBar->setTabEnabled(i + j * (tabBar->count() / struCnfg.nLevelTotal), false);
                 }
             }
             break;
         case PARAMS_ALL_SAME:
-            for (int i = 0; i < tabBar->count(); i++) {
+            for (int i = 0; i < tabBar->count(); i++)
+            {
                 if (i == 0)
                     tabBar->setTabEnabled(i, true);
                 else
@@ -90,25 +117,30 @@ void updateTabBar(MyTabBar *tabBar, bool bIsIdentify, bool bIsHide)
  * @brief 根据TD机型不同层的前后视配置设置TabBar
  * @param MyTabBar *tabBar
  */
-void setIdIndex (MyTabBar *tabBar)
+void setIdIndex(MyTabBar* tabBar)
 {
     int nIndex = 0;
-    for (int i = 0; i < MAX_LEVEL*2; i++) {
+    for (int i = 0; i < MAX_LEVEL * 2; i++)
+    {
         struGsh.idIndex[i] = 0;
     }
-    for (int i = 0; i < struCnfg.nLevelTotal; i++) {
-        if (struCnfg.struLevelInfo[i].nViewTotal == 1) {
-            struGsh.idIndex[nIndex] = 2*i;
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
+    {
+        if (struCnfg.struLevelInfo[i].nViewTotal == 1)
+        {
+            struGsh.idIndex[nIndex] = 2 * i;
             tabBar->insertTab(nIndex, myString.sIdentifyGroupName[i][0]);
             nIndex++;
-        } else if (struCnfg.struLevelInfo[i].nViewTotal == 2) {
+        }
+        else if (struCnfg.struLevelInfo[i].nViewTotal == 2)
+        {
             //! 前视
-            struGsh.idIndex[nIndex] = 2*i;
+            struGsh.idIndex[nIndex] = 2 * i;
             tabBar->insertTab(nIndex, myString.sIdentifyGroupName[i][0]);
             nIndex++;
 
             //! 后视
-            struGsh.idIndex[nIndex] = 2*i + 1;
+            struGsh.idIndex[nIndex] = 2 * i + 1;
             tabBar->insertTab(nIndex, myString.sIdentifyGroupName[i][1]);
             nIndex++;
         }
@@ -118,12 +150,16 @@ void setIdIndex (MyTabBar *tabBar)
 /**
  *  TD机型根据IdIndex数组值获取对应的识别组真实位置
  */
-int getIdIndex(int *idIndex, int index){
+int getIdIndex(int* idIndex, int index)
+{
 
-    if (index < 0) {
+    if (index < 0)
+    {
         return -1;
-    } else {
-        return *(idIndex+index);
+    }
+    else
+    {
+        return *(idIndex + index);
     }
 
 }
@@ -135,11 +171,12 @@ int getIdIndex(int *idIndex, int index){
  */
 int getCurrentLevelIndex(int index)
 {
-    if (index > MAX_LEVEL*2) {
+    if (index > MAX_LEVEL * 2)
+    {
         return 0;
     }
 
-    return struGsh.idIndex[index]/2;
+    return struGsh.idIndex[index] / 2;
 }
 
 /**
@@ -147,11 +184,15 @@ int getCurrentLevelIndex(int index)
  * @param int *inIndex, int index
  * @return
  */
-int getCurrentIdetifyGroupIndex(int*idIndex, int index){
-    if (struCnfg.nLevelTotal == 3){
-        if(idIndex[0] == 0 && idIndex[1] == 2 && idIndex[2] == 4
-                && idIndex[3] == 0 && idIndex[4] == 0 && idIndex[5] == 0){
-            switch (index){
+int getCurrentIdetifyGroupIndex(int* idIndex, int index)
+{
+    if (struCnfg.nLevelTotal == 3)
+    {
+        if (idIndex[0] == 0 && idIndex[1] == 2 && idIndex[2] == 4
+            && idIndex[3] == 0 && idIndex[4] == 0 && idIndex[5] == 0)
+        {
+            switch (index)
+            {
             case 0:
             case 1:
             case 2:
@@ -163,134 +204,151 @@ int getCurrentIdetifyGroupIndex(int*idIndex, int index){
             }
         }
         if (idIndex[0] == 0 && idIndex[1] == 1
-              && idIndex[2] == 2 && idIndex[3] == 4
-              && idIndex[4] == 0 && idIndex[5] == 0){
-             switch (index){
-             case 0:
-             case 2:
-             case 3:
+            && idIndex[2] == 2 && idIndex[3] == 4
+            && idIndex[4] == 0 && idIndex[5] == 0)
+        {
+            switch (index)
+            {
+            case 0:
+            case 2:
+            case 3:
                 return 0;
                 break;
-             case 1:
+            case 1:
                 return 1;
                 break;
-              default:
-                 return 0;
-                 break;
+            default:
+                return 0;
+                break;
             }
         }
         if (idIndex[0] == 0 && idIndex[1] == 2
-               && idIndex[2] == 3 && idIndex[3] == 4
-               && idIndex[4] == 0 && idIndex[5] == 0){
-             switch (index){
-             case 0:
-             case 1:
-             case 3:
+            && idIndex[2] == 3 && idIndex[3] == 4
+            && idIndex[4] == 0 && idIndex[5] == 0)
+        {
+            switch (index)
+            {
+            case 0:
+            case 1:
+            case 3:
                 return 0;
                 break;
-              case 2:
-                 return 1;
-                 break;
-              default:
-                 return 0;
-                 break;
+            case 2:
+                return 1;
+                break;
+            default:
+                return 0;
+                break;
             }
         }
         if (idIndex[0] == 0 && idIndex[1] == 2
-               && idIndex[2] == 4 && idIndex[3] == 5
-               && idIndex[4] == 0 && idIndex[5] == 0){
-             switch (index){
-             case 0:
-             case 1:
-             case 2:
+            && idIndex[2] == 4 && idIndex[3] == 5
+            && idIndex[4] == 0 && idIndex[5] == 0)
+        {
+            switch (index)
+            {
+            case 0:
+            case 1:
+            case 2:
                 return 0;
                 break;
-              case 3:
-                 return 1;
-                 break;
-              default:
-                 return 0;
-                 break;
-            }
-        }
-        if (idIndex[0] == 0 && idIndex[1] == 1
-               && idIndex[2] == 2 && idIndex[3] == 3
-               && idIndex[4] == 4 && idIndex[5] == 0){
-             switch (index){
-             case 0:
-             case 2:
-             case 4:
-                return 0;
-                break;
-             case 1:
-             case 3:
+            case 3:
                 return 1;
                 break;
-              default:
-                 return 0;
-                 break;
-            }
-        }
-        if (idIndex[0] == 0 && idIndex[1] == 1
-               && idIndex[2] == 2 && idIndex[3] == 4
-               && idIndex[4] == 5 && idIndex[5] == 0){
-             switch (index){
-             case 0:
-             case 2:
-             case 3:
+            default:
                 return 0;
                 break;
-             case 1:
-             case 5:
-                return 1;
-                break;
-              default:
-                 return 0;
-                 break;
-            }
-        }
-        if (idIndex[0] == 0 && idIndex[1] == 2
-               && idIndex[2] == 3 && idIndex[3] == 4
-               && idIndex[4] == 5 && idIndex[5] == 0){
-             switch (index){
-             case 0:
-             case 1:
-             case 3:
-                return 0;
-                break;
-             case 2:
-             case 4:
-                return 1;
-                break;
-              default:
-                 return 0;
-                 break;
             }
         }
         if (idIndex[0] == 0 && idIndex[1] == 1
             && idIndex[2] == 2 && idIndex[3] == 3
-              && idIndex[4] == 4 && idIndex[5] == 5){
-             switch (index){
-             case 0:
-             case 2:
-             case 4:
+            && idIndex[4] == 4 && idIndex[5] == 0)
+        {
+            switch (index)
+            {
+            case 0:
+            case 2:
+            case 4:
                 return 0;
                 break;
-             case 1:
-             case 3:
-             case 5:
+            case 1:
+            case 3:
+                return 1;
+                break;
+            default:
+                return 0;
+                break;
+            }
+        }
+        if (idIndex[0] == 0 && idIndex[1] == 1
+            && idIndex[2] == 2 && idIndex[3] == 4
+            && idIndex[4] == 5 && idIndex[5] == 0)
+        {
+            switch (index)
+            {
+            case 0:
+            case 2:
+            case 3:
+                return 0;
+                break;
+            case 1:
+            case 5:
+                return 1;
+                break;
+            default:
+                return 0;
+                break;
+            }
+        }
+        if (idIndex[0] == 0 && idIndex[1] == 2
+            && idIndex[2] == 3 && idIndex[3] == 4
+            && idIndex[4] == 5 && idIndex[5] == 0)
+        {
+            switch (index)
+            {
+            case 0:
+            case 1:
+            case 3:
+                return 0;
+                break;
+            case 2:
+            case 4:
+                return 1;
+                break;
+            default:
+                return 0;
+                break;
+            }
+        }
+        if (idIndex[0] == 0 && idIndex[1] == 1
+            && idIndex[2] == 2 && idIndex[3] == 3
+            && idIndex[4] == 4 && idIndex[5] == 5)
+        {
+            switch (index)
+            {
+            case 0:
+            case 2:
+            case 4:
+                return 0;
+                break;
+            case 1:
+            case 3:
+            case 5:
                 return 1;
                 break;;
-              default:
-                 return 0;
-                 break;
+            default:
+                return 0;
+                break;
             }
         }
     }
-    if(struCnfg.nLevelTotal == 2){
-        if(idIndex[0] == 0 && idIndex[1] == 2
-                && idIndex[2] == 0 && idIndex[3] == 0){
-            switch(index){
+    if (struCnfg.nLevelTotal == 2)
+    {
+        if (idIndex[0] == 0 && idIndex[1] == 2
+            && idIndex[2] == 0 && idIndex[3] == 0)
+        {
+            switch (index)
+            {
             case 0:
             case 1:
                 return 0;
@@ -300,9 +358,11 @@ int getCurrentIdetifyGroupIndex(int*idIndex, int index){
                 break;
             }
         }
-        if(idIndex[0] == 0 && idIndex[1] == 1
-                && idIndex[2] == 2 &&idIndex[3] == 0){
-            switch(index){
+        if (idIndex[0] == 0 && idIndex[1] == 1
+            && idIndex[2] == 2 && idIndex[3] == 0)
+        {
+            switch (index)
+            {
             case 0:
             case 2:
                 return 0;
@@ -315,9 +375,11 @@ int getCurrentIdetifyGroupIndex(int*idIndex, int index){
                 break;
             }
         }
-        if(idIndex[0] == 0 && idIndex[1] == 2
-                && idIndex[2] == 3 && idIndex[3] == 0){
-            switch(index){
+        if (idIndex[0] == 0 && idIndex[1] == 2
+            && idIndex[2] == 3 && idIndex[3] == 0)
+        {
+            switch (index)
+            {
             case 0:
             case 1:
                 return 0;
@@ -330,9 +392,11 @@ int getCurrentIdetifyGroupIndex(int*idIndex, int index){
                 break;
             }
         }
-        if(idIndex[0] == 0 && idIndex[1] == 1
-                && idIndex[2] == 2 && idIndex[3] == 3){
-            switch(index){
+        if (idIndex[0] == 0 && idIndex[1] == 1
+            && idIndex[2] == 2 && idIndex[3] == 3)
+        {
+            switch (index)
+            {
             case 0:
             case 2:
                 return 0;
@@ -357,7 +421,8 @@ int getCurrentIdetifyGroupIndex(int*idIndex, int index){
 int getPageIndex(int nArithIndex)
 {
     int pageId;
-    switch (nArithIndex) {
+    switch (nArithIndex)
+    {
     case ARITH_GREY_A:
         pageId = Page_Grey_A;
         break;
@@ -384,13 +449,13 @@ int getPageIndex(int nArithIndex)
         break;
     case ARITH_SHAPE_POLE_B:
         pageId = Page_Shape_Pole_B;
-    break;
+        break;
     case ARITH_SHAPE_SLICE:
         pageId = Page_Shape_Slice;
-    break;
+        break;
     case ARITH_SHAPE_LEAF:
         pageId = Page_Shape_Leaf;
-    break;
+        break;
     case ARITH_SCALE:
         pageId = Page_Scale;
         break;
@@ -450,7 +515,8 @@ int getPageIndex(int nArithIndex)
 int getArithIndex(int pageId)
 {
     int nArithIndex = -1;
-    switch (pageId) {
+    switch (pageId)
+    {
     case Page_Params:
     case Page_Background:
         break;
@@ -573,7 +639,8 @@ int getArithIndex(int pageId)
 QString getColorText(int color)
 {
     QString text("");
-    switch (color) {
+    switch (color)
+    {
     case COLOR_OPT_BLACK:
         text = myLan.black;
         break;
@@ -605,7 +672,7 @@ QString getColorText(int color)
 QString getLevelText(int level)
 {
     QString text;
-    text = QString("%1 %2").arg(myLan.layer).arg(level+1);
+    text = QString("%1 %2").arg(myLan.layer).arg(level + 1);
     return text;
 }
 
@@ -615,7 +682,8 @@ QString getLevelText(int level)
 QString getReservedText(int nArithIndex)
 {
     QString text;
-    switch (nArithIndex) {
+    switch (nArithIndex)
+    {
     case ARITH_GREY_A:
         text = QString("%1 %2").arg(myLan.material_defect_grey_a).arg(myLan.reserved);
         break;
@@ -663,7 +731,8 @@ QString getReservedText(int nArithIndex)
 int getReservedIndex(int nArithIndex)
 {
     int pageId = -1;
-    switch (nArithIndex) {
+    switch (nArithIndex)
+    {
     case ARITH_GREY_A:
         pageId = Page_Reserved_Grey_A;
         break;
@@ -700,4 +769,116 @@ int getReservedIndex(int nArithIndex)
     }
 
     return pageId;
+}
+
+QSet<QString> getAiIpSet(MyTabBar* tarBar)
+{
+    if((nullptr == tarBar) || (0 == tarBar->count()) || (tarBar->currentIndex() < 0)) {
+        LOG_ERROR_STM("tarBar is :" << ((nullptr == tarBar) ? "nullptr" : "ok")  << "tarBar is count:" <<
+                      ((nullptr == tarBar) ? 0 : tarBar->count()) << ", currentIndex:" <<((nullptr == tarBar) ? -1 : tarBar->currentIndex()));
+        return QSet<QString>();
+    }
+
+    QString ipStr;
+    QSet<QString> ipSet;
+    /*
+     *  curIndex说明
+     *  偶数表示前视, 寄数表示后视
+     *  curIndex/2 表示第几次
+    */
+    int curIndex = tarBar->currentIndex();
+    switch (struCnfp.nMatAssembleMode)
+    {
+    case PARAMS_ALL_SEPARATE:
+    {
+        // 每个识别组的前后视都单独设置
+        for (int idx = 0; idx < struCnfg.struLevelInfo[0].struIdentifyGroupInfo[curIndex].nUnitCount; idx++)
+        {
+            int camId = struCnfg.struLevelInfo[0].struIdentifyGroupInfo[curIndex].nUnitId[idx];
+            QString ip = ai_helper::GetAiIpByIndex(camId);
+            ipStr += ip + " ";
+            ipSet.insert(ip);
+        }
+    }
+    break;
+    case PARAMS_ALL_SAME:
+    {
+        /**
+         * 全部相同，即所有AI板卡配置一样
+        */
+        for(int idx = 0; idx < struCnfg.nLevelTotal; idx++)
+        {
+            // 遍历这一层的每个相机
+            for(int idy = 0; idy < struCnfg.struLevelInfo[idx].nUnitLevelTotal; idy++)
+            {
+                int camId = struCnfg.struLevelInfo[idx].nUnitId[idy];
+                QString ip = ai_helper::GetAiIpByIndex(camId);
+                ipStr += ip + " ";
+                ipSet.insert(ip);
+            }
+        }
+    }
+    break;
+    case PARAMS_FRONT_REAR_SAME:
+    {
+        /**
+         * 前后视相同，即同一个识别组所有AI板卡相同
+        */
+        for(int idx = 0; idx < struCnfg.nLevelTotal; idx++)
+        {
+            // 遍历每一层的每一个识别组
+            for(int idy = 0; idy < struCnfg.struLevelInfo[idx].nIdentifyGroupTotal; idy++)
+            {
+                if((curIndex != idy) && ((curIndex + 1) != idy)) {
+                    // 不是该层的前视，也不是后视，则不处理
+                    continue;
+                }
+
+                // 遍历每个识别组的每个AI板卡
+                for(int idz = 0; idz < struCnfg.struLevelInfo[idx].struIdentifyGroupInfo[idy].nUnitCount; idz++)
+                {
+                    int camId = struCnfg.struLevelInfo[idx].struIdentifyGroupInfo[idy].nUnitId[idz];
+                    QString ip = ai_helper::GetAiIpByIndex(camId);
+                    ipStr += ip + " ";
+                    ipSet.insert(ip);
+                }
+            }
+        }
+
+    }
+    break;
+    case PARAMS_FIRST_SECOND_SAME:
+    {
+        /**
+         * 前视所有AI板卡相同，后视所有AI板卡相同
+        */
+        for(int idx = 0; idx < struCnfg.nLevelTotal; idx++)
+        {
+            // 遍历每一层的每一个识别组
+            for(int idy = 0; idy < struCnfg.struLevelInfo[idx].nIdentifyGroupTotal; idy++)
+            {
+                if((idy % 2) != curIndex) {
+                    continue;
+                }
+
+                // 遍历每个识别组的每个AI板卡
+                for(int idz = 0; idz < struCnfg.struLevelInfo[idx].struIdentifyGroupInfo[idy].nUnitCount; idz++)
+                {
+                    int camId = struCnfg.struLevelInfo[idx].struIdentifyGroupInfo[idy].nUnitId[idz];
+                    QString ip = ai_helper::GetAiIpByIndex(camId);
+                    ipStr += ip + " ";
+                    ipSet.insert(ip);
+                }
+            }
+        }
+    }
+    break;
+    default:
+        LOG_ERROR_STM("unknown assembleModel:" << struCnfp.nMatAssembleMode);
+        break;
+    }
+
+    LOG_INFO_STM("nMatAssembleMode:" << struCnfp.nMatAssembleMode << ", tar count:" << tarBar->count() << ", tar current index:" << curIndex
+        << ", ip list:" << ipStr.toStdString() << ", nLevelTotal:" << struCnfg.nLevelTotal << ", ip size:" << ipSet.size());
+    return ipSet;
 }

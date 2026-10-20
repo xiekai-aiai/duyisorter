@@ -1,5 +1,6 @@
 #include "arithenable.h"
 #include "configmgr.h"
+#include "unilog.h"
 
 /**
  * @brief PageIdentify::PageIdentify
@@ -129,6 +130,7 @@ void PageIdentify::setArithmeticEnable()
 {
     int level = struGsh.nLevel;
     int group = tabBar->currentIndex();
+    LOG_INFO_STM("level:" << level << ", group:" << group << ", arithmetic count:" << arithmeticBox.size());
     if (group < 0 || group >= MAX_GROUP_IDTNTIFY) return;
 
     // 先把当前 tabBar 页的勾选框状态同步到内存
@@ -254,18 +256,20 @@ void PageIdentify::setMatModeCombo(int index)
     /* 切换模式时，按新模式重新同步算法使能到各识别组 */
     int level = struGsh.nLevel;
     int totalGroup = struCnfg.struLevelInfo[level].nIdentifyGroupTotal;
+
     int mode = m_nMatMode;
     if (mode == PARAMS_FRONT_REAR_SAME)
     {
         // 保持各次前视为源，后视从它同步
         for (int g = 0; g < totalGroup; g += 2)
             if (g + 1 < totalGroup)
-                memcpy(m_nArithmeticEnable[level][g+1], m_nArithmeticEnable[level][g], sizeof(int) * ARITHMETIC_TOTAL);
+                memcpy(m_nArithmeticEnable[level][g + 1], m_nArithmeticEnable[level][g], sizeof(int) * ARITHMETIC_TOTAL);
     }
     else if (mode == PARAMS_FIRST_SECOND_SAME)
     {
         // 前视都从 group 0 同步，后视都从 group 1 同步
-        if (totalGroup > 0) {
+        if (totalGroup > 0)
+        {
             for (int g = 0; g < totalGroup; g++)
             {
                 if (g % 2 == 0 && g != 0)
@@ -298,7 +302,9 @@ void PageIdentify::setMatModeCombo(int index)
  */
 void PageIdentify::setArithButton(int btnId)
 {
-/* enable arithmetic buttons */
+    LOG_INFO_STM("********* btnId:" << btnId << ", is checked:" << arithmeticBox[btnId]->isChecked()
+        << ", seq:" << arithmeticSeq[btnId]);
+    /* enable arithmetic buttons */
     if (arithmeticBox[btnId]->isChecked())
     {
         if (arithmeticSeq[btnId] == ARITH_WATERMELON)
@@ -386,6 +392,7 @@ void PageIdentify::resetArithmeticEnable()
 void PageIdentify::changePage(int btnId)
 {
     int pageId = getPageIndex(btnId);
+    LOG_INFO_STM("btn id:" << btnId << ", pageId:" << pageId);
 
     /* trigger pageChanged signal to change page by pageId */
     emit pageChanged(pageId);

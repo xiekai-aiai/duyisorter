@@ -58,7 +58,7 @@ setMaterialSens::setMaterialSens(QWidget* parent) :
     }
     myFlow.getArithmeticName();
 
-    tabBar = new QTabBar(this);
+    tabBar = new MyTabBar(this);
     tabBar->setFont(font);
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {
@@ -195,11 +195,15 @@ void setMaterialSens::createAiPage()
 
 void setMaterialSens::updateModeParaInfo()
 {
-    int levelTotal = struGsh.nLevel;
-    int identifyGroupTotal = currentChan;
+    if (currentChan < 0)
+    {
+        LOG_INFO_STM("currentChan[" << currentChan << "] < 0");
+        return;
+    }
+
     // 获取当前方案对应的模型ID
     QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.modelId);
-    LOG_INFO_STM("current level:" << levelTotal << ",identify total:" << identifyGroupTotal << ", modelId:" << modelId.toStdString());
+    LOG_INFO_STM("current level:" << struGsh.nLevel << ", current identify group:" << currentChan << ", modelId:" << modelId.toStdString());
 
     modeParaCount = 0;
     for (int i = 0; i < MODEL_MAX_CLS_NUM; i++)
@@ -281,10 +285,8 @@ void setMaterialSens::setThresholdLineEdit(int index)
 
 void setMaterialSens::setModeParaInfo()
 {
-    int levelTotal = struGsh.nLevel;
-    int identifyGroupTotal = currentChan;
     QString modelId = QString::fromUtf8(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struAi.modelId);
-    LOG_INFO_STM("current level:" << levelTotal << ", identifyGroupTotal:" << identifyGroupTotal << ",modeId:"
+    LOG_INFO_STM("current level:" << struGsh.nLevel << ", current identify group:" << currentChan << ",modeId:"
         << modelId.toStdString() << ", modeParaCount:" << modeParaCount);
 
     // 应用模型参数
@@ -300,19 +302,19 @@ void setMaterialSens::setModeParaInfo()
         }
     }
 
+    QSet<QString> ipSet = getAiIpSet(tabBar);
     bool success = true;
     QByteArray request = cmdworker::ModelParamRequest(param_vec);
-    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    for (const QString& ip : ipSet)
     {
         QByteArray response;
-        QString ip = ai_helper::GetAiIpByIndex(idx);
         bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request,
             response, AI_RESPONSE_TIMEOUT);
 
         if (!ok)
         {
             success = false;
-            LOG_ERROR_STM("model cls threshold opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            LOG_ERROR_STM("model cls threshold opr  ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
             break;
         }
 
@@ -321,7 +323,7 @@ void setMaterialSens::setModeParaInfo()
         if (!ok)
         {
             success = false;
-            LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
+            LOG_ERROR_STM("model cls threshold opr ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
                 << ", response body:" << response.toHex(' ').toUpper().toStdString());
             break;
         }
@@ -329,13 +331,13 @@ void setMaterialSens::setModeParaInfo()
         int code = cmdworker::CommResponse(cmd_pkg).code_;
         if (AI_RESPONSE_SUCCESS != code)
         {
-            LOG_ERROR_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+            LOG_ERROR_STM("model cls threshold opr ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
                 << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
             success = false;
             break;
         }
 
-        LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
+        LOG_INFO_STM("model cls threshold opr ip:" << ip.toStdString() << ",model cls threshold send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
             << response.toHex(' ').toUpper().toStdString() << ", code:" << code);
     }
 
@@ -395,7 +397,6 @@ void setMaterialSens::updateAll()
     upTabBar();
     updateSensBiasBtn();
     updateModeParaInfo();
-
 }
 
 /**
@@ -404,16 +405,19 @@ void setMaterialSens::updateAll()
  */
 void setMaterialSens::upTabBar()
 {
-    for (int i = tabBar->count() - 1; i > -1;i--)
+    for (int i = tabBar->count() - 1; i >= 0;i--)
     {
         tabBar->removeTab(i);
     }
 
     algorithmType = 0;
 
-    for (int j = 0; j < struCnfg.struLevelInfo[0].nIdentifyGroupTotal; j++)
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {
-        tabBar->insertTab(j, myString.sIdentifyGroupName[0][j]);
+        for (int j = 0; j < struCnfg.struLevelInfo[i].nIdentifyGroupTotal; j++)
+        {
+            tabBar->insertTab(i * struCnfg.struLevelInfo[i].nIdentifyGroupTotal + j, myString.sIdentifyGroupName[i][j]);
+        }
     }
 
     int caseValue = struCnfp.nMatAssembleMode;
@@ -470,6 +474,7 @@ void setMaterialSens::upTabBar()
             }
         }
     }
+    tabBar->setCurrentIndex(FIRST_UNIT);
 }
 
 /**
@@ -569,7 +574,6 @@ void setMaterialSens::updateListWidget()
         listWidget->addItem(statusListItem[4]);
         stackedWidget->addWidget(pageAi);
         LOG_TRACE_STM("myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO):" << myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO));
-
     }
 
     if (listWidget->count() > 0)
@@ -598,6 +602,7 @@ void setMaterialSens::updateStackWidget(int indexOfUnit)
     updateWatermelonList();
     updateTeaList();
     updateRsvList();
+    updateModeParaInfo();
 
     if (stackedWidget->currentWidget() == m_pageAIRsv)
     {
@@ -1492,7 +1497,7 @@ void setMaterialSens::updateShapeList()
         shapeSensListCbx[6]->show();
     }
 
-    //    if(myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO))
+    //     if(myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO))
     //    {
     //        strShapeSens = QString("%1").arg(struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struPistachio.nAreaMin);
     //        shapeSensLbe[7]->setText(strShapeSens);

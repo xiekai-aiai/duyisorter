@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-10-08 16:20:14
+ * @LastEditTime: 2026-10-20 13:42:15
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -51,6 +51,12 @@
 
 // 下载设备数量
 #define AI_SFTP_DEV_NUM 2
+
+// 兆
+#define SPACEMB (1024 * 1024)
+
+// 最小空间200MB
+#define MIN_DOWN_SPACITY 200
 
 
  // A类包包头和包尾

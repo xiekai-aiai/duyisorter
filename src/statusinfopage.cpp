@@ -4017,7 +4017,7 @@ QVector<AiStatusInfo> StatusInfoPage::GetAiStatus()
     QVector<AiStatusInfo> status_vec;
 
     QByteArray request = cmdworker::AiStatusRequest();
-    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
+    for (int idx = 0; idx < struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal; idx++)
     {
         QByteArray response;
         AiStatusInfo status_info;
