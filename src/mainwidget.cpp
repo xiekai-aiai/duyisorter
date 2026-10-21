@@ -723,6 +723,8 @@ void MainWidget::goToPreheatPageSlt()
  */
 void MainWidget::onStartWipeSlt(int trigger)
 {
+    LOG_INFO_STM("run mode:" << struCnfg.nRunMode << ", trigger:" << trigger
+        << ", delay:" << struCnfp.struGroupCtrl[ONE_LEVEL].nWipeDelay);
     //! 主屏模式忽略网络同步清灰控制请求，仅支持手动、定时清灰触发请求
     if (struCnfg.nRunMode == MODE_RUN_MASTER && trigger == TRIGGER_SYNC)
     {

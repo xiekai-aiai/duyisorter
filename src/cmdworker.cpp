@@ -848,4 +848,36 @@ namespace cmdworker
         return request;
     }
 
+    QByteArray CleanDustParamRequest(const CleanDustParam& info)
+    {
+        QByteArray request;
+        // 2个字节的包头
+        request.append(PKGA_HEAD0);
+        request.append(PKGA_HEAD1);
+        // 2个字节的模块地址
+        quint16 addr = 0;
+        quint16 netAddr = qToBigEndian(addr);
+        request.append(reinterpret_cast<const char*>(&netAddr), sizeof(netAddr));
+        // 2个字节的命令编码
+        quint16 cmd = CMD_CODE_CLEAN_DUST;
+        quint16 netCmd = qToBigEndian(cmd);
+        request.append(reinterpret_cast<const char*>(&netCmd), sizeof(netCmd));
+        // 2个字节的命令长度
+        quint16 len = CMD_LEN_CLEAN_DUST;
+        quint16 netLen = qToBigEndian(len);
+        request.append(reinterpret_cast<const char*>(&netLen), sizeof(netLen));
+
+        // 1个字节的清灰标识
+        request.append(info.flag_);
+
+        // 2个字节的crc
+        quint16 crc = XMODEM_CRC16(request.mid(2, request.length() - 2));
+        quint16 netCrc = qToBigEndian(crc);
+        request.append(reinterpret_cast<const char*>(&netCrc), sizeof(netCrc));
+        // 2个字节的包尾
+        request.append(PKGA_TAIL0);
+        request.append(PKGA_TAIL1);
+        return request;
+    }
+
 }

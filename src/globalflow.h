@@ -92,6 +92,8 @@ public:
     void initEjectorDelayPara();                        //初始化udp ejector delay协议
     void initEjectorModePara();                         //初始化udp ejector mode协议
 
+    void onCleanDustCmd(quint8 cmd);                //清灰命令
+
     int  initAiCommunication();
 
     /**

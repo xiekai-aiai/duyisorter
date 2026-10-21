@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-10-20 13:42:15
+ * @LastEditTime: 2026-10-20 19:30:20
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -80,6 +80,10 @@
 #define MODEL_VAVLE_AI 0x01                    // AI模式
 #define MODEL_VALVE_TRADITIONAL 0x02           // 传统喷阀模型
 
+// 清灰
+#define CLEAN_DUST_START_FLAG 1                // 开始清灰
+#define CLEAN_DUST_STOP_FLAG 2                 // 停止清灰
+
 // A类包编码
 // 命令编码
 #define CMD_CODE_COLLECT 0x0001                // 采集命令
@@ -102,6 +106,7 @@
 #define CMD_CODE_AREA_SELECT 0x0012            // 面积选择命令
 #define CMD_CODE_AI_STATUS 0x0013              // AI状态命令
 #define CMD_CODE_VIEW_NEW 0x0014               // 新预览命令
+#define CMD_CODE_CLEAN_DUST 0x0015             // 清灰命令
 
 // 命令长度
 #define CMD_LEN_COLLECT 3                     // 采集命令
@@ -121,6 +126,7 @@
 #define CMD_LEN_IP_MODIFY 13                  // ip修改命令
 #define CMD_LEN_AREA_SELECT 4                 // 面积选择命令
 #define CMD_LEN_VIWE_NEW 1                    // 新预览命令
+#define CMD_LEN_CLEAN_DUST 1                  // 清灰命令
 
 // 错误编码
 #define CMD_CODE_FAIL 0                       // 错误编码
@@ -343,5 +349,10 @@ typedef struct __model_cls_param_
     quint8 area_model_;                     // 面积模型(0: 不开启 1: 选大 2: 选小)
     quint16 area_threshold_;                // 面积阈值
 } ModelClsParam;
+
+typedef struct __clean_dust_param_
+{
+    quint8 flag_;                             // 1: 启动清灰 2: 停止清灰
+} CleanDustParam;
 
 #endif // SORTERTYPES_H

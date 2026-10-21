@@ -4032,9 +4032,38 @@ bool GlobalFlow::peaMachineJudge()
     }
 }
 
+void GlobalFlow::onCleanDustCmd(quint8 cmd)
+{
+    int cam_num = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal;
+    // 清灰指令
+    CleanDustParam cdp;
+    cdp.flag_ = cmd;
+    QByteArray request = cmdworker::CleanDustParamRequest(cdp);
+
+    LOG_INFO_STM("cmd:" << (int)cmd << ", cam num:" << cam_num);
+
+    // 相机和AI板卡一一对应，编译所有AI板卡
+    for (int idx = 0; idx < cam_num; ++idx)
+    {
+        QString ip = ai_helper::GetAiIpByIndex(idx);
+
+        QByteArray response;
+        bool ok = CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request);
+        if (!ok)
+        {
+            LOG_ERROR_STM("clean dust cmd index:" << idx << " ip:" << ip.toStdString() << " send command failed! request body:" << request.toHex(' ').toUpper().toStdString());
+            continue;
+        }
+
+        LOG_INFO_STM("clean dust cmd index:" << idx << " ip:" << ip.toStdString() << ", request body:" << request.toHex(' ').toUpper().toStdString());
+    }
+}
+
 /* 清灰操作 */
 void GlobalFlow::startWipe()
 {
+    LOG_INFO_STM("------------------startWipe, struGsh.nBacklightStat:" << struGsh.nBacklightStat
+        << ",struGsh.bStatFeed:" << struGsh.bStatFeed << ", struCnfg.nWipeMode:" << struCnfg.nWipeMode);
     int nStatFeed = 0;
     int flagBacklight = 0;
     int curLevel = 0;
@@ -4060,6 +4089,7 @@ void GlobalFlow::startWipe()
 
     struGsh.isQueryingCom3 = true;
 
+    LOG_INFO_STM("-----------startWipe start---------");
     //! 若当前处在供料状态，则关闭下料，并保存当前状态
     if (struGsh.bStatFeed == 1)
     {
@@ -4075,6 +4105,9 @@ void GlobalFlow::startWipe()
         //测试后，优化为5s
         sleep(5);
         myFlow.ejectOff();
+
+        // 通知AI板卡开始清灰
+        onCleanDustCmd(CLEAN_DUST_START_FLAG);
 
         //! 考虑多层色选机振动器至视点距离较远
         if (struCnfg.nLevelTotal > 1)
@@ -4106,6 +4139,10 @@ void GlobalFlow::startWipe()
     MySerial.com2Write(CMD_CTRL_WIPE, CTRL_GENERAL, 0, 0, 0, 0, struCnfp.struGroupCtrl[0].nWipeDuration, 0xAA, 3);
     MySerial.com2Write(CMD_CTRL_WIPE, CTRL_GENERAL, 1, 0, 0, 0, struCnfp.struGroupCtrl[0].nWipeDuration, 0xAA, 3);
     myFlow.sleep(struCnfp.struGroupCtrl[0].nWipeDuration);
+
+    LOG_INFO_STM("-----------startWipe stop--------- duration:" << struCnfp.struGroupCtrl[0].nWipeDuration);
+    // 通知AI板卡停止清灰
+    onCleanDustCmd(CLEAN_DUST_STOP_FLAG);
 
     //! 恢复至清灰前机器供料状态
     if (nStatFeed == 1)
@@ -4159,6 +4196,7 @@ void GlobalFlow::startWipe()
             myFlow.startStatistic(curLevel, curUnit);
         }
     }
+    LOG_INFO_STM("-----------startWipe stop---------");
 
     struGsh.isQueryingCom3 = false;
     //! 恢复至清灰前机器屏保状态

@@ -89,6 +89,9 @@ namespace cmdworker
     // 喷阀模式
     QByteArray ValveModeParamRequest(const ValveModeParam& info);
 
+    // 清灰
+    QByteArray CleanDustParamRequest(const CleanDustParam& info);
+
 }
 
 #endif // CMDWORKER_H
