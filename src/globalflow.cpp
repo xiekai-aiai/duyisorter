@@ -2670,6 +2670,11 @@ void GlobalFlow::resetFeeder(int flag)
     if (flag == 1)
     {
         char feedOnoff = (struGsh.bStatFeed == 1) ? 0xAA : 0x55;
+        /*
+        * 通知振动器启动或停止下料
+        * note: 这里固定写死两个振动器
+        * 0xAA: 开始下类 0x55: 停止下类
+        */
         MySerial.com2Write(CMD_CTRL_FEEDER, CTRL_GENERAL, 0, 0, 0, 0, 0, feedOnoff, 3);
         MySerial.com2Write(CMD_CTRL_FEEDER, CTRL_GENERAL, 1, 0, 0, 0, 0, feedOnoff, 3);
         return;
@@ -3774,6 +3779,7 @@ void GlobalFlow::onOff()
 
         for (i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
         {
+            // 给接口板发送运行停止指令
             MySerial.com1Write(CMD_INT_ONOFF, INT, i, 0, 0, 0, 0, 0, 0, 3);
         }
         for (i = 0; i < struCnfg.nLevelTotal; i++)
@@ -3781,6 +3787,7 @@ void GlobalFlow::onOff()
             for (j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
             {
                 int nAddr = struCnfg.struLevelInfo[i].nUnitId[j];
+                // 给相机板发送运行停止指令
                 MySerial.com1Write(CMD_UNIT_ONOFF, UNIT, i, nAddr, 0, 0, 0, 0, 0, 3);
             }
         }
@@ -3818,11 +3825,13 @@ void GlobalFlow::onOff()
             LOG_INFO_STM("feed switch: Feed on");
             resetSortParams();
             for (i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
-            {    // 正常色选工作状态
+            {
+                // 给接口板发送运行开始指令
                 MySerial.com1Write(CMD_INT_ONOFF, INT, i, 0, 0, 0, 0, 0, 1, 3);
                 for (j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
                 {
                     int nAddr = struCnfg.struLevelInfo[i].nUnitId[j];
+                    // 给相机板发送运行开始指令
                     MySerial.com1Write(CMD_UNIT_ONOFF, UNIT, i, nAddr, 0, 0, 0, 0, 1, 3);
                 }
             }

@@ -2229,6 +2229,7 @@ void MainWidget::state_machine_engineer_info()
  */
 void MainWidget::onFeedSwitchBtnClickedSlt()
 {
+    LOG_INFO_STM("+++++++start or stop working,struGsh.bStatFeed:" << struGsh.bStatFeed << ",struCnfg.nRunMode:" << struCnfg.nRunMode);
     emit shutdownCurveBg();
 
     //! 从屏模式下提示操作无效
