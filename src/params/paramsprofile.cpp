@@ -79,6 +79,19 @@ bool GlobalFlow::getProfileSetting(const QString& fileName)
         }
     }
 
+    /* 算法使能永远全局统一：旧方案里按组独立保存的使能归一化到每层 group 0，
+       否则加载方案/重启后各组算法使能会出现不一致 */
+    for (int lv = 0; lv < MAX_LEVEL; lv++)
+    {
+        for (int g = 1; g < MAX_GROUP_IDTNTIFY; g++)
+        {
+            for (int a = 0; a < ARITHMETIC_TOTAL; a++)
+            {
+                struCnfp.nArithmeticEnableGroup[lv][g][a] = struCnfp.nArithmeticEnableGroup[lv][0][a];
+            }
+        }
+    }
+
     /* intel mode */
     struCnfp.nIntelMode = setting.value(QString("%1-%2").arg(3).arg(12), struCnfp.nIntelMode).toInt();
 

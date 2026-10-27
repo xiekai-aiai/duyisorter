@@ -114,6 +114,7 @@ void DegaussTime::onDegaussTimeTabChanged(int index)
 
     switch (struCnfe.nMachine) {
     case MACHINE_CF:
+    case MACHINE_CG:
         struGsh.nLevel = 0;
         currentChan = index;
         break;

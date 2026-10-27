@@ -110,6 +110,7 @@ void PageIntel::changeCurrentSlt(int index)
     /* get level info */
     switch(struCnfe.nMachine){
     case MACHINE_CF:
+    case MACHINE_CG:
         struGsh.nLevel = ONE_LEVEL;
         currentChan    = index;
         break;

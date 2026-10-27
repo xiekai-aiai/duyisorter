@@ -1,4 +1,5 @@
 #include "arith.h"
+#include <QDebug>
 
 /* 构造识别算法参数页面 */
 PageArith::PageArith(int nArithIndex, QWidget *parent)
@@ -19,32 +20,54 @@ PageArith::PageArith(int nArithIndex, QWidget *parent)
 /* 应用当前识别算法参数设置 */
 void PageArith::setArithParams()
 {
+    int curTab = tabBar->currentIndex();
+    int mode = struCnfp.nMatAssembleMode;
+    qDebug("LIC TRACK GROUP ALGO SET：[1/4] setArithParams START curTab=%d mode=%d arithIdx=%d machine=%d",
+           curTab, mode, m_nArithIndex, struCnfe.nMachine);
+
     /* write params to memory */
     for (int i = 0; i < struCnfg.nLevelTotal; i++) {
         int step = struCnfg.struLevelInfo[i].nIdentifyGroupTotal;
         for (int j = 0; j < step; j++) {
+            // if (m_nArithIndex <= ARITH_DISCOLOR_B) {
+            //     int idx = m_nArithIndex - ARITH_GREY_A;
+            //     qDebug("LIC TRACK GROUP ALGO SET：[2/4] mem-write L%dG%d GREYCOLOR[%d] sensMin=%d sensMax=%d mode=%d color=%d row=%d percent=%d",
+            //            i, j, idx,
+            //            m_struGroupIdentify[i*step+j].struGreyColor[idx].nSensMin,
+            //            m_struGroupIdentify[i*step+j].struGreyColor[idx].nSensMax,
+            //            m_struGroupIdentify[i*step+j].struGreyColor[idx].nMode,
+            //            m_struGroupIdentify[i*step+j].struGreyColor[idx].nColor,
+            //            m_struGroupIdentify[i*step+j].struGreyColor[idx].nRow,
+            //            m_struGroupIdentify[i*step+j].struGreyColor[idx].nPercent);
+            // }
             struCnfp.struGroupIdentify[i][j] = m_struGroupIdentify[i*step+j];
         }
     }
 
     /* write params to fpga */
-    switch(struCnfe.nMachine) {
-    case MACHINE_CF:
-        myFlow.materialCopyAssemble(0, tabBar->currentIndex(), 0, m_nArithIndex, 0);
-        myFlow.materialResetGroupAssemble(struGsh.nLevel, tabBar->currentIndex(), 0, m_nArithIndex, 0);
-        break;
-    default:
-        break;
+    switch(struCnfe.nMachine) 
+    {
+        case MACHINE_CF:
+        case MACHINE_CG:
+            // qDebug("LIC TRACK GROUP ALGO SET：[3/4] call materialResetGroupAssemble L=%d G=%d allSens=0 arith=%d reserved=0",
+            //     struGsh.nLevel, curTab, m_nArithIndex);
+            myFlow.materialCopyAssemble(0, curTab, 0, m_nArithIndex, 0);
+            myFlow.materialResetGroupAssemble(struGsh.nLevel, curTab, 0, m_nArithIndex, 0);
+            break;
+        default:
+            //qDebug("LIC TRACK GROUP ALGO SET：[3/4] MACHINE switch MISSED! machine=%d", struCnfe.nMachine);
+            break;
     }
 
     /* 重置延迟时间 */
     myFlow.resetEjectTime();
+    qDebug("LIC TRACK GROUP ALGO SET：[4/4] setArithParams DONE");
 }
 
 /* 重置当前识别算法参数设置 */
 void PageArith::resetArithParams()
 {
-/* reset params */
+    /* reset params */
     for (int i = 0; i < struCnfg.nLevelTotal; i++) {
         int step = struCnfg.struLevelInfo[i].nIdentifyGroupTotal;
         for (int j = 0; j < step ; j++) {
@@ -52,7 +75,7 @@ void PageArith::resetArithParams()
         }
     }
 
-/* reset page */
+    /* reset page */
     emit pageUpdated();
 }
 
@@ -1551,7 +1574,7 @@ void PageArith::createPage()
     m_rsvPerLbl->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
     m_rsvPerLe->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
 
-/* signals to slots */
+    /* signals to slots */
     connect(tabBar,           SIGNAL(currentChanged(int)), this, SLOT(changeCurrentSlt(int)));
     connect(nameValue,        SIGNAL(pressed()),           this, SLOT(setImpurityNameSlt()));
     connect(sensValue,        SIGNAL(pressed()),           this, SLOT(setSensValueSlt()));
@@ -1561,7 +1584,7 @@ void PageArith::createPage()
     connect(limitValue,       SIGNAL(pressed()),           this, SLOT(setLimitValueSlt()));
     connect(colorRadio,       SIGNAL(currentChanged(int)), this, SLOT(setColorValueSlt(int)));
     connect(modeRadio,        SIGNAL(currentChanged(int)), this, SLOT(setModeValueSlt(int)));
-    connect(colorModeRadio,        SIGNAL(currentChanged(int)), this, SLOT(setColorModeValueSlt(int)));
+    connect(colorModeRadio,   SIGNAL(currentChanged(int)), this, SLOT(setColorModeValueSlt(int)));
 
     connect(reservedCheckBox, SIGNAL(toggled(bool)),       this, SLOT(setReservedStateSlt(bool)));
     connect(reservedButton,   SIGNAL(pressed()),           this, SLOT(changeReservedPageSlt()));

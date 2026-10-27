@@ -338,6 +338,7 @@ void GlobalFlow::getGroupIdentify()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         switch (struCnfc.nSensorType)
         {
         case SENSOR_K:  // Keda
@@ -642,6 +643,7 @@ void GlobalFlow::getGroupTick()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         nEjectDuration = 20;
         nEjectDelay = 60;
 
@@ -1578,30 +1580,16 @@ void GlobalFlow::resetTick()
     resetReverseSort();
 }
 
-/* 根据物料参数设置模式, 获取某 level/group 下的算法使能 */
+/* 获取某 level/group 下的算法使能
+   返回指定 groupId 对应的算法使能位，支持前后视独立使能 */
 int GlobalFlow::getArithEnable(int level, int groupId, int arith)
 {
     if (level < 0 || level >= MAX_LEVEL) return 0;
     if (groupId < 0 || groupId >= MAX_GROUP_IDTNTIFY) return 0;
     if (arith < 0 || arith >= ARITHMETIC_TOTAL) return 0;
 
-    int mode = struCnfp.nMatAssembleMode;
-    switch (mode)
-    {
-    case PARAMS_ALL_SAME:
-        return struCnfp.nArithmeticEnableGroup[level][0][arith];
-    case PARAMS_FRONT_REAR_SAME:
-        // 同一次内前后视相同：groupId 的低位置 0 得到前视 groupId
-        return struCnfp.nArithmeticEnableGroup[level][groupId & ~1][arith];
-    case PARAMS_FIRST_SECOND_SAME:
-        // 按前后视相同：所有前视 groupId%2==0，所有后视 groupId%2==1
-        return struCnfp.nArithmeticEnableGroup[level][groupId % 2][arith];
-    case PARAMS_ALL_SEPARATE:
-    default:
-        return struCnfp.nArithmeticEnableGroup[level][groupId][arith];
-    }
+    return struCnfp.nArithmeticEnableGroup[level][groupId][arith];
 }
-
 /* 发送算法使能状态 */
 void GlobalFlow::resetArithmeticEnable()
 {
@@ -1819,6 +1807,7 @@ void GlobalFlow::resetBackgroundColor()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         for (i = 0; i < struCnfg.nLevelTotal; i++)
         {
             for (j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
@@ -2678,6 +2667,7 @@ void GlobalFlow::resetFeeder(int flag)
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         nFeederTotal = struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2 + 1;
         if (struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal / 2 == 1)
         {
@@ -2752,23 +2742,7 @@ void GlobalFlow::resetLamp()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
-        //			int tmp = struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal;
-        //            if (tmp <= 2) {//CF1,CI1
-        //				arg4 = (!struCnfp.struGroupCtrl[sModuleAddr].nLamp[9] << 5)
-        //						|(!struCnfp.struGroupCtrl[sModuleAddr].nLamp[8] << 4)
-        //						|(struCnfp.struGroupCtrl[sModuleAddr].nLamp[7] << 3)
-        //						|(struCnfp.struGroupCtrl[sModuleAddr].nLamp[6] << 2)
-        //						|(1 << 1)
-        //						|1;
-        //				arg5 = (struCnfp.struGroupCtrl[sModuleAddr].nLamp[5] << 7)
-        //						|(struCnfp.struGroupCtrl[sModuleAddr].nLamp[4] << 6)
-        //						|(struCnfp.struGroupCtrl[sModuleAddr].nLamp[3] << 5)
-        //						|(1 << 4)
-        //						|(1 << 3)
-        //						|(struCnfp.struGroupCtrl[sModuleAddr].nLamp[2] << 2)
-        //						|(struCnfp.struGroupCtrl[sModuleAddr].nLamp[1] << 1)
-        //						|(struCnfp.struGroupCtrl[sModuleAddr].nLamp[0]);
-        //			} else {
+    case MACHINE_CG:
         arg4 = (!struCnfp.struGroupCtrl[sModuleAddr].nLamp[9] << 3)
             | (!struCnfp.struGroupCtrl[sModuleAddr].nLamp[8] << 2)
             | (struCnfp.struGroupCtrl[sModuleAddr].nLamp[7] << 1)
@@ -3319,6 +3293,7 @@ void GlobalFlow::getColorSelectGroupName()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         sLevelName[0] = "";
         break;
     default:
@@ -3356,6 +3331,7 @@ void GlobalFlow::getIdentifyGroupName()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         sLevelName[0] = "";
         break;
     default:
@@ -3502,6 +3478,7 @@ void GlobalFlow::getTickGroupName()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         sLevelName[0] = "";
         break;
     default:
@@ -3568,6 +3545,7 @@ void GlobalFlow::getLampName()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         if (struCnfg.nEnableLampAI == 1)
         {
             if (struCnfe.nEnableCGMachine)
@@ -4330,6 +4308,7 @@ void GlobalFlow::updateLampTotal()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         struCnfg.nLampTotal = 10;
         if (struCnfg.nEnableLampAI == 1)
         {
@@ -4339,7 +4318,7 @@ void GlobalFlow::updateLampTotal()
         }
         else
         {
-            if ((struCnfe.nMachine == MACHINE_CF) && (struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal > 16))
+            if (((struCnfe.nMachine == MACHINE_CF) || (struCnfe.nMachine == MACHINE_CG)) && (struCnfg.struLevelInfo[ONE_LEVEL].nUnitLevelTotal > 16))
             {
                 struCnfg.nLampAINum = 8;
             }
@@ -4364,6 +4343,7 @@ void GlobalFlow::updateLightSrcLampNum()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         if (struCnfe.nEnableCGMachine)
         {
             //! CG8及CG10整机共6个恒流源板

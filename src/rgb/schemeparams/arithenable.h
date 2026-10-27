@@ -71,6 +71,7 @@ private:
 
     int m_nMatMode;
     int m_nArithmeticEnable[MAX_LEVEL][MAX_GROUP_IDTNTIFY][ARITHMETIC_TOTAL];  // 三维：level × group × arith
+    bool m_bInitialized;  // 构造完成前为 false，防止 UI setChecked 误触发全量写回 struCnfp
 };
 
 #endif // ARITHENABLE_H

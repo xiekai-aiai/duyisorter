@@ -12,8 +12,8 @@
 
 #if DEBUG_OUTPUT == 1
 #define PRINT_FOR_DEBUG_1 1
-#define PRINT_FOR_DEBUG_2 0
-#define PRINT_FOR_DEBUG_3 0
+#define PRINT_FOR_DEBUG_2 1   // 也开启 com2 打印 (main 程序 release 版对比 test_arm 用)
+#define PRINT_FOR_DEBUG_3 1
 #else
 #define PRINT_FOR_DEBUG_1 0
 #define PRINT_FOR_DEBUG_2 0
@@ -388,13 +388,14 @@ int MyQextSerialPort::com1Write(int nCmd, char SModuleType, char sIntAddr, char 
 
     LOG_INFO_STM("com1 write >> " << tmpFormat.toStdString());
 #else
-    printf("com1(0x%x) write >> ", nCmd);
-    for (int i = 0; i < 16; i++)
     {
-        printf("%02x ", sPacket[i]);
+        char hexbuf[128];
+        int pos = snprintf(hexbuf, sizeof(hexbuf), "com1(0x%04X) >> ", (unsigned)nCmd);
+        for (int i = 0; i < 16 && pos < (int)sizeof(hexbuf) - 4; i++)
+            pos += snprintf(hexbuf + pos, sizeof(hexbuf) - pos, "%02X ", (uchar)sPacket[i]);
+        fprintf(stderr, "%s\n", hexbuf);
+        fflush(stderr);
     }
-    printf("\n");
-    fflush(0);
 #endif
 #endif
 
@@ -537,13 +538,14 @@ int MyQextSerialPort::com2Write(int nCmd, char sModuleType, char sModuleAddr, ch
 
     LOG_INFO_STM("com2 write:" << tmpFormat.toStdString());
 #else
-    printf("com2(0x%x) write >> ", nCmd);
-    for (int i = 0; i < 16; i++)
     {
-        printf("%02x ", sPacket[i]);
+        char hexbuf[128];
+        int pos = snprintf(hexbuf, sizeof(hexbuf), "com2(0x%04X) >> ", (unsigned)nCmd);
+        for (int i = 0; i < 16 && pos < (int)sizeof(hexbuf) - 4; i++)
+            pos += snprintf(hexbuf + pos, sizeof(hexbuf) - pos, "%02X ", (uchar)sPacket[i]);
+        fprintf(stderr, "%s\n", hexbuf);
+        fflush(stderr);
     }
-    printf("\n");
-    fflush(0);
 #endif
 #endif
 

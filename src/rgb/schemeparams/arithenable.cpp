@@ -9,6 +9,7 @@
  */
 PageIdentify::PageIdentify(QWidget* parent)
     : QWidget(parent)
+    , m_bInitialized(false)
 {
     /* import global params */
     resetIdentifyParams();
@@ -21,6 +22,9 @@ PageIdentify::PageIdentify(QWidget* parent)
 
     /* page update */
     updatePage();
+
+    /* 构造完成，允许 setArithButton 正常写回 */
+    m_bInitialized = true;
 }
 
 /**
@@ -73,6 +77,23 @@ void PageIdentify::resetIdentifyParams()
             }
         }
     }
+
+    /* 算法使能永远全局统一：每层一律以 group 0 为准，
+       兼容旧方案里各组使能不一致的历史数据，并同步写回 struCnfp */
+    for (int i = 0; i < struCnfg.nLevelTotal; i++)
+    {
+        int total = struCnfg.struLevelInfo[i].nIdentifyGroupTotal;
+        if (total <= 0)
+            continue;
+        /* AI 未使能时，智能算法一律置否 */
+        if (!struCnfp.enableAi)
+            m_nArithmeticEnable[i][0][ARITH_PISTACHIO] = 0;
+        for (int g = 1; g < total; g++)
+        {
+            memcpy(m_nArithmeticEnable[i][g], m_nArithmeticEnable[i][0], sizeof(int) * ARITHMETIC_TOTAL);
+        }
+    }
+    memcpy(struCnfp.nArithmeticEnableGroup, m_nArithmeticEnable, sizeof(struCnfp.nArithmeticEnableGroup));
 
     /* trigger page update */
     emit pageUpdated();
@@ -140,44 +161,12 @@ void PageIdentify::setArithmeticEnable()
         m_nArithmeticEnable[level][group][arith] = arithmeticBox[i]->isChecked() ? 1 : 0;
     }
 
-    // 再根据物料组合模式，同步到需要共享的其他组
-    int mode = struCnfp.nMatAssembleMode;
-    switch (mode)
+    // 算法使能永远全局统一，不分 m_nMatMode；从当前 tab 的组同步到所有其他组
+    int total = struCnfg.struLevelInfo[level].nIdentifyGroupTotal;
+    for (int g = 0; g < total; g++)
     {
-    case PARAMS_FRONT_REAR_SAME:
-    {
-        // 同一次内前后视相同
-        int pair = group ^ 1;
-        if (pair < MAX_GROUP_IDTNTIFY)
-            memcpy(m_nArithmeticEnable[level][pair], m_nArithmeticEnable[level][group], sizeof(int) * ARITHMETIC_TOTAL);
-        break;
-    }
-    case PARAMS_FIRST_SECOND_SAME:
-    {
-        // 按前后视相同：所有偶数 group 同步到 group%2==0，奇数同步到 group%2==1
-        int view = group % 2;
-        for (int g = 0; g < struCnfg.struLevelInfo[level].nIdentifyGroupTotal; g++)
-        {
-            if (g != group && g % 2 == view)
-                memcpy(m_nArithmeticEnable[level][g], m_nArithmeticEnable[level][group], sizeof(int) * ARITHMETIC_TOTAL);
-        }
-        break;
-    }
-    case PARAMS_ALL_SAME:
-    {
-        // 全部相同：group 0 是源，其他都同步
-        for (int g = 0; g < struCnfg.struLevelInfo[level].nIdentifyGroupTotal; g++)
-        {
-            if (g != group && g != 0)
-                memcpy(m_nArithmeticEnable[level][g], m_nArithmeticEnable[level][0], sizeof(int) * ARITHMETIC_TOTAL);
-            else if (g == 0 && group != 0)
-                memcpy(m_nArithmeticEnable[level][0], m_nArithmeticEnable[level][group], sizeof(int) * ARITHMETIC_TOTAL);
-        }
-        break;
-    }
-    case PARAMS_ALL_SEPARATE:
-    default:
-        break;  // 完全独立，不用同步
+        if (g != group)
+            memcpy(m_nArithmeticEnable[level][g], m_nArithmeticEnable[level][group], sizeof(int) * ARITHMETIC_TOTAL);
     }
 
     // 把完整三维写回全局
@@ -195,16 +184,17 @@ QList<int> PageIdentify::getMatAssembleModeList()
 
     switch (struCnfe.nMachine)
     {
-    case MACHINE_CF:
-        list << PARAMS_ALL_SEPARATE
-            << PARAMS_ALL_SAME
-            << PARAMS_FRONT_REAR_SAME
-            << PARAMS_FIRST_SECOND_SAME;
-        break;
-    default:
-        list << PARAMS_ALL_SEPARATE
-            << PARAMS_ALL_SAME;
-        break;
+        case MACHINE_CF:
+        case MACHINE_CG:
+            list << PARAMS_ALL_SEPARATE
+                << PARAMS_ALL_SAME
+                << PARAMS_FRONT_REAR_SAME
+                << PARAMS_FIRST_SECOND_SAME;
+            break;
+        default:
+            list << PARAMS_ALL_SEPARATE
+                << PARAMS_ALL_SAME;
+            break;
     }
 
     return list;
@@ -221,20 +211,20 @@ QString PageIdentify::getMatAssembleModeName(int mode)
     QString text = "";
     switch (mode)
     {
-    case PARAMS_ALL_SAME:
-        text = myLan.all_alike;
-        break;
-    case PARAMS_ALL_SEPARATE:
-        text = myLan.all_seperate;
-        break;
-    case PARAMS_FRONT_REAR_SAME:
-        text = myLan.front_rear;
-        break;
-    case PARAMS_FIRST_SECOND_SAME:
-        text = myLan.first_second;
-        break;
-    default:
-        break;
+        case PARAMS_ALL_SAME:
+            text = myLan.all_alike;
+            break;
+        case PARAMS_ALL_SEPARATE:
+            text = myLan.all_seperate;
+            break;
+        case PARAMS_FRONT_REAR_SAME:
+            text = myLan.front_rear;
+            break;
+        case PARAMS_FIRST_SECOND_SAME:
+            text = myLan.first_second;
+            break;
+        default:
+            break;
     }
 
     return text;
@@ -253,44 +243,21 @@ void PageIdentify::setMatModeCombo(int index)
     m_nMatMode = matModeCombo->itemData(index).toInt();
     struCnfp.nMatAssembleMode = m_nMatMode;
 
-    /* 切换模式时，按新模式重新同步算法使能到各识别组 */
+    // 算法使能永远全局统一，只在 setArithmeticEnable 里改，这里不动
+
     int level = struGsh.nLevel;
     int totalGroup = struCnfg.struLevelInfo[level].nIdentifyGroupTotal;
 
-    int mode = m_nMatMode;
-    if (mode == PARAMS_FRONT_REAR_SAME)
-    {
-        // 保持各次前视为源，后视从它同步
-        for (int g = 0; g < totalGroup; g += 2)
-            if (g + 1 < totalGroup)
-                memcpy(m_nArithmeticEnable[level][g + 1], m_nArithmeticEnable[level][g], sizeof(int) * ARITHMETIC_TOTAL);
-    }
-    else if (mode == PARAMS_FIRST_SECOND_SAME)
-    {
-        // 前视都从 group 0 同步，后视都从 group 1 同步
-        if (totalGroup > 0)
-        {
-            for (int g = 0; g < totalGroup; g++)
-            {
-                if (g % 2 == 0 && g != 0)
-                    memcpy(m_nArithmeticEnable[level][g], m_nArithmeticEnable[level][0], sizeof(int) * ARITHMETIC_TOTAL);
-                else if (g % 2 == 1 && g != 1 && totalGroup > 1)
-                    memcpy(m_nArithmeticEnable[level][g], m_nArithmeticEnable[level][1], sizeof(int) * ARITHMETIC_TOTAL);
-            }
-        }
-    }
-    else if (mode == PARAMS_ALL_SAME)
-    {
-        // 全部从 group 0 同步
-        for (int g = 1; g < totalGroup; g++)
-            memcpy(m_nArithmeticEnable[level][g], m_nArithmeticEnable[level][0], sizeof(int) * ARITHMETIC_TOTAL);
-    }
-    // PARAMS_ALL_SEPARATE 不需要同步
+    /* matModeCombo切换时，识别组参数立即按新模式组装：
+       逐个源组调用，保证多组机型每一对组（前视/后视、第一/第二次）都能按新模式同步；
+       全部单独设置(ALL_SEPARATE)时 materialCopyAssemble 内部直接 break，不复制 */
+    for (int g = 0; g < totalGroup; g++)
+        myFlow.materialCopyAssemble(level, g, 1, 0, 0);
 
-    memcpy(struCnfp.nArithmeticEnableGroup, m_nArithmeticEnable, sizeof(struCnfp.nArithmeticEnableGroup));
+    /* 复制完立即把本层所有组的新参数下发硬件，切换模式后即时生效 */
+    for (int g = 0; g < totalGroup; g++)
+        myFlow.materialResetGroupAssemble(level, g, 1, 0, 0);
 
-    /*matModeCombo切换时，识别组参数立即修改*/
-    myFlow.materialCopyAssemble(0, 0, 1, 0, 0);
     /* 刷新 tabBar enabled 状态和页面 */
     updatePage();
 }
@@ -304,9 +271,18 @@ void PageIdentify::setArithButton(int btnId)
 {
     LOG_INFO_STM("********* btnId:" << btnId << ", is checked:" << arithmeticBox[btnId]->isChecked()
         << ", seq:" << arithmeticSeq[btnId]);
+
+    /* 构造期间 setChecked 等 UI 刷新触发的信号要吞掉，
+       因为 resetIdentifyParams 刚从 struCnfp 拷了正确值，
+       这里再全量 memcpy 会用错误的 UI 默认值覆盖 struCnfp */
+    if (!m_bInitialized) return;
+
     /* enable arithmetic buttons */
     if (arithmeticBox[btnId]->isChecked())
     {
+        /* 西瓜子算法已从 CF/CG 机型算法列表中移除（nArithmeticSeq[ARITH_WATERMELON]=0，
+           界面不会创建该选项），其与其它算法的排他使能逻辑一并注释掉，
+           勾选任意算法时直接使能
         if (arithmeticSeq[btnId] == ARITH_WATERMELON)
         {
             //! 使能西瓜子算法可同时使能智能A
@@ -348,9 +324,13 @@ void PageIdentify::setArithButton(int btnId)
                 }
             }
         }
+        */
+        m_nArithmeticEnable[struGsh.nLevel][tabBar->currentIndex()][arithmeticSeq[btnId]] = 1;
+        arithmeticBtn[btnId]->setEnabled(true);
     }
     else
     {
+        /* 西瓜子算法已移除，取消勾选时无需恢复其它选项的可用性
         if (arithmeticSeq[btnId] == ARITH_WATERMELON)
         {
             for (int i = 0; i < arithmeticSeq.size(); i++)
@@ -358,6 +338,7 @@ void PageIdentify::setArithButton(int btnId)
                 arithmeticBox[i]->setEnabled(true);
             }
         }
+        */
         m_nArithmeticEnable[struGsh.nLevel][tabBar->currentIndex()][arithmeticSeq[btnId]] = 0;
         arithmeticBtn[btnId]->setEnabled(false);
     }
@@ -530,7 +511,9 @@ void PageIdentify::updateArithmeticState()
                     arithmeticBox[i]->setChecked(false);
                     arithmeticBox[i]->setEnabled(false);
                     arithmeticBtn[i]->setEnabled(false);
-                    m_nArithmeticEnable[struGsh.nLevel][tabBar->currentIndex()][ARITH_PISTACHIO] = 0;
+                    /* 算法使能全局统一：智能算法置否要同步到本层所有组 */
+                    for (int g = 0; g < struCnfg.struLevelInfo[struGsh.nLevel].nIdentifyGroupTotal; g++)
+                        m_nArithmeticEnable[struGsh.nLevel][g][ARITH_PISTACHIO] = 0;
                 }
                 else
                 {
@@ -547,7 +530,9 @@ void PageIdentify::updateArithmeticState()
                     arithmeticBox[i]->setChecked(false);
                     arithmeticBox[i]->setEnabled(false);
                     arithmeticBtn[i]->setEnabled(false);
-                    m_nArithmeticEnable[struGsh.nLevel][tabBar->currentIndex()][ARITH_PISTACHIO] = 0;
+                    /* 算法使能全局统一：智能算法置否要同步到本层所有组 */
+                    for (int g = 0; g < struCnfg.struLevelInfo[struGsh.nLevel].nIdentifyGroupTotal; g++)
+                        m_nArithmeticEnable[struGsh.nLevel][g][ARITH_PISTACHIO] = 0;
                 }
                 else
                 {

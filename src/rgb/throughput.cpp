@@ -92,6 +92,7 @@ void Throughput::updateThroughtputPage()
     unitLcdNum->display(struGsh.nUnit / 2 + 1);
     switch(struCnfe.nMachine) {
     case MACHINE_CF:
+    case MACHINE_CG:
         if (struGsh.nUnit%2 == 1) {
             unitViewBtn->setText(myLan.rear_view);
         } else {
@@ -175,6 +176,7 @@ void Throughput::onUnitViewBtnSlt()
 {
     switch(struCnfe.nMachine) {
     case MACHINE_CF:
+    case MACHINE_CG:
         struGsh.nUnit += (struGsh.nUnit%2 == 0) ? 1 : -1;
         if (struGsh.nUnit%2 == 0) {
             unitViewBtn->setText(myLan.front_view);

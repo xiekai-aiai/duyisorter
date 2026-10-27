@@ -14,9 +14,10 @@ CONFIG += resources_big
 QT += network widgets sql
 DEFINES += ENABLE_CAPTURE_SCREEN=1
 
+# 2026-10-26: 临时让 release 也开 DEBUG_OUTPUT, 用来抓 com1/com2 完整串口帧对比 test_arm
 CONFIG(release,debug|release){ 
         DEFINES += QT_NO_DEBUG_OUTPUT \
-                   DEBUG_OUTPUT=0
+                   DEBUG_OUTPUT=1
 }
 else {
         DEFINES += DEBUG_OUTPUT=1

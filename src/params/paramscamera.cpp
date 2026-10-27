@@ -8,7 +8,7 @@ bool GlobalFlow::getCameraSetting(const QString& fileName)
     QSettings setting(fileName, QSettings::IniFormat);
 
     /* get parameters */
-        /* level camera details */
+    /* level camera details */
     for (int i = 0; i < MAX_LEVEL; i++)
     {
         for (int j = 0; j < MAX_UNIT; j++)
@@ -477,10 +477,6 @@ void GlobalFlow::getCamera()
             struCnfc.struLevelCamera[i].nEjectorBegin[nUnitAddr] = 0;
             struCnfc.struLevelCamera[i].nEjectorEnd[nUnitAddr] = struCnfg.nEjectorsPerChute - 1;
 
-            //            for (k = 0; k < struCnfg.nEjectorsPerChute; k++) {
-            //                struCnfc.struLevelCamera[i].nChannelEjectorBegin[nUnitAddr][k] = 100;
-            //                struCnfc.struLevelCamera[i].nChannelEjectorEnd[nUnitAddr][k] = 900;
-            //            }
 
             myFlow.calDivChannelParams(struCnfc.struLevelCamera[i].nChannelBegin[nUnitAddr],
                 struCnfc.struLevelCamera[i].nChannelEnd[nUnitAddr], i, nUnitAddr);

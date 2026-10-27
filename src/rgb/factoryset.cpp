@@ -418,6 +418,7 @@ void factorySet::factoryUpdateSlt()
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
     {
         //                qDebug()<<"AuthenticationLevel"<<struGsh.nAuthenticationLevel<<endl;
         upLay->addWidget(setColorCameraBtn, 0, 0);

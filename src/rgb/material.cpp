@@ -21,6 +21,7 @@
  ***************************************************************************************************/
 void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGroupId, int nIndex)
 {
+    LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-ENTER] cmd=" << nCmd << " L=" << nLevelId << " G=" << nGroupId << " idx=" << nIndex);
     int tmpCmd;
     int k;
     int nUnitAddr;
@@ -74,6 +75,13 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
         switch (nCmd)
         {
         case CMD_UNIT_CROSS_PARAMS:
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-CROSS] L=" << nLevelId << " G=" << nGroupId
+                         << " unitAddr=" << nUnitAddr
+                         << " color=" << struCnfp.struGroupIdentify[nLevelId][nGroupId].struCross.nColor
+                         << " sens=" << struCnfp.struGroupIdentify[nLevelId][nGroupId].struCross.nSens
+                         << " row=" << struCnfp.struGroupIdentify[nLevelId][nGroupId].struCross.nRow
+                         << " col=" << struCnfp.struGroupIdentify[nLevelId][nGroupId].struCross.nColumn
+                         << " percent=" << struCnfp.struGroupIdentify[nLevelId][nGroupId].struCross.nPercent);
             MySerial.com1Write(CMD_UNIT_NEW_CROSS_PARAMS_1, UNIT, nLevelId, nUnitAddr,
                 struCnfp.struGroupIdentify[nLevelId][nGroupId].struCross.nColor, 0, 0,
                 255 - (struCnfp.struGroupIdentify[nLevelId][nGroupId].struCross.nSens * 0.255 + 0.5) / 1, 255, 3);
@@ -203,27 +211,42 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
             break;
         case CMD_UNIT_GREY_A:
         case CMD_UNIT_GREY_B:
-            if (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nMode == 1)
+        {
+            auto &g = struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex];
+            int sensBiasRaw;
+            int sensBiasArith = (nCmd == CMD_UNIT_GREY_A) ? ARITH_GREY_A : ARITH_GREY_B;
+            sensBiasRaw = struCnfp.nSensBias[nUnitAddrLocInLevelArray][sensBiasArith];
+
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-GREY-RAW] cmd=" << nCmd << "(0=GREY_A,1=GREY_B)"
+                         << " L=" << nLevelId << " G=" << nGroupId << " unitAddr=" << nUnitAddr
+                         << " nIndex=" << nIndex
+                         << " raw.color=" << g.nColor
+                         << " raw.mode=" << g.nMode << "(0=选暗,1=选亮)"
+                         << " raw.sensMin=" << g.nSensMin << " raw.sensMax=" << g.nSensMax
+                         << " raw.row=" << g.nRow << " raw.column=" << g.nColumn
+                         << " raw.percent=" << g.nPercent
+                         << " sensBias[" << nUnitAddrLocInLevelArray << "][" << sensBiasArith << "]=" << sensBiasRaw);
+
+            if (g.nMode == 1)
             {
-                nMin = 255 - (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nSensMax * 0.255) / 1;
+                nMin = 255 - (g.nSensMax * 0.255) / 1;
                 nMax = 255;
             }
             else
             {
                 nMin = 0;
-                nMax = (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nSensMin * 0.255 + 0.5) / 1;
+                nMax = (g.nSensMin * 0.255 + 0.5) / 1;
             }
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-GREY-BIAS] mode=" << g.nMode
+                         << " nMin_biasBefore=" << nMin << " nMax_biasBefore=" << nMax);
 
             /* 加上灵敏度偏置的影响 */
             if (nCmd == CMD_UNIT_GREY_A)
-            {
                 nSens = (struCnfp.nSensBias[nUnitAddrLocInLevelArray][ARITH_GREY_A] * 0.255 + 0.5);
-            }
             else
-            {
                 nSens = (struCnfp.nSensBias[nUnitAddrLocInLevelArray][ARITH_GREY_B] * 0.255 + 0.5);
-            }
-            if (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nMode == 1)
+
+            if (g.nMode == 1)
             {
                 nMin = nMin - nSens;
                 nMin = (nMin > 0) ? nMin : 0;
@@ -235,74 +258,92 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
                 nMax = (nMax > 0) ? nMax : 0;
                 nMax = (nMax < 255) ? nMax : 255;
             }
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-GREY-FINAL] sensBias_calced=" << nSens
+                         << " nMin_final=" << nMin << " nMax_final=" << nMax);
 
             if (nCmd == CMD_UNIT_GREY_A)
             {
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-COM1] GREY_A_1: cmd=NEW_GREY_A_1 L=" << nLevelId
+                             << " G=" << nGroupId << " unit=" << nUnitAddr
+                             << " color=" << g.nColor << " nMin=" << nMin << " nMax=" << nMax);
                 MySerial.com1Write(CMD_UNIT_NEW_GREY_A_1, UNIT, nLevelId, nUnitAddr,
-                    struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nColor,
-                    0, 0, nMin, nMax, 3);
+                    g.nColor, 0, 0, nMin, nMax, 3);
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-COM1] GREY_A_2: row=" << g.nRow - 1
+                             << " col=" << g.nColumn - 1
+                             << " percentHi=" << (g.nPercent - 1) / 256
+                             << " percentLo=" << (g.nPercent - 1) % 256);
                 MySerial.com1Write(CMD_UNIT_NEW_GREY_A_2, UNIT, nLevelId, nUnitAddr, 0,
-                    struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nRow - 1,
-                    struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nColumn - 1,
-                    (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nPercent - 1) / 256,
-                    (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nPercent - 1) % 256, 3);
+                    g.nRow - 1, g.nColumn - 1,
+                    (g.nPercent - 1) / 256, (g.nPercent - 1) % 256, 3);
             }
             else
             {
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-COM1] GREY_B_1: cmd=NEW_GREY_B_1 L=" << nLevelId
+                             << " G=" << nGroupId << " unit=" << nUnitAddr
+                             << " color=" << g.nColor << " nMin=" << nMin << " nMax=" << nMax);
                 MySerial.com1Write(CMD_UNIT_NEW_GREY_B_1, UNIT, nLevelId, nUnitAddr,
-                    struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nColor,
-                    0, 0, nMin, nMax, 3);
+                    g.nColor, 0, 0, nMin, nMax, 3);
                 MySerial.com1Write(CMD_UNIT_NEW_GREY_B_2, UNIT, nLevelId, nUnitAddr, 0,
-                    struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nRow - 1,
-                    struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nColumn - 1,
-                    (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nPercent - 1) / 256,
-                    (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nPercent - 1) % 256, 3);
+                    g.nRow - 1, g.nColumn - 1,
+                    (g.nPercent - 1) / 256, (g.nPercent - 1) % 256, 3);
             }
             break;
+        }
         case CMD_UNIT_BURNT_ENABLE:
             MySerial.com1Write(nCmd, UNIT, nLevelId, nUnitAddr, 0, 0, 0, 0, struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nBurntReservedFlag, 3);
             break;
         case CMD_UNIT_DISCOLOR_A_1:
         case CMD_UNIT_DISCOLOR_B_1:
-            if (nCmd == CMD_UNIT_DISCOLOR_A_1)
-            {
-                tmpCmd = CMD_UNIT_NEW_DISCOLOR_A_2;
-            }
-            else
-            {
-                tmpCmd = CMD_UNIT_NEW_DISCOLOR_B_2;
-            }
-
+        {
+            auto &g = struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex];
+            bool isA = (nCmd == CMD_UNIT_DISCOLOR_A_1);
+            tmpCmd = isA ? CMD_UNIT_NEW_DISCOLOR_A_2 : CMD_UNIT_NEW_DISCOLOR_B_2;
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-DISCOLOR-1] "
+                         << (isA ? "A_1" : "B_1")
+                         << " L=" << nLevelId << " G=" << nGroupId << " unit=" << nUnitAddr
+                         << " row=" << g.nRow - 1 << " col=" << g.nColumn - 1
+                         << " percentHi=" << (g.nPercent - 1) / 256
+                         << " percentLo=" << (g.nPercent - 1) % 256);
             MySerial.com1Write(tmpCmd, UNIT, nLevelId, nUnitAddr, 0,
-                struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nRow - 1,
-                struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nColumn - 1,
-                (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nPercent - 1) / 256,
-                (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nPercent - 1) % 256, 3);
-
+                g.nRow - 1, g.nColumn - 1,
+                (g.nPercent - 1) / 256, (g.nPercent - 1) % 256, 3);
             break;
+        }
         case CMD_UNIT_DISCOLOR_A_2:
         case CMD_UNIT_DISCOLOR_B_2:
-            if (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nMode == 1)
+        {
+            auto &g = struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex];
+            bool isA = (nCmd == CMD_UNIT_DISCOLOR_A_2);
+            int discolorArith = isA ? ARITH_DISCOLOR_A : ARITH_DISCOLOR_B;
+            int sensBiasRaw = struCnfp.nSensBias[nUnitAddrLocInLevelArray][discolorArith];
+
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-DISCOLOR-RAW] "
+                         << (isA ? "A_2" : "B_2")
+                         << " L=" << nLevelId << " G=" << nGroupId << " unit=" << nUnitAddr
+                         << " discolor=" << g.nDiscolor
+                         << " mode=" << g.nMode << "(0=选暗,1=选亮)"
+                         << " sensMin=" << g.nSensMin << " sensMax=" << g.nSensMax
+                         << " lightLimit=" << g.nLightLimit
+                         << " sensBias[" << nUnitAddrLocInLevelArray << "][" << discolorArith << "]=" << sensBiasRaw);
+
+            if (g.nMode == 1)
             {
-                nMin = 255 - (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nSensMax * 0.0255 + 0.5);
+                nMin = 255 - (g.nSensMax * 0.0255 + 0.5);
                 nMax = 255;
             }
             else
             {
                 nMin = 0;
-                nMax = (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nSensMin * 0.0255 + 0.5);
+                nMax = (g.nSensMin * 0.0255 + 0.5);
             }
 
-            /*加上灵敏度偏置的影响20141204*/
-            if (nCmd == CMD_UNIT_DISCOLOR_A_2)
-            {
+            /*加上灵敏度偏置的影响*/
+            if (isA)
                 nSens = (struCnfp.nSensBias[nUnitAddrLocInLevelArray][ARITH_DISCOLOR_A] * 0.0255 + 0.5);
-            }
             else
-            {
                 nSens = (struCnfp.nSensBias[nUnitAddrLocInLevelArray][ARITH_DISCOLOR_B] * 0.0255 + 0.5);
-            }
-            if (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nMode == 1)
+
+            if (g.nMode == 1)
             {
                 nMin = nMin - nSens;
                 nMin = (nMin > 0) ? nMin : 0;
@@ -315,32 +356,23 @@ void GlobalFlow::materialParamsNewPacketOrganize(int nCmd, int nLevelId, int nGr
                 nMax = (nMax < 255) ? nMax : 255;
             }
 
-            switch (struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nDiscolor)
+            switch (g.nDiscolor)
             {
-            case 0:
-                nMain = 1;
-                nVice = 2;
-                break;
-            case 1:
-                nMain = 1;
-                nVice = 4;
-                break;
-            case 2:
-                nMain = 2;
-                nVice = 4;
-                break;
+            case 0: nMain = 1; nVice = 2; break;
+            case 1: nMain = 1; nVice = 4; break;
+            case 2: nMain = 2; nVice = 4; break;
             }
 
-            if (nCmd == CMD_UNIT_DISCOLOR_A_2)
-            {
-                tmpCmd = CMD_UNIT_NEW_DISCOLOR_A_1;
-            }
-            else
-            {
-                tmpCmd = CMD_UNIT_NEW_DISCOLOR_B_1;
-            }
-            MySerial.com1Write(tmpCmd, UNIT, nLevelId, nUnitAddr, 0, nMin, nMax, (nMain << 4) | nVice, struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[nIndex].nLightLimit, 3);
+            tmpCmd = isA ? CMD_UNIT_NEW_DISCOLOR_A_1 : CMD_UNIT_NEW_DISCOLOR_B_1;
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[NewPkt-DISCOLOR-FINAL] "
+                         << (isA ? "A_2" : "B_2")
+                         << " nMin=" << nMin << " nMax=" << nMax
+                         << " nMain=" << nMain << " nVice=" << nVice
+                         << " mainVice=" << ((nMain << 4) | nVice)
+                         << " lightLimit=" << g.nLightLimit);
+            MySerial.com1Write(tmpCmd, UNIT, nLevelId, nUnitAddr, 0, nMin, nMax, (nMain << 4) | nVice, g.nLightLimit, 3);
             break;
+        }
         case CMD_UNIT_PEANUT_A:
             MySerial.com1Write(CMD_UNIT_NEW_GREY_A_1, UNIT, nLevelId, nUnitAddr,
                 1,//red
@@ -2070,62 +2102,96 @@ void GlobalFlow::resetMaterial(int nLevelId, int nGroupId, int bIsAllSens, int n
         nArithEnd = struCnfe.nArithmeticTotal;
     }
 
+    LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RM-ENTER] L=" << nLevelId << " G=" << nGroupId
+                 << " allSens=" << bIsAllSens << " arith=" << nArithSeq
+                 << " range=" << nArithBegin << "-" << nArithEnd);
+
     /* get arithmetic enable */
     memset(nArithmeticEnable, 0, sizeof(nArithmeticEnable));
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {
         for (int j = 0; j < struCnfe.nArithmeticTotal; j++)
         {
-            nArithmeticEnable[i][j] = myFlow.getArithEnable(i, 0, j);
+            nArithmeticEnable[i][j] = myFlow.getArithEnable(i, nGroupId, j);
         }
     }
+
+    LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RM-enable] L=" << nLevelId << " G=" << nGroupId
+                 << " GREY_A=" << nArithmeticEnable[nLevelId][ARITH_GREY_A]
+                 << " GREY_B=" << nArithmeticEnable[nLevelId][ARITH_GREY_B]
+                 << " DISCOLOR_A=" << nArithmeticEnable[nLevelId][ARITH_DISCOLOR_A]
+                 << " DISCOLOR_B=" << nArithmeticEnable[nLevelId][ARITH_DISCOLOR_B]);
 
     for (int i = nArithBegin; i < nArithEnd; i++)
     {
         if (nArithmeticEnable[nLevelId][i] == 1)
         {
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RM-dispatch] L=" << nLevelId << " G=" << nGroupId
+                         << " arith=" << i << " ENABLED -> materialParamsSet");
             switch (i)
             {
             case ARITH_GREY_A:
+            {
+                int idx = 0;
+                auto &g = struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[idx];
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RM-GREY_A] L=" << nLevelId << " G=" << nGroupId
+                             << " sensMin=" << g.nSensMin << " sensMax=" << g.nSensMax
+                             << " mode=" << g.nMode << " color=" << g.nColor
+                             << " row=" << g.nRow << " percent=" << g.nPercent);
                 materialParamsSet(CMD_UNIT_GREY_A, nLevelId, nGroupId, 0);
-                if (struCnfe.nEnableMaizeDoubleView == 1)
-                {
-                    materialParamsSet(CMD_UNIT_BURNT_ENABLE, nLevelId, nGroupId, 0);
-                }
-                if (bIsReserved == 1)
-                {
-                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, 0);
-                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, 0);
+                if (bIsReserved == 1) {
+                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, idx);
+                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, idx);
                 }
                 break;
+            }
             case ARITH_GREY_B:
-                materialParamsSet(CMD_UNIT_GREY_B, nLevelId, nGroupId, 1);
-                if (bIsReserved == 1)
-                {
-                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, 1);
-                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, 1);
+            {
+                int idx = 1;
+                auto &g = struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[idx];
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RM-GREY_B] L=" << nLevelId << " G=" << nGroupId
+                             << " sensMin=" << g.nSensMin << " sensMax=" << g.nSensMax
+                             << " mode=" << g.nMode << " color=" << g.nColor
+                             << " row=" << g.nRow << " percent=" << g.nPercent);
+                materialParamsSet(CMD_UNIT_GREY_B, nLevelId, nGroupId, idx);
+                if (bIsReserved == 1) {
+                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, idx);
+                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, idx);
                 }
                 break;
+            }
+            case ARITH_DISCOLOR_A:
+            {
+                int idx = 2;
+                auto &g = struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[idx];
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RM-DISCOLOR_A] L=" << nLevelId << " G=" << nGroupId
+                             << " discolor=" << g.nDiscolor << " mode=" << g.nMode
+                             << " sensMin=" << g.nSensMin << " sensMax=" << g.nSensMax);
+                materialParamsSet(CMD_UNIT_DISCOLOR_A_1, nLevelId, nGroupId, idx);
+                materialParamsSet(CMD_UNIT_DISCOLOR_A_2, nLevelId, nGroupId, idx);
+                if (bIsReserved == 1) {
+                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, idx);
+                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, idx);
+                }
+                break;
+            }
+            case ARITH_DISCOLOR_B:
+            {
+                int idx = 3;
+                auto &g = struCnfp.struGroupIdentify[nLevelId][nGroupId].struGreyColor[idx];
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RM-DISCOLOR_B] L=" << nLevelId << " G=" << nGroupId
+                             << " discolor=" << g.nDiscolor << " mode=" << g.nMode
+                             << " sensMin=" << g.nSensMin << " sensMax=" << g.nSensMax);
+                materialParamsSet(CMD_UNIT_DISCOLOR_B_1, nLevelId, nGroupId, idx);
+                materialParamsSet(CMD_UNIT_DISCOLOR_B_2, nLevelId, nGroupId, idx);
+                if (bIsReserved == 1) {
+                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, idx);
+                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, idx);
+                }
+                break;
+            }
             case ARITH_RESERVED:
                 materialParamsSet(CMD_UNIT_MAIZE_PARAMS_3, nLevelId, nGroupId, 0);  //保留算法的参数借用玉米参数命令下发
-                break;
-            case ARITH_DISCOLOR_A:
-                materialParamsSet(CMD_UNIT_DISCOLOR_A_1, nLevelId, nGroupId, 2);
-                materialParamsSet(CMD_UNIT_DISCOLOR_A_2, nLevelId, nGroupId, 2);
-                if (bIsReserved == 1)
-                {
-                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, 2);
-                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, 2);
-                }
-                break;
-            case ARITH_DISCOLOR_B:
-                materialParamsSet(CMD_UNIT_DISCOLOR_B_1, nLevelId, nGroupId, 3);
-                materialParamsSet(CMD_UNIT_DISCOLOR_B_2, nLevelId, nGroupId, 3);
-                if (bIsReserved == 1)
-                {
-                    materialParamsSet(CMD_UNIT_RESERVED_1, nLevelId, nGroupId, 3);
-                    materialParamsSet(CMD_UNIT_RESERVED_2, nLevelId, nGroupId, 3);
-                }
                 break;
             case ARITH_CROSS:
                 materialParamsSet(CMD_UNIT_CROSS_PARAMS, nLevelId, nGroupId, 0);
@@ -2317,26 +2383,34 @@ void GlobalFlow::materialAiModelParaSet(int nLevelId, int nGroupId)
 void GlobalFlow::materialResetGroupAssemble(int nLevelId, int nGroupId, int bIsAllSens, int nArithSeq, int bIsReserved)
 {
     int caseValue = struCnfp.nMatAssembleMode;
+    LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RGA-ENTER] L=" << nLevelId << " G=" << nGroupId
+                 << " mode=" << caseValue << " allSens=" << bIsAllSens << " arith=" << nArithSeq);
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         switch (nGroupId)
         {
         case 0: // first_front
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RGA-case0] FIRST_FRONT resetMaterial(0,0)");
             resetMaterial(0, 0, bIsAllSens, nArithSeq, bIsReserved);
             switch (caseValue)
             {
             case PARAMS_ALL_SEPARATE:
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RGA-case0] mode=ALL_SEPARATE break -> 仅下发 G=0, 不碰其他组");
                 break;
             case PARAMS_FRONT_REAR_SAME:
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RGA-case0] mode=FRONT_REAR_SAME -> 同步下发 G=1");
                 resetMaterial(0, 1, bIsAllSens, nArithSeq, bIsReserved);
                 break;
             case PARAMS_FIRST_SECOND_SAME:
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RGA-case0] mode=FIRST_SECOND_SAME -> 同步下发 G=2,4,6");
                 resetMaterial(0, 2, bIsAllSens, nArithSeq, bIsReserved);
                 resetMaterial(0, 4, bIsAllSens, nArithSeq, bIsReserved);
                 resetMaterial(0, 6, bIsAllSens, nArithSeq, bIsReserved);
                 break;
             case PARAMS_ALL_SAME:
+                LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RGA-case0] mode=ALL_SAME -> 同步下发所有 G=1..7");
                 resetMaterial(0, 1, bIsAllSens, nArithSeq, bIsReserved);
                 resetMaterial(0, 2, bIsAllSens, nArithSeq, bIsReserved);
                 resetMaterial(0, 3, bIsAllSens, nArithSeq, bIsReserved);
@@ -2348,6 +2422,7 @@ void GlobalFlow::materialResetGroupAssemble(int nLevelId, int nGroupId, int bIsA
             }
             break;
         case 1: // first_rear
+            LOG_INFO_STM("LIC TRACK GROUP ALGO SET：[RGA-case1] FIRST_REAR resetMaterial(0,1)");
             resetMaterial(0, 1, bIsAllSens, nArithSeq, bIsReserved);
             switch (caseValue)
             {
@@ -2455,7 +2530,7 @@ void GlobalFlow::materialParamsCopy(int nLevelIdSrc, int nGroupIdSrc, int nLevel
     {
         for (int j = 0; j < struCnfe.nArithmeticTotal; j++)
         {
-            nArithmeticEnable[i][j] = myFlow.getArithEnable(i, 0, j);
+            nArithmeticEnable[i][j] = myFlow.getArithEnable(i, nGroupIdSrc, j);
         }
     }
 
@@ -2795,99 +2870,60 @@ void GlobalFlow::materialAiModelParaCopy(int nLevelId, int nGroupId, int nOldLev
 void GlobalFlow::materialCopyAssemble(int nLevelId, int nGroupId, int bIsAllSens, int nArithSeq, int bIsReserved)
 {
     int caseTmp = struCnfp.nMatAssembleMode;
+    LOG_INFO_STM("[CopyAssemble] ENTER level=" << nLevelId << " group=" << nGroupId << " mode=" << caseTmp);
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
-        switch (nGroupId)
+    case MACHINE_CG:
+    {
+        /* 层号统一按 0 处理；组数取本层实际配置，不再固定只支持 0~7 组 */
+        int nGroupTotal = struCnfg.struLevelInfo[0].nIdentifyGroupTotal;
+        if (nGroupTotal > MAX_GROUP_IDTNTIFY)
+            nGroupTotal = MAX_GROUP_IDTNTIFY;
+        LOG_INFO_STM("[CopyAssemble] total=" << nGroupTotal);
+        if (nGroupId < 0 || nGroupId >= nGroupTotal)
+            break;
+
+        switch (caseTmp)
         {
-        case 0: // first_front
-            switch (caseTmp)
+        case PARAMS_ALL_SEPARATE:
+            LOG_INFO_STM("[CopyAssemble] ALL_SEPARATE -> break (NO copy)");
+            break;
+        case PARAMS_FRONT_REAR_SAME:
+            /* 前后视相同：前视组(偶数) -> 配对的后视组(奇数)， 只修改对应的前视后视 */
+            if ((nGroupId % 2) == 0 && (nGroupId + 1) < nGroupTotal)
             {
-            case PARAMS_ALL_SEPARATE:
-                break;
-            case PARAMS_FRONT_REAR_SAME:
-                materialParamsCopy(0, 0, 0, 1, bIsAllSens, nArithSeq, bIsReserved);
-                break;
-            case PARAMS_FIRST_SECOND_SAME:
-                materialParamsCopy(0, 0, 0, 2, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 4, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 6, bIsAllSens, nArithSeq, bIsReserved);
-                break;
-            case PARAMS_ALL_SAME:
-                materialParamsCopy(0, 0, 0, 1, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 2, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 3, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 4, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 5, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 6, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 0, 0, 7, bIsAllSens, nArithSeq, bIsReserved);
-                break;
+                LOG_INFO_STM("[CopyAssemble] FRONT_REAR_SAME G" << nGroupId << " -> G" << (nGroupId + 1));
+                materialParamsCopy(0, nGroupId, 0, nGroupId + 1, bIsAllSens, nArithSeq, bIsReserved);
             }
             break;
-        case 1: // first_rear
-            switch (struCnfp.nMatAssembleMode)
+        case PARAMS_FIRST_SECOND_SAME:
+            /* 前视相同、后视相同：第1次的前视(0)/后视(1) -> 后续同奇偶的所有组 */
+            if (nGroupId < 2)
             {
-            case PARAMS_ALL_SEPARATE:
-            case PARAMS_FRONT_REAR_SAME:
-                break;
-            case PARAMS_FIRST_SECOND_SAME:
-                materialParamsCopy(0, 1, 0, 3, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 1, 0, 5, bIsAllSens, nArithSeq, bIsReserved);
-                materialParamsCopy(0, 1, 0, 7, bIsAllSens, nArithSeq, bIsReserved);
-                break;
-            case PARAMS_ALL_SAME:
-                break;
+                for (int dst = nGroupId + 2; dst < nGroupTotal; dst += 2)
+                {
+                    LOG_INFO_STM("[CopyAssemble] FIRST_SECOND_SAME G" << nGroupId << " -> G" << dst);
+                    materialParamsCopy(0, nGroupId, 0, dst, bIsAllSens, nArithSeq, bIsReserved);
+                }
             }
             break;
-        case 2: // second_front
-            switch (struCnfp.nMatAssembleMode)
+        case PARAMS_ALL_SAME:
+            /* 全部相同：只由 G0 作为源，复制到其余所有组 */
+            if (nGroupId == 0)
             {
-            case PARAMS_ALL_SEPARATE:
-                break;
-            case PARAMS_FRONT_REAR_SAME:
-                materialParamsCopy(0, 2, 0, 3, bIsAllSens, nArithSeq, bIsReserved);
-                break;
-            case PARAMS_FIRST_SECOND_SAME:
-            case PARAMS_ALL_SAME:
-                break;
+                for (int dst = 1; dst < nGroupTotal; dst++)
+                {
+                    LOG_INFO_STM("[CopyAssemble] ALL_SAME G0 -> G" << dst);
+                    materialParamsCopy(0, 0, 0, dst, bIsAllSens, nArithSeq, bIsReserved);
+                }
             }
-            break;
-        case 3: // second_rear
-            break;
-        case 4: // third_front
-            switch (struCnfp.nMatAssembleMode)
-            {
-            case PARAMS_ALL_SEPARATE:
-                break;
-            case PARAMS_FRONT_REAR_SAME:
-                materialParamsCopy(0, 4, 0, 5, bIsAllSens, nArithSeq, bIsReserved);
-                break;
-            case PARAMS_FIRST_SECOND_SAME:
-            case PARAMS_ALL_SAME:
-                break;
-            }
-            break;
-        case 5: // third_rear
-            break;
-        case 6: // fourth_front
-            switch (struCnfp.nMatAssembleMode)
-            {
-            case PARAMS_ALL_SEPARATE:
-                break;
-            case PARAMS_FRONT_REAR_SAME:
-                materialParamsCopy(0, 6, 0, 7, bIsAllSens, nArithSeq, bIsReserved);
-                break;
-            case PARAMS_FIRST_SECOND_SAME:
-            case PARAMS_ALL_SAME:
-                break;
-            }
-            break;
-        case 7: // fourth_rear
             break;
         default:
             break;
         }
         break;
+    }
     default:
         break;
     }

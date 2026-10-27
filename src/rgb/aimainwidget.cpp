@@ -3313,6 +3313,7 @@ bool AIMainWidget::setGlobalAIParam(int classMode, int indexOfTrain)
     switch (struCnfe.nMachine)
     {
     case MACHINE_CF:
+    case MACHINE_CG:
         qDebug("cal-%d", m_bCalSet);
         if (m_bCalSet)
         {//独立设置

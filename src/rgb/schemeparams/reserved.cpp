@@ -65,6 +65,7 @@ void PageReserved::setReservedParams()
 /* write params to file */
     switch(struCnfe.nMachine) {
     case MACHINE_CF:
+    case MACHINE_CG:
         myFlow.materialCopyAssemble(0, tabBar->currentIndex(), 0, m_nArithIndex, 1);
         myFlow.materialResetGroupAssemble(struGsh.nLevel, tabBar->currentIndex(), 0, m_nArithIndex, 1);
         break;

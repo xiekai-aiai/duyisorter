@@ -37,6 +37,7 @@ void PageLamp::setLampParams()
 
     switch(struCnfe.nMachine) {
     case MACHINE_CF:
+    case MACHINE_CG:
         memcpy(struCnfp.struGroupCtrl[0].nLamp, m_nLamp, sizeof(m_nLamp));
         memcpy(struCnfp.struGroupCtrl[0].nLampLight, m_nLampLight, sizeof(m_nLampLight));
         break;
@@ -57,6 +58,7 @@ void PageLamp::resetLampParams()
 
     switch(struCnfe.nMachine) {
     case MACHINE_CF:
+    case MACHINE_CG:
         memcpy(m_nLamp, struCnfp.struGroupCtrl[0].nLamp, sizeof(struCnfp.struGroupCtrl[0].nLamp));
         memcpy(m_nLampLight, struCnfp.struGroupCtrl[0].nLampLight, sizeof(struCnfp.struGroupCtrl[0].nLampLight));
         break;
@@ -202,6 +204,7 @@ void PageLamp::updateMachineParams()
     /* lamp extra page */
     switch (struCnfe.nMachine) {
     case MACHINE_CF:
+    case MACHINE_CG:
         if(struCnfe.nEnableHGQMachine==1)
         {
             topLine->hide();
