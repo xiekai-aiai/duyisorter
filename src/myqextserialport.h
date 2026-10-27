@@ -22,7 +22,7 @@
 #define PACKET_SIZE     24
 #define FRAME_LEN_MAIZE 8192
 
-/*  模块类型 */
+ /*  模块类型 */
 #define INT     0x01
 #define UNIT	0x02
 
@@ -53,7 +53,7 @@
 #define CMD_INT_POSITION_BIAS          0x3200           // 对位偏置数据下发
 #define CMD_INT_MASTER_SLAVE_RELATION  0x3201           // 三次反选中主配辅配逻辑关系
 #define CMD_INT_TICK_MODE              0x3210           // 剔除模式下发
-									
+
 /* 彩色相机板参数协议 */
 #define CMD_UNIT_ONOFF                  0x01            // 运行开始/停止
 #define CMD_UNIT_UPDATE                 0x02            // 校正开始/停止
@@ -326,32 +326,60 @@ public:
     void setComBaud(int nPortno, int baud);     // 设置串口波特率
     int getComBaud(int nPortno);     // 获取串口波特率
 
+    /**
+     * @brief: 发送串口数据
+     * @param {int} nCmd:         命令编码，对应协议Byte4~Byte5
+     * @param {char} sModuleType: 模块类型，1: 接口板 2: 相机板
+     * @param {char} sIntAddr:    模块组序号, 0: 第一组 1: 第二组，依此类推，目前看是对应接口板个数，从0~struCnfg.nInterfaceBoardTotal
+     * @param {char} sUnitAddr:   相机模块地址， 偶数为前视，奇数为后视
+     * @param {char} arg1:        对应协议Byte7字节
+     * @param {char} arg2:        对应协议Byte8字节
+     * @param {char} arg3:        对应协议Byte9字节
+     * @param {char} arg4:        对应协议Byte10字节
+     * @param {char} arg5:        对应协议Byte11字节
+     * @param {int} nCount:       发送次数
+     * @return {*}
+     */
     int com1Write(int nCmd, char sModuleType, char sIntAddr, char sUnitAddr, char arg1, char arg2,
-                        char arg3, char arg4, char arg5, int nCount);
-    int com1Read(char *sBuf, int nLen, int timeoutMsec = 0);
-    int com1Write_update(int nCmd, char sModule, char sModule2, char *sBuf, int nCount);
+        char arg3, char arg4, char arg5, int nCount);
+
+    int com1Read(char* sBuf, int nLen, int timeoutMsec = 0);
+    int com1Write_update(int nCmd, char sModule, char sModule2, char* sBuf, int nCount);
 
     int fpgaUpdateWrite(int nCmd, uchar sModule1, uchar sModule2, uchar arg1, uchar arg2,
-                        uchar arg3, uchar arg4, uchar arg5, int nCount, uchar buf[][FRAME_LEN]=NULL);
-    int fpgaUpdateRead(char *sBuf, int len, bool bIsCtrl=false);
+        uchar arg3, uchar arg4, uchar arg5, int nCount, uchar buf[][FRAME_LEN] = NULL);
+    int fpgaUpdateRead(char* sBuf, int len, bool bIsCtrl = false);
 
     // sModuleType: 0-通用控制板， 1-恒流源控制板
+    /**
+     * @brief: 发送串口数据
+     * @param {int} nCmd:         命令编码，对应协议Byte4~Byte5
+     * @param {char} sModuleType: 模块类型, 0: 控制板 1: 调光板
+     * @param {char} sModuleAddr: 模块地址
+     * @param {char} arg1:        对应协议Byte7字节
+     * @param {char} arg2:        对应协议Byte8字节
+     * @param {char} arg3:        对应协议Byte9字节
+     * @param {char} arg4:        对应协议Byte10字节
+     * @param {char} arg5:        对应协议Byte11字节
+     * @param {int} nCount:       发送次数
+     * @return {*}
+     */
     int com2Write(int nCmd, char sModuleType, char sModuleAddr, char arg1, char arg2,
-                  char arg3, char arg4, char arg5, int nCount);
-    int com2Read(char *sBuf, int nLen);
+        char arg3, char arg4, char arg5, int nCount);
+    int com2Read(char* sBuf, int nLen);
 
     int com3Write(int nCmd, char sModuleType, char sIntAddr, char sUnitAddr, char arg1, char arg2,
-                        char arg3, char arg4, char arg5, int nCount);
-    int com3Read(char *sbuf, int nLen, int timeoutMsec = 0);
+        char arg3, char arg4, char arg5, int nCount);
+    int com3Read(char* sbuf, int nLen, int timeoutMsec = 0);
 
-    int remoteUpdateRead(char *sbuf, int nLen);
-    unsigned int crcFpga(char *sData, int nLen);    // CRC check
+    int remoteUpdateRead(char* sbuf, int nLen);
+    unsigned int crcFpga(char* sData, int nLen);    // CRC check
 
     int smsComWrite(int nCmd, QString str);         // 发送短信息
     QString smsComRead(void);       // 接收短信息
 
 private:
-    QextSerialPort *myPort1, *myPort2, *myPort3;
+    QextSerialPort* myPort1, * myPort2, * myPort3;
 };
 
 #endif // MYQEXTSERIALPORT_H
