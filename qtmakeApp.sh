@@ -329,9 +329,11 @@ if [ -d "$path_cur/$APP_DIR/cnf.board" ]; then
   cp -rf $path_cur/$APP_DIR/cnf.board    tar_app/
 fi
 
-# 注意: userdata/db 是运行时生产数据（sorter.db 里有方案、AI模型、用户配置），
-# 不应打包！否则用户升级时会把板卡上正在用的 sorter.db 覆盖成空库。
-# tar_app/userdata/db 目录只创建空目录（保证路径存在），不复制任何文件。
+# userdata/db —— 把编译机上当前 app/db/sorter.db 打包进去（方案/AI模型/用户配置）
+# 全新部署的板卡需要这份初始库，用户升级时手动覆盖即可
+if [ -d "$path_cur/$APP_DIR/db" ]; then
+  cp -rf $path_cur/$APP_DIR/db/*        tar_app/userdata/db/
+fi
 
 # 校验: 关键文件不能缺 (cp 失败时立刻退出, 避免出坏包)
 MISSING=""

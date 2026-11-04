@@ -11,7 +11,7 @@ DEPENDPATH += . src/3rdparty src src/common
 INCLUDEPATH += . src src/common src/3rdparty
 CONFIG += qt debug_and_release warn_on thread
 CONFIG += resources_big
-QT += network widgets sql
+QT += network widgets sql ftp
 DEFINES += ENABLE_CAPTURE_SCREEN=1
 
 # 2026-10-26: 临时让 release 也开 DEBUG_OUTPUT, 用来抓 com1/com2 完整串口帧对比 test_arm
@@ -98,9 +98,12 @@ HEADERS += $$PWD/src/*.h \
            $$PWD/src/rgb/autoanalysiswidget.h
 
 # source file
-SOURCES += $$PWD/src/*.cpp \
+# log4qt 死代码: 项目统一用 unilog, mylogger.cpp 无任何引用
+SOURCES += $$PWD/src/*.cpp
+SOURCES -= $$PWD/src/mylogger.cpp
+
 #第三方库
-           $$PWD/src/3rdparty/qextserialport/qextserialport.cpp \
+SOURCES += $$PWD/src/3rdparty/qextserialport/qextserialport.cpp \
            $$PWD/src/3rdparty/libqrencode/*.c \
            $$PWD/src/3rdparty/qjson/*.cpp \
 #自定义控件库
