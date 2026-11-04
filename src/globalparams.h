@@ -1527,7 +1527,7 @@ struct struShare
     QString wifiPassWord;
     quint64 nThroughtPut[MAX_UNIT / 2]; // 本次总产量
 
-
+    bool isImageSend;               // AI 图像推送开关 (aismainwidget UI 复选框)
 };
 
 typedef struct

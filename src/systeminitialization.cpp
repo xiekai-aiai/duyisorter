@@ -61,7 +61,9 @@ void communication::startComSlt()
     //         msgBox.setText(str);
     //         msgBox.exec();
     //    }
-    myFlow.initInterfaceTransMode(0);
+    // initInterfaceTransMode(0) 是老架构遗留, 会把 FPGA 切到串口上传模式, AI 架构下不需要
+    // FPGA 出厂默认就是 AI 以太网推图, sendAllParamsRgb() 里也会再调一次 arg8=1 双重保险
+    // myFlow.initInterfaceTransMode(0);  // ← 已禁用, AI 架构不要切串口模式
     ret = myFlow.initCommunication();
     ret1 = myFlow.initAiCommunication();
 
