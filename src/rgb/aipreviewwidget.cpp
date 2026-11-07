@@ -29,6 +29,7 @@ static quint8 eightToFour[256] = {0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,0,0,1,1,2,2,3,
 /* 用于图片显示的缓冲区 */
 static char oriBuf[IMAGE_WIDTH*IMAGE_HEIGHT*3];          // 用于存储原始图片的数据
 static uchar chgBuf[IMAGE_WIDTH*IMAGE_HEIGHT*3];         // 用于存储被修改的图片数据
+static uchar fgBuf[IMAGE_WIDTH*IMAGE_HEIGHT*3];          // 用于存储前景二值化掩码数据
 static uchar disBuf[DISPLAY_WIDTH*DISPLAY_HEIGHT*3];     // 用于存储显示的图片信息
 
 /* 智能分析相关参数 */
@@ -55,6 +56,7 @@ void AIPreviewWidget::initAIDisParams()
 {
     m_bIsSimulate = false;
     m_bIsPurSim = false;
+    m_bShowFgMask = false;
 }
 
 /* 初始化智能分析中的独立参数 */
@@ -193,15 +195,18 @@ void AIPreviewWidget::createAIPreviewPage()
     m_relastBtn->setFixedHeight(height);
     m_optSamBtn = new myPushButton(myLan.ai_optimize_sample, QIcon());
     m_optSamBtn->setFixedHeight(height);
+    m_fgMaskBtn = new myPushButton(tr("前景显示"), QIcon());
+    m_fgMaskBtn->setFixedHeight(height);
     m_backBtn = new myPushButton(myLan.back, QIcon());
     m_backBtn->setFixedHeight(height);
     downLay->addWidget(m_relastBtn);
     downLay->addWidget(m_optSamBtn);
+    downLay->addWidget(m_fgMaskBtn);
     downLay->addWidget(m_backBtn);
     if(LCD_WIDTH == 640)
-        downLay->setSpacing(100);
+        downLay->setSpacing(30);
     else if(LCD_WIDTH == 1024)
-        downLay->setSpacing(200);
+        downLay->setSpacing(60);
 
     /* 图片预览页面的整体布局 */
     mainLay->addLayout(upLay);
@@ -232,6 +237,7 @@ void AIPreviewWidget::createAIPreviewPage()
     connect(m_samSensLcd, SIGNAL(pressed()), this, SLOT(onSamSensLcdPressed()));
     connect(m_relastBtn, SIGNAL(pressed()), this, SLOT(onReLastBtnClicked()));
     connect(m_optSamBtn, SIGNAL(pressed()), this, SLOT(onOptSamBtnClicked()));
+    connect(m_fgMaskBtn, SIGNAL(pressed()), this, SLOT(onFgMaskBtnClicked()));
     connect(m_backBtn, SIGNAL(clicked()), this, SLOT(onBackBtnClicked()));
     connect(AISensLbe,SIGNAL(pressed()),this,SLOT(onAISensLetPressed()));
     connect(AIRowLbe,SIGNAL(pressed()),this,SLOT(onAIRowLetPressed()));
@@ -290,6 +296,10 @@ void AIPreviewWidget::getDataAndShow()
     fileName = QString("%1.png").arg(m_nImgIndex);
     getImageData(fileName);
     getSelPointsFromFile();
+
+    /* 前景显示模式下切换图片时重建掩码 */
+    if(m_bShowFgMask)
+        buildForegroundMask();
 
     if(m_bIsSimulate)
         displaySimulate();
@@ -401,6 +411,12 @@ void AIPreviewWidget::refreshBtnStatus()
     else
         m_optSamBtn->setRedColor(DEF);
 
+    m_fgMaskBtn->setEnabled(true);
+    if(m_bShowFgMask)
+        m_fgMaskBtn->setRedColor(GREEN);
+    else
+        m_fgMaskBtn->setRedColor(DEF);
+
     if(aloneParams[m_nImgIndex].nSelTimes > 0)
         m_relastBtn->setEnabled(true);
     else
@@ -503,14 +519,16 @@ void AIPreviewWidget::updateImage()
     int tmpHei = DISPLAY_HEIGHT/uniParams.nScale;
     int disbufIndex;
     int chgBufIndex;
+    /* 前景显示模式时以二值化掩码为数据源，其余情况显示修改后的图片 */
+    uchar *srcBuf = m_bShowFgMask ? fgBuf : chgBuf;
     for(int i=0; i<tmpHei; i++){
         for(int j=0; j<tmpWid; j++){
             disbufIndex = (i*uniParams.nScale*DISPLAY_WIDTH+j*uniParams.nScale)*3;
             chgBufIndex = ((i+uniParams.nIndex/(uniParams.nScale*2)*uniParams.nSpaceY)*IMAGE_WIDTH
                               +j+uniParams.nIndex%(uniParams.nScale*2)*uniParams.nSpaceX)*3;
-            disBuf[disbufIndex] = chgBuf[chgBufIndex];
-            disBuf[disbufIndex+1] = chgBuf[chgBufIndex+1];
-            disBuf[disbufIndex+2] = chgBuf[chgBufIndex+2];
+            disBuf[disbufIndex] = srcBuf[chgBufIndex];
+            disBuf[disbufIndex+1] = srcBuf[chgBufIndex+1];
+            disBuf[disbufIndex+2] = srcBuf[chgBufIndex+2];
         }
     }
 
@@ -551,6 +569,42 @@ void AIPreviewWidget::updateImage()
 
     QImage img(disBuf, DISPLAY_WIDTH, DISPLAY_HEIGHT, QImage::Format_RGB888);
     m_imgLabel->setPixmap(QPixmap::fromImage(img));
+}
+
+/* 生成当前图片的前景二值化掩码到 fgBuf：前景（物料）为白色，背景为黑色 */
+void AIPreviewWidget::buildForegroundMask()
+{
+    QString maskName = QString("/tmp/%1_mask.png").arg(m_nImgIndex);
+    QImage mask(maskName);
+
+    /* 掩码文件不存在（旧图片）时，按同一规则现场计算并落盘 */
+    if (mask.isNull()) {
+        mask = QImage(IMAGE_WIDTH, IMAGE_HEIGHT, QImage::Format_RGB888);
+        mask.fill(Qt::black);
+
+        /* AI 板卡采集图片有效宽度为 1020，右侧为补边，不参与前景判定 */
+        int sampleWidth = (IMAGE_WIDTH > 1020) ? 1020 : IMAGE_WIDTH;
+        int index;
+        for (int i = 0; i < IMAGE_HEIGHT; i++) {
+            uchar *maskLine = mask.scanLine(i);
+            for (int j = 0; j < sampleWidth; j++) {
+                index = (i*IMAGE_WIDTH+j)*3;
+                if (myAIShare.pixelIsBackgroundcomm((uchar)oriBuf[index], (uchar)oriBuf[index+1], (uchar)oriBuf[index+2], j))
+                    continue;
+                maskLine[j*3] = 255;
+                maskLine[j*3+1] = 255;
+                maskLine[j*3+2] = 255;
+            }
+        }
+        mask.save(maskName, "PNG");
+    }
+
+    if (mask.width() != IMAGE_WIDTH || mask.height() != IMAGE_HEIGHT)
+        mask = mask.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::IgnoreAspectRatio);
+
+    QImage rgbMask = mask.convertToFormat(QImage::Format_RGB888);
+    for (int i = 0; i < IMAGE_HEIGHT; i++)
+        memcpy(fgBuf + i*IMAGE_WIDTH*3, rgbMask.constScanLine(i), IMAGE_WIDTH*3);
 }
 
 /* 将红外图片缓冲区中的数据更新到显示页面中 */
@@ -1615,6 +1669,25 @@ void AIPreviewWidget::onOptSamBtnClicked()
     refreshMatStatusLabel();
 }
 
+/* 响应图片预览页面中的前景显示按钮 */
+void AIPreviewWidget::onFgMaskBtnClicked()
+{
+    m_bShowFgMask = !m_bShowFgMask;
+
+    if(m_bShowFgMask){
+        buildForegroundMask();
+        updateImage();
+    }
+    else if(m_bIsSimulate){
+        displaySimulate();
+    }
+    else{
+        refreshImageDisplay();
+    }
+
+    refreshBtnStatus();
+}
+
 /* 响应图片预览页面中的返回按钮 */
 void AIPreviewWidget::onBackBtnClicked()
 {
@@ -1721,6 +1794,7 @@ void AIPreviewWidget::onReduceBtnClicked()
 void AIPreviewWidget::onSimulateBtnClicked()
 {
     m_bIsSimulate = !m_bIsSimulate;
+    m_bShowFgMask = false;      // 仿真时不显示前景掩码，避免遮挡仿真结果
 
     if (m_bIsSimulate) {
         displaySimulate();

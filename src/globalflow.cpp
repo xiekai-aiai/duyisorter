@@ -4280,12 +4280,24 @@ void GlobalFlow::startStatistic(int curLevel, int curUnit)
 }
 
 /*!
- * \brief 接口板传输模式切换设置
+ * \brief 接口板图像传输模式切换 (CMD_INT_IMAGE_CAPTURE_MODE 0x08)
+ *
+ * 全链路都是 FPGA → AI板 (eth0 UDP), 没有串口收图!
+ * 这条命令只是配置 FPGA 的传输模式参数:
+ *   mode=0: AI采集模式 (简化版, arg3=0 arg4=0 arg5=0)
+ *           FPGA eth0 UDP 推图给 AI板, AI板识别后发回上位机
+ *   mode=1: 传统采集模式 (简化版, arg3=0 arg4=0 arg5=1)
+ *           完整参数版本需 UI页面/方案切换路径发送 (arg3=1 arg4=0xF3 arg5=1)
+ *
+ * 注: CF协议文档里"USB上传"是2012年老架构描述, 现已废弃.
+ *     实际 FPGA 固件只有 eth0 UDP 推图一种物理链路.
  */
 void GlobalFlow::initInterfaceTransMode(int mode)
 {
     for (int i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
     {
+        // 简化版: 只设 arg5=mode, arg3/arg4 都是 0
+        // 完整版 (传统采集开前用): com1Write(..., 0, 0, 1, 0xF3, 1, 3)
         MySerial.com1Write(CMD_INT_IMAGE_CAPTURE_MODE, INT, i, 0, 0, 0, 0, 0, mode, 3);
     }
 }
@@ -5001,11 +5013,10 @@ void GlobalFlow::startAiCollect()
     quint16 collect_num = ConfigMgr::Instance().GetCollPicNum();
     LOG_INFO_STM("start collect image, collect num:" << collect_num << ", ai device num:" << struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal);
 
-    // 关键: CF 协议文档太老(2012-2014), 当时还没有 AI 架构
-    // 实际 FPGA 新固件里 arg8=1 = 切换到"非串口上传"模式 = eth0 UDP 推图给 AI 板
-    // arg8=0 = RS485 串口上传 (老架构, FPGA 等 RK3568 com1 收图)
-    // 之前 discard 从 0→968228 实锤了 arg8=1 让 FPGA 开始推 UDP
-    initInterfaceTransMode(1);
+    // 关键: 全链路都是 FPGA eth0 UDP 推图给 AI板, 没有串口收图!
+    // initInterfaceTransMode(0) = AI采集模式 (简化版 arg5=0)
+    // AI 采集在 mode=0 下跑, 抓包实锤开机先 mode=0
+    initInterfaceTransMode(0);
 
     // 开始采集，先通知AI板卡启动 
     ImgCollectParam imgp;
@@ -5278,9 +5289,10 @@ void GlobalFlow::initSendAllParams()
 
 void GlobalFlow::sendAllParamsRgb()
 {
-    // initInterfaceTransMode(1) = 切 FPGA 到非串口上传模式 = eth0 UDP 推图给 AI 板
-    // (CF 协议文档太老, arg8=1 写成"USB上传"是过时的说法)
-    initInterfaceTransMode(1);
+    // initInterfaceTransMode(0) = AI采集模式 (简化版 arg5=0)
+    // 注意: 全链路都是 FPGA eth0 UDP 推图给 AI板, 没有串口收图!
+    // 开机默认走 AI采集模式, 传统采集完整版本 (arg3/arg4=像素深度, arg5=1) 由 AIMainWidget::startCapture() 发送
+    initInterfaceTransMode(0);
 
     initCamera();               // 重置相机参数
 

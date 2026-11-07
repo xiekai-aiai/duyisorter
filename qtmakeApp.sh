@@ -200,6 +200,25 @@ else
   
   # strip executable file
   $STRIP $APP_DIR/DuySorter
+
+  # ------ 翻译文件收尾 ------
+  # CONFIG += lrelease 让 Makefile 在 make 时自动编 .ts → .qm (产物在 i18n/)
+  # 这里只需把 .qm 拷到运行目录 app/i18n/, 再同步 Qt 内置翻译
+  echo ">> [i18n] 同步翻译文件到 $APP_DIR/i18n/"
+  mkdir -p $APP_DIR/i18n
+  cp -f i18n/*.qm $APP_DIR/i18n/ 2>/dev/null
+  N_QM=$(ls $APP_DIR/i18n/*.qm 2>/dev/null | wc -l | tr -d ' ')
+  echo "   ✅ $N_QM 个项目 .qm"
+  # Qt 内置翻译 (qtbase_zh_CN.qm 等) —— 让 QFileDialog/QMessageBox 也翻译
+  QT_TRANSLATIONS_DIR=$(dirname $QMAKE)/../translations
+  if [ -d "$QT_TRANSLATIONS_DIR" ]; then
+    for qt_qm in qtbase_zh_CN.qm qtbase_zh_TW.qm qtbase_en.qm; do
+      if [ -f "$QT_TRANSLATIONS_DIR/$qt_qm" ]; then
+        cp -f "$QT_TRANSLATIONS_DIR/$qt_qm" $APP_DIR/i18n/
+        echo "   + $qt_qm"
+      fi
+    done
+  fi
 fi
 
 # ------ 恢复 app/ 关键文件 ------

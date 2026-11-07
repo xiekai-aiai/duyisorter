@@ -61,9 +61,11 @@ void communication::startComSlt()
     //         msgBox.setText(str);
     //         msgBox.exec();
     //    }
-    // initInterfaceTransMode(0) 是老架构遗留, 会把 FPGA 切到串口上传模式, AI 架构下不需要
-    // FPGA 出厂默认就是 AI 以太网推图, sendAllParamsRgb() 里也会再调一次 arg8=1 双重保险
-    // myFlow.initInterfaceTransMode(0);  // ← 已禁用, AI 架构不要切串口模式
+    // initInterfaceTransMode(0) = AI采集模式 (简化版 arg5=0)
+    // 注意: 全链路都是 FPGA eth0 UDP 推图给 AI板, 没有串口收图!
+    // mode=0 是 AI采集模式, mode=1 是传统采集模式 (简化版, AIMainWidget 拍照时自己发完整版)
+    // FPGA 上电默认也是 eth0 UDP 推图, 这里发一次 initInterfaceTransMode(0) 双重保险
+    myFlow.initInterfaceTransMode(0);  // ← 开机走 AI采集模式
     ret = myFlow.initCommunication();
     ret1 = myFlow.initAiCommunication();
 

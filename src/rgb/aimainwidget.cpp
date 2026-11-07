@@ -9,11 +9,115 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <QFile>
+#include <QDir>
+#include <QCoreApplication>
+#include <QImage>
+#include <QColor>
 #include "unilog.h"
 #include "configmgr.h"
 #include "aihelper.h"
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// [VM/x86_64 Mock 独立辅助函数]
+//   仅在非 ARM 平台编译 (__aarch64__ / __arm__ 不存在时)
+//   设计: 与 AIMainWidget 方法零耦合, 只在 startCapture / ByAIEN 入口处各加
+//         一个守卫调用 + 一个 return, 其余逻辑独立在本 namespace 内
+// ═══════════════════════════════════════════════════════════════════════════════════
+#if !defined(__aarch64__) && !defined(__arm__)
+
+namespace {
+
+/// 当前是否处于 mock 模式: x86 VM + /dev/ttyS4 不存在 → 无硬件
+static bool _isMockMode()
+{
+#ifdef Q_OS_LINUX
+    return !QFile::exists("/dev/ttyS4");
+#else
+    return true;   // macOS/Windows 一定没硬件
+#endif
+}
+
+/// 扫描 /tmp/ 下的样例图: sample0.png, sample1.png ... (按文件名排序)
+static QStringList _scanSampleImagesInTmp()
+{
+    QStringList result;
+    QDir tmpDir("/tmp");
+    // Qt 5.15: entryList(nameFilters, Filters, SortFlags) — 3 参数版
+    QStringList files = tmpDir.entryList(QStringList() << "*.png", QDir::Files, QDir::Name);
+    for (const QString& f : files) result << "/tmp/" + f;
+    return result;
+}
+
+/// 加载第 idx 张图: 有样例则返回样例, 没样例则生成纯色兜底图
+static QImage _loadSampleImage(const QStringList& samples, int idx)
+{
+    if (!samples.isEmpty()) {
+        QImage img(samples[idx % samples.size()]);
+        if (!img.isNull()) {
+            LOG_INFO_STM("[MOCK] 加载样例: " << samples[idx % samples.size()].toStdString()
+                         << " (" << img.width() << "x" << img.height() << ")");
+            return img;
+        }
+    }
+    // 兜底纯色图 (红/绿/蓝/黄轮换, 4 色区分不同相机)
+    int ci = idx % 4;
+    QColor bg = (ci == 0) ? QColor(200, 60, 60)
+              : (ci == 1) ? QColor(60, 180, 60)
+              : (ci == 2) ? QColor(60, 100, 220)
+                          : QColor(220, 180, 40);
+    QImage img(CAM_PIXEL_WIDTH, 500, QImage::Format_RGB888);
+    img.fill(bg);
+    LOG_INFO_STM("[MOCK] 兜底纯色图 idx=" << idx);
+    return img;
+}
+
+/// [核心入口] mock 版 startCapture: 从 /tmp/ 加载样例图, 逐台调 obj->onImageRead()
+///   调用时机: AIMainWidget::startCapture() 开头
+///   返回值: true=已处理(mock 完), 调用者应 return; false=继续走真实硬件路径
+static bool _mockStartCapture(AIMainWidget* obj, QList<CaptureConfig>& qlCaptureConfig)
+{
+    if (!_isMockMode()) return false;   // 真实硬件 → 让主流程继续
+
+    LOG_WARN_STM("[MOCK] startCapture: 检测不到硬件, 从 /tmp/ 加载样例图");
+
+    QStringList samples = _scanSampleImagesInTmp();
+    if (samples.isEmpty()) {
+        LOG_WARN_STM("[MOCK] /tmp/ 下找不到 *.png, 请放样例图进去");
+    }
+
+    for (int i = 0; i < qlCaptureConfig.size(); ++i) {
+        CaptureConfig& cfg = qlCaptureConfig[i];
+        QImage mockImg = _loadSampleImage(samples, i);
+        obj->onImageRead(mockImg);   // ← public 方法, 触发存 /tmp/N.png + emit imgReceivedSig + UI 刷新
+        cfg.result = 0;   // = AIMainWidget::ERR_SUCCESS (private enum, 外部不可见, 用值 0 代替)
+        myFlow.msleep(80);           // myFlow 是全局变量, 不是 AIMainWidget 成员
+    }
+    return true;   // mock 完, 主流程应 return
+}
+
+/// [核心入口] mock 版 processImageDataFromCameraByAIEN: 跳过 3 秒 UDP 等待
+///   调用时机: AIMainWidget::processImageDataFromCameraByAIEN() 开头
+///   返回值: true=已处理(跳过等待), 调用者应 return; false=继续走真实 UDP 路径
+static bool _mockSkipAIENWaiting(AIMainWidget* obj, CaptureConfig& cfg)
+{
+    if (!_isMockMode()) return false;
+
+    LOG_INFO_STM("[MOCK] ByAIEN: 跳过 UDP 等待 (startCapture mock 已存图)");
+    cfg.result = 0;   // = AIMainWidget::ERR_SUCCESS (private enum, 外部不可见, 用值 0 代替)
+    // 注意: 不访问 obj->udp_img_receiver / obj->myFlow 等 private 成员
+    //   mock 模式下 udp_img_receiver 本来就没 start, 不需要 stop
+    //   startCapture mock 里已调过 onImageRead, UI 已刷新
+    obj->onViewRequest(cfg.nUnitAddr, false);
+    return true;
+}
+
+} // anonymous namespace
+
+#endif // !ARM
+// ═══════════════════════════════════════════════════════════════════════════════════
 #ifdef Q_OS_UNIX
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -123,10 +227,49 @@ AIMainWidget::AIMainWidget(QWidget* parent) :
 void AIMainWidget::onImageRead(const QImage& img)
 {
     QImage scaledImg = img.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
     QString  imageName = QString("%1.png").arg(m_nNumOfImg);
     scaledImg.save(QString("/tmp/%1").arg(imageName), "PNG", 50);
 
+    // 每张图片自动生成前景二值化掩码：/tmp/<index>_mask.png
+    saveForegroundMask(scaledImg, m_nNumOfImg);
+
     emit imgReceivedSig();
+}
+
+/*!
+ * \brief AIMainWidget::saveForegroundMask
+ *        生成前景二值化掩码并保存到 /tmp/<indexOfImg>_mask.png
+ *        前景（物料）= 白色(255,255,255)，背景 = 黑色(0,0,0)
+ *        判定规则与 saveDataFromImg 中一致：非背景色即为前景
+ * \param image        原图（IMAGE_WIDTH * IMAGE_HEIGHT）
+ * \param indexOfImg   图片序号，与 /tmp/<indexOfImg>.png 对应
+ */
+void AIMainWidget::saveForegroundMask(QImage &image, int indexOfImg)
+{
+    QImage mask(image.width(), image.height(), QImage::Format_RGB888);
+    mask.fill(Qt::black);
+
+    // AI 板卡采集图片有效宽度为 1020，右侧为补边，不参与前景判定
+    int sampleWidth = (image.width() > 1020) ? 1020 : image.width();
+
+    for (int i = 0; i < image.height(); i++)
+    {
+        uchar *maskLine = mask.scanLine(i);
+        for (int j = 0; j < sampleWidth; j++)
+        {
+            QRgb rgb = image.pixel(j, i);
+            if (myAIShare.pixelIsBackgroundcomm((uchar)qRed(rgb), (uchar)qGreen(rgb), (uchar)qBlue(rgb), j))
+            {
+                continue;
+            }
+            maskLine[j*3] = 255;
+            maskLine[j*3+1] = 255;
+            maskLine[j*3+2] = 255;
+        }
+    }
+
+    mask.save(QString("/tmp/%1_mask.png").arg(indexOfImg), "PNG");
 }
 
 /*!
@@ -1097,18 +1240,41 @@ void AIMainWidget::getAllUnitsAddrForOneChuteForOneViewPerLayer(QList <int>& qln
 }
 
 /*!
- * \brief AIMainWidget::getAllUnitsAddrForOneChuteForTwoViewPerLayer
- * \see getAllUnitsAddrForOneChute();
+ * \brief 按"每层双视角"规则, 把一个 chute(溜槽/色选通道) 对应的两块相机板地址配对
+ *
+ * 硬件拓扑: 每个 chute 有 2 个视角(正面 + 背面), 各由一块相机板采集,
+ *          两块板的物理单元地址在接口板上是奇偶配对的 (偶数=前视角, 奇数=后视角).
+ *
+ * 规则:
+ *   传入任意一块相机板地址 nUnitElem, 自动把它的"配对板"也加入列表.
+ *     - nUnitElem 是奇数 → 配对它前面的偶数 (n-1, n)
+ *     - nUnitElem 是偶数 → 配对它后面的奇数 (n, n+1)
+ *
+ * 图示 (4个 chute × 2视角 = 8块相机板):
+ *   chute0: unit0(前) + unit1(后)
+ *   chute1: unit2(前) + unit3(后)
+ *   chute2: unit4(前) + unit5(后)
+ *   chute3: unit6(前) + unit7(后)
+ *
+ *   传 nUnitElem=3 (chute1 的后视角板) → 返回 [2, 3] (chute1 完整两块)
+ *   传 nUnitElem=4 (chute2 的前视角板) → 返回 [4, 5] (chute2 完整两块)
+ *
+ * \param qlnUnit 输出列表, 被追加 2 个单元地址
+ * \param nUnitElem 触发相机板的单元地址 (0-based, 相对接口板内)
+ *
+ * \see getAllUnitsAddrForOneChute()  上层统一入口, 根据机型选择调用哪个配对策略
+ * \see getAllUnitsAddrForOneChuteForOneViewPerLayer()  单视角版本 (每个 chute 只有 1 块板)
  */
 void AIMainWidget::getAllUnitsAddrForOneChuteForTwoViewPerLayer(QList <int>& qlnUnit, int nUnitElem)
 {
+    // 奇偶配对: 每个 chute 占 2 个连续 unit 地址 (前视角=偶数, 后视角=奇数)
     if ((nUnitElem & 0x01) == 0x01)
-    {   //奇数地址
+    {   // 奇数地址 = 后视角板, 它的配对是前一块偶数板
         qlnUnit << nUnitElem - 1;
         qlnUnit << nUnitElem;
     }
     else
-    {                            //偶数地址
+    {   // 偶数地址 = 前视角板, 它的配对是后一块奇数板
         qlnUnit << nUnitElem;
         qlnUnit << nUnitElem + 1;
     }
@@ -1336,6 +1502,14 @@ void AIMainWidget::setCaptureAttr(QList <CaptureConfig>& qlCaptureConfig, int nU
  */
 void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
 {
+    // ╔══════════════════════════════════════════════════════════════════════╗
+    // ║ [Mock 守卫] 仅非 ARM 平台编译, 检测不到硬件时走 /tmp/ 样例图路径      ║
+    // ║ ARM/RK3568 板端这段完全不编 → 和之前 100% 一致                        ║
+    // ╚══════════════════════════════════════════════════════════════════════╝
+#if !defined(__aarch64__) && !defined(__arm__)
+    if (_mockStartCapture(this, qlCaptureConfig)) return;
+#endif
+
     bool isUSBInit = false;
     int nBegin = m_beginChLe->text().toInt();
     int nEnd = m_endChLe->text().toInt();
@@ -1939,6 +2113,14 @@ EXIT:
 
 void AIMainWidget::processImageDataFromCameraByAIEN(CaptureConfig& captureConfig)
 {
+    // ╔══════════════════════════════════════════════════════════════════════╗
+    // ║ [Mock 守卫] 仅非 ARM 平台编译, startCapture 已 mock 存图             ║
+    // ║ 跳过 3 秒 QEventLoop 等 UDP, 直接设 result=成功                        ║
+    // ║ ARM/RK3568 板端这段完全不编 → 和之前 100% 一致                        ║
+    // ╚══════════════════════════════════════════════════════════════════════╝
+#if !defined(__aarch64__) && !defined(__arm__)
+    if (_mockSkipAIENWaiting(this, captureConfig)) return;
+#endif
 
     // 目前框架实现是阻塞的，所以这里通过QEventLoop做阻塞实现 
     QEventLoop loop;
@@ -3112,7 +3294,12 @@ bool AIMainWidget::multipleClassAICal(int indexOfTrain)
     qDebug("data\n");
     saveDataMaxMin(MODE_MULTIPLE, indexOfTrain);
     qDebug("max_min\n");
-    AIClassComputer(MODE_MULTIPLE, indexOfTrain);
+    if (!AIClassComputer(MODE_MULTIPLE, indexOfTrain))
+    {
+        // 模型未生成或参数非法，已弹窗报错，终止本次拟合
+        infoWidget->hide();
+        return false;
+    }
     qDebug("computer\n");
 
     setGlobalAIParam(MODE_MULTIPLE, indexOfTrain);
@@ -3180,7 +3367,12 @@ void AIMainWidget::usualClassAICal()
     for (int i = 0; i < m_nClassNum[m_nLayer]; i++)
     {
         saveDataMaxMin(MODE_USUAL, i);
-        AIClassComputer(MODE_USUAL, i);
+        if (!AIClassComputer(MODE_USUAL, i))
+        {
+            // 模型未生成或参数非法，已弹窗报错，终止本次拟合
+            infoWidget->hide();
+            return;
+        }
         setGlobalAIParam(MODE_USUAL, i);
     }
     enableAIArithmetic(MODE_USUAL);
@@ -3195,21 +3387,37 @@ void AIMainWidget::usualClassAICal()
 bool AIMainWidget::AIClassComputer(int classMode, int indexOfTrain)
 {
     QFile file;
-    char cmd[64];
+    char cmd[256];   // 放大到 256 — x86_64 绝对路径较长
     int maxQuo;
 
     memset(m_struClassQuo, 0, MAX_VIEW_LOCATION * sizeof(struct classQuo));
-    //    sprintf(cmd, "./normalization_scale -r /tmp/train%d.range /tmp/train%d",indexOfTrain, indexOfTrain);
-    //    system(cmd);
-    //    file.remove(QString("/tmp/train%1").arg(indexOfTrain));
-    //    file.remove(QString("/tmp/train%1.range").arg(indexOfTrain));
-    //    sprintf(cmd, "./normalization_linear_learn /tmp/train%d.scale",indexOfTrain);
-    //    system(cmd);
-    //    file.remove(QString("/tmp/train%1.scale").arg(indexOfTrain));
 
+    // SVM 拟合程序：ARM 板卡用 ./norm_train（随 app 打包），
+    // VM x86_64 调试用 svm/cpp/svm_train_x86_64（源码树内独立编译）
+#if defined(__x86_64__)
+    // x86_64 调试: svm_train_x86_64 在项目根目录下
+    sprintf(cmd, "/mnt/hgfs/duyisorter/svm/cpp/svm_train_x86_64 /tmp/train%d", indexOfTrain);
+#else
+    // ARM 板卡: norm_train 跟二进制同目录
     sprintf(cmd, "./norm_train /tmp/train%d", indexOfTrain);
-    system(cmd);
+#endif
+    // 先删除上一次的模型文件，避免本次训练失败时误读残留的旧模型
+    QString modelFile = QString("/tmp/train%1.model").arg(indexOfTrain);
+    QFile::remove(modelFile);
+
+    LOG_INFO_STM("[AIClassComputer] SVM cmd: " << cmd);
+    int ret = system(cmd);
+    LOG_INFO_STM("[AIClassComputer] SVM ret=" << ret);
     file.remove(QString("/tmp/train%1").arg(indexOfTrain));
+
+    // 训练程序异常退出（无执行权限返回126、程序不存在返回127等）
+    if (ret != 0)
+    {
+        LOG_ERROR_STM("[AIClassComputer] norm_train 执行失败, ret=" << ret);
+        myMessageBox msgBox(MSG_INFO, myLan.msg_compute_error);
+        msgBox.exec();
+        return false;
+    }
 
 
     m_struClassQuo[m_nLayer].nMin[0] = m_nMinR[m_nLayer][indexOfTrain];
@@ -3234,10 +3442,13 @@ bool AIMainWidget::AIClassComputer(int classMode, int indexOfTrain)
         m_struClassQuo[m_nLayer].nMax[8] = m_nMaxBB[m_nLayer][indexOfTrain];
     }
 
-    file.setFileName(QString("/tmp/train%1.model").arg(indexOfTrain));
+    file.setFileName(modelFile);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qDebug("result file open error!");
+        // 训练程序没有生成模型文件
+        LOG_ERROR_STM("[AIClassComputer] 模型文件未生成: " << modelFile.toStdString());
+        myMessageBox msgBox(MSG_INFO, myLan.msg_compute_error);
+        msgBox.exec();
         return false;
     }
 
@@ -3258,12 +3469,54 @@ bool AIMainWidget::AIClassComputer(int classMode, int indexOfTrain)
     {
         maxQuo = MAX_USUAL_QUO;
     }
+    // 读取并校验模型参数：数量不足、非数值、NaN/Inf 都视为无效模型
+    bool paramValid = true;
+    double value = 0.0;
     for (int i = 0; i < maxQuo; i++)
     {
-        io >> m_struClassQuo[m_nLayer].nQuo[i];
+        io >> value;
+        if (io.status() != QTextStream::Ok || !qIsFinite(value))
+        {
+            paramValid = false;
+            break;
+        }
+        m_struClassQuo[m_nLayer].nQuo[i] = value;
     }
-    io >> m_struClassQuo[m_nLayer].nCons;     //cons*/
+    if (paramValid)
+    {
+        io >> m_struClassQuo[m_nLayer].nCons;     //cons*/
+        if (io.status() != QTextStream::Ok || !qIsFinite(m_struClassQuo[m_nLayer].nCons))
+        {
+            paramValid = false;
+        }
+    }
     file.close();
+
+    if (!paramValid)
+    {
+        LOG_ERROR_STM("[AIClassComputer] 模型参数无效(数量不足或含非法数值): " << modelFile.toStdString());
+        myMessageBox msgBox(MSG_INFO, myLan.msg_compute_error);
+        msgBox.exec();
+        return false;
+    }
+
+    // 系数全为 0 说明样本单一或训练退化，模型不可用
+    bool allZero = (m_struClassQuo[m_nLayer].nCons == 0.0);
+    for (int i = 0; i < maxQuo; i++)
+    {
+        if (m_struClassQuo[m_nLayer].nQuo[i] != 0.0)
+        {
+            allZero = false;
+            break;
+        }
+    }
+    if (allZero)
+    {
+        LOG_ERROR_STM("[AIClassComputer] 模型参数全为0: " << modelFile.toStdString());
+        myMessageBox msgBox(MSG_INFO, myLan.msg_compute_error);
+        msgBox.exec();
+        return false;
+    }
 
 
     for (int i = 0; i < maxQuo; i++)
@@ -3566,6 +3819,9 @@ bool AIMainWidget::saveDataMaxMin(int classMode, int indexOfTrain)
         io << strUsual;
     }
 
+    // QTextStream 自带写缓冲（约16KB），必须先 flush 再 close，
+    // 否则 file.close() 之后 QTextStream 析构时的刷盘会写入已关闭的设备，数据静默丢失
+    io.flush();
     file.close();
     return true;
 }
@@ -3606,11 +3862,14 @@ bool AIMainWidget::saveDataFromImg(int nDataFrom, int classMode, int classLevel,
     }
     QTextStream io2(&sample_ponit_file);
 
+    // AI 板卡采集图片，如果是1024， 右侧4个像素是补的
+    int sample_width = (IMAGE_WIDTH > 1020) ? 1020:(int)IMAGE_WIDTH;
+
     if (nDataFrom == DATA_IMG)
     { //From Img
         for (int i = 0; i < IMAGE_HEIGHT; i++)
         {
-            for (int j = 0; j < IMAGE_WIDTH; j++)
+            for (int j = 0; j < sample_width; j++)
             {
                 rgb = image.pixel(j, i);
                 if (myAIShare.pixelIsBackgroundcomm((uchar)rgb.red(), (uchar)rgb.green(), (uchar)rgb.blue(), j))
@@ -3640,7 +3899,10 @@ bool AIMainWidget::saveDataFromImg(int nDataFrom, int classMode, int classLevel,
 
                 QString strUsual = QString("%1: %2\n").arg(j).arg(i);
                 io2 << strUsual;
-
+                
+                /*
+                    0 是 RGB，1 是 HSV
+                */
                 if (struCnfp.nColorSpace)
                 {
                     hsv = myAIShare.RGBToHSV(rgb.red(), rgb.green(), rgb.blue());
@@ -3681,6 +3943,9 @@ bool AIMainWidget::saveDataFromImg(int nDataFrom, int classMode, int classLevel,
 
                     if (classMode == MODE_MULTIPLE)
                     {
+                        /*
+                            低纬空间， r g b r*g r*b g*b
+                        */
                         if (struCnfp.nAIMode)
                         {
                             QString strMulti = QString("%1\t1:%2\t2:%3\t3:%4\t4:%5\t5:%6\t6:%7\t\n")
@@ -3706,6 +3971,8 @@ bool AIMainWidget::saveDataFromImg(int nDataFrom, int classMode, int classLevel,
                 }
             }
         }
+        // 同 io：先 flush 再 close，避免 QTextStream 缓冲数据丢失
+        io2.flush();
         sample_ponit_file.close();
     }
     else
@@ -3814,35 +4081,55 @@ bool AIMainWidget::saveDataFromImg(int nDataFrom, int classMode, int classLevel,
         }
         fileData.close();
     }
+    // 关键：训练数据必须先 flush 落盘，之后才能被 norm_train 读到；
+    // 否则数据量小于 16KB（人工取样点少时）会全部滞留在 QTextStream 缓冲区里丢失
+    io.flush();
     file.close();
 
     return true;
 }
 /*!
  * \brief AIMainWidget::enableAICal
- * \return
+ *        拟合（学习）前的可行性检查与取样模式判定。
+ *        遍历当前视链下所有图片的分类标记，统计好料/坏料图片数量，
+ *        并判断是否存在「未人工取样」的图片：
+ *          - 若存在 → m_bIsAutoGetData=true，外层拟合函数会弹出
+ *            "部分物料没有取样，是否自动取样？" 对话框，确认后走全图自动取样；
+ *          - 若不存在 → 直接使用人工采样点数据进行拟合。
+ *        若当前智能模式非关闭(MODE_NULL)，还会做以下校验：
+ *          - 好料或坏料图片数为 0 时，提示用户未设置/缺少样本；
+ *          - 传统模式(MODE_USUAL)下图片总数超过 MAX_USUAL_IMG_NUM 时报溢出。
+ * \return SUCCEED           校验通过，可进入拟合流程
+ *         ERR_NO_SET        未标记任何好料或坏料图片
+ *         ERR_NO_GOOD       缺少好料样本
+ *         ERR_NO_BAD        缺少坏料样本
+ *         ERR_OVERRUN       传统模式下图片数超过上限
  */
 int AIMainWidget::enableAICal()
 {
     myMessageBox msgBox(MSG_INFO, "");
 
+    /* 复位"是否需要自动取样"标志；只要存在未人工取样的图片，后续会置 true */
     m_bIsAutoGetData = false;
 
+    /* 复位当前视链好料/坏料图片计数 */
     m_nClassBadNum[m_nLayer] = 0;
     m_nClassGoodNum[m_nLayer] = 0;
 
     QString ld4Prefix;
     ld4Prefix.append("");
 
-
+    /* 遍历所有图片，统计好料/坏料数量，并判断是否有未人工取样的图片 */
     for (int k = 0; k < MAX_IMG_NUM; k++)
     {
+        /* 跳过未分类（未标记好料/坏料）的图片 */
         if (m_nStatOfImg[m_nLayer][k] == CLASS_NULL)
         {
             continue;
         }
         if (m_nStatOfImg[m_nLayer][k] == CLASS_GOOD)
         {
+            /* 该图片没有在预览页人工采样过像素点（采样点数 ≤ 100） */
             if (m_bSampedOfImg[k] == SAMPLED_NO)
             {
                 m_bIsAutoGetData = true;
@@ -3859,14 +4146,17 @@ int AIMainWidget::enableAICal()
         }
     }
 
+    /* 智能算法模式非关闭时，对样本完整性做强校验 */
     if (struCnfp.nIntelMode != MODE_NULL)
     {
+        /* 好料和坏料都为 0 → 用户完全没做分类标记 */
         if (m_nClassGoodNum[m_nLayer] == 0 && m_nClassBadNum[m_nLayer] == 0)
         {
             msgBox.setText(ld4Prefix + myLan.ai_err_no_set);
             msgBox.exec();
             return ERR_NO_SET;
         }
+        /* 没有好料样本 */
         if (m_nClassGoodNum[m_nLayer] == 0)
         {
             msgBox.setText(ld4Prefix + myLan.ai_err_no_good);
@@ -3874,6 +4164,7 @@ int AIMainWidget::enableAICal()
             return ERR_NO_GOOD;
         }
 
+        /* 没有坏料样本 */
         if (m_nClassBadNum[m_nLayer] == 0)
         {
             msgBox.setText(ld4Prefix + myLan.ai_err_no_bad);
@@ -3881,6 +4172,7 @@ int AIMainWidget::enableAICal()
             return ERR_NO_BAD;
         }
 
+        /* 传统模式（MODE_USUAL）下图片数上限为 MAX_USUAL_IMG_NUM，超出无法配对 */
         if (struCnfp.nIntelMode == MODE_USUAL)
         {
             if (m_nClassGoodNum[m_nLayer] + m_nClassBadNum[m_nLayer] > MAX_USUAL_IMG_NUM)
@@ -3897,11 +4189,35 @@ int AIMainWidget::enableAICal()
 
 /*!
  * \brief AIMainWidget::enableAIArithmetic
+ *        根据当前智能算法模式(classMode)使能/关闭板端 AI 算法通道，
+ *        并配置好料/坏料配对序列(nMatIntelSeq)与分类数(m_nClassNum)。
+ *
+ *        - MODE_USUAL(传统模式)：
+ *            先调用 enableAICal() 校验样本完整性，失败直接返回 false；
+ *            根据好料/坏料图片数量组合，映射为 nMatIntelSeq（配对编码）和
+ *            m_nClassNum（分类数），再按 m_nClassNum 使能 0~4 个算法通道
+ *            (ARITH_INTEL_A~D)。配对规则如下：
+ *              好料0+坏料0 → seq=0, class=0 → 全关闭
+ *              好料1+坏料1 → seq=1, class=1 → A
+ *              好料1+坏料2 → seq=2, class=2 → A,B
+ *              好料1+坏料3 → seq=3, class=3 → A,B,C
+ *              好料2+坏料1 → seq=4, class=2 → A,B
+ *              好料2+坏料2 → seq=6, class=4 → A,B,C,D
+ *              好料3+坏料1 → seq=5, class=3 → A,B,C
+ *        - MODE_MULTIPLE(多分类模式)：直接置 nMatIntelSeq=1，不做配对（多分类
+ *          只拟合一个"好料 vs 坏料"模型，算法通道使能由 setGlobalAIParam 控制）。
+ *        - 其它(MODE_NULL等)：关闭全部算法通道，复位序列与分类数。
+ *
+ *        最后（茶叶机型专用）将各层 A~D 通道使能状态同步到 nArithmeticEnableLevel。
+ * \param classMode  智能算法模式：MODE_USUAL / MODE_MULTIPLE / MODE_NULL
+ * \return true  算法通道配置成功
+ *         false 仅在 MODE_USUAL 且 enableAICal() 校验失败时返回
  */
 bool AIMainWidget::enableAIArithmetic(int classMode)
 {
     if (classMode == MODE_USUAL)
     {
+        /* 传统模式需先做样本完整性校验，失败直接返回 */
         switch (enableAICal())
         {
         case ERR_NO_BAD:
@@ -3912,6 +4228,7 @@ bool AIMainWidget::enableAIArithmetic(int classMode)
         case SUCCEED:
             break;
         }
+        /* 以下按好料/坏料图片数量组合，计算配对序列 nMatIntelSeq 与分类数 m_nClassNum */
         if ((m_nClassGoodNum[m_nLayer] == 0) && (m_nClassBadNum[m_nLayer] == 0))
         {
             struCnfp.nMatIntelSeq = 0;
@@ -3947,9 +4264,11 @@ bool AIMainWidget::enableAIArithmetic(int classMode)
             struCnfp.nMatIntelSeq = 5;
             m_nClassNum[m_nLayer] = 3;
         }
+        /* 根据分类数 m_nClassNum 依次使能 ARITH_INTEL_A~D 算法通道 */
         switch (m_nClassNum[m_nLayer])
         {
         case 0:
+            /* 无分类 → 全部关闭 */
             struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 0;
             struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 0;
             struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
@@ -3985,10 +4304,12 @@ bool AIMainWidget::enableAIArithmetic(int classMode)
     }
     else if (classMode == MODE_MULTIPLE)
     {
+        /* 多分类模式：只拟合一个"好料 vs 坏料"模型，配对序列固定为 1 */
         struCnfp.nMatIntelSeq = 1;
     }
     else
     {
+        /* MODE_NULL 等其它模式：关闭全部算法通道，复位配对序列与分类数 */
         struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_A] = 0;
         struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_B] = 0;
         struCnfp.nArithmeticEnableGroup[ONE_LEVEL][0][ARITH_INTEL_C] = 0;
@@ -3998,6 +4319,7 @@ bool AIMainWidget::enableAIArithmetic(int classMode)
         updateBtnStatus();
     }
 
+    /* 茶叶机型专用：将各层 A~D 通道使能状态同步到 nArithmeticEnableLevel */
     /* only for tea */
     for (int i = 0; i < struCnfg.nLevelTotal; i++)
     {

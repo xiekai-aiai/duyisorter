@@ -437,7 +437,7 @@ void AutoAnalysisWidget::onRightBtnClicked()
 /* 返回按钮槽函数*/
 void AutoAnalysisWidget::onBackBtnClickedSlt_test()
 {
-    //myFlow.initInterfaceTransMode(0);// 切换接口板模式为串口模式
+    //myFlow.initInterfaceTransMode(0);// 返回首页切回 AI采集模式 (简化版 arg5=0)
     emit backToPageSig();
 }
 

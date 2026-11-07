@@ -77,6 +77,7 @@ public:
     void refreshBtnStatus(void);            // 根据当前图片的尺寸刷新按钮的状态
     void refreshMatStatusLabel(void);       // 根据当前状态刷新物料状态的显示
     void updateImage(void);                 // 将彩色图片缓冲区中的数据更新到显示页面中
+    void buildForegroundMask(void);         // 生成当前图片的前景二值化掩码到 fgBuf
     void updateInfImage(void);              // 将红外图片缓冲区中的数据更新到显示页面中
     void changeImage(void);                 // 根据勾选的情况修改缓冲区中的数据
     void refreshImageDisplay(void);         // 根据优化取样的标志位刷新显示
@@ -113,6 +114,7 @@ public slots:
     /* 页面控件对应的槽函数 */
     void onReLastBtnClicked();
     void onOptSamBtnClicked();
+    void onFgMaskBtnClicked();
     void onBackBtnClicked();
     void onUpBtnClicked();
     void onDownBtnClicked();
@@ -135,6 +137,7 @@ private:
     int m_nImgIndex;
     bool m_bIsSimulate;
     bool m_bIsPurSim;
+    bool m_bShowFgMask;         // 是否正在显示前景二值化掩码
     int m_nDisPixelNum;
     QPoint m_disPoints[MAX_PIXEL_NUM];
     bool m_bFlgTest;
@@ -167,6 +170,7 @@ private:
     myLCDNumber *m_samSensLcd;
     myPushButton *m_relastBtn;
     myPushButton *m_optSamBtn;
+    myPushButton *m_fgMaskBtn;
     myPushButton *m_backBtn;
     myLabel *m_matStatusLabel;
     myLabel *m_pixelColorLabel;
