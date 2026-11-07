@@ -4453,11 +4453,7 @@ void AIAnalysis::onNextBtnClicked()
 /* 响应智能界面的返回按钮 */
 void AIAnalysis::onAIBackBtnClicked()
 {
-    /*
-    for(int i=0; i<struCnfg.nLevelTotal; i++) {
-        MySerial.com1Write(CMD_INT_IMAGE_CAPTURE_MODE, INT, i, 0, 0, 0, 0, 0, 0, 3);
-    }
-    */
+    // 返回首页: 切回 AI采集模式 (简化版 arg5=0, 全链路 FPGA eth0 UDP 推图)
     myFlow.initInterfaceTransMode(0);
     emit goToHomePage();
 }

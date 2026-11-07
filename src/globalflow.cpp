@@ -2868,15 +2868,18 @@ void GlobalFlow::setCom1Baud()
             { // 以921600查询
                 MySerial.setComBaud(1, MY_UARTBAUD_115200);
                 MySerial.setComBaud(3, MY_UARTBAUD_115200);
+                LOG_INFO_STM("int board[" << i << "] baud detect: 115200 fail, 921600 fail -> fallback 115200");
             }
             else
             {
                 struGsh.nIntBaud[i] = MY_UARTBAUD_921600;
+                LOG_INFO_STM("int board[" << i << "] baud detect: matched 921600");
             }
         }
         else
         {
             struGsh.nIntBaud[i] = MY_UARTBAUD_115200;
+            LOG_INFO_STM("int board[" << i << "] baud detect: matched 115200");
         }
     }
     for (int i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
@@ -2907,15 +2910,18 @@ void GlobalFlow::setCom2Baud()
             if (!checkCtrlBoardCom(i))
             { // 以921600查询
                 MySerial.setComBaud(2, MY_UARTBAUD_115200);
+                LOG_INFO_STM("ctrl board[" << i << "] baud detect: 115200 fail, 921600 fail -> fallback 115200");
             }
             else
             {
                 struGsh.nCtrlBaud[i] = MY_UARTBAUD_921600;
+                LOG_INFO_STM("ctrl board[" << i << "] baud detect: matched 921600");
             }
         }
         else
         {
             struGsh.nCtrlBaud[i] = MY_UARTBAUD_115200;
+            LOG_INFO_STM("ctrl board[" << i << "] baud detect: matched 115200");
         }
     }
     for (int i = 0; i < struCnfg.nCtrlBoardTotal; i++)
@@ -4274,12 +4280,24 @@ void GlobalFlow::startStatistic(int curLevel, int curUnit)
 }
 
 /*!
- * \brief 接口板传输模式切换设置
+ * \brief 接口板图像传输模式切换 (CMD_INT_IMAGE_CAPTURE_MODE 0x08)
+ *
+ * 全链路都是 FPGA → AI板 (eth0 UDP), 没有串口收图!
+ * 这条命令只是配置 FPGA 的传输模式参数:
+ *   mode=0: AI采集模式 (简化版, arg3=0 arg4=0 arg5=0)
+ *           FPGA eth0 UDP 推图给 AI板, AI板识别后发回上位机
+ *   mode=1: 传统采集模式 (简化版, arg3=0 arg4=0 arg5=1)
+ *           完整参数版本需 UI页面/方案切换路径发送 (arg3=1 arg4=0xF3 arg5=1)
+ *
+ * 注: CF协议文档里"USB上传"是2012年老架构描述, 现已废弃.
+ *     实际 FPGA 固件只有 eth0 UDP 推图一种物理链路.
  */
 void GlobalFlow::initInterfaceTransMode(int mode)
 {
     for (int i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
     {
+        // 简化版: 只设 arg5=mode, arg3/arg4 都是 0
+        // 完整版 (传统采集开前用): com1Write(..., 0, 0, 1, 0xF3, 1, 3)
         MySerial.com1Write(CMD_INT_IMAGE_CAPTURE_MODE, INT, i, 0, 0, 0, 0, 0, mode, 3);
     }
 }
@@ -4995,6 +5013,11 @@ void GlobalFlow::startAiCollect()
     quint16 collect_num = ConfigMgr::Instance().GetCollPicNum();
     LOG_INFO_STM("start collect image, collect num:" << collect_num << ", ai device num:" << struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal);
 
+    // 关键: 全链路都是 FPGA eth0 UDP 推图给 AI板, 没有串口收图!
+    // initInterfaceTransMode(0) = AI采集模式 (简化版 arg5=0)
+    // AI 采集在 mode=0 下跑, 抓包实锤开机先 mode=0
+    initInterfaceTransMode(0);
+
     // 开始采集，先通知AI板卡启动 
     ImgCollectParam imgp;
     imgp.start_ = 1;
@@ -5014,7 +5037,7 @@ void GlobalFlow::startAiCollect()
             LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! reqeust body:" << request.toHex(' ').toUpper().toStdString());
             continue;
         }
-
+        
         CmdPackage cmd_pkg;
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
@@ -5029,11 +5052,10 @@ void GlobalFlow::startAiCollect()
     }
 
 
-    // 给所有相机发送开启采集指令 
-    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
-    {
-        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 1, 3);
-    }
+    // 给所有相机发送开启采集指令 — 用组内广播 (Byte3=0x20), 和 cmd_1104 抓包一致
+    // ⚠️ 必须用 com1WriteRaw! com1Write 内部会对 unitAddr>=24 做拆分 (MAX_UNIT_PER_INT=24),
+    //     把 0x20 篡改成 "intAddr+1, unitAddr=8", FPGA 收不到正确的组内广播帧
+    MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 1, 3);
 
 }
 
@@ -5042,11 +5064,9 @@ void GlobalFlow::stopAiCollect()
     quint16 collect_num = ConfigMgr::Instance().GetCollPicNum();
     LOG_INFO_STM("Stop collect image, collect num:" << collect_num << ", ai device num:" << struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal);
 
-    // 停止采集，先给所有相机发送停止采集指令 
-    for (int idx = 0; idx < struCnfg.struLevelInfo[0].nUnitLevelTotal; idx++)
-    {
-        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 0, 3);
-    }
+    // 停止采集，先给所有相机发送停止采集指令 — 用组内广播 (Byte3=0x20)
+    // ⚠️ 必须用 com1WriteRaw! 同上, 避免 unitAddr=0x20 被拆分篡改
+    MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 0, 3);
 
     // 停止采集，通知AI板卡停止
     ImgCollectParam imgp;
@@ -5127,11 +5147,9 @@ void GlobalFlow::startAiInfer()
             << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
 
-    // 给所有相机发送开启推理指令 
-    for (int idx = 0; idx < struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal; idx++)
-    {
-        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 1, 3);
-    }
+    // 给所有相机发送开启推理指令 — 用组内广播 (Byte3=0x20), 和 collect 一致
+    // ⚠️ 必须用 com1WriteRaw! 避免 unitAddr=0x20 被 com1Write 拆分成 intAddr+1
+    MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 1, 3);
 }
 
 
@@ -5146,11 +5164,9 @@ void GlobalFlow::stopAiInfer()
 
     LOG_INFO_STM("Stop infer image, ai device num:" << struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal);
 
-    // 停止推理，先给所有相机发送停止推理指令 
-    for (int idx = 0; idx < struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal; idx++)
-    {
-        MySerial.com1Write(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, idx, 0, 0, 0, 0, 0, 3);
-    }
+    // 停止推理，先给所有相机发送停止推理指令 — 用组内广播 (Byte3=0x20)
+    // ⚠️ 必须用 com1WriteRaw! 避免 unitAddr=0x20 被 com1Write 拆分成 intAddr+1
+    MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 0, 3);
 
     // 停止推理，通知AI板卡停止
     ImgInferParam info;
@@ -5273,7 +5289,10 @@ void GlobalFlow::initSendAllParams()
 
 void GlobalFlow::sendAllParamsRgb()
 {
-    initInterfaceTransMode(0);  // 切换接口板到串口模式
+    // initInterfaceTransMode(0) = AI采集模式 (简化版 arg5=0)
+    // 注意: 全链路都是 FPGA eth0 UDP 推图给 AI板, 没有串口收图!
+    // 开机默认走 AI采集模式, 传统采集完整版本 (arg3/arg4=像素深度, arg5=1) 由 AIMainWidget::startCapture() 发送
+    initInterfaceTransMode(0);
 
     initCamera();               // 重置相机参数
 

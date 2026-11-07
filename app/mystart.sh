@@ -127,6 +127,13 @@ mkdir -p /opt/app/userdata/i18n
 cp -f i18n/* /opt/app/userdata/i18n/ 2>/dev/null
 
 chmod u+x DuySorter
- 
+
+# 关闭内核 fbcon 文本控制台，避免终端文字（状态栏/命令行）叠加在 Qt 画面上
+for vc in /sys/class/vtconsole/vtcon*; do
+        [ -w "$vc/bind" ] && echo 0 > "$vc/bind" 2>/dev/null
+done
+# 降低内核打印级别，避免 dmesg 信息刷到屏幕上
+echo 1 > /proc/sys/kernel/printk 2>/dev/null
+
 # start app
 ./DuySorter &

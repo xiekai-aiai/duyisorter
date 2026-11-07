@@ -1,0 +1,77 @@
+#ifndef QFTP_COMPAT_H
+#define QFTP_COMPAT_H
+
+#include <QObject>
+#include <QIODevice>
+
+// Qt 5.15 移除了 QFtp 和 QUrlInfo, 这里提供最小兼容声明让代码能编译链接
+// 运行时 FTP 功能需要移植到项目已有的 libssh2 sftp_client
+
+class QFtp : public QObject {
+public:
+    enum Command { None, SetHost, SetUser, SetAccount, SetProxy, Connect, Close, List, Cd, Get, Put, Delete, Rename, Mkdir, Rmdir, RawCommand };
+    enum Error { NoError, UnknownError, HostNotFound, ConnectionRefused, UnexpectedClose, HostNotFoundTryProxy, ProtocolUnknown, Unterminated, IllegalNumberInReply, OpeningDataConnection, NoIpSpecified, NoSuchHost, NoService, ConnectionTimedOut, NotConnected, HostIsDown, AccessDenied, RmdirFailed, InitProtocolError, NotAFile, RenameInProgress, RenameFailed, DirNotEmpty, UnknownFileType, ListNotSupported, FeatureNotSupported, CommandNotImplemented, Busy, NotSupported, ReadInProgress, WriteInProgress, Aborted };
+    enum TransferMode { Active, Passive };
+    enum TransferType { Binary, Ascii };
+
+    explicit QFtp(QObject *parent = nullptr) : QObject(parent) {}
+    ~QFtp() override {}
+
+    void setTransferMode(TransferMode) {}
+    Command currentCommand() const { return None; }
+    int error() const { return NoError; }
+    QString errorString() const { return QString(); }
+    
+    void connectToHost(const QString &, quint16 = 21) {}
+    void login(const QString & = QString(), const QString & = QString()) {}
+    void close() {}
+    Command list(const QString & = QString()) { return None; }
+    Command cd(const QString &) { return None; }
+    Command get(const QString &, QIODevice * = nullptr) { return None; }
+    Command put(const QByteArray &, const QString &) { return None; }
+    Command put(QIODevice *, const QString &) { return None; }
+    Command remove(const QString &) { return None; }
+    Command mkdir(const QString &) { return None; }
+    Command rmdir(const QString &) { return None; }
+    Command rename(const QString &, const QString &) { return None; }
+    Command rawCommand(const QString &) { return None; }
+    void abort() {}
+    void clear() {}
+    bool isConnected() const { return false; }
+};
+
+class QUrlInfo {
+public:
+    QUrlInfo() {}
+    QUrlInfo(const QString &name) : name_(name) {}
+    
+    QString name() const { return name_; }
+    QString path() const { return QString(); }
+    QString owner() const { return QString(); }
+    QString group() const { return QString(); }
+    QString target() const { return QString(); }
+    int size() const { return size_; }
+    bool isDir() const { return isDir_; }
+    bool isFile() const { return isFile_; }
+    bool isSymLink() const { return false; }
+    bool isWritable() const { return true; }
+    bool isReadable() const { return true; }
+    bool isExecutable() const { return false; }
+    int permissions() const { return permissions_; }
+    QDateTime lastModified() const { return QDateTime(); }
+    QDateTime lastRead() const { return QDateTime(); }
+    QDateTime created() const { return QDateTime(); }
+    QString toString(int) const { return name_; }
+    
+private:
+    QString name_;
+    QString path_;
+    int size_ = 0;
+    bool isDir_ = false;
+    bool isFile_ = true;
+    int permissions_ = 0;
+};
+
+inline bool operator<(const QUrlInfo &a, const QUrlInfo &b) { return a.name() < b.name(); }
+
+#endif

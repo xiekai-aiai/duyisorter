@@ -11,7 +11,7 @@ rel/
 app/
 
 # 3rdparty arm 产物
-src/3rdparty/arm/
+src/3rdparty/
 .DS_Store
 cp_data.sh
 UI参考/UI_RESIZE_ANALYSIS.md 

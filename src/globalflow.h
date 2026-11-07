@@ -175,7 +175,7 @@ public:
 
     /** 发送参数流程 */
     void sendAllParamsRgb(void);        //! 彩色机型开机发送所有参数
-    void initInterfaceTransMode(int mode);  //! 刚开机时，将接口板上传数据模式切换成串口模式，防止在USB模式下异常断电
+    void initInterfaceTransMode(int mode);  //! 图像传输模式切换: mode=0 AI采集模式, mode=1 传统采集模式 (全链路 FPGA eth0 UDP 推图给 AI板)
     void initCamera();                  //! 重置相机参数
     void resetSortParams();             //! 重置色选参数
     void resetBackgroundColor();        //! 重置背景颜色设置

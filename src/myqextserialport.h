@@ -343,6 +343,14 @@ public:
     int com1Write(int nCmd, char sModuleType, char sIntAddr, char sUnitAddr, char arg1, char arg2,
         char arg3, char arg4, char arg5, int nCount);
 
+    /**
+     * @brief: 绕过 com1Write 内部 MAX_UNIT_PER_INT(24) 拆分, unitAddr 原样写入帧
+     *         CRC 始终用标准 crcFpga (不走 0x3f 广播的累加和模式)
+     *         用于 CMD_UNIT_AI_CAPTURE_ENABLE(0x110) 等需要精确 unitAddr 的场景
+     */
+    int com1WriteRaw(int nCmd, char sModuleType, char sIntAddr, char sUnitAddr, char arg1, char arg2,
+        char arg3, char arg4, char arg5, int nCount);
+    
     int com1Read(char* sBuf, int nLen, int timeoutMsec = 0);
     int com1Write_update(int nCmd, char sModule, char sModule2, char* sBuf, int nCount);
 

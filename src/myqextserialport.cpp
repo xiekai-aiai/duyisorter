@@ -402,6 +402,56 @@ int MyQextSerialPort::com1Write(int nCmd, char SModuleType, char sIntAddr, char 
     return ret;
 }
 
+/* ------------------------------------------------------------ */
+/* com1WriteRaw: 绕过 MAX_UNIT_PER_INT(24) 拆分                  */
+/*   sPacket[2] = (sIntAddr*16) | sModuleType  (不拆分)         */
+/*   sPacket[3] = sUnitAddr  (原样)                              */
+/*   CRC 始终 crcFpga (不走 0x3f 广播累加和)                     */
+/* ------------------------------------------------------------ */
+int MyQextSerialPort::com1WriteRaw(int nCmd, char sModuleType, char sIntAddr, char sUnitAddr,
+    char arg1, char arg2, char arg3, char arg4, char arg5, int nCount)
+{
+    char sPacket[16];
+    char sCrcData[10];
+    unsigned int nCrcItt = 0;
+    int i, ret = 0;
+
+    memset(sPacket, 0, 16);
+    sPacket[0] = 0xA5;
+    sPacket[1] = 0x5A;
+    /* ====== 关键: 不拆分 ====== */
+    sPacket[2] = (sIntAddr * 16) | sModuleType;
+    sPacket[3] = sUnitAddr;
+    /* ========================= */
+
+    sPacket[4] = nCmd / 256;
+    sPacket[5] = nCmd % 256;
+    sPacket[6] = struGsh.nSerialCount1++;
+    sPacket[7] = arg1;
+    sPacket[8] = arg2;
+    sPacket[9] = arg3;
+    sPacket[10] = arg4;
+    sPacket[11] = arg5;
+    sPacket[14] = 0xff;
+    sPacket[15] = 0xff;
+
+    if (struGsh.nSerialCount1 > 250)
+        struGsh.nSerialCount1 = 0;
+
+    for (i = 0; i < 10; i++)
+        sCrcData[i] = sPacket[i + 2];
+
+    nCrcItt = crcFpga(sCrcData, 10);   /* 始终 crcFpga */
+    sPacket[12] = nCrcItt / 256;
+    sPacket[13] = nCrcItt % 256;
+
+#ifdef Q_OS_UNIX
+    for (int m = 0; m < nCount; m++)
+        ret = myPort1->write(sPacket, 16);
+#endif
+    return ret;
+}
+
 int MyQextSerialPort::com1Read(char* sBuf, int nLen, int timeoutMsec)
 {
     mutex.lock();
@@ -672,7 +722,6 @@ int MyQextSerialPort::com3Read(char* sBuf, int nLen, int timeoutMsec)
 #if PRINT_FOR_DEBUG_3 == 1
     printf("com3 read >> %d\n", ret);
     int nPrintLen = (ret > nLen) ? nLen : ret;
-    int nPrintLen = (nDispLen > 24) ? 24 : nDispLen;
     for (int i = 0; i < nPrintLen; i++)
     {
         printf("%02x ", sBuf[i] & 0xFF);

@@ -8,60 +8,58 @@ MOC_DIR     = build/moc
 OBJECTS_DIR = build/obj
 RCC_DIR     = build/rcc
 DEPENDPATH += . src/3rdparty src src/common
-INCLUDEPATH += . src src/common src/3rdparty
+INCLUDEPATH += . src src/common src/3rdparty src/qtftp_compat/QtFtp
 CONFIG += qt debug_and_release warn_on thread
-CONFIG += resources_big
+CONFIG += resources_big lrelease
 QT += network widgets sql
 DEFINES += ENABLE_CAPTURE_SCREEN=1
 
-# 2026-10-26: 临时让 release 也开 DEBUG_OUTPUT, 用来抓 com1/com2 完整串口帧对比 test_arm
 CONFIG(release,debug|release){ 
         DEFINES += QT_NO_DEBUG_OUTPUT \
-                   DEBUG_OUTPUT=1
+                   DEBUG_OUTPUT=0
 }
 else {
         DEFINES += DEBUG_OUTPUT=1
 }
 
 # ============ 目标架构自适应（VM 调试 x86_64 / 生产交叉编译 aarch64）============
-# qmake 依据编译器目标架构自动选择 OpenCV / OpenSSL 的库路径
+# qmake 依据 CROSS_COMPILE=1 强制 ARM 分支，或 QT_ARCH == aarch64 自动走 ARM
 unix {
-    contains(QT_ARCH, x86_64)|contains(QMAKE_TARGET.arch, x86_64) {
-        message("qmake: target arch = x86_64 (host/VM debug)")
-        # OpenCV + OpenSSL + 其他3rdparty：x86_64 版本（随项目分发）
-        INCLUDEPATH += $$PWD/src/3rdparty/opencv/x86/include/opencv4 \
-                       $$PWD/src/3rdparty/openssl/x86/include      \
-                       $$PWD/src/3rdparty/unilog/x86/include       \
-                       $$PWD/src/3rdparty/libssh2/x86/include      \
-                       $$PWD/src/3rdparty/spdlog/x86/include
+    FORCE_ARM = no
+    contains(CROSS_COMPILE, 1) { FORCE_ARM = yes }
+    contains(QT_ARCH, aarch64) { FORCE_ARM = yes }
 
+    contains(FORCE_ARM, yes) {
+        message("qmake: target arch = aarch64 (CROSS_COMPILE=1)")
+        INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4 \
+                       $$PWD/src/3rdparty/openssl/arm/include        \
+                       $$PWD/src/3rdparty/unilog/arm/include         \
+                       $$PWD/src/3rdparty/libssh2/arm/include        \
+                       $$PWD/src/3rdparty/spdlog/arm/include
+        LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib  \
+                -L$$PWD/src/3rdparty/openssl/arm/lib \
+                -L$$PWD/src/3rdparty/unilog/arm/lib  \
+                -L$$PWD/src/3rdparty/libssh2/arm/lib \
+                -L$$PWD/src/3rdparty/libts/arm/lib   \
+                -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
+                -lcrypto -lssl -lunilog -lssh2 -lts -lpthread
+    } else {
+        message("qmake: target arch = x86_64 (host/VM debug)")
+        INCLUDEPATH += $$PWD/src/3rdparty/opencv/x86/include/opencv4 \
+                       $$PWD/src/3rdparty/openssl/x86/include        \
+                       $$PWD/src/3rdparty/unilog/x86/include         \
+                       $$PWD/src/3rdparty/libssh2/x86/include        \
+                       $$PWD/src/3rdparty/spdlog/x86/include
         LIBS += -L$$PWD/src/3rdparty/opencv/x86/lib  \
                 -L$$PWD/src/3rdparty/openssl/x86/lib \
                 -L$$PWD/src/3rdparty/unilog/x86/lib  \
                 -L$$PWD/src/3rdparty/libssh2/x86/lib \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
-
-        # 把 3rdparty 绝对路径烘焙进 RUNPATH，VM 调试时直接可运行
         QMAKE_LFLAGS += -Wl,-rpath,$$PWD/src/3rdparty/opencv/x86/lib \
                         -Wl,-rpath,$$PWD/src/3rdparty/openssl/x86/lib \
                         -Wl,-rpath,$$PWD/src/3rdparty/unilog/x86/lib  \
                         -Wl,-rpath,$$PWD/src/3rdparty/libssh2/x86/lib
-    } else {
-        message("qmake: target arch = aarch64 (rk3566 production)")
-        # OpenCV 4.5.5（随项目分发）：rk3566 aarch64 生产
-        INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4 \
-                       $$PWD/src/3rdparty/openssl/arm/include        \
-                       $$PWD/src/3rdparty/unilog/arm/include         \
-                       $$PWD/src/3rdparty/libssh2/arm/include        \
-                       $$PWD/src/3rdparty/spdlog/arm/include
-
-        LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib  \
-                -L$$PWD/src/3rdparty/openssl/arm/lib \
-                -L$$PWD/src/3rdparty/unilog/arm/lib  \
-                -L$$PWD/src/3rdparty/libssh2/arm/lib \
-                -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
-                -lcrypto -lssl -lunilog -lssh2
     }
 }
 
@@ -70,6 +68,10 @@ HEADERS += $$PWD/src/*.h \
 #第三方库
            $$PWD/src/3rdparty/qextserialport/*.h \
            $$PWD/src/3rdparty/libqrencode/*.h \
+           $$PWD/src/3rdparty/log4qt/*.h \
+           $$PWD/src/3rdparty/log4qt/helpers/*.h \
+           $$PWD/src/3rdparty/log4qt/spi/*.h \
+           $$PWD/src/3rdparty/log4qt/varia/*.h \
            $$PWD/src/3rdparty/qjson/*.h \
 #自定义控件库
            $$PWD/src/common/libdccrypt/dccrypt.h \
@@ -98,10 +100,15 @@ HEADERS += $$PWD/src/*.h \
            $$PWD/src/rgb/autoanalysiswidget.h
 
 # source file
-SOURCES += $$PWD/src/*.cpp \
+SOURCES += $$PWD/src/*.cpp
+
 #第三方库
-           $$PWD/src/3rdparty/qextserialport/qextserialport.cpp \
+SOURCES += $$PWD/src/3rdparty/qextserialport/qextserialport.cpp \
            $$PWD/src/3rdparty/libqrencode/*.c \
+           $$PWD/src/3rdparty/log4qt/*.cpp \
+           $$PWD/src/3rdparty/log4qt/helpers/*.cpp \
+           $$PWD/src/3rdparty/log4qt/spi/*.cpp \
+           $$PWD/src/3rdparty/log4qt/varia/*.cpp \
            $$PWD/src/3rdparty/qjson/*.cpp \
 #自定义控件库
            $$PWD/src/common/*.cpp \
@@ -138,7 +145,10 @@ win32{
                        AI_MODE=0
 }
 unix{
-            DESTDIR = $$[MYAPP_DIR]
+            DESTDIR_TMP = $$MYAPP_DIR
+            isEmpty(DESTDIR_TMP) { DESTDIR_TMP = $$[MYAPP_DIR] }
+            isEmpty(DESTDIR_TMP) { DESTDIR_TMP = app }
+            DESTDIR = $$DESTDIR_TMP
 
             HEADERS += $$PWD/src/3rdparty/libusb/*.h \
                        $$PWD/src/common/myusb/*.h \
@@ -185,4 +195,4 @@ INSTALLS += target
 target.path=/opt/app
 
 FORMS += \
-    aimodelset.ui 
+    aimodelset.ui

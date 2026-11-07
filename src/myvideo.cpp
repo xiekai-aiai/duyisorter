@@ -711,6 +711,7 @@ void MyVideo::resetCaptureState(bool bState)
 void MyVideo::onSetBackBtnClicked()
 {
     startCapture(false);
+    // 返回首页: 切回 AI采集模式 (简化版 arg5=0, 全链路 FPGA eth0 UDP 推图)
     myFlow.initInterfaceTransMode(0);
     emit backToHomePageSig();
 }

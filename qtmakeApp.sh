@@ -124,30 +124,85 @@ esac
 
 # platform
 #if [[ $2 == *335X* ]]; then
-	PATH=/home/mcgs/sdk/rk3568-arm64-Qt5.15.15/sysroot/usr/local/qt5.15.15/bin/:$PATH
-	STRIP=/home/mcgs/sdk/rk3568-arm64-Qt5.15.15/bin/aarch64-linux-gnu-strip
-	QMAKE=/home/mcgs/sdk/rk3568-arm64-Qt5.15.15/sysroot/usr/local/qt5.15.15/bin/qmake
-	APP_DIR=app
-	REL_DIR=rel
-	MYPLATFORM=$PLATFORM_335X
-export PATH
 
-# ========== 编译加速配置 ==========
-# ccache: 二次编译命中缓存直接跳过
-export CXX="ccache /home/mcgs/sdk/rk3568-arm64-Qt5.15.15/bin/aarch64-linux-gnu-g++"
-export CC="ccache /home/mcgs/sdk/rk3568-arm64-Qt5.15.15/bin/aarch64-linux-gnu-gcc"
-export CACHEFILE=/home/mcgs/.ccache
-export CCACHE_MAXSIZE=5G
-# 并行编译: 用全部可用核数
-MYJOBS=$(nproc)
-echo "🚀 编译加速: ccache=开, 并行作业=${MYJOBS}"
+# ====== VM 交叉编译工具链 (Ubuntu gcc-12 aarch64 + Sysroot) ======
+SYSROOT=/home/root123/project/Sysroot
+ARM_QT_LIBS=$SYSROOT/usr/lib/aarch64-linux-gnu
+QMAKE=/usr/bin/qmake
+CROSS=aarch64-linux-gnu
+GCC_VER=12
+APP_DIR=app
+REL_DIR=rel
 
-# set global parameters for qmake
-$QMAKE -set MYAPP_DIR  $APP_DIR
-$QMAKE -set MYLCD_WID  $MYLCD_WID_TMP
-$QMAKE -set MYLCD_HEI  $MYLCD_HEI_TMP
-$QMAKE -set MYAIMODE   $MYAIMODE
-$QMAKE -set MYPLATFORM $MYPLATFORM
+export PATH=$PATH
+
+CC="$CROSS-gcc-$GCC_VER --sysroot=$SYSROOT"
+CXX="$CROSS-g++-$GCC_VER --sysroot=$SYSROOT"
+AR="$CROSS-ar"
+LINK="$CROSS-g++-$GCC_VER --sysroot=$SYSROOT"
+STRIP="$CROSS-strip"
+OBJCOPY="$CROSS-objcopy"
+RANLIB="$CROSS-ranlib"
+
+export CC CXX AR LINK STRIP OBJCOPY RANLIB
+
+# 编译加速: ccache (如已安装)
+if command -v ccache &>/dev/null; then
+    export CXX="ccache $CXX"
+    export CC="ccache $CC"
+    export CCACHE_MAXSIZE=5G
+    CCACHE_STR=" ccache=开"
+else
+    CCACHE_STR=""
+fi
+
+# VM 内存有限（3G），并行过高会 OOM 导致虚拟机崩溃
+MYJOBS=${MYJOBS:-$(nproc)}
+[ "$MYJOBS" -gt 4 ] && MYJOBS=4
+echo "========================================"
+echo "  VM 交叉编译: Ubuntu gcc-$GCC_VER aarch64$CCACHE_STR"
+echo "  Sysroot=$SYSROOT"
+echo "  CC=$CC"
+echo "  并行作业=${MYJOBS}"
+echo "========================================"
+
+# set global parameters for qmake (全部命令行传递, VM 交叉编译必须)
+$QMAKE \
+    CROSS_COMPILE=1 \
+    MYAPP_DIR=$APP_DIR \
+    MYLCD_WID=$MYLCD_WID_TMP \
+    MYLCD_HEI=$MYLCD_HEI_TMP \
+    MYAIMODE=$MYAIMODE \
+    MYPLATFORM=$MYPLATFORM \
+    "QMAKE_CC=$CC" \
+    "QMAKE_CXX=$CXX" \
+    "QMAKE_LINK=$LINK" \
+    "QMAKE_LINK_C=$CC" \
+    "QMAKE_AR=$AR cqs" \
+    "QMAKE_STRIP=$STRIP" \
+    "QMAKE_OBJCOPY=$OBJCOPY" \
+    "QMAKE_RANLIB=$RANLIB" \
+    CONFIG+=$MYMODEOPT
+
+# qmake 验证
+QMAKE_RC=$?
+echo "qmake EXIT=$QMAKE_RC"
+[ $QMAKE_RC -ne 0 ] && echo "❌ qmake 失败" && exit 1
+echo "Makefile CC=$(grep '^CC ' Makefile.Release 2>/dev/null | head -1)"
+echo "Makefile CXX=$(grep '^CXX ' Makefile.Release 2>/dev/null | head -1)"
+
+# ====== perl 修复: host qmake 写死的 x86_64 Qt 绝对路径 ======
+# 必须替换为 ARM Sysroot 路径, 否则链接报 "File in wrong format"
+if [ -f Makefile.Release ]; then
+  echo "perl 修复 x86_64 Qt 路径..."
+  perl -i -pe "s|/usr/lib/x86_64-linux-gnu/lib(Qt5[A-Za-z]+)\.so|-L$ARM_QT_LIBS -l\$1|g" Makefile.Release
+  perl -i -pe "s|/usr/lib/x86_64-linux-gnu/lib(GL)\.so|-L$ARM_QT_LIBS -l\$1|g" Makefile.Release
+  perl -i -pe "s|-L/usr/lib/x86_64-linux-gnu|-L$ARM_QT_LIBS|g" Makefile.Release
+  X86_LEFT=$(grep -c '/usr/lib/x86_64-linux-gnu/libQt' Makefile.Release 2>/dev/null || true)
+  X86_LEFT=${X86_LEFT:-0}
+  echo "x86_64 Qt 残留: $X86_LEFT"
+  [ "$X86_LEFT" -gt 0 ] && echo "❌ 仍有 $X86_LEFT 处 x86_64 Qt 路径未替换" && exit 1
+fi
 
 # ------ 备份 app/ 关键文件 ------
 # distclean 只删 app/DuySorter 二进制, 其他脚本配置会保留
@@ -187,9 +242,8 @@ print_conf $MYCONF
 if [ "$NO_BUILD" = "1" ]; then
   echo ">> NO_BUILD=1, 跳过编译, 直接打包"
 else
-  echo 1
-  # build
-  $QMAKE
+  # build (qmake 已在前面执行, 这里直接 make)
+  echo ">> make $MYMODEOPT -j${MYJOBS}"
   make $MYMODEOPT -j${MYJOBS}
   # check compile 
   if [ $? -ne 0 ]
@@ -200,6 +254,25 @@ else
   
   # strip executable file
   $STRIP $APP_DIR/DuySorter
+
+  # ------ 翻译文件收尾 ------
+  # CONFIG += lrelease 让 Makefile 在 make 时自动编 .ts → .qm (产物在 i18n/)
+  # 这里只需把 .qm 拷到运行目录 app/i18n/, 再同步 Qt 内置翻译
+  echo ">> [i18n] 同步翻译文件到 $APP_DIR/i18n/"
+  mkdir -p $APP_DIR/i18n
+  cp -f i18n/*.qm $APP_DIR/i18n/ 2>/dev/null
+  N_QM=$(ls $APP_DIR/i18n/*.qm 2>/dev/null | wc -l | tr -d ' ')
+  echo "   ✅ $N_QM 个项目 .qm"
+  # Qt 内置翻译 (qtbase_zh_CN.qm 等) —— 让 QFileDialog/QMessageBox 也翻译
+  QT_TRANSLATIONS_DIR=$(dirname $QMAKE)/../translations
+  if [ -d "$QT_TRANSLATIONS_DIR" ]; then
+    for qt_qm in qtbase_zh_CN.qm qtbase_zh_TW.qm qtbase_en.qm; do
+      if [ -f "$QT_TRANSLATIONS_DIR/$qt_qm" ]; then
+        cp -f "$QT_TRANSLATIONS_DIR/$qt_qm" $APP_DIR/i18n/
+        echo "   + $qt_qm"
+      fi
+    done
+  fi
 fi
 
 # ------ 恢复 app/ 关键文件 ------
@@ -329,9 +402,11 @@ if [ -d "$path_cur/$APP_DIR/cnf.board" ]; then
   cp -rf $path_cur/$APP_DIR/cnf.board    tar_app/
 fi
 
-# 注意: userdata/db 是运行时生产数据（sorter.db 里有方案、AI模型、用户配置），
-# 不应打包！否则用户升级时会把板卡上正在用的 sorter.db 覆盖成空库。
-# tar_app/userdata/db 目录只创建空目录（保证路径存在），不复制任何文件。
+# userdata/db —— 把编译机上当前 app/db/sorter.db 打包进去（方案/AI模型/用户配置）
+# 全新部署的板卡需要这份初始库，用户升级时手动覆盖即可
+if [ -d "$path_cur/$APP_DIR/db" ]; then
+  cp -rf $path_cur/$APP_DIR/db/*        tar_app/userdata/db/
+fi
 
 # 校验: 关键文件不能缺 (cp 失败时立刻退出, 避免出坏包)
 MISSING=""
