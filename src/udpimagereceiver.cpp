@@ -34,6 +34,12 @@ void UdpImageReceiver::SetImageHegiht(int heigth)
     height_ = heigth;
 }
 
+void UdpImageReceiver::SetSenderIp(const QString &ip)
+{
+    LOG_INFO_STM("set sender filter ip:" << ip.toStdString());
+    sender_filter_ = ip;
+}
+
 void UdpImageReceiver::start()
 {
     if (is_running_)
@@ -81,6 +87,8 @@ void UdpImageReceiver::start()
     frameCount_ = 0;
     errorCount_ = 0;
     bytesPerLine_ = 3 * width_;
+    // 清掉上一次取图残留的半帧数据, 保证新相机从帧头开始对齐
+    line_buffer_.clear();
     is_running_ = true;
 
     emit statusChanged(
@@ -137,6 +145,17 @@ void UdpImageReceiver::onReadyRead()
             &senderPort);
 
         if (size < 0)
+        {
+            errorCount_++;
+            continue;
+        }
+
+        /*
+         * 顺序取图: 前后视相机共用同一个端口,
+         * 只接收当前正在取图的那台相机的数据, 其它来源直接丢弃,
+         * 避免上一台相机的残留包把当前帧冲乱.
+         */
+        if (!sender_filter_.isEmpty() && sender.toString() != sender_filter_)
         {
             errorCount_++;
             continue;

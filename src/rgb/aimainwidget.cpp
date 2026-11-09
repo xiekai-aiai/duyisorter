@@ -1555,15 +1555,25 @@ void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
 
     foreach(CaptureConfig tmp, qlCaptureConfig)
     {
-        myFlow.msleep(50);
         if (tmp.result == ERR_USB_INIT)
         {
             //USB初始化失败
             return;
         }
 
+        // UDP(AI)方式: 这里不再同时触发所有相机,
+        // 改为在 processImageDataFromCamera() 里逐台触发、逐台取图,
+        // 避免多台相机同时向同一个 UDP 端口推流造成数据包交织
+        if (tmp.nTransType == 1)
+        {
+            continue;
+        }
+
+        myFlow.msleep(50);
+
         // 启动抓包, 通知AI板卡准备接收
         udp_img_receiver->SetImageHegiht(ConfigMgr::Instance().GetAiCfgInfo().img_view_height_);
+        udp_img_receiver->SetSenderIp(QString());   // UART方式不做来源过滤
         udp_img_receiver->start();
         onViewRequest(tmp.nUnitAddr, true);
 
@@ -1576,6 +1586,37 @@ void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
         }
         MySerial.com1Write(CMD_UNIT_IMAGE, UNIT, struGsh.nLevel, tmp.nUnitAddr, 0, 0, tmp.nTransType, (tmp.dataDepth - 1) / 256, (tmp.dataDepth - 1) % 256, 1);
     }
+}
+
+/*!
+ * \brief AIMainWidget::triggerAICaptureUnit
+ * \param captureConfig 单个相机单元的拍照配置
+ * \note 前后视相机共用一个 UDP 端口, 必须"触发一台 -> 收完一台 -> 再触发下一台".
+ *       多台同时触发会导致两路数据包交织, 表现为其中一路超时或出花图.
+ *       这里只负责触发和开流, 具体收图由 processImageDataFromCameraByAIEN() 完成.
+ */
+void AIMainWidget::triggerAICaptureUnit(const CaptureConfig& captureConfig)
+{
+    int nBegin = m_beginChLe->text().toInt();
+    int nEnd = m_endChLe->text().toInt();
+
+    LOG_INFO_STM("trigger AI unit:" << captureConfig.nUnitAddr << ", seq:" << captureConfig.nSeq
+        << ", depth:" << captureConfig.dataDepth << ", trans:" << captureConfig.nTransType);
+
+    // 启动抓包, 并按来源 IP 过滤, 只接收当前这台相机的数据包
+    udp_img_receiver->SetImageHegiht(ConfigMgr::Instance().GetAiCfgInfo().img_view_height_);
+    udp_img_receiver->SetSenderIp(ai_helper::GetAiIpByIndex(captureConfig.nUnitAddr));
+    udp_img_receiver->start();
+    onViewRequest(captureConfig.nUnitAddr, true);
+
+    MySerial.com1Write(CMD_INT_IMAGE_CAPTURE_MODE, INT, struGsh.nLevel, captureConfig.nUnitAddr, 0, 0, (captureConfig.dataDepth - 1) / 256, (captureConfig.dataDepth - 1) % 256, captureConfig.nTransType, 3);
+    MySerial.com1Write(CMD_UNIT_IMG_BURST, UNIT, struGsh.nLevel, captureConfig.nUnitAddr, 0, m_bIsCuteOffBg, 0x01, struGsh.nIntelSampBurst / 256, struGsh.nIntelSampBurst % 256, 1);
+    if (myFlow.getProductLineNo() != 0)
+    {
+        MySerial.com1Write(CMD_UNIT_CAPTURE_RANGE, UNIT, struGsh.nLevel, captureConfig.nUnitAddr, 0, nBegin / 256, nBegin % 256, nEnd / 256, nEnd % 256, 1);
+        MySerial.com1Write(2, 2, 0, 0x3f, 0, 0, 0, 0, 0, 1);
+    }
+    MySerial.com1Write(CMD_UNIT_IMAGE, UNIT, struGsh.nLevel, captureConfig.nUnitAddr, 0, 0, captureConfig.nTransType, (captureConfig.dataDepth - 1) / 256, (captureConfig.dataDepth - 1) % 256, 1);
 }
 
 /*!
@@ -2339,7 +2380,18 @@ void AIMainWidget::processImageDataFromCamera(CaptureConfig& captureConfig)
     {
         if (struCnfp.enableAi)
         {
-            processImageDataFromCameraByAIEN(captureConfig);
+            // 顺序取图: 触发当前相机 -> 收完 -> 处理下一台相机
+            // 超时重试一次, 提升多相机切换时的稳定性
+            for (int nTry = 0; nTry < 2; ++nTry)
+            {
+                triggerAICaptureUnit(captureConfig);
+                processImageDataFromCameraByAIEN(captureConfig);
+                if (captureConfig.result != ERR_TIMEOUT)
+                {
+                    break;
+                }
+                LOG_WARN_STM("AI image timeout, retry:" << nTry + 1 << ", unit:" << captureConfig.nUnitAddr);
+            }
         }
         //        processImageDataFromCameraByUSB(captureConfig);
     }

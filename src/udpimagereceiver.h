@@ -16,6 +16,13 @@ public:
     void SetImageWidth(int width);
     void SetImageHegiht(int height);
 
+    /*!
+     * \brief SetSenderIp 只接收指定来源 IP 的图像包, 传空串表示不过滤
+     * \note 前后视相机共用一个 UDP 端口, 顺序取图时必须按来源 IP 过滤,
+     *       否则上一台相机的残留数据包会混进当前帧
+     */
+    void SetSenderIp(const QString &ip);
+
 signals:
     // 接收一张完整的图片
     void imageReady(const QImage &image);
@@ -48,6 +55,7 @@ private:
     int    cur_row_;                   // 当前行
     QByteArray line_buffer_;           // 一行像素buffer
     QUdpSocket *socket_;
+    QString sender_filter_;            // 只接收该 IP 的数据包, 空串不过滤
 
     // 统计
     quint64 packetCount_;

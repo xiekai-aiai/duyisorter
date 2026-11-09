@@ -110,6 +110,7 @@ public:
     bool pixelIsBackground(uchar r, uchar g, uchar b, int nUnitAddr);            /*!<< 拍照时根据背景确定物料在哪一侧*/
     void refreshImpurityName(void);                                             /*!<< 更新杂质名称*/
     void processImageDataFromCameraByAIEN(CaptureConfig& captureConfig);         /*!<< 数据的接收函数 */
+    void triggerAICaptureUnit(const CaptureConfig& captureConfig);               /*!<< 触发单个AI相机单元抓拍(UDP方式, 顺序执行) */
 
     void updateParams();                                                        /*!<< 智能参数页面参数更新*/
     void updateAIParamsPage();
