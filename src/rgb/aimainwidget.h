@@ -202,7 +202,7 @@ public slots:
     void onAIParamsBackBtnPressedSlt();     /*!< 槽函数：智能参数页面返回*/
     void onColorSpaceBtnGpIndexChangedSlt(int nIndex);      /*!< 槽函数：颜色空间 */
     void onDimensionBtnGpIndexChangedSlt(int nIndex);       /*!< 槽函数：维度 */
-    void onImageRead(const QImage& img);
+    void onImageRead(const QImage& img, quint16 addr);
 
 private:
     /*!
@@ -448,7 +448,7 @@ private:
     bool getImageFromUSB_2048_All(void);                                    /*!<< 私有函数：通过USB获取图片 */
     void saveBMPFile(QString name, int width, int height, uchar* data); /*!<< 私有函数：将图片数据保存为BMP文件 */
     void saveBMPFileForMono(QString name, int width, int height, uchar* data);
-    void saveForegroundMask(QImage &image, int indexOfImg);              /*!<< 私有函数：生成前景二值化掩码，保存为 /tmp/<index>_mask.png */
+    void saveForegroundMask(QImage& image, int indexOfImg);              /*!<< 私有函数：生成前景二值化掩码，保存为 /tmp/<index>_mask.png */
     bool pixelIsEdgeImage(QImage* image, int x, int y);                  /*!<< 私有函数：优化取样时判断像素点是否为边缘点 */
     bool multipleClassAICal(int indexOfTrain = 0);                        /*!<< 私有函数：多分类智能计算 */
     void usualClassAICal(void);                                         /*!<< 私有函数：传统智能计算 */

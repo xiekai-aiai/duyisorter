@@ -759,7 +759,7 @@ void MyVideo::onSimulateBtnClicked()
     }
 }
 
-void MyVideo::onImageReady(const QImage& img)
+void MyVideo::onImageReady(const QImage& img, quint16 addr)
 {
     QMutexLocker lock(&img_mutex);
     lastest_img = img;
