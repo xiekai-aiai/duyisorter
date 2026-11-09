@@ -8,7 +8,6 @@ UdpImageReceiver::UdpImageReceiver(int port, int width, int height, QObject* par
 , height_(height)
 , socket_(nullptr)
 , bytesPerLine_(width * 3)
-, cur_row_(0)
 , packetCount_(0)
 , frameCount_(0)
 , errorCount_(0)
@@ -26,18 +25,42 @@ void UdpImageReceiver::SetImageWidth(int width)
 {
     LOG_INFO_STM("is runnning:" << is_running_ << ", set width:" << width);
     width_ = width;
+    bytesPerLine_ = 3 * width_;
 }
 
-void UdpImageReceiver::SetImageHegiht(int heigth)
+void UdpImageReceiver::SetImageHegiht(int height)
 {
-    LOG_INFO_STM("is runnning:" << is_running_ << ", set heigth:" << heigth);
-    height_ = heigth;
+    LOG_INFO_STM("is runnning:" << is_running_ << ", set height:" << height);
+    height_ = height;
 }
 
-void UdpImageReceiver::SetSenderIp(const QString &ip)
+void UdpImageReceiver::resetStreamImage(CameraStreamState& state)
 {
-    LOG_INFO_STM("set sender filter ip:" << ip.toStdString());
-    sender_filter_ = ip;
+    state.cur_image = QImage(width_, height_,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+        QImage::Format_BGR888);
+#else
+        QImage::Format_RGB888);
+#endif
+    state.cur_image.fill(Qt::black);
+    state.cur_row = 0;
+    state.line_buffer.clear();
+}
+
+UdpImageReceiver::CameraStreamState& UdpImageReceiver::streamStateForKey(const QString& key)
+{
+    auto it = stream_states_.find(key);
+    if (it == stream_states_.end())
+    {
+        CameraStreamState state;
+        resetStreamImage(state);
+        it = stream_states_.insert(key, state);
+    }
+    else if (it->cur_image.width() != width_ || it->cur_image.height() != height_)
+    {
+        resetStreamImage(*it);
+    }
+    return *it;
 }
 
 void UdpImageReceiver::start()
@@ -73,22 +96,11 @@ void UdpImageReceiver::start()
     connect(socket_, &QUdpSocket::readyRead,
         this, &UdpImageReceiver::onReadyRead);
 
-    // 创建第一张图片
-    cur_image_ = QImage(width_, height_,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-        QImage::Format_BGR888);
-#else
-        QImage::Format_RGB888);
-#endif
-    cur_image_.fill(Qt::black);
-
-    cur_row_ = 0;
+    stream_states_.clear();
     packetCount_ = 0;
     frameCount_ = 0;
     errorCount_ = 0;
     bytesPerLine_ = 3 * width_;
-    // 清掉上一次取图残留的半帧数据, 保证新相机从帧头开始对齐
-    line_buffer_.clear();
     is_running_ = true;
 
     emit statusChanged(
@@ -113,7 +125,7 @@ void UdpImageReceiver::stop()
         socket_ = nullptr;
     }
 
-    cur_row_ = 0;
+    stream_states_.clear();
     emit statusChanged("UDP receiver stopped");
 }
 
@@ -150,19 +162,8 @@ void UdpImageReceiver::onReadyRead()
             continue;
         }
 
-        /*
-         * 顺序取图: 前后视相机共用同一个端口,
-         * 只接收当前正在取图的那台相机的数据, 其它来源直接丢弃,
-         * 避免上一台相机的残留包把当前帧冲乱.
-         */
-        if (!sender_filter_.isEmpty() && sender.toString() != sender_filter_)
-        {
-            errorCount_++;
-            continue;
-        }
-
         packetCount_++;
-        processDatagram(datagram);
+        processDatagram(datagram, sender, senderPort);
     }
 
     emit statisticsChanged(packetCount_, frameCount_, errorCount_);
@@ -186,22 +187,26 @@ bool UdpImageReceiver::IsPkgHeader(const QByteArray& datagram)
     return true;
 }
 
-void UdpImageReceiver::processDatagram(const QByteArray& datagram)
+void UdpImageReceiver::processDatagram(const QByteArray& datagram,
+    const QHostAddress& sender,
+    quint16 senderPort)
 {
-    line_buffer_.append(datagram);
-    if (line_buffer_.size() < (bytesPerLine_ + MIN_PKGA_LEN))
+    CameraStreamState& state = streamStateForKey(sender.toString());
+
+    state.line_buffer.append(datagram);
+    if (state.line_buffer.size() < (bytesPerLine_ + MIN_PKGA_LEN))
     {
         return;
     }
 
-    if (!IsPkgHeader(line_buffer_))
+    if (!IsPkgHeader(state.line_buffer))
     {
         LOG_WARN_STM("image package head is not correct, data size : " << datagram.size()
-            << ", sum size:" << line_buffer_.length() << ", body:" << line_buffer_.toHex(' ').toStdString());
+            << ", sum size:" << state.line_buffer.length() << ", body:" << state.line_buffer.toHex(' ').toStdString());
 
-        while (!line_buffer_.isEmpty() && !IsPkgHeader(line_buffer_))
+        while (!state.line_buffer.isEmpty() && !IsPkgHeader(state.line_buffer))
         {
-            line_buffer_.remove(0, 1);
+            state.line_buffer.remove(0, 1);
         }
 
         return;
@@ -209,49 +214,48 @@ void UdpImageReceiver::processDatagram(const QByteArray& datagram)
 
     quint32 idx{ 4 };
     // 两个字节的地址
-    quint16 addr = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(line_buffer_.constData() + idx));
+    quint16 addr = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(state.line_buffer.constData() + idx));
     idx += 2;
     // 两个字节的长度
-    quint16 len = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(line_buffer_.constData() + idx));
+    quint16 len = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(state.line_buffer.constData() + idx));
     idx += 2;
     // 四个字节的包序号
-    quint32 no = qFromBigEndian<quint32>(reinterpret_cast<const uchar*>(line_buffer_.constData() + idx));
+    quint32 no = qFromBigEndian<quint32>(reinterpret_cast<const uchar*>(state.line_buffer.constData() + idx));
     idx += 4;
 
     // 图片数据
-    if (line_buffer_.size() < MIN_PKGA_LEN + bytesPerLine_)
+    if (state.line_buffer.size() < MIN_PKGA_LEN + bytesPerLine_)
     {
-        LOG_TRACE_STM("line buffer size:" << line_buffer_.size() << ", line image len:" << len
+        LOG_TRACE_STM("line buffer size:" << state.line_buffer.size() << ", line image len:" << len
             << ", bytesPerLine_:" << bytesPerLine_);
         return;
     }
 
-    uchar* dst = cur_image_.scanLine(cur_row_);
-
+    uchar* dst = state.cur_image.scanLine(state.cur_row);
 
     /*
      * UDP中的数据本身就是BGR。
      */
-    memcpy(dst, line_buffer_.constData() + idx, bytesPerLine_);
+    memcpy(dst, state.line_buffer.constData() + idx, bytesPerLine_);
 
-    line_buffer_.remove(0, idx + bytesPerLine_);
+    state.line_buffer.remove(0, idx + bytesPerLine_);
 
     LOG_TRACE_STM("no:" << no << ", idx:" << idx << ", bytesPerLine_:" << bytesPerLine_);
 
-    cur_row_++;
+    state.cur_row++;
 
     /*
      * 一张完整图片接收完成
      */
-    if (cur_row_ == height_)
+    if (state.cur_row == height_)
     {
         frameCount_++;
 
-        LOG_TRACE_STM("image read:" << frameCount_);
+        LOG_TRACE_STM("image read:" << frameCount_ << ", addr:" << addr);
 
         // xknote: 对于x5板卡， 相机传过来的数据是-128的
-        uchar* data = cur_image_.bits();
-        const int size = cur_image_.width() * cur_image_.height() * 3;  // Qt 5.9 compat
+        uchar* data = state.cur_image.bits();
+        const int size = state.cur_image.width() * state.cur_image.height() * 3;  // Qt 5.9 compat
         for (int i = 0; i < size; ++i)
         {
             data[i] = static_cast<uchar>(
@@ -259,20 +263,13 @@ void UdpImageReceiver::processDatagram(const QByteArray& datagram)
         }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-        cur_image_ = cur_image_.rgbSwapped();
+        state.cur_image = state.cur_image.rgbSwapped();
 #endif
 
-        emit imageReady(cur_image_);
+        emit imageReady(state.cur_image, addr);
 
         // 准备接收下一张图片
-        cur_image_ = QImage(width_, height_,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-            QImage::Format_BGR888);
-#else
-            QImage::Format_RGB888);
-#endif
-        cur_image_.fill(Qt::black);
-        cur_row_ = 0;
+        resetStreamImage(state);
     }
 }
 

@@ -20,99 +20,104 @@
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
 
-// ═══════════════════════════════════════════════════════════════════════════════════
-// [VM/x86_64 Mock 独立辅助函数]
-//   仅在非 ARM 平台编译 (__aarch64__ / __arm__ 不存在时)
-//   设计: 与 AIMainWidget 方法零耦合, 只在 startCapture / ByAIEN 入口处各加
-//         一个守卫调用 + 一个 return, 其余逻辑独立在本 namespace 内
-// ═══════════════════════════════════════════════════════════════════════════════════
+ // ═══════════════════════════════════════════════════════════════════════════════════
+ // [VM/x86_64 Mock 独立辅助函数]
+ //   仅在非 ARM 平台编译 (__aarch64__ / __arm__ 不存在时)
+ //   设计: 与 AIMainWidget 方法零耦合, 只在 startCapture / ByAIEN 入口处各加
+ //         一个守卫调用 + 一个 return, 其余逻辑独立在本 namespace 内
+ // ═══════════════════════════════════════════════════════════════════════════════════
 #if !defined(__aarch64__) && !defined(__arm__)
 
-namespace {
-
-/// 当前是否处于 mock 模式: x86 VM + /dev/ttyS4 不存在 → 无硬件
-static bool _isMockMode()
+namespace
 {
+
+    /// 当前是否处于 mock 模式: x86 VM + /dev/ttyS4 不存在 → 无硬件
+    static bool _isMockMode()
+    {
 #ifdef Q_OS_LINUX
-    return !QFile::exists("/dev/ttyS4");
+        return !QFile::exists("/dev/ttyS4");
 #else
-    return true;   // macOS/Windows 一定没硬件
+        return true;   // macOS/Windows 一定没硬件
 #endif
-}
+    }
 
-/// 扫描 /tmp/ 下的样例图: sample0.png, sample1.png ... (按文件名排序)
-static QStringList _scanSampleImagesInTmp()
-{
-    QStringList result;
-    QDir tmpDir("/tmp");
-    // Qt 5.15: entryList(nameFilters, Filters, SortFlags) — 3 参数版
-    QStringList files = tmpDir.entryList(QStringList() << "*.png", QDir::Files, QDir::Name);
-    for (const QString& f : files) result << "/tmp/" + f;
-    return result;
-}
+    /// 扫描 /tmp/ 下的样例图: sample0.png, sample1.png ... (按文件名排序)
+    static QStringList _scanSampleImagesInTmp()
+    {
+        QStringList result;
+        QDir tmpDir("/tmp");
+        // Qt 5.15: entryList(nameFilters, Filters, SortFlags) — 3 参数版
+        QStringList files = tmpDir.entryList(QStringList() << "*.png", QDir::Files, QDir::Name);
+        for (const QString& f : files) result << "/tmp/" + f;
+        return result;
+    }
 
-/// 加载第 idx 张图: 有样例则返回样例, 没样例则生成纯色兜底图
-static QImage _loadSampleImage(const QStringList& samples, int idx)
-{
-    if (!samples.isEmpty()) {
-        QImage img(samples[idx % samples.size()]);
-        if (!img.isNull()) {
-            LOG_INFO_STM("[MOCK] 加载样例: " << samples[idx % samples.size()].toStdString()
-                         << " (" << img.width() << "x" << img.height() << ")");
-            return img;
+    /// 加载第 idx 张图: 有样例则返回样例, 没样例则生成纯色兜底图
+    static QImage _loadSampleImage(const QStringList& samples, int idx)
+    {
+        if (!samples.isEmpty())
+        {
+            QImage img(samples[idx % samples.size()]);
+            if (!img.isNull())
+            {
+                LOG_INFO_STM("[MOCK] 加载样例: " << samples[idx % samples.size()].toStdString()
+                    << " (" << img.width() << "x" << img.height() << ")");
+                return img;
+            }
         }
-    }
-    // 兜底纯色图 (红/绿/蓝/黄轮换, 4 色区分不同相机)
-    int ci = idx % 4;
-    QColor bg = (ci == 0) ? QColor(200, 60, 60)
-              : (ci == 1) ? QColor(60, 180, 60)
-              : (ci == 2) ? QColor(60, 100, 220)
-                          : QColor(220, 180, 40);
-    QImage img(CAM_PIXEL_WIDTH, 500, QImage::Format_RGB888);
-    img.fill(bg);
-    LOG_INFO_STM("[MOCK] 兜底纯色图 idx=" << idx);
-    return img;
-}
-
-/// [核心入口] mock 版 startCapture: 从 /tmp/ 加载样例图, 逐台调 obj->onImageRead()
-///   调用时机: AIMainWidget::startCapture() 开头
-///   返回值: true=已处理(mock 完), 调用者应 return; false=继续走真实硬件路径
-static bool _mockStartCapture(AIMainWidget* obj, QList<CaptureConfig>& qlCaptureConfig)
-{
-    if (!_isMockMode()) return false;   // 真实硬件 → 让主流程继续
-
-    LOG_WARN_STM("[MOCK] startCapture: 检测不到硬件, 从 /tmp/ 加载样例图");
-
-    QStringList samples = _scanSampleImagesInTmp();
-    if (samples.isEmpty()) {
-        LOG_WARN_STM("[MOCK] /tmp/ 下找不到 *.png, 请放样例图进去");
+        // 兜底纯色图 (红/绿/蓝/黄轮换, 4 色区分不同相机)
+        int ci = idx % 4;
+        QColor bg = (ci == 0) ? QColor(200, 60, 60)
+            : (ci == 1) ? QColor(60, 180, 60)
+            : (ci == 2) ? QColor(60, 100, 220)
+            : QColor(220, 180, 40);
+        QImage img(CAM_PIXEL_WIDTH, 500, QImage::Format_RGB888);
+        img.fill(bg);
+        LOG_INFO_STM("[MOCK] 兜底纯色图 idx=" << idx);
+        return img;
     }
 
-    for (int i = 0; i < qlCaptureConfig.size(); ++i) {
-        CaptureConfig& cfg = qlCaptureConfig[i];
-        QImage mockImg = _loadSampleImage(samples, i);
-        obj->onImageRead(mockImg);   // ← public 方法, 触发存 /tmp/N.png + emit imgReceivedSig + UI 刷新
+    /// [核心入口] mock 版 startCapture: 从 /tmp/ 加载样例图, 逐台调 obj->onImageRead()
+    ///   调用时机: AIMainWidget::startCapture() 开头
+    ///   返回值: true=已处理(mock 完), 调用者应 return; false=继续走真实硬件路径
+    static bool _mockStartCapture(AIMainWidget* obj, QList<CaptureConfig>& qlCaptureConfig)
+    {
+        if (!_isMockMode()) return false;   // 真实硬件 → 让主流程继续
+
+        LOG_WARN_STM("[MOCK] startCapture: 检测不到硬件, 从 /tmp/ 加载样例图");
+
+        QStringList samples = _scanSampleImagesInTmp();
+        if (samples.isEmpty())
+        {
+            LOG_WARN_STM("[MOCK] /tmp/ 下找不到 *.png, 请放样例图进去");
+        }
+
+        for (int i = 0; i < qlCaptureConfig.size(); ++i)
+        {
+            CaptureConfig& cfg = qlCaptureConfig[i];
+            QImage mockImg = _loadSampleImage(samples, i);
+            obj->onImageRead(mockImg, i);   // ← public 方法, 触发存 /tmp/N.png + emit imgReceivedSig + UI 刷新
+            cfg.result = 0;   // = AIMainWidget::ERR_SUCCESS (private enum, 外部不可见, 用值 0 代替)
+            myFlow.msleep(80);           // myFlow 是全局变量, 不是 AIMainWidget 成员
+        }
+        return true;   // mock 完, 主流程应 return
+    }
+
+    /// [核心入口] mock 版 processImageDataFromCameraByAIEN: 跳过 3 秒 UDP 等待
+    ///   调用时机: AIMainWidget::processImageDataFromCameraByAIEN() 开头
+    ///   返回值: true=已处理(跳过等待), 调用者应 return; false=继续走真实 UDP 路径
+    static bool _mockSkipAIENWaiting(AIMainWidget* obj, CaptureConfig& cfg)
+    {
+        if (!_isMockMode()) return false;
+
+        LOG_INFO_STM("[MOCK] ByAIEN: 跳过 UDP 等待 (startCapture mock 已存图)");
         cfg.result = 0;   // = AIMainWidget::ERR_SUCCESS (private enum, 外部不可见, 用值 0 代替)
-        myFlow.msleep(80);           // myFlow 是全局变量, 不是 AIMainWidget 成员
+        // 注意: 不访问 obj->udp_img_receiver / obj->myFlow 等 private 成员
+        //   mock 模式下 udp_img_receiver 本来就没 start, 不需要 stop
+        //   startCapture mock 里已调过 onImageRead, UI 已刷新
+        obj->onViewRequest(cfg.nUnitAddr, false);
+        return true;
     }
-    return true;   // mock 完, 主流程应 return
-}
-
-/// [核心入口] mock 版 processImageDataFromCameraByAIEN: 跳过 3 秒 UDP 等待
-///   调用时机: AIMainWidget::processImageDataFromCameraByAIEN() 开头
-///   返回值: true=已处理(跳过等待), 调用者应 return; false=继续走真实 UDP 路径
-static bool _mockSkipAIENWaiting(AIMainWidget* obj, CaptureConfig& cfg)
-{
-    if (!_isMockMode()) return false;
-
-    LOG_INFO_STM("[MOCK] ByAIEN: 跳过 UDP 等待 (startCapture mock 已存图)");
-    cfg.result = 0;   // = AIMainWidget::ERR_SUCCESS (private enum, 外部不可见, 用值 0 代替)
-    // 注意: 不访问 obj->udp_img_receiver / obj->myFlow 等 private 成员
-    //   mock 模式下 udp_img_receiver 本来就没 start, 不需要 stop
-    //   startCapture mock 里已调过 onImageRead, UI 已刷新
-    obj->onViewRequest(cfg.nUnitAddr, false);
-    return true;
-}
 
 } // anonymous namespace
 
@@ -224,7 +229,7 @@ AIMainWidget::AIMainWidget(QWidget* parent) :
     m_stackedWidget->setCurrentIndex(AI_MAIN_PAGE);
 }
 
-void AIMainWidget::onImageRead(const QImage& img)
+void AIMainWidget::onImageRead(const QImage& img, quint16 addr)
 {
     QImage scaledImg = img.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
@@ -245,7 +250,7 @@ void AIMainWidget::onImageRead(const QImage& img)
  * \param image        原图（IMAGE_WIDTH * IMAGE_HEIGHT）
  * \param indexOfImg   图片序号，与 /tmp/<indexOfImg>.png 对应
  */
-void AIMainWidget::saveForegroundMask(QImage &image, int indexOfImg)
+void AIMainWidget::saveForegroundMask(QImage& image, int indexOfImg)
 {
     QImage mask(image.width(), image.height(), QImage::Format_RGB888);
     mask.fill(Qt::black);
@@ -255,7 +260,7 @@ void AIMainWidget::saveForegroundMask(QImage &image, int indexOfImg)
 
     for (int i = 0; i < image.height(); i++)
     {
-        uchar *maskLine = mask.scanLine(i);
+        uchar* maskLine = mask.scanLine(i);
         for (int j = 0; j < sampleWidth; j++)
         {
             QRgb rgb = image.pixel(j, i);
@@ -263,9 +268,9 @@ void AIMainWidget::saveForegroundMask(QImage &image, int indexOfImg)
             {
                 continue;
             }
-            maskLine[j*3] = 255;
-            maskLine[j*3+1] = 255;
-            maskLine[j*3+2] = 255;
+            maskLine[j * 3] = 255;
+            maskLine[j * 3 + 1] = 255;
+            maskLine[j * 3 + 2] = 255;
         }
     }
 
@@ -1481,19 +1486,9 @@ void AIMainWidget::setCaptureAttr(QList <CaptureConfig>& qlCaptureConfig, int nU
         setDataLenByProtocal(config.nProtoType, config.dataLen, config.dataDepth);    // 根据协议类型设置数据包的长度
         config.result = ERR_SUCCESS;                                                // 初始结果为成功
         qlCaptureConfig << config;
+        LOG_INFO_STM("m_bIsCaptureAllView:" << m_bIsCaptureAllView << ",addr:" << config.nUnitAddr << ", seq:" << config.nSeq << ", proto:" << config.nProtoType
+            << ", view:" << config.nViewNum << ", nTransType:" << config.nTransType);
     }
-
-    //debug
-#if 1
-    printf("qlCaptureConfig list:\n");
-    foreach(CaptureConfig tmp, qlCaptureConfig)
-    {
-        printf("unit:%2d, seq:%d, result:%d, trans:%d, view:%d, proto:%d, dateLen:%d, dataDepth:%d.\n",
-            tmp.nUnitAddr, tmp.nSeq, tmp.result, tmp.nTransType, tmp.nViewNum, tmp.nProtoType,
-            tmp.dataLen, tmp.dataDepth);
-    }
-    fflush(0);
-#endif
 }
 
 /*!
@@ -1573,7 +1568,6 @@ void AIMainWidget::startCapture(QList <CaptureConfig>& qlCaptureConfig)
 
         // 启动抓包, 通知AI板卡准备接收
         udp_img_receiver->SetImageHegiht(ConfigMgr::Instance().GetAiCfgInfo().img_view_height_);
-        udp_img_receiver->SetSenderIp(QString());   // UART方式不做来源过滤
         udp_img_receiver->start();
         onViewRequest(tmp.nUnitAddr, true);
 
@@ -1603,9 +1597,8 @@ void AIMainWidget::triggerAICaptureUnit(const CaptureConfig& captureConfig)
     LOG_INFO_STM("trigger AI unit:" << captureConfig.nUnitAddr << ", seq:" << captureConfig.nSeq
         << ", depth:" << captureConfig.dataDepth << ", trans:" << captureConfig.nTransType);
 
-    // 启动抓包, 并按来源 IP 过滤, 只接收当前这台相机的数据包
+    // 启动抓包, 只接收当前这台相机的数据
     udp_img_receiver->SetImageHegiht(ConfigMgr::Instance().GetAiCfgInfo().img_view_height_);
-    udp_img_receiver->SetSenderIp(ai_helper::GetAiIpByIndex(captureConfig.nUnitAddr));
     udp_img_receiver->start();
     onViewRequest(captureConfig.nUnitAddr, true);
 
@@ -3915,7 +3908,7 @@ bool AIMainWidget::saveDataFromImg(int nDataFrom, int classMode, int classLevel,
     QTextStream io2(&sample_ponit_file);
 
     // AI 板卡采集图片，如果是1024， 右侧4个像素是补的
-    int sample_width = (IMAGE_WIDTH > 1020) ? 1020:(int)IMAGE_WIDTH;
+    int sample_width = (IMAGE_WIDTH > 1020) ? 1020 : (int)IMAGE_WIDTH;
 
     if (nDataFrom == DATA_IMG)
     { //From Img
@@ -3951,7 +3944,7 @@ bool AIMainWidget::saveDataFromImg(int nDataFrom, int classMode, int classLevel,
 
                 QString strUsual = QString("%1: %2\n").arg(j).arg(i);
                 io2 << strUsual;
-                
+
                 /*
                     0 是 RGB，1 是 HSV
                 */
