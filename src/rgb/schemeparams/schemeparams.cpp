@@ -49,7 +49,11 @@ PageParams::PageParams(QWidget *parent)
     pageListWidget->setFlow(QListView::LeftToRight);
 //    pageListWidget->setIconSize(QSize(ICON_WID, ICON_HEI));
     pageListWidget->setMovement(QListView::Static);
-    pageListWidget->setStyleSheet("background-color:transparent");
+    pageListWidget->setStyleSheet(
+        "QListWidget { background-color: transparent; }"
+        "QListWidget::item { color: white; }"
+        "QListWidget::item:selected { color: white; }"
+    );
 
     if (LCD_WIDTH == 1024) {
         pageListWidget->setFixedWidth(LCD_WIDTH-BTN_WIDTH-180);

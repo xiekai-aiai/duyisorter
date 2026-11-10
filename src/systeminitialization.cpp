@@ -17,6 +17,7 @@ communication::communication(QWidget* parent) :
     QWidget(parent)
 {
     waitCommLabel = new myLabel(myLan.msg_communicating, this);
+    waitCommLabel->setStyleSheet("color: white;");  
 
     /*页面布局*/
     commVBLayout = new QVBoxLayout(this);
@@ -97,14 +98,14 @@ void communicationList::commuUpdateInterface()
         if (struGsh.nIntBaud[i] == MY_UARTBAUD_115200)
         {
             interfaceListLabel[i][1]->setText(myLan.normal);
-            interfaceListLabel[i][1]->setStyleSheet("color:black");
+            interfaceListLabel[i][1]->setStyleSheet("color:white");
         }
         else if (struGsh.nIntBaud[i] == MY_UARTBAUD_921600)
         {
             //            interfaceListLabel[i][1]->setText(myLan.normal+"1");
             interfaceListLabel[i][1]->setText(myLan.normal);
 
-            interfaceListLabel[i][1]->setStyleSheet("color:black");
+            interfaceListLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -152,14 +153,13 @@ void communicationList::commuUpdateCtrl()
         if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_115200)
         {
             controlListLabel[i][1]->setText(myLan.normal);
-            controlListLabel[i][1]->setStyleSheet("color:black");
+            controlListLabel[i][1]->setStyleSheet("color:white");
         }
         else if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_921600)
         {
             //            controlListLabel[i][1]->setText(myLan.normal+"1");
             controlListLabel[i][1]->setText(myLan.normal);
-
-            controlListLabel[i][1]->setStyleSheet("color:black");
+            controlListLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -216,7 +216,7 @@ void communicationList::commuUpdateCamera()
             if ((struGsh.struVer.sUnit[j][i][0] != 255) && (struGsh.struVer.sUnit[j][i][1] != 255))
             {
                 cameraListLabel[row_no][col_no]->setText(myLan.normal);
-                cameraListLabel[row_no][col_no]->setStyleSheet("color:black");
+                cameraListLabel[row_no][col_no]->setStyleSheet("color:white");
             }
             else
             {
@@ -231,7 +231,7 @@ void communicationList::commuUpdateCamera()
                 if (struGsh.aiResult[j] != QString(""))
                 {
                     cameraListLabel[row_no][col_no]->setText(myLan.normal);
-                    cameraListLabel[row_no][col_no]->setStyleSheet("color:black");
+                    cameraListLabel[row_no][col_no]->setStyleSheet("color:white");
                 }
                 else
                 {
@@ -263,12 +263,12 @@ void communicationList::commuUpdateLightSrc()
         if (struCnfg.nCurSrcBoradLampNum[i] == 0)
         {
             m_lightSrcLabel[i][1]->setText("--");
-            m_lightSrcLabel[i][1]->setStyleSheet("color:black");
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
         }
         else if (struGsh.struVer.sLightSrc[i][0] != 255 && struGsh.struVer.sLightSrc[i][1] != 255)
         {
             m_lightSrcLabel[i][1]->setText(myLan.normal);
-            m_lightSrcLabel[i][1]->setStyleSheet("color:black");
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -338,7 +338,7 @@ communicationList::communicationList(QWidget* parent) :
     newInterfaceBoardListGroup->setObjectName("newInterfaceBoardListGroup");
     //    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup title: { padding:0 1px;}");
     //    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup::title { px 0 3 px }");
-    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup { border: 2px solid black; }");
+    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup { border: 2px solid rgb(209, 243, 249); }");
 
     //    newInterfaceBoardListGroup->setAlignment(Qt::AlignHCenter);
     newInterfaceListLayout->setSpacing(5);
@@ -365,6 +365,7 @@ communicationList::communicationList(QWidget* parent) :
         for (j = 0; j < 2; j++)
         {
             m_lightSrcLabel[i][j] = new QLabel;
+            m_lightSrcLabel[i][j]->setStyleSheet("color:white");
             m_lightSrcLabel[i][j]->setFont(config->getFont());
             m_lightSrcLabel[i][j]->setAlignment(Qt::AlignCenter);
             m_lightSrcLay->addWidget(m_lightSrcLabel[i][j], i, j);
@@ -376,6 +377,7 @@ communicationList::communicationList(QWidget* parent) :
         for (j = 0; j < 2; j++)
         {
             controlListLabel[i][j] = new QLabel;
+            controlListLabel[i][j]->setStyleSheet("color:white");
             controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
             controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             interfaceListLayout->addWidget(controlListLabel[i][j], j, i);
@@ -387,6 +389,7 @@ communicationList::communicationList(QWidget* parent) :
         for (j = 0; j < 2; j++)
         {
             interfaceListLabel[i][j] = new QLabel;
+            interfaceListLabel[i][j]->setStyleSheet("color:white");
             interfaceListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             interfaceListLabel[i][j]->setAlignment(Qt::AlignCenter);
             interfaceListLayout->addWidget(interfaceListLabel[i][j], j, i + MAX_CTRL);
@@ -398,6 +401,7 @@ communicationList::communicationList(QWidget* parent) :
         for (j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
         {
             cameraListLabel[i][j] = new QLabel;
+            cameraListLabel[i][j]->setStyleSheet("color:white");
             cameraListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             cameraListLabel[i][j]->setAlignment(Qt::AlignHCenter);
             cameraListLayout->addWidget(cameraListLabel[i][j], i, j);
@@ -406,6 +410,7 @@ communicationList::communicationList(QWidget* parent) :
 
     cameraStateLbl = new QLabel;
     cameraStateLbl->setText(myLan.cameraList);
+    cameraStateLbl->setStyleSheet("color:white");
     //    cameraStateLbl->setText("相机状态");
 
     cameraStateLbl->setFont(config->getFont(DEFAULT_FONT_SIZE));
@@ -413,6 +418,7 @@ communicationList::communicationList(QWidget* parent) :
 
     testStateLbl = new QLabel;
     testStateLbl->setText(myLan.state);
+    testStateLbl->setStyleSheet("color:white");
     testStateLbl->setFont(config->getFont(DEFAULT_FONT_SIZE));
     testStateLbl->setAlignment(Qt::AlignHCenter);
 
@@ -492,6 +498,7 @@ initialization::initialization(QWidget* parent) :
     QWidget(parent)
 {
     waitCommLabel = new myLabel(myLan.msg_system_init, this);
+    waitCommLabel->setStyleSheet("color: white;");  
     /*页面布局*/
     initVBLayout = new QVBoxLayout(this);
     initVBLayout->addWidget(waitCommLabel);

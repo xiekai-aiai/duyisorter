@@ -961,6 +961,9 @@ QPushButton:pressed {
      <pointsize>10</pointsize>
     </font>
    </property>
+   <property name="styleSheet">
+    <string notr="true">color: white;</string>
+   </property>
    <property name="text">
     <string>面积阈值</string>
    </property>
@@ -982,6 +985,9 @@ QPushButton:pressed {
      <family>HarmonyOS Sans Medium</family>
      <pointsize>10</pointsize>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: white;</string>
    </property>
    <property name="text">
     <string>色差阈值</string>

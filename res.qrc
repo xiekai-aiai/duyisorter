@@ -2,193 +2,193 @@
     <qresource prefix="/">
         <file>res/html/asset/js/echarts-all.js</file>
         <file>res/html/statistic.html</file>
-        <file>res/png/Action_Apply.png</file>
-        <file>res/png/Action_Back.png</file>
-        <file>res/png/Action_Backup.png</file>
-        <file>res/png/Action_Cancel.png</file>
-        <file>res/png/Action_Clean.png</file>
-        <file>res/png/Action_Configure.png</file>
-        <file>res/png/Action_Minus.png</file>
-        <file>res/png/Action_OneKey.png</file>
-        <file>res/png/Action_Parameter.png</file>
-        <file>res/png/Action_Plus.png</file>
-        <file>res/png/Action_Refresh.png</file>
-        <file>res/png/Action_Restore.png</file>
-        <file>res/png/Action_Switch.png</file>
-        <file>res/png/Arrow_Down.png</file>
-        <file>res/png/Arrow_DownBottom.png</file>
-        <file>res/png/Arrow_DownFast.png</file>
-        <file>res/png/Arrow_Left.png</file>
-        <file>res/png/Arrow_LeftFast.png</file>
-        <file>res/png/Arrow_LeftFirst.png</file>
-        <file>res/png/Arrow_Right.png</file>
-        <file>res/png/Arrow_RightFast.png</file>
-        <file>res/png/Arrow_RightLast.png</file>
-        <file>res/png/Arrow_Up.png</file>
-        <file>res/png/Arrow_UpFast.png</file>
-        <file>res/png/Arrow_UpTop.png</file>
-        <file>res/png/Chart_Bar.png</file>
-        <file>res/png/Chart_Dot.png</file>
-        <file>res/png/Chart_Line.png</file>
-        <file>res/png/Chart_Pie.png</file>
-        <file>res/png/Device_Bluetooth.png</file>
-        <file>res/png/Device_Calculator.png</file>
-        <file>res/png/Device_Camera.png</file>
-        <file>res/png/Device_Chip.png</file>
-        <file>res/png/Device_Network.png</file>
-        <file>res/png/Device_NetworkError.png</file>
-        <file>res/png/Device_Printer.png</file>
-        <file>res/png/Device_TFCard.png</file>
-        <file>res/png/Device_USBDisk.png</file>
-        <file>res/png/Device_USBLine.png</file>
-        <file>res/png/Edit.png</file>
-        <file>res/png/Edit_Add.png</file>
-        <file>res/png/Edit_Copy.png</file>
-        <file>res/png/Edit_Cut.png</file>
-        <file>res/png/Edit_Delete.png</file>
-        <file>res/png/Edit_List.png</file>
-        <file>res/png/Edit_Paste.png</file>
-        <file>res/png/Edit_Redo.png</file>
-        <file>res/png/Edit_Rename.png</file>
-        <file>res/png/Edit_Save.png</file>
-        <file>res/png/Edit_Search.png</file>
-        <file>res/png/Edit_Undo.png</file>
-        <file>res/png/Edit_ZoomIn.png</file>
-        <file>res/png/Edit_ZoomOut.png</file>
-        <file>res/png/Flag_CN.png</file>
-        <file>res/png/Flag_ES.png</file>
-        <file>res/png/Flag_FR.png</file>
-        <file>res/png/Flag_GB.png</file>
-        <file>res/png/Flag_HK.png</file>
-        <file>res/png/Flag_IR.png</file>
-        <file>res/png/Flag_KR.png</file>
-        <file>res/png/Flag_MM.png</file>
-        <file>res/png/Flag_RU.png</file>
-        <file>res/png/Flag_SA.png</file>
-        <file>res/png/Flag_TH.png</file>
-        <file>res/png/Flag_TR.png</file>
-        <file>res/png/Flag_VN.png</file>
-        <file>res/png/Input_Backspace.png</file>
-        <file>res/png/Input_Language.png</file>
-        <file>res/png/Mark_Blue.png</file>
-        <file>res/png/Mark_Green.png</file>
-        <file>res/png/Mark_Red.png</file>
-        <file>res/png/Media_Pause.png</file>
-        <file>res/png/Media_Record.png</file>
-        <file>res/png/Media_Sound.png</file>
-        <file>res/png/Media_Start.png</file>
-        <file>res/png/Media_Stop.png</file>
-        <file>res/png/Media_Video.png</file>
-        <file>res/png/Message_Dialog.png</file>
-        <file>res/png/Message_Error.png</file>
-        <file>res/png/Message_Help.png</file>
-        <file>res/png/Message_HighTemperature.png</file>
-        <file>res/png/Message_Info.png</file>
-        <file>res/png/Message_Period.png</file>
-        <file>res/png/Message_Progress.png</file>
-        <file>res/png/Message_Warning.png</file>
-        <file>res/png/Meyer_Blue.png</file>
-        <file>res/png/Meyer_Green.png</file>
-        <file>res/png/Meyer_Red.png</file>
-        <file>res/png/Path_Cloud.png</file>
-        <file>res/png/Path_Favorite.png</file>
-        <file>res/png/Path_Folder.png</file>
-        <file>res/png/Path_Globe.png</file>
-        <file>res/png/Path_Home.png</file>
-        <file>res/png/Path_Share.png</file>
-        <file>res/png/QRCode.png</file>
-        <file>res/png/Sorter.png</file>
-        <file>res/png/Sorter_AI.png</file>
-        <file>res/png/Sorter_BootMode.png</file>
-        <file>res/png/Sorter_CameraInfra.png</file>
-        <file>res/png/Sorter_CameraRGB.png</file>
-        <file>res/png/Sorter_Degaussing.png</file>
-        <file>res/png/Sorter_Ejector.png</file>
-        <file>res/png/Sorter_EjectorStatistics.png</file>
-        <file>res/png/Sorter_EjectorTest.png</file>
-        <file>res/png/Sorter_EjectorTime.png</file>
-        <file>res/png/Sorter_Feeder.png</file>
-        <file>res/png/Sorter_FeederTest.png</file>
-        <file>res/png/Sorter_Infra.png</file>
-        <file>res/png/Sorter_Laser.png</file>
-        <file>res/png/Sorter_Light.png</file>
-        <file>res/png/Sorter_LightWarm.png</file>
-        <file>res/png/Sorter_RGB.png</file>
-        <file>res/png/Sorter_SchemeManage.png</file>
-        <file>res/png/Sorter_SchemeParameter.png</file>
-        <file>res/png/Sorter_SchemeSelect.png</file>
-        <file>res/png/Sorter_Shape.png</file>
-        <file>res/png/Sorter_WipeManual.png</file>
-        <file>res/png/Sorter_WipeTime.png</file>
-        <file>res/png/System_Calendar.png</file>
-        <file>res/png/System_Clock.png</file>
-        <file>res/png/System_Contacts.png</file>
-        <file>res/png/System_Lock.png</file>
-        <file>res/png/System_Remote.png</file>
-        <file>res/png/System_ScreenSaver.png</file>
-        <file>res/png/System_Shutdown.png</file>
-        <file>res/png/System_Signal.png</file>
-        <file>res/png/System_Standby.png</file>
-        <file>res/png/System_TSCalibrate.png</file>
-        <file>res/png/System_Unlock.png</file>
-        <file>res/png/System_User.png</file>
-        <file>res/png/System_UserGroup.png</file>
-        <file>res/png/Update.png</file>
-        <file>res/png/Update_Chip.png</file>
-        <file>res/png/Update_LCD.png</file>
-        <file>res/png/Vendor_Alpha.png</file>
-        <file>res/png/Vendor_Meyer.png</file>
-        <file>res/png/Vendor_Milltec.png</file>
-        <file>res/png/Video.png</file>
-        <file>res/png/Flag_BD.png</file>
-        <file>res/png/Flag_BG.png</file>
-        <file>res/png/Flag_ID.png</file>
-        <file>res/png/Flag_PT.png</file>
-        <file>res/png/Flag_SK.png</file>
-        <file>res/png/Action_Circle.png</file>
-        <file>res/png/Action_Select.png</file>
-        <file>res/png/Flag_PL.png</file>
-        <file>res/png/blank.png</file>
-        <file>res/png/pic.png</file>
-        <file>res/png/pic2.png</file>
-        <file>res/png/pic3.png</file>
-        <file>res/png/pic4.png</file>
-        <file>res/png/pic5.png</file>
-        <file>res/png/pic6.png</file>
-        <file>res/png/back.png</file>
-        <file>res/png/schemeBack.png</file>
-        <file>res/png/material.png</file>
-        <file>res/png/materialButton.png</file>
-        <file>res/png/materialSelect.png</file>
-        <file>res/png/sensSelect.png</file>
-        <file>res/png/feederSelect.png</file>
-        <file>res/png/ejectorSelect.png</file>
-        <file>res/png/wiperSelect.png</file>
-        <file>res/png/funcSelect.png</file>
-        <file>res/png/operSelect.png</file>
-        <file>res/png/selected.png</file>
-        <file>res/png/backSelect.png</file>
-        <file>res/png/selectPress.png</file>
-        <file>res/png/selectUnpress.png</file>
-        <file>res/png/savePara.png</file>
-        <file>res/png/leftBack.png</file>
-        <file>res/png/time.png</file>
-        <file>res/png/shutDown.png</file>
-        <file>res/png/workStop.png</file>
-        <file>res/png/workStart.png</file>
-        <file>res/png/inputPanelBack.png</file>
-        <file>res/png/inputDel.png</file>
-        <file>res/png/messageBack.png</file>
-        <file>res/png/inputMethodBack.png</file>
-        <file>res/png/pic7.png</file>
-        <file>res/png/pic8.png</file>
-        <file>res/png/pic9.png</file>
-        <file>res/png/pic10.png</file>
-        <file>res/png/Sorter_WipeManual_New.png</file>
-        <file>res/png/setup.png</file>
-        <file>res/png/algo.png</file>
-        <file>res/png/aialgo.png</file>
-        <file>res/png/Loading.gif</file>
+        <file alias="res/png/Action_Apply.png">res/png2/Action_Apply.png</file>
+        <file alias="res/png/Action_Back.png">res/png2/Action_Back.png</file>
+        <file alias="res/png/Action_Backup.png">res/png2/Action_Backup.png</file>
+        <file alias="res/png/Action_Cancel.png">res/png2/Action_Cancel.png</file>
+        <file alias="res/png/Action_Clean.png">res/png2/Action_Clean.png</file>
+        <file alias="res/png/Action_Configure.png">res/png2/Action_Configure.png</file>
+        <file alias="res/png/Action_Minus.png">res/png2/Action_Minus.png</file>
+        <file alias="res/png/Action_OneKey.png">res/png2/Action_OneKey.png</file>
+        <file alias="res/png/Action_Parameter.png">res/png2/Action_Parameter.png</file>
+        <file alias="res/png/Action_Plus.png">res/png2/Action_Plus.png</file>
+        <file alias="res/png/Action_Refresh.png">res/png2/Action_Refresh.png</file>
+        <file alias="res/png/Action_Restore.png">res/png2/Action_Restore.png</file>
+        <file alias="res/png/Action_Switch.png">res/png2/Action_Switch.png</file>
+        <file alias="res/png/Arrow_Down.png">res/png2/Arrow_Down.png</file>
+        <file alias="res/png/Arrow_DownBottom.png">res/png2/Arrow_DownBottom.png</file>
+        <file alias="res/png/Arrow_DownFast.png">res/png2/Arrow_DownFast.png</file>
+        <file alias="res/png/Arrow_Left.png">res/png2/Arrow_Left.png</file>
+        <file alias="res/png/Arrow_LeftFast.png">res/png2/Arrow_LeftFast.png</file>
+        <file alias="res/png/Arrow_LeftFirst.png">res/png2/Arrow_LeftFirst.png</file>
+        <file alias="res/png/Arrow_Right.png">res/png2/Arrow_Right.png</file>
+        <file alias="res/png/Arrow_RightFast.png">res/png2/Arrow_RightFast.png</file>
+        <file alias="res/png/Arrow_RightLast.png">res/png2/Arrow_RightLast.png</file>
+        <file alias="res/png/Arrow_Up.png">res/png2/Arrow_Up.png</file>
+        <file alias="res/png/Arrow_UpFast.png">res/png2/Arrow_UpFast.png</file>
+        <file alias="res/png/Arrow_UpTop.png">res/png2/Arrow_UpTop.png</file>
+        <file alias="res/png/Chart_Bar.png">res/png2/Chart_Bar.png</file>
+        <file alias="res/png/Chart_Dot.png">res/png2/Chart_Dot.png</file>
+        <file alias="res/png/Chart_Line.png">res/png2/Chart_Line.png</file>
+        <file alias="res/png/Chart_Pie.png">res/png2/Chart_Pie.png</file>
+        <file alias="res/png/Device_Bluetooth.png">res/png2/Device_Bluetooth.png</file>
+        <file alias="res/png/Device_Calculator.png">res/png2/Device_Calculator.png</file>
+        <file alias="res/png/Device_Camera.png">res/png2/Device_Camera.png</file>
+        <file alias="res/png/Device_Chip.png">res/png2/Device_Chip.png</file>
+        <file alias="res/png/Device_Network.png">res/png2/Device_Network.png</file>
+        <file alias="res/png/Device_NetworkError.png">res/png2/Device_NetworkError.png</file>
+        <file alias="res/png/Device_Printer.png">res/png2/Device_Printer.png</file>
+        <file alias="res/png/Device_TFCard.png">res/png2/Device_TFCard.png</file>
+        <file alias="res/png/Device_USBDisk.png">res/png2/Device_USBDisk.png</file>
+        <file alias="res/png/Device_USBLine.png">res/png2/Device_USBLine.png</file>
+        <file alias="res/png/Edit.png">res/png2/Edit.png</file>
+        <file alias="res/png/Edit_Add.png">res/png2/Edit_Add.png</file>
+        <file alias="res/png/Edit_Copy.png">res/png2/Edit_Copy.png</file>
+        <file alias="res/png/Edit_Cut.png">res/png2/Edit_Cut.png</file>
+        <file alias="res/png/Edit_Delete.png">res/png2/Edit_Delete.png</file>
+        <file alias="res/png/Edit_List.png">res/png2/Edit_List.png</file>
+        <file alias="res/png/Edit_Paste.png">res/png2/Edit_Paste.png</file>
+        <file alias="res/png/Edit_Redo.png">res/png2/Edit_Redo.png</file>
+        <file alias="res/png/Edit_Rename.png">res/png2/Edit_Rename.png</file>
+        <file alias="res/png/Edit_Save.png">res/png2/Edit_Save.png</file>
+        <file alias="res/png/Edit_Search.png">res/png2/Edit_Search.png</file>
+        <file alias="res/png/Edit_Undo.png">res/png2/Edit_Undo.png</file>
+        <file alias="res/png/Edit_ZoomIn.png">res/png2/Edit_ZoomIn.png</file>
+        <file alias="res/png/Edit_ZoomOut.png">res/png2/Edit_ZoomOut.png</file>
+        <file alias="res/png/Flag_CN.png">res/png2/Flag_CN.png</file>
+        <file alias="res/png/Flag_ES.png">res/png2/Flag_ES.png</file>
+        <file alias="res/png/Flag_FR.png">res/png2/Flag_FR.png</file>
+        <file alias="res/png/Flag_GB.png">res/png2/Flag_GB.png</file>
+        <file alias="res/png/Flag_HK.png">res/png2/Flag_HK.png</file>
+        <file alias="res/png/Flag_IR.png">res/png2/Flag_IR.png</file>
+        <file alias="res/png/Flag_KR.png">res/png2/Flag_KR.png</file>
+        <file alias="res/png/Flag_MM.png">res/png2/Flag_MM.png</file>
+        <file alias="res/png/Flag_RU.png">res/png2/Flag_RU.png</file>
+        <file alias="res/png/Flag_SA.png">res/png2/Flag_SA.png</file>
+        <file alias="res/png/Flag_TH.png">res/png2/Flag_TH.png</file>
+        <file alias="res/png/Flag_TR.png">res/png2/Flag_TR.png</file>
+        <file alias="res/png/Flag_VN.png">res/png2/Flag_VN.png</file>
+        <file alias="res/png/Input_Backspace.png">res/png2/Input_Backspace.png</file>
+        <file alias="res/png/Input_Language.png">res/png2/Input_Language.png</file>
+        <file alias="res/png/Mark_Blue.png">res/png2/Mark_Blue.png</file>
+        <file alias="res/png/Mark_Green.png">res/png2/Mark_Green.png</file>
+        <file alias="res/png/Mark_Red.png">res/png2/Mark_Red.png</file>
+        <file alias="res/png/Media_Pause.png">res/png2/Media_Pause.png</file>
+        <file alias="res/png/Media_Record.png">res/png2/Media_Record.png</file>
+        <file alias="res/png/Media_Sound.png">res/png2/Media_Sound.png</file>
+        <file alias="res/png/Media_Start.png">res/png2/Media_Start.png</file>
+        <file alias="res/png/Media_Stop.png">res/png2/Media_Stop.png</file>
+        <file alias="res/png/Media_Video.png">res/png2/Media_Video.png</file>
+        <file alias="res/png/Message_Dialog.png">res/png2/Message_Dialog.png</file>
+        <file alias="res/png/Message_Error.png">res/png2/Message_Error.png</file>
+        <file alias="res/png/Message_Help.png">res/png2/Message_Help.png</file>
+        <file alias="res/png/Message_HighTemperature.png">res/png2/Message_HighTemperature.png</file>
+        <file alias="res/png/Message_Info.png">res/png2/Message_Info.png</file>
+        <file alias="res/png/Message_Period.png">res/png2/Message_Period.png</file>
+        <file alias="res/png/Message_Progress.png">res/png2/Message_Progress.png</file>
+        <file alias="res/png/Message_Warning.png">res/png2/Message_Warning.png</file>
+        <file alias="res/png/Meyer_Blue.png">res/png2/Meyer_Blue.png</file>
+        <file alias="res/png/Meyer_Green.png">res/png2/Meyer_Green.png</file>
+        <file alias="res/png/Meyer_Red.png">res/png2/Meyer_Red.png</file>
+        <file alias="res/png/Path_Cloud.png">res/png2/Path_Cloud.png</file>
+        <file alias="res/png/Path_Favorite.png">res/png2/Path_Favorite.png</file>
+        <file alias="res/png/Path_Folder.png">res/png2/Path_Folder.png</file>
+        <file alias="res/png/Path_Globe.png">res/png2/Path_Globe.png</file>
+        <file alias="res/png/Path_Home.png">res/png2/Path_Home.png</file>
+        <file alias="res/png/Path_Share.png">res/png2/Path_Share.png</file>
+        <file alias="res/png/QRCode.png">res/png2/QRCode.png</file>
+        <file alias="res/png/Sorter.png">res/png2/Sorter.png</file>
+        <file alias="res/png/Sorter_AI.png">res/png2/Sorter_AI.png</file>
+        <file alias="res/png/Sorter_BootMode.png">res/png2/Sorter_BootMode.png</file>
+        <file alias="res/png/Sorter_CameraInfra.png">res/png2/Sorter_CameraInfra.png</file>
+        <file alias="res/png/Sorter_CameraRGB.png">res/png2/Sorter_CameraRGB.png</file>
+        <file alias="res/png/Sorter_Degaussing.png">res/png2/Sorter_Degaussing.png</file>
+        <file alias="res/png/Sorter_Ejector.png">res/png2/Sorter_Ejector.png</file>
+        <file alias="res/png/Sorter_EjectorStatistics.png">res/png2/Sorter_EjectorStatistics.png</file>
+        <file alias="res/png/Sorter_EjectorTest.png">res/png2/Sorter_EjectorTest.png</file>
+        <file alias="res/png/Sorter_EjectorTime.png">res/png2/Sorter_EjectorTime.png</file>
+        <file alias="res/png/Sorter_Feeder.png">res/png2/Sorter_Feeder.png</file>
+        <file alias="res/png/Sorter_FeederTest.png">res/png2/Sorter_FeederTest.png</file>
+        <file alias="res/png/Sorter_Infra.png">res/png2/Sorter_Infra.png</file>
+        <file alias="res/png/Sorter_Laser.png">res/png2/Sorter_Laser.png</file>
+        <file alias="res/png/Sorter_Light.png">res/png2/Sorter_Light.png</file>
+        <file alias="res/png/Sorter_LightWarm.png">res/png2/Sorter_LightWarm.png</file>
+        <file alias="res/png/Sorter_RGB.png">res/png2/Sorter_RGB.png</file>
+        <file alias="res/png/Sorter_SchemeManage.png">res/png2/Sorter_SchemeManage.png</file>
+        <file alias="res/png/Sorter_SchemeParameter.png">res/png2/Sorter_SchemeParameter.png</file>
+        <file alias="res/png/Sorter_SchemeSelect.png">res/png2/Sorter_SchemeSelect.png</file>
+        <file alias="res/png/Sorter_Shape.png">res/png2/Sorter_Shape.png</file>
+        <file alias="res/png/Sorter_WipeManual.png">res/png2/Sorter_WipeManual.png</file>
+        <file alias="res/png/Sorter_WipeTime.png">res/png2/Sorter_WipeTime.png</file>
+        <file alias="res/png/System_Calendar.png">res/png2/System_Calendar.png</file>
+        <file alias="res/png/System_Clock.png">res/png2/System_Clock.png</file>
+        <file alias="res/png/System_Contacts.png">res/png2/System_Contacts.png</file>
+        <file alias="res/png/System_Lock.png">res/png2/System_Lock.png</file>
+        <file alias="res/png/System_Remote.png">res/png2/System_Remote.png</file>
+        <file alias="res/png/System_ScreenSaver.png">res/png2/System_ScreenSaver.png</file>
+        <file alias="res/png/System_Shutdown.png">res/png2/System_Shutdown.png</file>
+        <file alias="res/png/System_Signal.png">res/png2/System_Signal.png</file>
+        <file alias="res/png/System_Standby.png">res/png2/System_Standby.png</file>
+        <file alias="res/png/System_TSCalibrate.png">res/png2/System_TSCalibrate.png</file>
+        <file alias="res/png/System_Unlock.png">res/png2/System_Unlock.png</file>
+        <file alias="res/png/System_User.png">res/png2/System_User.png</file>
+        <file alias="res/png/System_UserGroup.png">res/png2/System_UserGroup.png</file>
+        <file alias="res/png/Update.png">res/png2/Update.png</file>
+        <file alias="res/png/Update_Chip.png">res/png2/Update_Chip.png</file>
+        <file alias="res/png/Update_LCD.png">res/png2/Update_LCD.png</file>
+        <file alias="res/png/Vendor_Alpha.png">res/png2/Vendor_Alpha.png</file>
+        <file alias="res/png/Vendor_Meyer.png">res/png2/Vendor_Meyer.png</file>
+        <file alias="res/png/Vendor_Milltec.png">res/png2/Vendor_Milltec.png</file>
+        <file alias="res/png/Video.png">res/png2/Video.png</file>
+        <file alias="res/png/Flag_BD.png">res/png2/Flag_BD.png</file>
+        <file alias="res/png/Flag_BG.png">res/png2/Flag_BG.png</file>
+        <file alias="res/png/Flag_ID.png">res/png2/Flag_ID.png</file>
+        <file alias="res/png/Flag_PT.png">res/png2/Flag_PT.png</file>
+        <file alias="res/png/Flag_SK.png">res/png2/Flag_SK.png</file>
+        <file alias="res/png/Action_Circle.png">res/png2/Action_Circle.png</file>
+        <file alias="res/png/Action_Select.png">res/png2/Action_Select.png</file>
+        <file alias="res/png/Flag_PL.png">res/png2/Flag_PL.png</file>
+        <file alias="res/png/blank.png">res/png2/blank.png</file>
+        <file alias="res/png/pic.png">res/png2/pic.png</file>
+        <file alias="res/png/pic2.png">res/png2/pic2.png</file>
+        <file alias="res/png/pic3.png">res/png2/pic3.png</file>
+        <file alias="res/png/pic4.png">res/png2/pic4.png</file>
+        <file alias="res/png/pic5.png">res/png2/pic5.png</file>
+        <file alias="res/png/pic6.png">res/png2/pic6.png</file>
+        <file alias="res/png/back.png">res/png2/back.png</file>
+        <file alias="res/png/schemeBack.png">res/png2/schemeBack.png</file>
+        <file alias="res/png/material.png">res/png2/material.png</file>
+        <file alias="res/png/materialButton.png">res/png2/materialButton.png</file>
+        <file alias="res/png/materialSelect.png">res/png2/materialSelect.png</file>
+        <file alias="res/png/sensSelect.png">res/png2/sensSelect.png</file>
+        <file alias="res/png/feederSelect.png">res/png2/feederSelect.png</file>
+        <file alias="res/png/ejectorSelect.png">res/png2/ejectorSelect.png</file>
+        <file alias="res/png/wiperSelect.png">res/png2/wiperSelect.png</file>
+        <file alias="res/png/funcSelect.png">res/png2/funcSelect.png</file>
+        <file alias="res/png/operSelect.png">res/png2/operSelect.png</file>
+        <file alias="res/png/selected.png">res/png2/selected.png</file>
+        <file alias="res/png/backSelect.png">res/png2/backSelect.png</file>
+        <file alias="res/png/selectPress.png">res/png2/selectPress.png</file>
+        <file alias="res/png/selectUnpress.png">res/png2/selectUnpress.png</file>
+        <file alias="res/png/savePara.png">res/png2/savePara.png</file>
+        <file alias="res/png/leftBack.png">res/png2/leftBack.png</file>
+        <file alias="res/png/time.png">res/png2/time.png</file>
+        <file alias="res/png/shutDown.png">res/png2/shutDown.png</file>
+        <file alias="res/png/workStop.png">res/png2/workStop.png</file>
+        <file alias="res/png/workStart.png">res/png2/workStart.png</file>
+        <file alias="res/png/inputPanelBack.png">res/png2/inputPanelBack.png</file>
+        <file alias="res/png/inputDel.png">res/png2/inputDel.png</file>
+        <file alias="res/png/messageBack.png">res/png2/messageBack.png</file>
+        <file alias="res/png/inputMethodBack.png">res/png2/inputMethodBack.png</file>
+        <file alias="res/png/pic7.png">res/png2/pic7.png</file>
+        <file alias="res/png/pic8.png">res/png2/pic8.png</file>
+        <file alias="res/png/pic9.png">res/png2/pic9.png</file>
+        <file alias="res/png/pic10.png">res/png2/pic10.png</file>
+        <file alias="res/png/Sorter_WipeManual_New.png">res/png2/Sorter_WipeManual_New.png</file>
+        <file alias="res/png/setup.png">res/png2/setup.png</file>
+        <file alias="res/png/algo.png">res/png2/algo.png</file>
+        <file alias="res/png/aialgo.png">res/png2/aialgo.png</file>
+        <file alias="res/png/Loading.gif">res/png2/Loading.gif</file>
         <file>res/fonts/HarmonyOS_Sans_Black.ttf</file>
         <file>res/fonts/HarmonyOS_Sans_Bold.ttf</file>
         <file>res/fonts/HarmonyOS_Sans_Condensed_Black.ttf</file>
@@ -207,14 +207,14 @@
         <file>res/fonts/HarmonyOS_Sans_SC_Regular.ttf</file>
         <file>res/fonts/HarmonyOS_Sans_SC_Thin.ttf</file>
         <file>res/fonts/HarmonyOS_Sans_Thin.ttf</file>
-        <file>res/png/System_Alerm.png</file>
-        <file>res/png/System_Device.png</file>
-        <file>res/png/System_Network.png</file>
-        <file>res/png/System_Status.png</file>
-        <file>res/png/System_Time.png</file>
-        <file>res/png/System_Version.png</file>
-        <file>res/png/Al_Ai.png</file>
-        <file>res/png/Al_General.png</file>
-        <file>res/png/Al_Shape.png</file>
+        <file alias="res/png/System_Alerm.png">res/png2/System_Alerm.png</file>
+        <file alias="res/png/System_Device.png">res/png2/System_Device.png</file>
+        <file alias="res/png/System_Network.png">res/png2/System_Network.png</file>
+        <file alias="res/png/System_Status.png">res/png2/System_Status.png</file>
+        <file alias="res/png/System_Time.png">res/png2/System_Time.png</file>
+        <file alias="res/png/System_Version.png">res/png2/System_Version.png</file>
+        <file alias="res/png/Al_Ai.png">res/png2/Al_Ai.png</file>
+        <file alias="res/png/Al_General.png">res/png2/Al_General.png</file>
+        <file alias="res/png/Al_Shape.png">res/png2/Al_Shape.png</file>
     </qresource>
 </RCC>

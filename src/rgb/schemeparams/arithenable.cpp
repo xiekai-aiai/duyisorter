@@ -2,6 +2,26 @@
 #include "configmgr.h"
 #include "unilog.h"
 
+/* 勾选算法后右侧按钮深色高亮，取消勾选恢复默认样式 */
+static void setArithButtonHighlight(myPushButton *btn, bool checked)
+{
+    if (checked)
+    {
+        btn->setStyleSheet("QPushButton {"
+                           "text-align: center;"
+                           "outline: none;"
+                           "background-color: rgb(14, 40, 60);"
+                           "border: 2px solid #afafaf;"
+                           "border-radius: 5;"
+                           "color: white;"
+                           "}");
+    }
+    else
+    {
+        btn->setStyleSheet(btn->property("defaultStyle").toString());
+    }
+}
+
 /**
  * @brief PageIdentify::PageIdentify
  * 构造识别参数页面
@@ -327,6 +347,7 @@ void PageIdentify::setArithButton(int btnId)
         */
         m_nArithmeticEnable[struGsh.nLevel][tabBar->currentIndex()][arithmeticSeq[btnId]] = 1;
         arithmeticBtn[btnId]->setEnabled(true);
+        setArithButtonHighlight(arithmeticBtn[btnId], true);
     }
     else
     {
@@ -341,6 +362,7 @@ void PageIdentify::setArithButton(int btnId)
         */
         m_nArithmeticEnable[struGsh.nLevel][tabBar->currentIndex()][arithmeticSeq[btnId]] = 0;
         arithmeticBtn[btnId]->setEnabled(false);
+        setArithButtonHighlight(arithmeticBtn[btnId], false);
     }
     /* assign arithmetic enable */
     setArithmeticEnable();
@@ -461,6 +483,8 @@ void PageIdentify::createArithmeticList()
         arithmeticBox[i]->setMinimumSize(BTN_HEIGHT, BTN_HEIGHT);
         arithmeticBtn[i]->setFocusPolicy(Qt::NoFocus);
         arithmeticBtn[i]->setMinimumSize(BTN_WIDTH, BTN_HEIGHT);
+        /* 记录默认样式，供勾选高亮恢复用 */
+        arithmeticBtn[i]->setProperty("defaultStyle", arithmeticBtn[i]->styleSheet());
 
         /* signal mapped */
         sigBoxMapper->setMapping(arithmeticBox[i], i);
@@ -547,6 +571,9 @@ void PageIdentify::updateArithmeticState()
             arithmeticBox[i]->hide();
             arithmeticBtn[i]->hide();
         }
+
+        /* 按勾选状态刷新按钮高亮 */
+        setArithButtonHighlight(arithmeticBtn[i], arithmeticBox[i]->isChecked());
     }
 }
 

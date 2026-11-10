@@ -105,7 +105,11 @@ StatusInfoPage::StatusInfoPage(QWidget* parent) :
     listWidget->setMaximumWidth(LCD_WIDTH / 5);
     listWidget->setMinimumWidth(LCD_WIDTH / 5);
     listWidget->setViewMode(QListView::IconMode);
-    listWidget->setStyleSheet("background-color:transparent");
+    listWidget->setStyleSheet(
+        "QListWidget { background-color: transparent; }"
+        "QListWidget::item { color: white; }"
+        "QListWidget::item:selected { color: white; }"
+    );
 
     leftBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     cancelBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -781,7 +785,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.feed_stat).arg(myLan.off);
-        feedLabel->setStyleSheet("color:black");
+        feedLabel->setStyleSheet("color:white");
     }
     feedLabel->setText(str);
 
@@ -789,10 +793,12 @@ void StatusInfoPage::updateGeneralPage()
     if (struGsh.bStatEjectFpga)
     {
         str = QString("%1: %2").arg(myLan.eject_stat).arg(myLan.on);
+        ejectLabel->setStyleSheet("color:red");
     }
     else
     {
         str = QString("%1: %2").arg(myLan.eject_stat).arg(myLan.off);
+        ejectLabel->setStyleSheet("color:white");
     }
     ejectLabel->setText(str);
 
@@ -810,7 +816,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.pressure_alarm).arg(myLan.normal);
-        pressLabel->setStyleSheet("color:black");
+        pressLabel->setStyleSheet("color:white");
     }
     pressLabel->setText(str);
 
@@ -823,7 +829,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.blower_alarm).arg(myLan.normal);
-        blowerLabel->setStyleSheet("color:black");
+        blowerLabel->setStyleSheet("color:white");
     }
     blowerLabel->setText(str);
 
@@ -836,7 +842,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.lamp_alarm).arg(myLan.normal);
-        lampLabel->setStyleSheet("color:black");
+        lampLabel->setStyleSheet("color:white");
     }
     lampLabel->setText(str);
 
@@ -849,7 +855,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.belt_1_status).arg(myLan.off);
-        beltStatus[0]->setStyleSheet("color:black");
+        beltStatus[0]->setStyleSheet("color:white");
     }
     beltStatus[0]->setText(str);
 
@@ -862,7 +868,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.belt_2_status).arg(myLan.off);
-        beltStatus[1]->setStyleSheet("color:black");
+        beltStatus[1]->setStyleSheet("color:white");
     }
     beltStatus[1]->setText(str);
 
@@ -913,7 +919,7 @@ void StatusInfoPage::updateGeneralPage()
     }
     else
     {
-        m_temperatureLabel->setStyleSheet("color:black");
+        m_temperatureLabel->setStyleSheet("color:white");
     }
 
     /* 显示或屏蔽报警状态 */
@@ -967,7 +973,7 @@ void StatusInfoPage::updateGeneralPage()
         else
         {
             m_slaveCommAlarmLabel->setText(QString("%1: %2").arg(myLan.communication_alarm).arg(myLan.normal));
-            m_slaveCommAlarmLabel->setStyleSheet("color:black");
+            m_slaveCommAlarmLabel->setStyleSheet("color:white");
         }
     }
     else
@@ -1509,7 +1515,7 @@ void StatusInfoPage::versionUpdateCtrl()
             //              controlListLabel[i][1]->setText(QString("V%1.0%2").arg(struGsh.struVer.sControl[i][1])
             //                      .arg(struGsh.struVer.sControl[i][0]));
             controlListLabel[i][1]->setText(QString("V1.00"));
-            controlListLabel[i][1]->setStyleSheet("color:black");
+            controlListLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -1559,7 +1565,7 @@ void StatusInfoPage::versionUpdateInterface()
             //                        materialType);
             //                interfaceListLabel[i][1]->setText(str);
             interfaceListLabel[i][1]->setText(QString("V1.00"));
-            interfaceListLabel[i][1]->setStyleSheet("color:black");
+            interfaceListLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -1586,12 +1592,12 @@ void StatusInfoPage::versionUpdateUSBFirmware()
     if (struGsh.struVer.nUsbFirmware == 1)
     {
         interfaceListLabel[MAX_INT][1]->setText("V1.00");
-        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:black");
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:white");
     }
     else if (struGsh.struVer.nUsbFirmware == 2)
     {
         interfaceListLabel[MAX_INT][1]->setText("V2.00");
-        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:black");
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:white");
     }
     else
     {
@@ -3142,13 +3148,13 @@ void StatusInfoPage::versionUpdateLightSrc()
         if (struCnfg.nCurSrcBoradLampNum[i] == 0)
         {
             m_lightSrcLabel[i][1]->setText("--");
-            m_lightSrcLabel[i][1]->setStyleSheet("color:black");
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
         }
         else if ((struGsh.struVer.sLightSrc[i][0] != 255) && (struGsh.struVer.sLightSrc[i][1] != 255))
         {
             m_lightSrcLabel[i][1]->setText(QString("V%1.0%2").arg(struGsh.struVer.sLightSrc[i][1])
                 .arg(struGsh.struVer.sLightSrc[i][0]));
-            m_lightSrcLabel[i][1]->setStyleSheet("color:black");
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {

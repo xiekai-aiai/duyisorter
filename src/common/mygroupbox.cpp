@@ -6,9 +6,13 @@
  * \date        2015.01.14
  */
 #include "mygroupbox.h"
+#include <QPalette>
 
 myGroupBox::myGroupBox()
 {
+    QPalette pe = palette();
+    pe.setColor(QPalette::WindowText, Qt::white);
+    setPalette(pe);
 }
 
 myGroupBox::myGroupBox(QString text, QWidget *parent)
@@ -17,4 +21,8 @@ myGroupBox::myGroupBox(QString text, QWidget *parent)
     config = g_Config::getInstance();
     setFont(config->getFont());
     setTitle(text);
+
+    QPalette pe = palette();
+    pe.setColor(QPalette::WindowText, Qt::white);
+    setPalette(pe);
 }

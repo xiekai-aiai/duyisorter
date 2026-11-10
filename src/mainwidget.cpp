@@ -121,20 +121,20 @@ MainWidget::MainWidget(QWidget* parent)
     statInfoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     statInfoBtn->setIconSize(QSize(ICON_WID, ICON_WID));
     statInfoBtn->setIcon(QIcon(":/res/png/time.png"));
-    statInfoBtn->setStyleSheet("background-color:transparent; border:none;");
+    statInfoBtn->setStyleSheet("background-color:transparent; border:none; color:white;");
 
     lineTitle = new QFrame(this);
     lineTitle->setFrameShape(QFrame::HLine);
     lineTitle->setFrameShadow(QFrame::Plain);
     lineTitle->setLineWidth(2);
-    lineTitle->setStyleSheet("color: black");
+    lineTitle->setStyleSheet("color: rgb(209, 243, 249)");
 
     // 分割线
     lineStatus = new QFrame(this);
     lineStatus->setFrameShape(QFrame::HLine);
     lineStatus->setFrameShadow(QFrame::Plain);
     lineStatus->setLineWidth(2);
-    lineStatus->setStyleSheet("color: black");
+    lineStatus->setStyleSheet("color: rgb(209, 243, 249)");
 
     // 系统关闭 myLan.halt
 //    systemHaltBtn = new myPushButton("",QIcon(""),
@@ -146,12 +146,21 @@ MainWidget::MainWidget(QWidget* parent)
 //    QString strStyle3 = QString("QPushButton {border-image: url(:/res/png/shutDown.png);}");
 //    systemHaltBtn->setStyleSheet(strStyle3);
 
+    // 顶部 QToolButton 深色底板按钮: 默认白字, pressed/checked 黑字
+    const char* topToolBtnStyle =
+        "QToolButton {"
+        "  background-color:transparent; border:none; color:white;"
+        "}"
+        "QToolButton:pressed, QToolButton:checked {"
+        "  color:black;"
+        "}";
+
     videoBtn = new QToolButton(this);
     videoBtn->setText(myLan.sorter_manager);
     videoBtn->setIconSize(QSize(60, 60));
     videoBtn->setIcon(QIcon(":/res/png/workStart.png"));
     videoBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    videoBtn->setStyleSheet("background-color:transparent; border:none;");
+    videoBtn->setStyleSheet(topToolBtnStyle);
     videoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     videoBtn->setAutoRaise(true);
 
@@ -160,44 +169,28 @@ MainWidget::MainWidget(QWidget* parent)
     systemHaltBtn->setIconSize(QSize(60, 60));
     systemHaltBtn->setIcon(QIcon(":/res/png/shutDown.png"));
     systemHaltBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    systemHaltBtn->setStyleSheet("background-color:transparent; border:none;");
+    systemHaltBtn->setStyleSheet(topToolBtnStyle);
     systemHaltBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     systemHaltBtn->setAutoRaise(true);
 
-
-    //    saveParamBtn = new myPushButton(myLan.save_parameterNew, QIcon(""),
-    //                                      true,false,this);
-    //    saveParamBtn->setFont(config->getFont(FONT_SIZE_16));
-    //    QString strStyle4 = QString("QPushButton {border-image: url(:/res/png/savePara.png);}");
-    //    saveParamBtn->setStyleSheet(strStyle4);
 
     saveParamBtn = new QToolButton(this);
     saveParamBtn->setText(myLan.save_parameterNew);
     saveParamBtn->setIconSize(QSize(60, 60));
     saveParamBtn->setIcon(QIcon(":/res/png/savePara.png"));
     saveParamBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    saveParamBtn->setStyleSheet("background-color:transparent; border:none;");
+    saveParamBtn->setStyleSheet(topToolBtnStyle);
     saveParamBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     saveParamBtn->setAutoRaise(true);
-
-    //    feedSwitchBtn = new myPushButton(myLan.working_stop, QIcon(""),
-    //                                      true,false,this);
-    //    feedSwitchBtn->setFont(config->getFont(FONT_SIZE_16));
-    //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);"
-    //                                "text-align:center}");
-    //    feedSwitchBtn->setStyleSheet(strStyle5);
 
     feedSwitchBtn = new QToolButton(this);
     feedSwitchBtn->setText(myLan.working_stop);
     feedSwitchBtn->setIconSize(QSize(80, 80));
     feedSwitchBtn->setIcon(QIcon(":/res/png/workStart.png"));
     feedSwitchBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    feedSwitchBtn->setStyleSheet("background-color:transparent; border:none;");
+    feedSwitchBtn->setStyleSheet(topToolBtnStyle);
     feedSwitchBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     feedSwitchBtn->setAutoRaise(true);
-    QPalette patlette;
-    patlette.setColor(QPalette::ButtonText, Qt::black);
-    feedSwitchBtn->setPalette(patlette);
 
     // 机器和工程师信息
 //    machineInfoBtn = new myPushButton(myLan.contact_us,myIcon.System_Contacts,
@@ -1133,14 +1126,31 @@ void MainWidget::CreateHomeWidget()
 //    operateListWidget->setMovement(QListView::Static);
 //    operateListWidget->setFixedWidth(BTN_WIDTH);
 
-    QString strStyle = QString("QPushButton {border-image: url(:/res/png/backSelect.png);text-align:center;}"
-        "QToolTip {border-image: url(:/res/png/backSelect.png);}"
-        //                               "QPushButton:hover {border-image: url(:/res/png/selectPress.png);}"
-        "QPushButton:pressed {border-image: url(:/res/png/selectPress.png);}");
+    // 方案C：深蓝渐变带高光的胶囊按钮（底部 tabbar 7 个按钮，高度 BTN_HEIGHT+10=50px → border-radius=25px 胶囊形）
+    QString strStyle = QString(
+        "QPushButton {"
+        "  text-align: center;"
+        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #3a7ab5, stop:1 #0d2440);"
+        "  border: 1px solid #4a8fc0;"
+        "  border-radius: 12px;"
+        "  color: white;"
+        "  padding: 4px 12px;"
+        "  outline: none;"
+        "}"
+        "QPushButton:pressed {"
+        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #0d2440, stop:1 #3a7ab5);"
+        "}"
+        "QPushButton:checked {"
+        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #4d94c8, stop:1 #132f4f);"
+        "  border: 1px solid #5fa5d8;"
+        "}"
+        "QPushButton:disabled {"
+        "  background: #3d4a57;"
+        "  border: 1px solid #4a5a68;"
+        "  color: rgba(255,255,255,120);"
+        "}"
+    );
 
-
-    //    QString strStyle  = QString("QPushButton {border-image: url(:/res/png/backSelect.png);}"
-    //                                "QToolTip {border-image: url(:/res/png/backSelect.png);}");
     for (int i = 0; i < 7; i++)
     {
         operateButton[i] = new myPushButton(QString(""), QIcon(), pageHome);

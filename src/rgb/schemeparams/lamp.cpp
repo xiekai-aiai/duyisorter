@@ -192,8 +192,9 @@ void PageLamp::createLampExtra()
 
     /* switch button */
     lampExtraBtn = new myPushButton("", myIcon.Arrow_Right);
-    lampExtraBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
-    lampExtraBtn->setIconSize(QSize(ICON_WID, ICON_HEI));
+    /* 方图按钮做成正方形，图标才能撑满 */
+    lampExtraBtn->setFixedSize(BTN_HEIGHT, BTN_HEIGHT);
+    lampExtraBtn->setIconSize(QSize(BTN_HEIGHT - 4, BTN_HEIGHT - 4));
 
     connect(lampExtraBtn, SIGNAL(pressed()), this, SLOT(setLampExtra()));
 }

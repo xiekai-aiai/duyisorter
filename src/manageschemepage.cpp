@@ -40,7 +40,7 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
 
     //    palette1.setBrush(backgroundRole(),QBrush(pixmap1));
 
-    QString strStyle = QString("QPushButton {border-image: url(:/res/png/materialButton.png);}"
+    QString strStyle = QString("QPushButton {border-image: url(:/res/png/materialButton.png); color: white;}"
         "QToolTip {border-image: url(:/res/png/materialButton.png);}");
 
     m_newSchemeBtn->setStyleSheet(strStyle);
@@ -52,6 +52,8 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
     m_changeModeBtn->setStyleSheet(strStyle);
     m_copyMajorBtn->setStyleSheet(strStyle);
     m_okBtn->setStyleSheet(strStyle);
+
+    
     /* update scheme list widget and button status */
     updateListWidget();
 
@@ -111,7 +113,23 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
     palette.setBrush(backgroundRole(), QBrush(pixmap));
     this->setPalette(palette);
     this->setAutoFillBackground(true);
-    m_listWidget->setStyleSheet("background-color:transparent");
+    m_listWidget->setStyleSheet(
+        "QListWidget { background-color: transparent; border: 2px solid rgb(209, 243, 249); }"
+        "QListWidget::item {"
+        "  color: white;"
+        "  background-image: url(:/res/png/material.png);"
+        "  background-repeat: no-repeat;"
+        "  background-position: center;"
+        "  background-size: 797px 80px;"
+        "}"
+        "QListWidget::item:selected {"
+        "  color: white;"
+        "  background-image: url(:/res/png/material.png);"
+        "  background-repeat: no-repeat;"
+        "  background-position: center;"
+        "  background-size: 797px 80px;"
+        "}"
+    );
     m_listWidget->setFrameStyle(QFrame::Panel);
 
 }
@@ -188,10 +206,6 @@ void ManageSchemePage::updateListWidget()
 
         myListWidgetItem* schemeListItem = new myListWidgetItem(strScheme, QIcon(), QSize(760, 80));
         schemeListItem->setTextAlignment(Qt::AlignCenter);
-        QPixmap pixmap(":/res/png/material.png");
-        pixmap = pixmap.scaled(QSize(797, 80), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        schemeListItem->setBackground(QBrush(pixmap));
-
         m_listWidget->addItem(schemeListItem);
         m_listWidget->setSpacing(1);
     }

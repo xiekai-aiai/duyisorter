@@ -20,5 +20,6 @@ myLabel::myLabel(QString text, QWidget *parent):
     setFont(config->getFont());
     setText(text);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setStyleSheet("color: white");
     setSizePolicy(sizePolicy);
 }

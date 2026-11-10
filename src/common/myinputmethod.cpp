@@ -191,6 +191,10 @@ void myInputMethod::createButtons(void)
     listUp   = new myPushButton("",myIcon.Arrow_Left,this);
     listDown = new myPushButton("",myIcon.Arrow_Right,this);
     methodBtn = new myPushButton("",myIcon.Input_Language,this);
+    /* 顶部三个图标键固定为方形，尺寸与图标一致，避免挤占候选字显示格 */
+    listUp->setFixedSize(BTN_HEIGHT + 26, BTN_HEIGHT + 26);
+    listDown->setFixedSize(BTN_HEIGHT + 26, BTN_HEIGHT + 26);
+    methodBtn->setFixedSize(BTN_HEIGHT + 26, BTN_HEIGHT + 26);
     pinyin    = new myLineEdit(tr(""), this);
     pinyin->hide();
     methodBtn->setFocusPolicy(Qt::NoFocus);

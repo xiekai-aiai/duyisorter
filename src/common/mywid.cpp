@@ -33,11 +33,17 @@ MyTabBar::MyTabBar(QWidget *parent)
     config = g_Config::getInstance();
     setFont(config->getFont());
     if (LCD_HEIGHT == 768) {
-        setStyleSheet("QTabBar::tab {"
-                      "min-height: 45;}");
+        setStyleSheet("QTabBar { background: transparent; }"
+                      "QTabBar::tab {"
+                      "min-height: 45;"
+                      "color: white;"
+                      "background: transparent;}");
     } else {
-        setStyleSheet("QTabBar::tab {"
-                      "min-height: 32;}");
+        setStyleSheet("QTabBar { background: transparent; }"
+                      "QTabBar::tab {"
+                      "min-height: 32;"
+                      "color: white;"
+                      "background: transparent;}");
     }
     tabBarType = 0;//默认可见光识别组的tabBar
 }
@@ -162,7 +168,10 @@ MyCheckBox::MyCheckBox(const QString text, bool isChecked, QBoxLayout::Direction
 {
     /* buttons init */
     checkLabel = new myLabel(text);
-    checkBtn = new myPushButton(QIcon(), QSize(SMALL_BTN_WIDTH, BTN_HEIGHT));
+    checkBtn = new myPushButton(QIcon(), QSize(BTN_HEIGHT, BTN_HEIGHT));
+    /* 勾选图标撑满按钮：去掉边框与内边距，图标与按钮同尺寸 */
+    checkBtn->setStyleSheet(checkBtn->styleSheet() + "QPushButton { padding: 0px; border-width: 0px; }");
+    checkBtn->setIconSize(QSize(BTN_HEIGHT, BTN_HEIGHT));
 
     /* buttons update */
     setChecked(isChecked);
@@ -290,10 +299,10 @@ void MyButtonGroup::setChecked(int btnId)
     for (int i = 0; i < btns.size(); i++) {
         if (i == btnId) {
             btns[i]->setChecked(true);
-            btns[i]->setStyleSheet("background-color: #036eb8; border-radius: 5;");
+            btns[i]->setStyleSheet("background-color: #036eb8; border-radius: 5; color: white;");
         } else {
             btns[i]->setChecked(false);
-            btns[i]->setStyleSheet("background-color: #ebebeb; border-radius: 5;");
+            btns[i]->setStyleSheet("background-color: #ebebeb; border-radius: 5; color: black;");
         }
     }
 }
@@ -311,7 +320,10 @@ MyRadioGroup::MyRadioGroup(const QStringList &list, Qt::Orientation orientation,
         return;
 
     for (int i = 0; i < list.size(); i++) {
-        btns.append(new myPushButton(QIcon(), QSize(SMALL_BTN_WIDTH, BTN_HEIGHT)));
+        btns.append(new myPushButton(QIcon(), QSize(BTN_HEIGHT, BTN_HEIGHT)));
+        /* 选中图标撑满按钮：去掉边框与内边距，图标与按钮同尺寸 */
+        btns.last()->setStyleSheet(btns.last()->styleSheet() + "QPushButton { padding: 0px; border-width: 0px; }");
+        btns.last()->setIconSize(QSize(BTN_HEIGHT, BTN_HEIGHT));
         labels.append(new myLabel(list[i]));
     }
 

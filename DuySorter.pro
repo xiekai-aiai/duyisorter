@@ -101,6 +101,8 @@ HEADERS += $$PWD/src/*.h \
 # log4qt 死代码: 项目统一用 unilog, mylogger.cpp 无任何引用
 SOURCES += $$PWD/src/*.cpp
 SOURCES -= $$PWD/src/mylogger.cpp
+# src/mypushbutton.cpp 是误拷到 src/ 根目录的副本, 正本在 src/common/mypushbutton.cpp
+SOURCES -= $$PWD/src/mypushbutton.cpp
 
 #第三方库
 SOURCES += $$PWD/src/3rdparty/qextserialport/qextserialport.cpp \

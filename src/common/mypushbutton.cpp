@@ -6,6 +6,7 @@
  * \date        2015.01.14
  */
 #include "mypushbutton.h"
+#include <QResizeEvent>
 
 myPushButton::myPushButton(QString text, QIcon icon, bool enable, QWidget *parent) :
     QPushButton(parent)
@@ -120,6 +121,9 @@ void myPushButton::setBasicStyle()
         break;
     }
 
+    /* 纯图标按钮不留内边距，图标可撑满内容区 */
+    QString strPadding = m_sText.isEmpty() ? QString("0px") : QString("2px");
+
     QString strStyle = QString("QPushButton {"
                                "text-align: %1;"
                                "outline: none;"
@@ -128,12 +132,30 @@ void myPushButton::setBasicStyle()
                                "border-width: 2px;"
                                "border-style: solid;"
                                "border-radius: 5;"
-                               "padding: 2px;}"
+                               "padding: %3;"
+                               "color: black;}"
 
                       "QPushButton:pressed {"
                                "padding-left: 5px;"
                                "padding-top: 5px;"
-                               "background-color: lightgrey;}").arg(strAlign).arg(strColor);
+                               "background-color: lightgrey;"
+                               "color: black;}"
+                      "QPushButton:checked {"
+                               "background-color: lightgrey;"
+                               "color: black;}").arg(strAlign).arg(strColor).arg(strPadding);
 
     setStyleSheet(strStyle);
+}
+
+/*!
+ * \brief 尺寸变化时，纯图标按钮的图标撑满内容区
+ */
+void myPushButton::resizeEvent(QResizeEvent *event)
+{
+    QPushButton::resizeEvent(event);
+
+    if (text().isEmpty()) {
+        /* 扣除左右/上下各 2px 边框 */
+        setIconSize(QSize(width() - 4, height() - 4));
+    }
 }

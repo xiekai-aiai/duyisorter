@@ -141,9 +141,13 @@ MyCurve::MyCurve(int width, int height, QWidget *parent) :
     unitViewAdditionBtn->setFixedWidth(SMALL_BTN_WIDTH+10);
     unitViewBtn->setFixedSize(btnSize);
     unitViewBtn->setFixedWidth(SMALL_BTN_WIDTH+10);
-    unitPlusBtn->setFixedSize(btnSize);
-    unitMinusBtn->setFixedSize(btnSize);
-    rowPauseBtn->setFixedSize(btnSize);
+    /* 图标按钮改为正方形，方图可撑满按钮内容区 */
+    unitPlusBtn->setFixedSize(btnSize.height(), btnSize.height());
+    unitMinusBtn->setFixedSize(btnSize.height(), btnSize.height());
+    rowPauseBtn->setFixedSize(btnSize.height(), btnSize.height());
+    unitPlusBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
+    unitMinusBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
+    rowPauseBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
 
     axisPageHBLayout = new QHBoxLayout;
     axisPageHBLayout->addWidget(axisWidget);
@@ -843,10 +847,10 @@ void MyAxis::paintAxis(QPainter &painter)
 void MyAxis::paintAxisX(QPainter &painter)
 {
     qreal majorTickX, minorTickX;
-    QPen pen_axis(Qt::black, 2);
-    QPen pen_gridline(Qt::black, 1, Qt::DotLine);
-    QPen pen_majortick(Qt::black, 2);
-    QPen pen_minortick(Qt::black, 1);
+    QPen pen_axis(QColor(255, 255, 255), 2);
+    QPen pen_gridline(QColor(255, 255, 255, 40), 1, Qt::DotLine);
+    QPen pen_majortick(QColor(255, 255, 255), 2);
+    QPen pen_minortick(QColor(220, 230, 235), 1);
     QPen pen_border(QColor(180, 0, 180));
     pen_border.setWidth(1);
 
@@ -908,10 +912,10 @@ void MyAxis::paintAxisX(QPainter &painter)
 void MyAxis::paintAxisY(QPainter &painter)
 {
     qreal majorTickY, minorTickY;
-    QPen pen_axis(Qt::black, 2);
-    QPen pen_gridline(Qt::black, 1, Qt::DotLine);
-    QPen pen_majortick(Qt::black, 2);
-    QPen pen_minortick(Qt::black, 1);
+    QPen pen_axis(QColor(255, 255, 255), 2);
+    QPen pen_gridline(QColor(255, 255, 255, 40), 1, Qt::DotLine);
+    QPen pen_majortick(QColor(255, 255, 255), 2);
+    QPen pen_minortick(QColor(220, 230, 235), 1);
 
     valueYPerPixel = ((qreal)(maxValueY-minValueY)/(qreal)(height()-upBorder-downBorder));
     QPointF leftDownPoint(leftBorder,height()-downBorder);

@@ -9,6 +9,8 @@ build/
 build_x86/
 rel/
 app/
+app/lib/libts.so
+app/lib/libts.so.0
 
 # 3rdparty arm 产物
 src/3rdparty/arm/

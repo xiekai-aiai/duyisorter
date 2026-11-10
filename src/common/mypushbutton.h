@@ -41,6 +41,10 @@ signals:
     
 public slots:
 
+protected:
+    /* 纯图标按钮在尺寸变化时让图标撑满内容区 */
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     purviewType userType;
     g_Config *config;

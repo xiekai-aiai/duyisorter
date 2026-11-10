@@ -69,6 +69,10 @@ WipeBrushWidget::WipeBrushWidget(QWidget *parent) :
     enableWipeBrushBtn->hide();
     manualWipeBrushBtn = new myPushButton(myLan.wipe_manual,QIcon(":/res/png/Sorter_WipeManual_New.png"));
     manualWipeBrushBtn->setFixedSize(BTN_WIDTH+40, BTN_HEIGHT);
+    /* 图标贴左对齐撑满高度，去掉内边距白边 */
+    manualWipeBrushBtn->setStyleSheet(manualWipeBrushBtn->styleSheet()
+                                      + "QPushButton { padding: 0px; text-align: left; }");
+    manualWipeBrushBtn->setIconSize(QSize(BTN_HEIGHT - 4, BTN_HEIGHT - 4));
 
     // 页面布局
     wipeBrushPageGridLayout = new QGridLayout(this);

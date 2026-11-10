@@ -126,6 +126,7 @@ AisMainWidget::AisMainWidget(QWidget *parent)
     ApplyBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     ApplyBtn->setIconSize(QSize(ICON_WID, ICON_WID));
 
+
     backPushButton= new myPushButton(myLan.back,QIcon(""),
                                     true,true, this);
     backPushButton->setFont(config->getFont(DEFAULT_FONT_SIZE));
