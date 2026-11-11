@@ -30,7 +30,7 @@
   </property>
   <property name="font">
    <font>
-    <family>HarmonyOS Sans Medium</family>
+    <family>Noto Sans SC</family>
     <pointsize>10</pointsize>
    </font>
   </property>
@@ -66,7 +66,7 @@
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -85,7 +85,7 @@
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>12</pointsize>
     </font>
    </property>
@@ -93,7 +93,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>
+    <pixmap resource="res.qrc">:/res/Noto_Sans_SC/static/NotoSansSC-Medium.ttf</pixmap>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
@@ -113,7 +113,7 @@
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>12</pointsize>
     </font>
    </property>
@@ -245,7 +245,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -280,7 +280,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -315,7 +315,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -350,7 +350,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -385,7 +385,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -420,7 +420,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -455,7 +455,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -494,7 +494,7 @@ QPushButton:disabled {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -529,7 +529,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -580,7 +580,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -615,7 +615,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>9</pointsize>
     </font>
    </property>
@@ -623,7 +623,7 @@ QPushButton:pressed {
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="res.qrc">:/res/fonts/HarmonyOS_Sans_SC_Medium.ttf</pixmap>
+    <pixmap resource="res.qrc">:/res/Noto_Sans_SC/static/NotoSansSC-Medium.ttf</pixmap>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
@@ -701,7 +701,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -736,7 +736,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -781,7 +781,7 @@ QPushButton:checked {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -866,7 +866,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -901,7 +901,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -957,7 +957,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>10</pointsize>
     </font>
    </property>
@@ -982,7 +982,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>10</pointsize>
     </font>
    </property>
@@ -1023,7 +1023,7 @@ QPushButton:pressed {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -1065,7 +1065,7 @@ QPushButton:checked {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>
@@ -1107,7 +1107,7 @@ QPushButton:checked {
    </property>
    <property name="font">
     <font>
-     <family>HarmonyOS Sans Medium</family>
+     <family>Noto Sans SC</family>
      <pointsize>8</pointsize>
     </font>
    </property>

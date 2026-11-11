@@ -35,8 +35,8 @@ QFont getFont(void)
     } else if (struCnfg.nLang == LANG_BENGALIE) {
         font.setFamily("Vrinda");
     } else {
-        font.setFamily("HarmonyOS Sans Medium");
-        font.setWeight(63);
+        font.setFamily("Noto Sans SC");
+        font.setWeight(QFont::Medium);
 
         // 将字体细节全部引入
 //        int s0 = QFontDatabase::addApplicationFont(":/res/fonts/HarmonyOS_Sans_SC_Black.ttf");
@@ -223,19 +223,12 @@ int main(int argc, char *argv[])
     // 初始化AI配置
     ConfigMgr::Instance().Init();
 
-    // 注册 HarmonyOS Sans 字体（aimodelset.ui 和全局 getFont() 都依赖它）
+    // 注册 Noto Sans SC 字体（aimodelset.ui 和全局 getFont() 都依赖它）
     // 不注册会导致 Qt 回退默认字体 → 控件 label 尺寸变大 → UI 整体下移
     static const char* kFonts[] = {
-        ":/res/fonts/HarmonyOS_Sans_Medium.ttf",
-        ":/res/fonts/HarmonyOS_Sans_Regular.ttf",
-        ":/res/fonts/HarmonyOS_Sans_Bold.ttf",
-        ":/res/fonts/HarmonyOS_Sans_Light.ttf",
-        ":/res/fonts/HarmonyOS_Sans_Black.ttf",
-        ":/res/fonts/HarmonyOS_Sans_Thin.ttf",
-        ":/res/fonts/HarmonyOS_Sans_SC_Medium.ttf",
-        ":/res/fonts/HarmonyOS_Sans_SC_Regular.ttf",
-        ":/res/fonts/HarmonyOS_Sans_SC_Bold.ttf",
-        ":/res/fonts/HarmonyOS_Sans_SC_Light.ttf",
+        ":/res/Noto_Sans_SC/static/NotoSansSC-Regular.ttf",
+        ":/res/Noto_Sans_SC/static/NotoSansSC-Medium.ttf",
+        ":/res/Noto_Sans_SC/static/NotoSansSC-Bold.ttf",
     };
     for (auto f : kFonts) QFontDatabase::addApplicationFont(f);
 

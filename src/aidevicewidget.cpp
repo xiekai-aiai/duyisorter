@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QMutexLocker>
 #include <QStorageInfo>
+#include <QTimer>
 #include "unilog.h"
 #include "aihelper.h"
 #include "sortertypes.h"
@@ -35,7 +36,10 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     listWidget->setViewMode(QListView::ListMode);
     listWidget->setMovement(QListView::Static);
     listWidget->setFixedWidth(BTN_WIDTH);
-    listWidget->setStyleSheet("background-color:transparent");
+    listWidget->setStyleSheet(
+        "QListWidget { background-color: transparent; }"
+        "QListWidget::item { color: white; }"
+        "QListWidget::item:selected { color: white; }");
     listWidget->setFixedSize(LCD_WIDTH / 5, LCD_HEIGHT - 200);
 
 
@@ -183,33 +187,35 @@ void AiDeviceWidget::destroySftp()
 void AiDeviceWidget::onListWidgetRowChangedSlt(int idx)
 {
     stackedWidget->setCurrentIndex(idx);
+
+    /* 选中/切页立即生效；页面数据刷新推迟到下一次事件循环，
+       避免磁盘查询(同步 UDP 等待)阻塞在点击事件中，导致选中态不刷新、看起来需要点两次 */
+    QWidget* page = stackedWidget->currentWidget();
     switch (idx)
     {
     case 0:
     {
         // 对应图像下载配置页面
-        auto* page = stackedWidget->currentWidget();
         auto* acqWidget = dynamic_cast<AiImageAcquisitionWidget*>(page);
         if (!acqWidget)
         {
             LOG_ERROR_STM("idx:" << idx << " not AiImageAcquisitionWidget!");
             return;
         }
-        acqWidget->onRefresh();
+        QTimer::singleShot(0, acqWidget, [acqWidget]() { acqWidget->onRefresh(); });
     }
 
     break;
     case 1:
     {
         // 对应磁盘信息页面
-        auto* page = stackedWidget->currentWidget();
         auto* diskWidget = dynamic_cast<AiDiskInfoWidget*>(page);
         if (!diskWidget)
         {
             LOG_ERROR_STM("idx:" << idx << " not AiDiskInfoWidget!");
             return;
         }
-        diskWidget->onRefresh();
+        QTimer::singleShot(0, diskWidget, [diskWidget]() { diskWidget->onRefresh(); });
     }
     break;
     default:

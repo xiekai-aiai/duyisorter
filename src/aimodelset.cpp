@@ -1006,7 +1006,7 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
         auto* btn = new QPushButton(QString("%1：0").arg(name), m_cbContainer);
         btn->setCheckable(true);
         btn->setFixedSize(BTN_W, BTN_H);
-        btn->setFont(QFont("HarmonyOS Sans Medium", 8, QFont::Bold));
+        btn->setFont(QFont("Noto Sans SC", 8, QFont::Bold));
         btn->setCursor(Qt::PointingHandCursor);
 
         QString colorStr = QString("rgb(%1,%2,%3)").arg(color.red()).arg(color.green()).arg(color.blue());

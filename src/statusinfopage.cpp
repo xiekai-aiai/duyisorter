@@ -1337,6 +1337,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
     screenListGroup = new myGroupBox(myLan.screen);
     screenListLayout = new QGridLayout(screenListGroup);
     screenListLabel = new QLabel;
+    screenListLabel->setStyleSheet("color:white");
     screenListLabel->setAlignment(Qt::AlignCenter);
     screenListLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
     screenListLayout->addWidget(screenListLabel);
@@ -1415,6 +1416,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
         for (j = 0; j < 2; j++)
         {
             interfaceListLabel[i][j] = new QLabel;
+            interfaceListLabel[i][j]->setStyleSheet("color:white");
             interfaceListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             interfaceListLabel[i][j]->setAlignment(Qt::AlignCenter);
             interfaceListLayout->addWidget(interfaceListLabel[i][j], i, j);
@@ -1426,6 +1428,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
         for (j = 0; j < 2; j++)
         {
             controlListLabel[i][j] = new QLabel;
+            controlListLabel[i][j]->setStyleSheet("color:white");
             controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
             controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             controlListLayout->addWidget(controlListLabel[i][j], i, j);
@@ -1434,6 +1437,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
 
     /* 2.09及之后版本使用文本编辑框显示版本（针对2014.11.24之后的FPGA定版程序）*/
     m_textEdit = new QTextEdit();
+    m_textEdit->setStyleSheet("color:white; background:transparent; border:none;");
     m_textEdit->setFont(config->getFont());
     m_textEdit->setReadOnly(true);
     m_textEdit->setWordWrapMode(QTextOption::NoWrap);
@@ -1445,6 +1449,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
         for (j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
         {
             cameraListLabel[i][j] = new QLabel;
+            cameraListLabel[i][j]->setStyleSheet("color:white");
             cameraListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             cameraListLabel[i][j]->setAlignment(Qt::AlignHCenter);
         }

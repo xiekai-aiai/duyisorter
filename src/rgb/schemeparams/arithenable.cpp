@@ -481,6 +481,9 @@ void PageIdentify::createArithmeticList()
     {
         /* size policy */
         arithmeticBox[i]->setMinimumSize(BTN_HEIGHT, BTN_HEIGHT);
+        /* 文本为空时收紧勾选框宽度(去掉空标签占位)，使勾选框整体右移贴近算法按钮；
+           按钮尺寸不变 */
+        arithmeticBox[i]->setFixedWidth(BTN_HEIGHT);
         arithmeticBtn[i]->setFocusPolicy(Qt::NoFocus);
         arithmeticBtn[i]->setMinimumSize(BTN_WIDTH, BTN_HEIGHT);
         /* 记录默认样式，供勾选高亮恢复用 */

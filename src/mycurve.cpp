@@ -859,13 +859,16 @@ void MyAxis::paintAxisX(QPainter &painter)
     QPointF rightDownPoint(width()-rightBorder, height()-downBorder);
     /* 记录下tick点的坐标 */
     QPointF tmp(leftDownPoint);
-    int pixelSize = painter.fontInfo().pixelSize();
     qreal halfTextLength = ((((qreal)width()-leftBorder-rightBorder))/(majorXNum-1))/3.0;
     QRect textRect;
+    /* X轴刻度字高度按字体实际行高计算，避免 Noto Sans SC 行高大于字号导致底部被截断；
+       仅加高文字绘制区，tick 坐标与绘图区不变，不影响波形 */
+    const int labelTop = height() - downBorder + 9;
+    const int labelHeight = qMax(1, qMin(painter.fontMetrics().height(), height() - labelTop));
 
     painter.setPen(pen_axis);
     painter.drawLine(leftDownPoint,rightDownPoint);
-
+    
     /* 1.绘制主标记及纵轴虚线 */
     for (int i = 1; i <= majorXNum; i++) {
         painter.setPen(pen_majortick);
@@ -873,8 +876,8 @@ void MyAxis::paintAxisX(QPainter &painter)
         tmp.setX(leftBorder+majorTickX);
         /* 绘制tick */
         painter.drawLine(tmp,tmp+QPointF(0,8));
-        textRect.setTopLeft(QPoint(tmp.x()-halfTextLength,tmp.y()+10));
-        textRect.setSize(QSize(2*halfTextLength,pixelSize));
+        textRect.setTopLeft(QPoint(tmp.x()-halfTextLength, labelTop));
+        textRect.setSize(QSize(2*halfTextLength, labelHeight));
         /* 绘制X轴tick上的值 */
         painter.drawText(textRect, QString("%1")
                          .arg(minValueX+i*majorTickValueX),QTextOption(Qt::AlignHCenter));

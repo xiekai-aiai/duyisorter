@@ -115,19 +115,19 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
     this->setAutoFillBackground(true);
     m_listWidget->setStyleSheet(
         "QListWidget { background-color: transparent; border: 2px solid rgb(209, 243, 249); }"
+        /* 列表项配色参考底部导航按钮(深蓝渐变)，替换原 material.png 浅色底图 */
         "QListWidget::item {"
         "  color: white;"
-        "  background-image: url(:/res/png/material.png);"
-        "  background-repeat: no-repeat;"
-        "  background-position: center;"
-        "  background-size: 797px 80px;"
+        "  padding: 6px;"
+        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #3a7ab5, stop:1 #0d2440);"
+        "  border: 1px solid #2a5080;"
+        "  border-radius: 8px;"
         "}"
         "QListWidget::item:selected {"
         "  color: white;"
-        "  background-image: url(:/res/png/material.png);"
-        "  background-repeat: no-repeat;"
-        "  background-position: center;"
-        "  background-size: 797px 80px;"
+        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #2a5d8a, stop:1 #132f4f);"
+        "  border: 1px solid #3a70a0;"
+        "  border-radius: 8px;"
         "}"
     );
     m_listWidget->setFrameStyle(QFrame::Panel);

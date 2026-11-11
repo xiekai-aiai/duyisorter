@@ -11,6 +11,10 @@ myLabel::myLabel()
 {
     config = g_Config::getInstance();
     setFont(config->getFont());
+    /* 深色主题：标签文字统一白色 */
+    QPalette pe = palette();
+    pe.setColor(QPalette::WindowText, Qt::white);
+    setPalette(pe);
 }
 
 myLabel::myLabel(QString text, QWidget *parent):
@@ -20,6 +24,11 @@ myLabel::myLabel(QString text, QWidget *parent):
     setFont(config->getFont());
     setText(text);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setStyleSheet("color: white");
+    
     setSizePolicy(sizePolicy);
+
+    /* 深色主题：标签文字统一白色 */
+    QPalette pe = palette();
+    pe.setColor(QPalette::WindowText, Qt::white);
+    setPalette(pe);
 }

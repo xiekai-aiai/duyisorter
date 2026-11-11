@@ -77,9 +77,18 @@ PageParams::PageParams(QWidget *parent)
 
 /* page layout */
     /* widget layout */
+    /* 页签行放在固定高度的顶部区域：背景设置页切换时会调高 pagesWidget，
+       原写法(页签居中于剩余空间)会导致整行页签上移，这里固定住位置和高度 */
+    QWidget *pageListBand = new QWidget(this);
+    pageListBand->setFixedHeight(TAB_HEIGHT);
+    QHBoxLayout *pageListBandLayout = new QHBoxLayout(pageListBand);
+    pageListBandLayout->setContentsMargins(0, 0, 0, 0);
+    pageListBandLayout->setSpacing(0);
+    pageListBandLayout->addWidget(pageListWidget, 0, Qt::AlignCenter);
+
     QVBoxLayout *horizontalLayout = new QVBoxLayout;
-    horizontalLayout->addWidget(pageListWidget, 1, Qt::AlignCenter);
-    horizontalLayout->addWidget(pagesWidget,5, Qt::AlignLeft);
+    horizontalLayout->addWidget(pageListBand, 0, Qt::AlignHCenter);
+    horizontalLayout->addWidget(pagesWidget, 1, Qt::AlignLeft);
     horizontalLayout->setSpacing(0);
     horizontalLayout->setContentsMargins(0,0,0,0);
     /* main layout */

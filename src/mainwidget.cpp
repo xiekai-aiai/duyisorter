@@ -118,7 +118,11 @@ MainWidget::MainWidget(QWidget* parent)
     QDateTime time = QDateTime::currentDateTime();
     statInfoBtn = new myPushButton(time.toString("hh:mm:ss"), QIcon(""),
         true, false, this);
-    statInfoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    /* 按钮内为“日期+时间”两行文本，Noto Sans SC 行高约为字号的 1.45 倍，
+       两行需 ≤ 按钮高度 50，故取 16px（两行约 46px），避免第二行底部被截 */
+    QFont statFont = config->getFont(DEFAULT_FONT_SIZE);
+    statFont.setPixelSize(16);
+    statInfoBtn->setFont(statFont);
     statInfoBtn->setIconSize(QSize(ICON_WID, ICON_WID));
     statInfoBtn->setIcon(QIcon(":/res/png/time.png"));
     statInfoBtn->setStyleSheet("background-color:transparent; border:none; color:white;");
