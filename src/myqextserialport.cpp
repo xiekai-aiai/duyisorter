@@ -179,7 +179,7 @@ int MyQextSerialPort::comOpen(int nPortno)
     {
         qDebug("open port%d is err!", nPortno);
     }
-    return 1;
+    return (ret == 1) ? 1 : 0;
 }
 
 int MyQextSerialPort::comClose(int portno)

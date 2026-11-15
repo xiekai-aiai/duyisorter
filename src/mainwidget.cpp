@@ -162,7 +162,7 @@ MainWidget::MainWidget(QWidget* parent)
     videoBtn = new QToolButton(this);
     videoBtn->setText(myLan.sorter_manager);
     videoBtn->setIconSize(QSize(60, 60));
-    videoBtn->setIcon(QIcon(":/res/png/workStart.png"));
+    videoBtn->setIcon(QIcon(":/res/png2/topbar/videoCap.png"));
     videoBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     videoBtn->setStyleSheet(topToolBtnStyle);
     videoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
@@ -171,7 +171,7 @@ MainWidget::MainWidget(QWidget* parent)
     systemHaltBtn = new QToolButton(this);
     systemHaltBtn->setText(myLan.halt);
     systemHaltBtn->setIconSize(QSize(60, 60));
-    systemHaltBtn->setIcon(QIcon(":/res/png/shutDown.png"));
+    systemHaltBtn->setIcon(QIcon(":/res/png2/topbar/shutDown.png"));
     systemHaltBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     systemHaltBtn->setStyleSheet(topToolBtnStyle);
     systemHaltBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
@@ -181,7 +181,7 @@ MainWidget::MainWidget(QWidget* parent)
     saveParamBtn = new QToolButton(this);
     saveParamBtn->setText(myLan.save_parameterNew);
     saveParamBtn->setIconSize(QSize(60, 60));
-    saveParamBtn->setIcon(QIcon(":/res/png/savePara.png"));
+    saveParamBtn->setIcon(QIcon(":/res/png2/topbar/savePara.png"));
     saveParamBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     saveParamBtn->setStyleSheet(topToolBtnStyle);
     saveParamBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
@@ -190,7 +190,7 @@ MainWidget::MainWidget(QWidget* parent)
     feedSwitchBtn = new QToolButton(this);
     feedSwitchBtn->setText(myLan.working_stop);
     feedSwitchBtn->setIconSize(QSize(80, 80));
-    feedSwitchBtn->setIcon(QIcon(":/res/png/workStart.png"));
+    feedSwitchBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
     feedSwitchBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     feedSwitchBtn->setStyleSheet(topToolBtnStyle);
     feedSwitchBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
@@ -1140,7 +1140,7 @@ void MainWidget::CreateHomeWidget()
         "  border-color: transparent;"
         "  border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
         "  color: #E8F6FF;"
-        "  font-size: 14px;"
+        "  font-size: 16px;"
         "  padding: 0px;"
         "}"
         "QPushButton:hover {"
@@ -1823,14 +1823,10 @@ void MainWidget::onSetFeedBtnClickedSlt()
 {
     LOG_INFO_STM("xk333333333333");
     this->homePageStackedWidget->setCurrentIndex(HOME_FEED_PAGE_INDEX);
-    if (struCnfe.nEnableCGMachine == 1)
-    {
-        pageSetFeedRS->updatePage();
-    }
-    else
-    {
-        updateFeederPage();
-    }
+    // 供料页面只有 setFeedPage（pageSetFeedRS）被创建并加入堆栈；
+    // 旧机型使用的 pageSetFeed/updateFeederPage() 已随 CreateSetFeedWidget() 一起停用，
+    // 若继续走 updateFeederPage() 会访问从未构造的 feedLbe[]/feedLabel[] 野指针导致崩溃。
+    pageSetFeedRS->updatePage();
 }
 /**
  * @brief MainWidget::onSetSensBtnClickedSlt
@@ -2921,7 +2917,7 @@ void MainWidget::onCloseFeederSlt(int trigger)
     //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);}");
     //    feedSwitchBtn->setStyleSheet(strStyle5);
     feedSwitchBtn->setText(myLan.working_stop);
-    feedSwitchBtn->setIcon(QIcon(":/res/png/workStart.png"));
+    feedSwitchBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
 
     QPalette patlette;
     patlette.setColor(QPalette::ButtonText, Qt::black);
@@ -3016,7 +3012,7 @@ void MainWidget::onOpenFeederSlt(int trigger)
     feedSwitchBtn->setText(myLan.working_start);
     //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStop.png);}");
     //    feedSwitchBtn->setStyleSheet(strStyle5);
-    feedSwitchBtn->setIcon(QIcon(":/res/png/workStop.png"));
+    feedSwitchBtn->setIcon(QIcon(":/res/png2/topbar/workStop.png"));
     QPalette patlette;
     patlette.setColor(QPalette::ButtonText, Qt::red);
     feedSwitchBtn->setPalette(patlette);

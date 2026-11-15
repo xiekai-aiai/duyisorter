@@ -162,6 +162,8 @@ unix{
 
 RESOURCES += res.qrc
 
+CONFIG += lrelease
+
 TRANSLATIONS += i18n/zh-cn.ts \
                 i18n/en.ts \
                 i18n/es.ts \

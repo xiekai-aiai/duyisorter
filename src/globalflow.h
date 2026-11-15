@@ -15,6 +15,7 @@
 #include <QDataStream>
 #include <QSettings>
 #include <QString>
+#include <QStringList>
 #include <QObject>
 #include <QTime>
 #include <QCoreApplication>
@@ -23,6 +24,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include "globalparams.h"
+#include "bootstage.h"
 #include "sys/types.h"
 #include "sys/stat.h"
 #include "unistd.h"
@@ -74,7 +76,7 @@ public:
     void initGsh();                                 //! 初始化全局共享参数
     void resetGroupParams(void);                    //! 重置与组相关的参数
     void initLan();                                 //! 初始化词根
-    void initSerial(void);                          //! 初始化串口设备
+    bool initSerial(void);                          //! 初始化串口设备，任一串口打开失败返回 false
     void setCom1Baud(void);                         //! 设置波特率1
     bool checkIntBoardCom(int nInt);                //! 查询接口板
     void detectUsbFirmware(void);                   //! 检测USB固件
@@ -87,14 +89,23 @@ public:
     void resetTickAdvParams(void);                  //! 重置剔除高级参数（最大行、行列关系及行延迟）
     void resetLedModeForLD4(void);                  //! 重置LED指示灯（LD4机型）
 
-    void initUdpImagPara();                             //初始化udp img协议
-    void initPixelImagPara();                           //初始化udp pixel协议
+    QStringList initUdpImagPara();                      //初始化udp img协议，返回下发失败的AI板号
+    QStringList initPixelImagPara();                    //初始化udp pixel协议，返回下发失败的AI板号
     void initEjectorDelayPara();                        //初始化udp ejector delay协议
     void initEjectorModePara();                         //初始化udp ejector mode协议
 
     void onCleanDustCmd(quint8 cmd);                //清灰命令
 
-    int  initAiCommunication();
+    int  initAiCommunication(QStringList *failedDevices = nullptr);   //AI板自检，可选出参返回失败板号
+
+    /*!
+     * \brief 开机检测状态上报（启动画面 5 组）
+     * \param stage  BOOT_STAGE_*
+     * \param status BOOT_STATUS_*
+     * \param detail 正常/异常文案
+     */
+    void bootStage(int stage, int status, const QString &detail = QString());
+    bool isAiCheckEnabled();                        //! 读取 init_check.cnf 的 check_ai
 
     /**
      * @brief: 启动AI工作
@@ -278,6 +289,7 @@ public:
 
 signals:
     void backlightOnSig();   // 关背光后，点亮背光需要输入密码
+    void initStageChanged(int stage, int status, const QString &detail);   // 开机检测状态上报
 
 private:
     qint64 turnOnTime;      // 开机时刻

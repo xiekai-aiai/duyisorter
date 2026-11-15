@@ -2947,7 +2947,7 @@ bool GlobalFlow::checkIntBoardCom(int nInt)
     for (int m = 0; m < 3; m++)
     {       // 循环次数
         MySerial.com1Write(CMD_INT_VERSION, INT, nInt, 0, 0, 0, 0, 0, 0, 3);
-        usleep(50000);
+        msleep(50);
         memset(buf, 0, sizeof(buf));
 
         if (MySerial.com1Read(buf, 18) == 18
@@ -2974,7 +2974,7 @@ bool GlobalFlow::checkCtrlBoardCom(int nCtrl)
     for (int j = 0; j < 3; j++)
     {   // 循环次数
         MySerial.com2Write(CMD_CTRL_VERSION, CTRL_GENERAL, nCtrl, 0, 0, 0, 0, 0, 3);
-        usleep(50000);
+        msleep(50);
         memset(buf, 0, sizeof(buf));
 
         if (MySerial.com2Read(buf, 18) == 18
@@ -3129,7 +3129,7 @@ update:
             for (int m = 0; m < 3; m++)
             {       // 循环次数
                 MySerial.com1Write(CMD_UNIT_CAMERA_VERSION, UNIT, i, nAddr, 0, 0, 0, CAMERA_COLOR, 0, 3);
-                usleep(50000);
+                msleep(50);
                 memset(buf, 0, sizeof(buf));
                 if ((ret = MySerial.com1Read(buf, 24)) == 24)
                 {
@@ -3176,7 +3176,7 @@ update:
         for (int m = 0; m < 3; m++)
         {       // 循环次数
             MySerial.com1Write(CMD_INT_VERSION, INT, i, 0, 0, 0, 0, 0, 0, 3);
-            usleep(50000);
+            msleep(50);
             memset(buf, 0, sizeof(buf));
 
             ret = MySerial.com1Read(buf, 24);
@@ -3255,7 +3255,7 @@ update:
         for (j = 0; j < 3; j++)
         {
             MySerial.com2Write(CMD_CTRL_VERSION, CTRL_GENERAL, i, 0, 0, 0, 0, 0, 3);
-            usleep(50000);
+            msleep(50);
             memset(buf, 0, sizeof(buf));
 
             ret = MySerial.com2Read(buf, 18);
@@ -3735,14 +3735,16 @@ QString GlobalFlow::getNameByModeRSC(int nMode)
  * \brief GlobalFlow::initSerial
  *        初始化串口设备
  */
-void GlobalFlow::initSerial()
+bool GlobalFlow::initSerial()
 {
-    MySerial.comOpen(1);
-    MySerial.comOpen(2);
-    MySerial.comOpen(3);
+    const bool ok1 = (MySerial.comOpen(1) == 1);
+    const bool ok2 = (MySerial.comOpen(2) == 1);
+    const bool ok3 = (MySerial.comOpen(3) == 1);
 
     setCom1Baud();
     setCom2Baud();
+
+    return ok1 && ok2 && ok3;
 }
 
 /*!
@@ -4752,12 +4754,88 @@ void GlobalFlow::getSlaveList()
     file.close();
 }
 
+/* 开机检测状态上报（启动画面 5 组） */
+void GlobalFlow::bootStage(int stage, int status, const QString &detail)
+{
+    emit initStageChanged(stage, status, detail);
+
+    //! 非"进行中"状态停留 150ms，保证用户能看清正常/异常文案，同时光环继续播放
+    if (status != BOOT_STATUS_ACTIVE)
+    {
+        msleep(150);
+    }
+}
+
+/* 读取 init_check.cnf 的 check_ai（1=检查，0=跳过 AI 相关检测） */
+bool GlobalFlow::isAiCheckEnabled()
+{
+    if (!QFileInfo::exists(CNF_INIT_CHECK))
+    {
+        //! 首次启动生成模板；写失败不影响启动，按默认值处理
+        QSettings setting(CNF_INIT_CHECK, QSettings::IniFormat);
+        setting.setValue("Check/check_ai", 1);
+        setting.sync();
+        return true;
+    }
+
+    QSettings setting(CNF_INIT_CHECK, QSettings::IniFormat);
+    return setting.value("Check/check_ai", 1).toInt() != 0;
+}
+
+/* 参数状态值 → 具体参数文件错误文案 */
+static QString paramsFileErrorText(int value)
+{
+    switch (value)
+    {
+    case ENGINEER_FILE_ERROR:
+        return QCoreApplication::translate("GlobalFlow", "工程参数文件异常");
+    case GLOBAL_FILE_ERROR:
+        return QCoreApplication::translate("GlobalFlow", "全局参数文件异常");
+    case CAMER_FILE_ERROR:
+        return QCoreApplication::translate("GlobalFlow", "相机参数文件异常");
+    case SCHEME_FILE_ERROR:
+        return QCoreApplication::translate("GlobalFlow", "方案参数文件异常");
+    default:
+        return QString();
+    }
+}
+
 /* 开机初始化 */
 void GlobalFlow::initAll()
 {
+    // ---------------- 组 0：系统配置 / 参数文件 / 方案 / 相机参数 ----------------
+    bootStage(BOOT_STAGE_CONFIG, BOOT_STATUS_ACTIVE, tr("正在读取系统配置…"));
+
+    QStringList configErrors;
+
     getSetting();               // 获取配置文件参数内容
+    if (!QFileInfo::exists(CNF_MY))
+    {
+        configErrors << tr("系统配置文件缺失");
+    }
 
     getParamsFileStaus();       // 获取参数文件状态
+
+    //! 参数状态文件记录了最近一次保存失败的具体文件
+    const QString statusError = paramsFileErrorText(struCnfs.value);
+    if (!statusError.isEmpty())
+    {
+        configErrors << statusError;
+    }
+
+    //! 参数文件存在但内容为空，同样视为异常
+    if (QFileInfo(CNF_ENGINEER).exists() && QFileInfo(CNF_ENGINEER).size() <= 0)
+    {
+        configErrors << tr("工程参数文件异常");
+    }
+    if (QFileInfo(CNF_GLOBAL).exists() && QFileInfo(CNF_GLOBAL).size() <= 0)
+    {
+        configErrors << tr("全局参数文件异常");
+    }
+    if (QFileInfo(CNF_CAMERA).exists() && QFileInfo(CNF_CAMERA).size() <= 0)
+    {
+        configErrors << tr("相机参数文件异常");
+    }
 
     getEngineer();              // 获取全局工程参数文件
 
@@ -4773,24 +4851,83 @@ void GlobalFlow::initAll()
 
     initGsh();                  // 初始化全局共享参数
 
-    initSerial();               // 初始化串口设备
+    //! 初始化过程中若发生保存失败，状态值会变化，二次确认
+    const QString lateError = paramsFileErrorText(struCnfs.value);
+    if (!lateError.isEmpty())
+    {
+        configErrors << lateError;
+    }
 
-    initMachineType();			// 初始化机器类型
+    configErrors.removeDuplicates();
 
-    initUdpImagPara();
+    if (configErrors.isEmpty())
+    {
+        bootStage(BOOT_STAGE_CONFIG, BOOT_STATUS_OK, tr("系统配置正常"));
+    }
+    else
+    {
+        bootStage(BOOT_STAGE_CONFIG, BOOT_STATUS_ERROR,
+                  tr("异常：") + configErrors.join(tr("、")));
+    }
 
-    initPixelImagPara();
+    // ---------------- 组 1：串口设备 / 机型下发 ----------------
+    bootStage(BOOT_STAGE_SERIAL, BOOT_STATUS_ACTIVE, tr("正在检测串口设备…"));
+
+    const bool serialOk = initSerial();     // 初始化串口设备
+    initMachineType();			            // 初始化机器类型
+
+    if (serialOk)
+    {
+        bootStage(BOOT_STAGE_SERIAL, BOOT_STATUS_OK, tr("串口设备正常"));
+    }
+    else
+    {
+        bootStage(BOOT_STAGE_SERIAL, BOOT_STATUS_ERROR, tr("串口设备打开失败"));
+    }
+
+    // ---------------- 组 2：AI 图像参数 / AI 像素参数 ----------------
+    if (!isAiCheckEnabled())
+    {
+        bootStage(BOOT_STAGE_AI, BOOT_STATUS_SKIPPED, tr("AI检测未启用"));
+    }
+    else if (!struCnfp.enableAi)
+    {
+        bootStage(BOOT_STAGE_AI, BOOT_STATUS_SKIPPED, tr("AI未启用"));
+    }
+    else
+    {
+        bootStage(BOOT_STAGE_AI, BOOT_STATUS_ACTIVE, tr("正在下发AI参数…"));
+
+        QStringList aiFailed = initUdpImagPara();
+        aiFailed += initPixelImagPara();
+        aiFailed.removeDuplicates();
+
+        if (aiFailed.isEmpty())
+        {
+            bootStage(BOOT_STAGE_AI, BOOT_STATUS_OK, tr("AI功能模块正常"));
+        }
+        else
+        {
+            bootStage(BOOT_STAGE_AI, BOOT_STATUS_ERROR,
+                      tr("AI设备异常：") + aiFailed.join(tr("、")));
+        }
+    }
+
+    // ---------------- 组 3：界面与数据表 / 加密授权 ----------------
+    bootStage(BOOT_STAGE_UI, BOOT_STATUS_ACTIVE, tr("正在初始化界面与数据表…"));
 }
 
-void GlobalFlow::initUdpImagPara()
+QStringList GlobalFlow::initUdpImagPara()
 {
+    QStringList failedDevices;
+
     // 向AI板卡发送推理高度、采集高度等参数
     AiCfgInfo cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
 
     if (!struCnfp.enableAi)
     {
         LOG_INFO_STM("ai enable is false!");
-        return;
+        return failedDevices;
     }
 
     LOG_INFO_STM("collect image h:" << cfg_info.collect_height_ << ", infer image h:" << cfg_info.infer_height_
@@ -4817,6 +4954,7 @@ void GlobalFlow::initUdpImagPara()
         if (!ok)
         {
             LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! requst body:" << request.toHex(' ').toUpper().toStdString());
+            failedDevices << QString("AI%1").arg(idx + 1);
             continue;
         }
 
@@ -4826,19 +4964,24 @@ void GlobalFlow::initUdpImagPara()
         {
             LOG_ERROR_STM("image height opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed! request body:" << request.toHex(' ').toUpper().toStdString()
                 << ", response body:" << response.toHex(' ').toUpper().toStdString());
+            failedDevices << QString("AI%1").arg(idx + 1);
             continue;
         }
 
         LOG_INFO_STM("index:" << idx << " ip:" << ip.toStdString() << ",image height opr send command:" << request.toHex(' ').toUpper().toStdString() << ", response:"
             << response.toHex(' ').toUpper().toStdString() << ", code:" << (int)cmdworker::CommResponse(cmd_pkg).code_);
     }
+
+    return failedDevices;
 }
 
-void GlobalFlow::initPixelImagPara()
+QStringList GlobalFlow::initPixelImagPara()
 {
+    QStringList failedDevices;
+
     if (!struCnfp.enableAi)
     {
-        return;
+        return failedDevices;
     }
 
     // 向AI板卡发送相机的像素划分参数
@@ -4869,6 +5012,7 @@ void GlobalFlow::initPixelImagPara()
             if (!ok)
             {
                 LOG_ERROR_STM("set pixel index:" << j << " ip:" << ip.toStdString() << " failed, request body:" << request.toHex(' ').toUpper().toStdString());
+                failedDevices << QString("AI%1").arg(j + 1);
                 continue;
             }
 
@@ -4878,6 +5022,7 @@ void GlobalFlow::initPixelImagPara()
             {
                 LOG_ERROR_STM("set pixel index:" << j << " ip:" << ip.toStdString() << " parse failed, request body:" << request.toHex(' ').toUpper().toStdString()
                     << ", response body:" << response.toHex(' ').toUpper().toStdString());
+                failedDevices << QString("AI%1").arg(j + 1);
                 continue;
             }
 
@@ -4885,6 +5030,8 @@ void GlobalFlow::initPixelImagPara()
                 << ", response body:" << response.toHex(' ').toUpper().toStdString());
         }
     }
+
+    return failedDevices;
 }
 
 void GlobalFlow::initEjectorDelayPara()
@@ -5236,7 +5383,7 @@ void GlobalFlow::startAiWorker(bool onOff)
     }
 }
 
-int  GlobalFlow::initAiCommunication()
+int  GlobalFlow::initAiCommunication(QStringList *failedDevices)
 {
     if (!struCnfp.enableAi)
     {
@@ -5260,6 +5407,10 @@ int  GlobalFlow::initAiCommunication()
         if (!ok)
         {
             ret_code = 1;
+            if (failedDevices)
+            {
+                *failedDevices << QString("AI%1").arg(idx + 1);
+            }
             LOG_ERROR_STM("version opr index:" << idx << " ip:" << ip.toStdString() << " send command failed");
             continue;
         }
@@ -5269,6 +5420,10 @@ int  GlobalFlow::initAiCommunication()
         if (!ok)
         {
             ret_code = 1;
+            if (failedDevices)
+            {
+                *failedDevices << QString("AI%1").arg(idx + 1);
+            }
             LOG_ERROR_STM("version opr index:" << idx << " ip:" << ip.toStdString() << " parse resonpse failed");
             continue;
         }

@@ -205,6 +205,11 @@
         <file alias="res/png2/lineedit/lineedit_disabled.png">res/png2/lineedit/lineedit_disabled.png</file>
         <file alias="res/png2/lineedit/lineedit_glow.png">res/png2/lineedit/lineedit_glow.png</file>
         <file alias="res/png2/lineedit/lineedit_caret.png">res/png2/lineedit/lineedit_caret.png</file>
+        <file alias="res/png2/topbar/videoCap.png">res/png2/topbar/videoCap.png</file>
+        <file alias="res/png2/topbar/workStart.png">res/png2/topbar/workStart.png</file>
+        <file alias="res/png2/topbar/workStop.png">res/png2/topbar/workStop.png</file>
+        <file alias="res/png2/topbar/savePara.png">res/png2/topbar/savePara.png</file>
+        <file alias="res/png2/topbar/shutDown.png">res/png2/topbar/shutDown.png</file>
         <file alias="res/png/material.png">res/png2/material.png</file>
         <file alias="res/png/materialButton.png">res/png2/materialButton.png</file>
         <file alias="res/png/materialSelect.png">res/png2/materialSelect.png</file>

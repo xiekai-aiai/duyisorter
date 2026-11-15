@@ -711,14 +711,25 @@ void StatusInfoPage::CreateGeneralPage()
     serverLayout->addWidget(serverLineEdit);
 
     statusTabBar = new MyTabBar();
-    if (LCD_HEIGHT == 768)
-    {
-        statusTabBar->setStyleSheet("QTabBar::tab{""min-height:50;min-width:100;}");
-    }
-    else
-    {
-        statusTabBar->setStyleSheet("QTabBar::tab{""min-height:35;min-width:100;}");
-    }
+    /* 科技风线框页签：常态暗色线框 / 悬停实心高亮 / 选中亮青描边（同“一次前视”按钮） */
+    statusTabBar->setStyleSheet(QStringLiteral(
+        "QTabBar { background: transparent; }"
+        "QTabBar::tab {"
+        "  min-height: %1; min-width: 100;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #9FD0E0; margin-right: 8px;"
+        "}"
+        "QTabBar::tab:hover {"
+        "  border-width: 8px 16px 8px 16px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QTabBar::tab:selected {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}").arg(LCD_HEIGHT == 768 ? 50 : 35));
+    statusTabBar->setDrawBase(false);
     statusTabBar->addTab(myLan.state);
     statusTabBar->addTab(myLan.ai_det_status);
 
@@ -3327,14 +3338,25 @@ void StatusInfoPage::CreateSetNetworkPage()
         /* tab widget */
     remoteTabBar = new QTabBar();
     remoteTabBar->setFont(config->getFont());
-    if (LCD_HEIGHT == 768)
-    {
-        setStyleSheet("QTabBar::tab {min-height:45; min-width:180;}");
-    }
-    else
-    {
-        setStyleSheet("QTabBar::tab {min-height:32;}");
-    }
+    /* 科技风线框页签：与系统状态页页签保持一致 */
+    remoteTabBar->setStyleSheet(QStringLiteral(
+        "QTabBar { background: transparent; }"
+        "QTabBar::tab {"
+        "  min-height: %1; min-width: 180;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #9FD0E0; margin-right: 8px;"
+        "}"
+        "QTabBar::tab:hover {"
+        "  border-width: 8px 16px 8px 16px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QTabBar::tab:selected {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}").arg(LCD_HEIGHT == 768 ? 45 : 32));
+    remoteTabBar->setDrawBase(false);
     remoteTabBar->addTab(myLan.local_host);
     remoteTabBar->addTab(myLan.remote_control);
     if (struGsh.bIsMC)
@@ -3414,6 +3436,26 @@ void StatusInfoPage::createPageWifiWidget()
     ssidComboBox->setFixedHeight(BTN_HEIGHT);
     ssidComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
     ssidComboBox->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    /* 深色底 + 白字，与页面其余控件统一（覆盖 MyComboBox 默认浅灰样式） */
+    ssidComboBox->setStyleSheet(
+        "QComboBox {"
+        "  background-color: #0E2233; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; border-radius: 4px;"
+        "  padding-left: 10px; padding-right: 30px;"
+        "}"
+        "QComboBox:hover, QComboBox:focus { border-color: #45D2E4; }"
+        "QComboBox::drop-down {"
+        "  subcontrol-origin: padding; subcontrol-position: center right;"
+        "  width: 28px; border: none;"
+        "}"
+        "QComboBox::down-arrow { image: url(:/res/png2/algo/algo_arrow.png); width: 14px; height: 14px; }"
+        "QComboBox QAbstractItemView {"
+        "  background-color: #0E2233; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; outline: none;"
+        "  selection-background-color: rgba(69, 210, 228, 0.30);"
+        "  selection-color: #FFFFFF;"
+        "}"
+        "QComboBox QAbstractItemView::item { min-height: 40px; }");
 
     passWordLabel = new myLabel(myLan.password);
     passWordLineEdit = new myLineEdit();
@@ -3433,6 +3475,14 @@ void StatusInfoPage::createPageWifiWidget()
     connectResultEdit->setFont(config->getFont());
     connectResultEdit->setReadOnly(true);
     connectResultEdit->setWordWrapMode(QTextOption::NoWrap);
+    /* 深色底 + 白字日志区（覆盖默认白底黑字） */
+    connectResultEdit->setStyleSheet(
+        "QTextEdit {"
+        "  background-color: #0A1A26; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; border-radius: 4px;"
+        "  selection-background-color: rgba(69, 210, 228, 0.30);"
+        "  selection-color: #FFFFFF;"
+        "}");
 
     wifiAddrLabel = new myLabel("WIFI " + myLan.ip_address);
     wifiAddrLineEdit = new myLineEdit("0.0.0.0");

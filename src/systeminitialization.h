@@ -10,6 +10,9 @@
 #define SYSTEMINITIALIZATION_H
 
 #include <QProgressBar>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QTimer>
 #include "common/mypushbutton.h"
 #include "common/mylabel.h"
 #include "common/mylineedit.h"
@@ -130,12 +133,32 @@ signals:
 
 public slots:
     void startInitSlt();
+    void runNextStepSlt();
+
+protected:
+    void paintEvent(QPaintEvent* event);
+
+private slots:
+    void onAnimTickSlt();
 
 private:
-    // 通信列表
-    myLabel* waitCommLabel;
+    enum { INIT_STEP_COUNT = 5 };
 
-    QVBoxLayout* initVBLayout;
+    void drawTitle(QPainter& p);
+    void drawRing(QPainter& p);
+    void drawSteps(QPainter& p);
+    void drawFooter(QPainter& p);
+    void drawStateIcon(QPainter& p, int cx, int cy, int state);   //! 0待执行 1执行中 2已完成
+    QString stepText(int index);
+
+    int     m_currentStep;      //! 等待执行的步骤序号
+    int     m_doneCount;        //! 已完成步骤数
+    qreal   m_percent;          //! 平滑显示的百分比
+    qreal   m_targetPercent;    //! 目标百分比
+    int     m_pulseTick;        //! 脉动计时（33ms/格）
+    int     m_finishDelay;      //! 完成后的停留计时
+    bool    m_finished;         //! 是否已跳转预热页
+    QTimer* m_animTimer;
 };
 
 /*!

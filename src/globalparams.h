@@ -542,6 +542,7 @@ enum
 
 #define CNF_MY                  APP_PATH "/DuySorter.conf"                    // 全局配置文件
 #define CNF_LOG_CFG             APP_PATH "/log.properties"                    // 日志配置文件
+#define CNF_INIT_CHECK          APP_PATH "/init_check.cnf"                    // 开机检查项配置
 
 #if defined(Q_OS_WIN32)
 #define LANG_DIR                "../../DuySorter_rk3566/app/i18n/"   // 语言文件目录 *.qm
