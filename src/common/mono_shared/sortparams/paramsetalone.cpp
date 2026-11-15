@@ -35,6 +35,9 @@ void paramSetAlone::createPage()
 
     m_mutex->setLabelText(myLan.set_by_times, myLan.set_alone);
     m_mutex->setNum(2);
+    m_mutex->setCheckIndicator(true);   //! 选中标记改用对号图标
+    /* 深色主题下选项文字用白色（原默认黑字不可见） */
+    m_mutex->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; }"));
 
     if (LCD_WIDTH == 1024) {
         m_mutex->setFixedSize(500, 300);

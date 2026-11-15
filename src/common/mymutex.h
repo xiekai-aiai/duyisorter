@@ -38,6 +38,7 @@ public:
     int getCurrentIndex(void);
     void setCurrentIndex(int index);
     void setIndexEnabled(int index, bool enabled);
+    void setCheckIndicator(bool enable);    //! 选中标记改用对号图标（默认圆点）
 
 signals:
     void indexChanged(int);
@@ -56,6 +57,11 @@ private:
     QLabel *labels[MAX_NUM];
     quint8 curIndex;
     QSignalMapper   *m_sigMap;
+    bool m_bCheckIndicator = false;     //! 是否使用对号图标标记选中
+    bool m_bHasSelection = false;       //! 是否已有选中项
+
+    QIcon makeCheckIcon(void) const;    //! 生成对号图标
+    void updateSelectionIcon(int index); //! 刷新指定项的选中图标
 };
 
 #endif // GLOBAL_H
