@@ -233,6 +233,24 @@ MyButtonGroup::MyButtonGroup(const QStringList & list, QWidget *parent)
     if (list.size() == 0)
         return;
 
+    const QString normalStyle =
+        "QToolButton {"
+        "  border-width: 8px 10px 8px 10px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/radio/radio_row.png) 8 10 8 10 stretch stretch;"
+        "  color: #9FD0E0; font-size: 14px; padding: 0px;"
+        "}"
+        "QToolButton:hover {"
+        "  border-image: url(:/res/png2/radio/radio_row_hover.png) 8 10 8 10 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}";
+
+    const QString checkedStyle =
+        "QToolButton {"
+        "  border-width: 8px 10px 8px 10px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/radio/radio_row_checked.png) 8 10 8 10 stretch stretch;"
+        "  color: #FFFFFF; font-size: 14px; padding: 0px;"
+        "}";
+
     /* page init */
     config = g_Config::getInstance();
     for (int i = 0; i < list.size(); i++) {
@@ -243,6 +261,10 @@ MyButtonGroup::MyButtonGroup(const QStringList & list, QWidget *parent)
         btns[i]->setMaximumHeight(BTN_HEIGHT);
         btns[i]->setMinimumWidth(80);
         btns[i]->setCheckable(true);
+        btns[i]->setToolButtonStyle(Qt::ToolButtonTextOnly);
+        btns[i]->setProperty("normalStyle", normalStyle);
+        btns[i]->setProperty("checkedStyle", checkedStyle);
+        btns[i]->setStyleSheet(normalStyle);
     }
 
     /* page update */
@@ -261,6 +283,7 @@ MyButtonGroup::MyButtonGroup(const QStringList & list, QWidget *parent)
     /* layout */
     QHBoxLayout *mainLayout = new QHBoxLayout;
     mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
     for(int i = 0; i < btns.size(); i++) {
         mainLayout->addWidget(btns[i]);
     }
@@ -299,10 +322,10 @@ void MyButtonGroup::setChecked(int btnId)
     for (int i = 0; i < btns.size(); i++) {
         if (i == btnId) {
             btns[i]->setChecked(true);
-            btns[i]->setStyleSheet("background-color: #036eb8; border-radius: 5; color: white;");
+            btns[i]->setStyleSheet(btns[i]->property("checkedStyle").toString());
         } else {
             btns[i]->setChecked(false);
-            btns[i]->setStyleSheet("background-color: #ebebeb; border-radius: 5; color: black;");
+            btns[i]->setStyleSheet(btns[i]->property("normalStyle").toString());
         }
     }
 }

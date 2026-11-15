@@ -7114,6 +7114,66 @@ Insufficient disk space!</translation>
         <translation>Initialize the system...</translation>
     </message>
     <message>
+        <source>init_link</source>
+        <translation>Initialization Steps</translation>
+    </message>
+    <message>
+        <source>init_step_trans</source>
+        <translation>Push image transfer mode</translation>
+    </message>
+    <message>
+        <source>init_step_camera</source>
+        <translation>Sync camera parameters</translation>
+    </message>
+    <message>
+        <source>init_step_sort</source>
+        <translation>Sync color sorting parameters</translation>
+    </message>
+    <message>
+        <source>init_step_control</source>
+        <translation>Sync control board parameters</translation>
+    </message>
+    <message>
+        <source>init_step_ai</source>
+        <translation>Sync AI model parameters</translation>
+    </message>
+    <message>
+        <source>init_running</source>
+        <translation>Running</translation>
+    </message>
+    <message>
+        <source>init_doing</source>
+        <translation>Initializing</translation>
+    </message>
+    <message>
+        <source>toast_scheme</source>
+        <translation>Scheme selection</translation>
+    </message>
+    <message>
+        <source>toast_sens</source>
+        <translation>Sensitivity adjustment</translation>
+    </message>
+    <message>
+        <source>toast_feeder</source>
+        <translation>Feeder speed settings</translation>
+    </message>
+    <message>
+        <source>toast_ejector</source>
+        <translation>Ejector test command sent</translation>
+    </message>
+    <message>
+        <source>toast_wiper</source>
+        <translation>Cleaning command sent</translation>
+    </message>
+    <message>
+        <source>toast_func</source>
+        <translation>Algorithm settings</translation>
+    </message>
+    <message>
+        <source>toast_oper</source>
+        <translation>System parameters</translation>
+    </message>
+    <message>
         <location filename="../src/params/paramslang.cpp" line="840"/>
         <source>msg_preheating</source>
         <translatorcomment>Preheating,please wait...</translatorcomment>

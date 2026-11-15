@@ -10,10 +10,13 @@ static void setArithButtonHighlight(myPushButton *btn, bool checked)
         btn->setStyleSheet("QPushButton {"
                            "text-align: center;"
                            "outline: none;"
-                           "background-color: rgb(14, 40, 60);"
-                           "border: 2px solid #afafaf;"
-                           "border-radius: 5;"
+                           "border-width: 8px 12px 8px 12px;"
+                           "border-style: solid;"
+                           "border-color: transparent;"
+                           "border-image: url(:/res/png2/algo/algo_card_active.png) 8 12 8 12 stretch stretch;"
                            "color: white;"
+                           "font-size: 15px;"
+                           "padding: 0px;"
                            "}");
     }
     else
@@ -410,6 +413,24 @@ void PageIdentify::createPage()
 {
     /* tab widget */
     tabBar = new MyTabBar();
+    /* 深蓝线框风页签：常态线框 / 悬停实心高亮 / 选中亮青描边 */
+    tabBar->setStyleSheet(
+        "QTabBar::tab {"
+        "  min-width: 120px; min-height: 40px;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #9FD0E0; font-size: 14px; margin-right: 8px;"
+        "}"
+        "QTabBar::tab:hover {"
+        "  border-width: 8px 16px 8px 16px; border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QTabBar::tab:selected {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}");
+    tabBar->setDrawBase(false);
 
     /* arithmetic list group */
     arithmeticGroup = new QWidget;
@@ -419,7 +440,12 @@ void PageIdentify::createPage()
     matModeCombo = new MyComboBox();
     matModeCombo->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
     matModeCombo->setFixedHeight(BTN_HEIGHT);
-    QString g_style1 = "background-color: rgb(210, 231, 245);""outline: none;""border-radius: 8;";
+    QString g_style1 = "background-color: rgba(10, 30, 43, 150);"
+                       "color: #DCEEF5;"
+                       "border: 1px solid #2E657C;"
+                       "border-radius: 4;"
+                       "padding-left: 10px;"
+                       "outline: none;";
     matModeCombo->setStyleSheet(g_style1);
 
     /* arithmetic list */
@@ -486,6 +512,18 @@ void PageIdentify::createArithmeticList()
         arithmeticBox[i]->setFixedWidth(BTN_HEIGHT);
         arithmeticBtn[i]->setFocusPolicy(Qt::NoFocus);
         arithmeticBtn[i]->setMinimumSize(BTN_WIDTH, BTN_HEIGHT);
+        /* 深蓝线框风：卡片常态 / 悬停 */
+        arithmeticBtn[i]->setStyleSheet(
+            "QPushButton {"
+            "  text-align: center; outline: none;"
+            "  border-width: 8px 12px 8px 12px; border-style: solid; border-color: transparent;"
+            "  border-image: url(:/res/png2/algo/algo_card_normal.png) 8 12 8 12 stretch stretch;"
+            "  color: #DCEEF5; font-size: 15px; padding: 0px;"
+            "}"
+            "QPushButton:hover {"
+            "  border-image: url(:/res/png2/algo/algo_card_hover.png) 8 12 8 12 stretch stretch;"
+            "  color: #FFFFFF;"
+            "}");
         /* 记录默认样式，供勾选高亮恢复用 */
         arithmeticBtn[i]->setProperty("defaultStyle", arithmeticBtn[i]->styleSheet());
 

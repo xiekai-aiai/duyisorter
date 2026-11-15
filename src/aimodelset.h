@@ -303,6 +303,8 @@ public:
     
 private:
     Ui::AiModelSet *ui;
+    QPushButton *m_validImgBtn = nullptr;   // .ui 已移除仿真按钮，用隐藏占位按钮承接原引用
+    QWidget* m_imgEmptyOverlay = nullptr;   // 训练图片列表空态占位（“请先选择图片！”）
     int modelCategoryNum;
     QString modelName;
     QString downLoadModelName;

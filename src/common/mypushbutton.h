@@ -51,6 +51,8 @@ private:
     QIcon m_icon;
     QString m_sText;
     int m_nColor;
+    bool m_bSkin = false;   //! 当前是否套用点击动效贴图样式
+    QString m_ownStyle;     //! 本类最近一次设置的样式串，用于识别外部覆盖
 };
 
 #endif // MYPUSHBUTTON_H

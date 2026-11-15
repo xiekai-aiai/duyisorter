@@ -6919,6 +6919,66 @@
         <translation>系统初始化中，请稍候...</translation>
     </message>
     <message>
+        <source>init_link</source>
+        <translation>执行链路</translation>
+    </message>
+    <message>
+        <source>init_step_trans</source>
+        <translation>下发图像传输模式</translation>
+    </message>
+    <message>
+        <source>init_step_camera</source>
+        <translation>同步相机参数</translation>
+    </message>
+    <message>
+        <source>init_step_sort</source>
+        <translation>同步色选参数</translation>
+    </message>
+    <message>
+        <source>init_step_control</source>
+        <translation>同步控制板参数</translation>
+    </message>
+    <message>
+        <source>init_step_ai</source>
+        <translation>同步 AI 模型参数</translation>
+    </message>
+    <message>
+        <source>init_running</source>
+        <translation>正在执行</translation>
+    </message>
+    <message>
+        <source>init_doing</source>
+        <translation>初始化中</translation>
+    </message>
+    <message>
+        <source>toast_scheme</source>
+        <translation>已进入方案选择</translation>
+    </message>
+    <message>
+        <source>toast_sens</source>
+        <translation>已进入感度调节</translation>
+    </message>
+    <message>
+        <source>toast_feeder</source>
+        <translation>已进入供料速度设置</translation>
+    </message>
+    <message>
+        <source>toast_ejector</source>
+        <translation>喷阀检测指令已下发</translation>
+    </message>
+    <message>
+        <source>toast_wiper</source>
+        <translation>清扫指令已下发</translation>
+    </message>
+    <message>
+        <source>toast_func</source>
+        <translation>已进入算法设置</translation>
+    </message>
+    <message>
+        <source>toast_oper</source>
+        <translation>已进入系统参数</translation>
+    </message>
+    <message>
         <location filename="../src/params/paramslang.cpp" line="840"/>
         <source>msg_preheating</source>
         <translation>预热中，请稍候...</translation>

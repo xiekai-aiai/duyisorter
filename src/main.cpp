@@ -12,10 +12,11 @@
 #include <QProcess>
 #include <QSettings>
 #include <QProgressBar>
-#include <QMovie>
+#include <QEventLoop>
 #include "unilog.h"
 #include "sqlitemgr.h"
 #include "configmgr.h"
+#include "loadingwindow.h"
 //#include "aes.h"
 
 /*!
@@ -238,18 +239,20 @@ int main(int argc, char *argv[])
 
     struGsh.nAuthenticationLevel = AUTHENTICATION_LEVEL_OPERATOR;
 
-    QLabel *label = new QLabel;
-    label->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
-    label->setGeometry(0, 0, LCD_WIDTH, LCD_HEIGHT);
-    label->setWindowOpacity(1);
-    QMovie* movie=new QMovie(":/res/png/Loading.gif");
+    //! 启动画面：底板 + 光环动画 + 5 组检测进度
+    LoadingWindow *splash = new LoadingWindow;
+    splash->showFullScreen();
+    // 先渲染几帧，避免 initAll() 阻塞时启动页完全冻结
+    for (int i = 0; i < 5; ++i)
+    {
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
 
-    label->setMovie(movie);//Label添加动图
-    movie->start();//启动动图
-    label->setScaledContents(true);//自适应
-    label->show();
-    // 让 Loading.gif 先渲染几帧，避免 UI 线程被 initAll() 阻塞时完全冻结
-    for (int i = 0; i < 5; ++i) QCoreApplication::processEvents();
+    //! 开机检测状态上报 → 启动页
+    QObject::connect(&myFlow, &GlobalFlow::initStageChanged, &a,
+                     [splash](int stage, int status, const QString &detail) {
+                         splash->onStageChanged(stage, status, detail);
+                     });
 //    // 创建一个进度条
 //   QProgressBar *progressBar = new QProgressBar();
 //   QString s1 = "QProgressBar {\
@@ -287,6 +290,31 @@ int main(int argc, char *argv[])
    //! 设置字体
    a.setFont(getFont());
 
+   //! 全局输入框样式：深色底 + 1px 钢青描边，悬停/聚焦切换亮青描边（九宫格切片 4px）
+   a.setStyleSheet(
+       "QLineEdit {"
+       "  border-width: 4px 4px 4px 4px;"
+       "  border-style: solid;"
+       "  border-color: transparent;"
+       "  border-image: url(:/res/png2/lineedit/lineedit_normal.png) 4 4 4 4 stretch stretch;"
+       "  background: transparent;"
+       "  color: #E8F6FF;"
+       "  font-size: 16px;"
+       "  padding: 0px 6px;"
+       "  selection-background-color: #1E4A5E;"
+       "  selection-color: #FFFFFF;"
+       "}"
+       "QLineEdit:hover {"
+       "  border-image: url(:/res/png2/lineedit/lineedit_hover.png) 4 4 4 4 stretch stretch;"
+       "}"
+       "QLineEdit:focus {"
+       "  border-image: url(:/res/png2/lineedit/lineedit_focus.png) 4 4 4 4 stretch stretch;"
+       "}"
+       "QLineEdit:disabled {"
+       "  border-image: url(:/res/png2/lineedit/lineedit_disabled.png) 4 4 4 4 stretch stretch;"
+       "  color: #5A7686;"
+       "}");
+
 
 
 //   for (int i = 0; i <= 100; i=i+10) {
@@ -307,18 +335,35 @@ int main(int argc, char *argv[])
     createModeParaInfoTable();
     createParaInfoTable();
 
-// 设置定时器，在一段时间后关闭启动画面并显示主窗口
-    QTimer::singleShot(2000, [&]() {
-        // ⭐ 先 show 主窗口 → 让 X11 立即把 MainWidget 映射到屏幕
-        //    再 hide splash → 彻底消除「窗口间隙」露出桌面背景的问题
-        w.showFullScreen();
-        QCoreApplication::processEvents();  // 强制立即处理 X11 MapRequest
+    //! 5 组检测全部结束 → 收尾：先 show 主窗口，再关启动页，消除窗口间隙
+    bool bootFinished = false;
+    QObject::connect(&myFlow, &GlobalFlow::initStageChanged, &a,
+                     [&](int stage, int status, const QString &detail) {
+                         Q_UNUSED(detail);
+                         if (stage != BOOT_STAGE_HW || bootFinished)
+                         {
+                             return;
+                         }
+                         if (status != BOOT_STATUS_OK
+                             && status != BOOT_STATUS_ERROR
+                             && status != BOOT_STATUS_SKIPPED)
+                         {
+                             return;
+                         }
+                         bootFinished = true;
 
-        // 停止动图 + 关启动画面
-        movie->stop();
-        delete movie;
-        label->close();
-    });
+                         // 正常 400ms 收尾；异常停留 2.5s 让用户看清红段与错误行
+                         const int delay = (status == BOOT_STATUS_OK) ? 400 : 2500;
+                         QTimer::singleShot(delay, &a, [&w, splash]() {
+                             // ⭐ 先 show 主窗口 → 让 X11 立即把 MainWidget 映射到屏幕
+                             //    再 hide splash → 彻底消除「窗口间隙」露出桌面背景的问题
+                             w.showFullScreen();
+                             QCoreApplication::processEvents();
+
+                             splash->close();
+                             splash->deleteLater();
+                         });
+                     });
 
 //    w.show();
 

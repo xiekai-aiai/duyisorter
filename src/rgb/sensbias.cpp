@@ -27,6 +27,28 @@ void SensBias::createPageForGeneral()
     for (int i = 0; i < MAX_UNIT; i++) {
         m_lineEdits[i] = new myLineEdit;
         m_lineEdits[i]->setFont(m_config->getFont());
+        /* 灵敏度数值框：lineedit 九宫格三态 */
+        m_lineEdits[i]->setStyleSheet(
+            "QLineEdit {"
+            "  border-width: 4px 4px 4px 4px;"
+            "  border-style: solid;"
+            "  border-color: transparent;"
+            "  border-image: url(:/res/png2/lineedit/lineedit_normal.png) 4 4 4 4 stretch stretch;"
+            "  background: transparent;"
+            "  color: #E8F6FF;"
+            "  font-size: 20px;"
+            "  padding: 0px 6px;"
+            "}"
+            "QLineEdit:hover {"
+            "  border-image: url(:/res/png2/lineedit/lineedit_hover.png) 4 4 4 4 stretch stretch;"
+            "}"
+            "QLineEdit:focus {"
+            "  border-image: url(:/res/png2/lineedit/lineedit_focus.png) 4 4 4 4 stretch stretch;"
+            "}"
+            "QLineEdit:disabled {"
+            "  border-image: url(:/res/png2/lineedit/lineedit_disabled.png) 4 4 4 4 stretch stretch;"
+            "  color: #5A7686;"
+            "}");
             if(i%2 == 0) {
                 m_labels[i] = new myLabel(QString("%1%2").arg(myLan.front_view).arg(i/2+1));
                 upRightLay->addWidget(m_labels[i], i/2, 0);
@@ -139,12 +161,47 @@ void SensBias::createPage()
 
     /* 定义页面上半部分的控件 */
     m_list = new QListWidget;
-    m_list->setFixedSize(width()/6, height()-BTN_HEIGHT-50);
+    m_list->setFixedSize(200, height()-BTN_HEIGHT-50);
     m_list->setFont(m_config->getFont());
+    m_list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    m_list->setSpacing(0);
+    m_list->setStyleSheet(
+        "QListWidget {"
+        "  background: transparent;"
+        "  border: none;"
+        "  border-image: url(:/res/png2/sidelist/list_panel.png) 12 12 12 12 stretch stretch;"
+        "  padding: 10px 10px;"
+        "  outline: none;"
+        "}"
+        "QListWidget::item {"
+        "  border-width: 8px 10px 8px 10px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/scheme_row_normal.png) 8 10 8 10 stretch stretch;"
+        "  color: #DCEEF5;"
+        "  font-size: 16px;"
+        "}"
+        "QListWidget::item:hover {"
+        "  border-image: url(:/res/png2/sidelist/scheme_row_hover.png) 8 10 8 10 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QListWidget::item:selected {"
+        "  border-image: url(:/res/png2/sidelist/scheme_row_active.png) 8 10 8 10 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QScrollBar:vertical {"
+        "  width: 6px; background: transparent; margin: 6px 0;"
+        "}"
+        "QScrollBar::handle:vertical {"
+        "  background: #2A6076; border-radius: 3px; min-height: 40px;"
+        "}"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }"
+    );
     for (int i = 0; i < ARITHMETIC_TOTAL; i++) {
         m_items[i] = new QListWidgetItem;
         m_list->addItem(m_items[i]);
         m_items[i]->setTextAlignment(Qt::AlignCenter);
+        m_items[i]->setSizeHint(QSize(178, 58));
     }
     m_list->setCurrentRow(0);
 
@@ -153,6 +210,17 @@ void SensBias::createPage()
     /* 定义页面下半部分的控件 */
     m_backBtn = new myPushButton(myLan.back, myIcon.Action_Back);
     m_backBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    m_backBtn->setStyleSheet(
+        "QPushButton {"
+        "  text-align: center; outline: none;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #DCEEF5; font-size: 14px; padding: 0px;"
+        "}"
+        "QPushButton:hover, QPushButton:pressed {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}");
     m_nMaizeSensIndex = 0;
 
     m_sensGroup = new myMutex(Qt::Horizontal,0);
@@ -236,7 +304,7 @@ void SensBias::updateList()
     for(int i=0; i<ARITHMETIC_TOTAL; i++) {
         if(myFlow.getArithEnable(struGsh.nLevel, 0, i) == 1 && isSensBiasEnable(i)) {
             m_nArithIndex[i] = i;
-            m_items[i]->setText(QString("\n%1\n").arg(getArithNameFromId(i)));
+            m_items[i]->setText(QString("%1").arg(getArithNameFromId(i)));
             m_items[i]->setHidden(false);
             if (headLine == -1) {
                 headLine = i;

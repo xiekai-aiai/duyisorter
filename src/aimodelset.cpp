@@ -64,6 +64,13 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFileInfo>
+#include <QFontMetrics>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPixmap>
+#include <QIcon>
+#include <QVector>
+#include <QAbstractItemModel>
 #include <algorithm>   // std::sort
 
 // ═══ 新增 include ═══
@@ -83,6 +90,93 @@ static double calcIoU(const QRect& a, const QRect& b)
     double unionArea = (double)a.width() * a.height() + (double)b.width() * b.height() - interArea;
     return unionArea > 0 ? interArea / unionArea : 0.0;
 }
+
+// ── 类别按钮尺寸常量（setupClassCheckBoxes / updateClassAnnotCounts 共用）──
+static const int CLS_AREA_W  = 700;  // 类别按钮可用总宽（不压到右侧“面积阈值”）
+static const int CLS_SPACING = 5;    // 按钮水平间距
+static const int CLS_SLICE_X = 12;   // 9-slice 左右切片（必须与 border-width 一致）
+static const int CLS_PAD_X   = 2;    // QSS 内边距
+static const int CLS_ICON_W  = 14;   // 标签颜色块宽度
+// 按钮额外占宽 = 左右切片 + 左右内边距 + 颜色块 + 图标文字间距(4) + 余量(8)
+static const int CLS_CHROME  = CLS_SLICE_X * 2 + CLS_PAD_X * 2 + CLS_ICON_W + 4 + 8;
+
+// 计算类别按钮容纳指定文字所需宽度（fontSize 与 QSS 中 font-size 一致）
+static int classBtnWidth(const QFont& baseFont, const QString& text, int fontSize)
+{
+    QFont f = baseFont;
+    f.setPixelSize(fontSize);
+    return QFontMetrics(f).width(text) + CLS_CHROME;
+}
+
+// ── 训练图片列表空态占位：参考设计稿“请先选择图片！” ──
+namespace {
+class ImageListEmptyOverlay : public QWidget
+{
+public:
+    ImageListEmptyOverlay(QWidget* parent, const QString& title, const QString& subtitle)
+        : QWidget(parent), m_title(title), m_subtitle(subtitle)
+    {
+        setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    }
+
+protected:
+    void paintEvent(QPaintEvent*) override
+    {
+        QPainter p(this);
+        p.setRenderHint(QPainter::Antialiasing, true);
+
+        // 深色卡片底 + 细描边
+        p.setPen(QPen(QColor(30, 58, 74), 1));
+        p.setBrush(QColor(11, 16, 23));
+        p.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 8, 8);
+
+        const int cx = width() / 2;
+        const int cy = height() / 2 - 24;
+
+        // 虚线圆环
+        p.setPen(QPen(QColor(42, 91, 110), 1, Qt::DashLine));
+        p.setBrush(Qt::NoBrush);
+        p.drawEllipse(QPointF(cx, cy), 24, 24);
+
+        // 图片图标（青色）
+        const QColor cyan(34, 211, 238);
+        p.setPen(QPen(cyan, 1.4));
+        const QRectF icon(cx - 10, cy - 7.5, 20, 15);
+        p.drawRoundedRect(icon, 2, 2);
+        p.setBrush(cyan);
+        p.drawEllipse(QPointF(cx - 4.5, cy - 3), 1.5, 1.5);
+        p.setBrush(Qt::NoBrush);
+        QPainterPath path;
+        path.moveTo(icon.left() + 1, icon.bottom() - 2.5);
+        path.lineTo(icon.left() + 6.5, icon.bottom() - 7.5);
+        path.lineTo(icon.left() + 11, icon.bottom() - 4);
+        path.lineTo(icon.left() + 14.5, icon.bottom() - 6.5);
+        path.lineTo(icon.right() - 1.5, icon.bottom() - 2.5);
+        p.drawPath(path);
+
+        // 主标题
+        QFont tf = font();
+        tf.setPixelSize(15);
+        tf.setBold(true);
+        tf.setLetterSpacing(QFont::AbsoluteSpacing, 2);
+        p.setFont(tf);
+        p.setPen(QColor(69, 210, 228));
+        p.drawText(QRect(0, cy + 32, width(), 18), Qt::AlignHCenter | Qt::AlignVCenter, m_title);
+
+        // 副标题
+        QFont sf = font();
+        sf.setPixelSize(11);
+        sf.setLetterSpacing(QFont::AbsoluteSpacing, 1);
+        p.setFont(sf);
+        p.setPen(QColor(107, 135, 148));
+        p.drawText(QRect(0, cy + 52, width(), 16), Qt::AlignHCenter | Qt::AlignVCenter, m_subtitle);
+    }
+
+private:
+    QString m_title;
+    QString m_subtitle;
+};
+} // namespace
 
 // ── 辅助：判断一张图片是否存在"标注和仿真 cls_id 不一致"的情况 ──
 // 读取 {imgDir}/.pred/{modelName}_pred/pred_{name}.txt + {imgDir}/{name}.txt（人工标注）
@@ -217,6 +311,32 @@ AiModelSet::AiModelSet(QWidget *parent) :
     ui->m_imageList->setGridSize(QSize(gridW, gridH));
     ui->m_imageList->setIconSize(QSize(iconW, iconH));
 
+    // ── 空态占位：深色底 + 居中“请先选择图片！”，替代默认白色背景 ──
+    // 图片文件名统一白字（深色底上可读）；选中项用淡青色底 + 白字
+    ui->m_imageList->setStyleSheet(
+        "QListWidget { background: transparent; border: none; }"
+        "QListWidget::item { color: #FFFFFF; }"
+        "QListWidget::item:selected { color: #FFFFFF; background: rgba(69, 210, 228, 0.25); }");
+    m_imgEmptyOverlay = new ImageListEmptyOverlay(
+        ui->m_imageList->viewport(),
+        tr("请先选择图片") + QStringLiteral("！"),
+        tr("从训练资源列表选择图片，或导入新的图片资源"));
+    m_imgEmptyOverlay->setGeometry(ui->m_imageList->viewport()->rect());
+    m_imgEmptyOverlay->show();
+    ui->m_imageList->viewport()->installEventFilter(this);
+
+    // 列表内容变化时同步空态显隐（clear → 显示；插入缩略图 → 隐藏）
+    auto syncListEmptyState = [this]() {
+        if (!m_imgEmptyOverlay) return;
+        m_imgEmptyOverlay->setGeometry(ui->m_imageList->viewport()->rect());
+        m_imgEmptyOverlay->setVisible(ui->m_imageList->count() == 0);
+    };
+    connect(ui->m_imageList->model(), &QAbstractItemModel::rowsInserted, this,
+            [syncListEmptyState](const QModelIndex&, int, int) { syncListEmptyState(); });
+    connect(ui->m_imageList->model(), &QAbstractItemModel::rowsRemoved, this,
+            [syncListEmptyState](const QModelIndex&, int, int) { syncListEmptyState(); });
+    connect(ui->m_imageList->model(), &QAbstractItemModel::modelReset, this, syncListEmptyState);
+
     // 初始化模型接口
     m_modelApi = new ModelApi(this);
     m_modelApi->setHttpTimeout(5000);  // 训练查询/创建/启动超时 5 秒（超过基本可以判定服务挂了）
@@ -275,10 +395,14 @@ AiModelSet::AiModelSet(QWidget *parent) :
     ui->areaThresholdAnnoPushButton->setCheckable(true);
     connect(ui->areaThresholdAnnoPushButton, &QPushButton::clicked, this, &AiModelSet::onAreaThresholdAnnoPushButtonClicked);
 
+    // ── .ui 已移除仿真按钮：创建隐藏占位按钮，保证原引用点可安全调用 ──
+    m_validImgBtn = new QPushButton(this);
+    m_validImgBtn->setVisible(false);
+
     // ── 校验图片按钮（toggle，触发完整仿真流程）───────────────────
 #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-    ui->validImgPushButton->setCheckable(true);
-    connect(ui->validImgPushButton, &QPushButton::clicked, this, &AiModelSet::onValidImgPushButtonClicked);
+    m_validImgBtn->setCheckable(true);
+    connect(m_validImgBtn, &QPushButton::clicked, this, &AiModelSet::onValidImgPushButtonClicked);
 #endif
 
     ui->batchValidImgPushButton->setCheckable(true);
@@ -336,20 +460,35 @@ AiModelSet::AiModelSet(QWidget *parent) :
         ui->m_colorDiffThresholdlineEdit->installEventFilter(new KbFilter(tr("色差阈值"), true, this));
     }
 
-    // draw 和 selcet 模式是互斥的
-    // 选中态样式（:checked）与 fgPushButton 一致，按下后有明显选中视觉
-    const QString modeBtnQss = QStringLiteral(
-        "QPushButton { text-align: center; outline: none; background-color: lightcyan;"
-        " border-color: #afafaf; border-width: 2px; border-style: solid;"
-        " border-radius: 5px; padding: 2px; }"
-        "QPushButton:pressed { padding-left: 5px; padding-top: 5px; background-color: lightgrey; }"
-        "QPushButton:checked  { background-color: #00bcd4; color: white;"
-        " border-color: #0097a7; border-width: 3px; padding: 2px; }");
-    // 一键标注 = 瞬时触发，不 setCheckable、不保持按下态
+    // ═══════════════════════════════════════════════════════════════════════
+    // 按钮风格统一（参考页面）：
+    //   红框 → 底部导航式深蓝实心块（白字，块间留间隔）
+    //   黄框 → 参考页签式线框（常态暗线框 / 悬停亮 / 选中亮青线框）
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // 线框（黄框）
+    const QString lineStyle = QStringLiteral(
+        "QPushButton { border-width: 8px 12px 8px 12px; border-style: solid; border-color: transparent;"
+        " border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 12 8 12 stretch stretch;"
+        " color: #FFFFFF; font-size: 12px; padding: 0px; text-align: center; outline: none; }"
+        "QPushButton:hover { border-image: url(:/res/png2/button/btn_pressed.png) 8 12 8 12 stretch stretch; }"
+        "QPushButton:pressed { border-image: url(:/res/png2/button/btn_pressed.png) 8 12 8 12 stretch stretch; }"
+        "QPushButton:checked { border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 12 8 12 stretch stretch; }"
+        "QPushButton:disabled { border-image: url(:/res/png2/button/btn_disabled.png) 8 12 8 12 stretch stretch;"
+        " color: #5A7686; }");
+
+    // 实心（红框，与底部导航键一致）
+    const QString solidStyle = QStringLiteral(
+        "QPushButton { border-width: 8px 12px 8px 12px; border-style: solid; border-color: transparent;"
+        " border-image: url(:/res/png2/button/btn_normal.png) 8 12 8 12 stretch stretch;"
+        " color: #FFFFFF; font-size: 13px; padding: 0px; text-align: center; outline: none; }"
+        "QPushButton:hover { border-image: url(:/res/png2/button/btn_pressed.png) 8 12 8 12 stretch stretch; }"
+        "QPushButton:pressed { border-image: url(:/res/png2/button/btn_pressed.png) 8 12 8 12 stretch stretch; }"
+        "QPushButton:checked { border-image: url(:/res/png2/button/btn_pressed.png) 8 12 8 12 stretch stretch; }"
+        "QPushButton:disabled { border-image: url(:/res/png2/button/btn_disabled.png) 8 12 8 12 stretch stretch;"
+        " color: #5A7686; }");
     ui->selectAnnoPushButton->setCheckable(true);
     ui->drawAnnoPushButton->setCheckable(true);
-    ui->selectAnnoPushButton->setStyleSheet(modeBtnQss);
-    ui->drawAnnoPushButton->setStyleSheet(modeBtnQss);
     connect(ui->oneKeyAnnoPushButton, &QPushButton::clicked, this, &AiModelSet::onOneKeyAnnoBtnClicked);
     connect(ui->selectAnnoPushButton, &QPushButton::clicked, this, &AiModelSet::onSelectAnnoBtnClicked);
     connect(ui->drawAnnoPushButton,   &QPushButton::clicked, this, &AiModelSet::onDrawAnnoBtnClicked);
@@ -364,6 +503,124 @@ AiModelSet::AiModelSet(QWidget *parent) :
     connect(ui->delTrainListPushButton, SIGNAL(pressed()), this, SLOT(delTrainListPushButtonPressed()));
     connect(ui->delTrainListAllPushButton, &QPushButton::pressed, this, &AiModelSet::delTrainListAllPushButtonPressed);
     connect(ui->addAllLabeledTrainListPushButton, SIGNAL(pressed()), this, SLOT(addAllLabeledTrainListPushButtonPressed()));
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // 黄框：中间操作行 + 上一页/下一页（线框页签风）
+    QList<QPushButton*> lineBtns = {
+        ui->fgPushButton,          ui->oneKeyAnnoPushButton,
+        ui->selectAnnoPushButton,  ui->drawAnnoPushButton,
+        ui->erasePushButton,       ui->areaThresholdAnnoPushButton,
+        ui->backLastAnnoPushButton,
+        ui->addTrainListPushButton, ui->delTrainListPushButton,
+        ui->addAllLabeledTrainListPushButton, ui->delTrainListAllPushButton,
+        ui->m_prevBtn,             ui->m_nextBtn,
+    };
+    for (auto *b : lineBtns) {
+        if (!b) continue;
+        b->setProperty("lineStyle", lineStyle);
+        b->setStyleSheet(lineStyle);
+    }
+
+    // 红框：顶栏 4 个 + 底栏 5 个（与底部导航键一致的实心风）
+    QList<QPushButton*> solidBtns = {
+        ui->modelTrainPushButton,    ui->trainServerCfgPushButton,
+        ui->modelSelPushButton,      ui->modelNewPushButton,
+        ui->importImgPushButton,     ui->mergeImgPushButton,
+        ui->batchValidImgPushButton, ui->validvsAnnoImgPushButton,
+        ui->backPushButton,
+    };
+    for (auto *b : solidBtns) {
+        if (!b) continue;
+        b->setProperty("solidStyle", solidStyle);
+        b->setStyleSheet(solidStyle);
+    }
+
+    // 蓝框标签统一白字（深色底上可见）
+    {
+        const QString labelStyle = QStringLiteral("QLabel { color: #FFFFFF; background: transparent; }");
+        for (auto *lb : { ui->modelNameLabel, ui->tipLabel, ui->areaLabel,
+                          ui->colorDiffLabel, ui->m_pageInfoLabel }) {
+            if (lb) lb->setStyleSheet(labelStyle);
+        }
+    }
+
+    /* ── 按文字实测宽度重排按钮：宽度 = 文字宽 + 左右描边，固定间隔，杜绝截断 ── */
+    {
+        QFont f12 = font();
+        f12.setPixelSize(12);
+        QFontMetrics fm12(f12);
+        QFont f13 = font();
+        f13.setPixelSize(13);
+        QFontMetrics fm13(f13);
+
+        const int PAD_H = 26;   // 左右各 12px 描边 + 2px 余量
+        const int BTN_H = 40;
+
+        // 中间操作行（11 个，按 x 从左到右），间隔 6，起点 5，右端让出翻页列
+        QList<QPushButton*> midRow = {
+            ui->fgPushButton,       ui->oneKeyAnnoPushButton,
+            ui->selectAnnoPushButton, ui->drawAnnoPushButton,
+            ui->erasePushButton,    ui->areaThresholdAnnoPushButton,
+            ui->backLastAnnoPushButton,
+            ui->addTrainListPushButton, ui->delTrainListPushButton,
+            ui->addAllLabeledTrainListPushButton, ui->delTrainListAllPushButton,
+        };
+        int x = 5;
+        for (auto *b : midRow) {
+            if (!b) continue;
+            // 中间行统一 12px 线框样式
+            int w = qMax(64, fm12.width(b->text()) + PAD_H);
+            b->setMinimumWidth(0);
+            b->setMaximumWidth(QWIDGETSIZE_MAX);
+            b->setGeometry(x, 400, w, BTN_H);
+            x += w + 6;
+        }
+
+        // 顶栏（4 个）：右对齐到 x=1000，间隔 10，高度对齐原布局
+        QList<QPushButton*> topRow = {
+            ui->modelTrainPushButton, ui->trainServerCfgPushButton,
+            ui->modelSelPushButton,   ui->modelNewPushButton,
+        };
+        QVector<int> widths;
+        int total = 0;
+        for (auto *b : topRow) {
+            int w = qMax(72, fm13.width(b->text()) + PAD_H);
+            widths.append(w);
+            total += w;
+        }
+        total += 10 * (topRow.size() - 1);
+        int tx = LCD_WIDTH - 24 - total;
+        for (int i = 0; i < topRow.size(); ++i) {
+            topRow[i]->setMinimumWidth(0);
+            topRow[i]->setMaximumWidth(QWIDGETSIZE_MAX);
+            topRow[i]->setGeometry(tx, 10, widths[i], BTN_H);
+            tx += widths[i] + 10;
+        }
+
+        // 底栏：左侧 4 个（间隔 10、起点 5），返回右对齐到 x=1000，高度保持 51
+        QList<QPushButton*> bottomRow = {
+            ui->importImgPushButton, ui->mergeImgPushButton,
+            ui->batchValidImgPushButton, ui->validvsAnnoImgPushButton,
+        };
+        int bx = 5;
+        for (auto *b : bottomRow) {
+            if (!b) continue;
+            int w = qMax(72, fm13.width(b->text()) + PAD_H);
+            b->setMinimumWidth(0);
+            b->setMaximumWidth(QWIDGETSIZE_MAX);
+            b->setGeometry(bx, 620, w, 51);
+            bx += w + 10;
+        }
+        if (ui->backPushButton) {
+            int w = qMax(80, fm13.width(ui->backPushButton->text()) + PAD_H);
+            ui->backPushButton->setMinimumWidth(0);
+            ui->backPushButton->setMaximumWidth(QWIDGETSIZE_MAX);
+            ui->backPushButton->setGeometry(LCD_WIDTH - 24 - w, 620, w, 51);
+        }
+    }
+
+    // selectAnnoPushButton / drawAnnoPushButton 为 checkable 互斥，选中态由 QSS :checked 表现
+    // modelTrainPushButton 在训练流程里 setEnabled(false/true)，禁用态由 QSS :disabled 自动切换
 
     // ═══════════════════════════════════════════════════════════════════════
     // 训练流程信号槽链：
@@ -830,7 +1087,7 @@ void AiModelSet::resetTrainingState()
     if (ui) {
         ui->modelTrainPushButton->setEnabled(true);   // 训练按钮恢复
 #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-        ui->validImgPushButton->setEnabled(true);     // 仿真按钮恢复
+        m_validImgBtn->setEnabled(true);     // 仿真按钮恢复
 #endif
         ui->batchValidImgPushButton->setEnabled(true);
         ui->validvsAnnoImgPushButton->setEnabled(true);
@@ -966,7 +1223,6 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
     if (count > 8) count = 8;
 
     auto colorTable = getClassColorTable();
-    auto textColorTable = getClassTextColorTable();
 
     // 存类别名
     m_classNames = names;
@@ -976,10 +1232,22 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
         }
     }
 
-    const int AREA_X = 5, AREA_Y = 63, AREA_W = 800, AREA_H = 40;  // ⭐ 5~720 起，够塞 9 个按钮 + 右 stretch
-    const int BTN_W = 80;
+    const int AREA_X = 5, AREA_Y = 63, AREA_W = CLS_AREA_W, AREA_H = 40;
     const int BTN_H = 40;
-    const int SPACING = 5;  // 按钮间水平间距
+    const int SPACING = CLS_SPACING;  // 按钮间水平间距
+
+    // ── 统一字号：按全部按钮总宽不越界选最大字号（12→10）──
+    // 文字预留两位数量（"：00"），避免计数增长到两位后再次截断
+    int fontSize = 12;
+    for (; fontSize >= 10; --fontSize) {
+        int need = SPACING * (count - 1);
+        for (int i = 0; i < count; ++i) {
+            const QString nm = (i < m_classNames.size()) ? m_classNames[i] : QString::number(i);
+            need += classBtnWidth(font(), nm + QStringLiteral("：00"), fontSize);
+        }
+        if (need <= AREA_W) break;
+    }
+    if (fontSize < 10) fontSize = 10;
 
     m_cbContainer = new QWidget(this);
     m_cbContainer->setObjectName("classButtonContainer");
@@ -1002,20 +1270,40 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
         QColor color = (i < colorTable.size()) ? colorTable[i] : QColor(Qt::black);
         QString name = (i < m_classNames.size()) ? m_classNames[i] : QString("%1").arg(i);
 
-        // 互斥按钮（checkable），80×40，显示"名称：数量"
-        auto* btn = new QPushButton(QString("%1：0").arg(name), m_cbContainer);
+        // 颜色块图标：14×14 圆角色块，对应该类别的标注颜色
+        QPixmap swatch(14, 14);
+        swatch.fill(Qt::transparent);
+        {
+            QPainter sp(&swatch);
+            sp.setRenderHint(QPainter::Antialiasing, true);
+            sp.setPen(QPen(QColor(255, 255, 255, 60), 1));
+            sp.setBrush(color);
+            sp.drawRoundedRect(QRectF(0.5, 0.5, 13, 13), 3, 3);
+        }
+
+        // 文案：颜色块 + 类别名：数量
+        auto* btn = new QPushButton(QIcon(swatch), QString("%1：%2").arg(name).arg(0), m_cbContainer);
         btn->setCheckable(true);
-        btn->setFixedSize(BTN_W, BTN_H);
-        btn->setFont(QFont("Noto Sans SC", 8, QFont::Bold));
+        btn->setFixedHeight(BTN_H);
+        btn->setIconSize(QSize(14, 14));
         btn->setCursor(Qt::PointingHandCursor);
 
-        QString colorStr = QString("rgb(%1,%2,%3)").arg(color.red()).arg(color.green()).arg(color.blue());
-        QColor textColor = (i < textColorTable.size()) ? textColorTable[i] : QColor(Qt::black);
-        QString textColorStr = QString("rgb(%1,%2,%3)").arg(textColor.red()).arg(textColor.green()).arg(textColor.blue());
-        btn->setStyleSheet(QString(
-            "QPushButton { background-color: %1; color: %2; border: 2px solid transparent; border-radius: 5px; }"
-            "QPushButton:checked { border: 2px solid #333333; }"
-        ).arg(colorStr, textColorStr));
+        // 宽度按实际文字重算：文字(预留两位数量) + 颜色块 + 左右切片 + 内边距 + 余量
+        // 这样文字完整落在 9-slice 边框内部，不会压到右边框被裁掉
+        const int shareW = (AREA_W - SPACING * (count - 1)) / count;
+        int btnW = qBound(60, classBtnWidth(font(), QString("%1：00").arg(name), fontSize), shareW);
+        btn->setFixedWidth(btnW);
+        btn->setProperty("clsFontSize", fontSize);
+
+        // 线框页签风（参考页面黄框）：常态暗线框 / 悬停亮 / 选中亮青线框
+        btn->setStyleSheet(QStringLiteral(
+            "QPushButton { border-width: 8px %1px 8px %1px; border-style: solid; border-color: transparent;"
+            " border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 %1 8 %1 stretch stretch;"
+            " color: #FFFFFF; font-size: %2px; padding: 0px %3px; text-align: left; outline: none; }"
+            "QPushButton:hover { border-image: url(:/res/png2/button/btn_pressed.png) 8 %1 8 %1 stretch stretch; }"
+            "QPushButton:pressed { border-image: url(:/res/png2/button/btn_pressed.png) 8 %1 8 %1 stretch stretch; }"
+            "QPushButton:checked { border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 %1 8 %1 stretch stretch; }")
+            .arg(CLS_SLICE_X).arg(fontSize).arg(CLS_PAD_X));
 
         m_classBtnGroup->addButton(btn, i);
         connect(btn, &QPushButton::clicked, this, &AiModelSet::onClassButtonClicked);
@@ -1039,12 +1327,8 @@ void AiModelSet::onClassButtonClicked()
     if (classId < 0) return;
 
     QString className = (classId < m_classNames.size()) ? m_classNames[classId] : QString("%1").arg(classId);
-    auto colorTable = getClassColorTable();
-    QString colorName = (classId < colorTable.size())
-        ? QString("(%1,%2,%3)").arg(colorTable[classId].red()).arg(colorTable[classId].green()).arg(colorTable[classId].blue())
-        : "";
 
-    // QButtonGroup exclusive 模式自动互斥，不需要手动取消其他按钮
+    // QButtonGroup 互斥 + QSS :checked 已能表现选中态，无需手动切贴图
     m_currentAnnotType = annotTypeFromClassId(classId);
     showTip(tr("当前标注类型：%1").arg(className));
 }
@@ -1081,11 +1365,17 @@ void AiModelSet::updateClassAnnotCounts()
         f.close();
     }
 
-    // 更新按钮 text → "名称：数量"
-    for (int i = 0; i < m_classButtons.size(); ++i) {
-        int n = counts.value(i, 0);
+    // 更新按钮 text → "名称：数量"；宽度随数量位数变化重算，避免 "：1234" 被截断
+    const int n = m_classButtons.size();
+    const int shareW = (n > 0) ? ((CLS_AREA_W - CLS_SPACING * (n - 1)) / n) : 0;
+    for (int i = 0; i < n; ++i) {
+        int cnt = counts.value(i, 0);
         QString name = (i < m_classNames.size()) ? m_classNames[i] : QString("%1").arg(i);
-        m_classButtons[i]->setText(QString("%1：%2").arg(name).arg(n));
+        QPushButton* btn = m_classButtons[i];
+        btn->setText(QString("%1：%2").arg(name).arg(cnt));
+        int fs = btn->property("clsFontSize").toInt();
+        if (fs <= 0) fs = 12;
+        btn->setFixedWidth(qBound(60, classBtnWidth(font(), btn->text(), fs), shareW));
     }
 }
 
@@ -1111,7 +1401,7 @@ static void _clearOtherBtn(QPushButton* other) {
 // 提示信息（red=true 用红色文字，否则恢复默认色）
 void AiModelSet::showTip(const QString &msg, bool red) {
     // ⭐ 显式清除/设置颜色，避免上一条红色残留
-    ui->tipLabel->setStyleSheet(red ? "color: red;" : "color: black;");
+    ui->tipLabel->setStyleSheet(red ? "color: #FF6B6B;" : "color: #FFFFFF;");
     ui->tipLabel->setText(msg);
 }
 
@@ -1659,6 +1949,11 @@ void AiModelSet::mouseReleaseEvent(QMouseEvent *event)
 // ═══════════════════════════════════════════════════════════
 bool AiModelSet::eventFilter(QObject *watched, QEvent *event)
 {
+    // 图片列表尺寸变化时，空态占位跟随铺满 viewport
+    if (watched == ui->m_imageList->viewport() && event->type() == QEvent::Resize) {
+        if (m_imgEmptyOverlay)
+            m_imgEmptyOverlay->setGeometry(ui->m_imageList->viewport()->rect());
+    }
     if (watched == ui->imgLabel && event->type() == QEvent::MouseMove) {
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
         // 把 imgLabel 坐标转成 AiModelSet 父级坐标，调用自身 mouseMoveEvent
@@ -3965,7 +4260,7 @@ void AiModelSet::onValidImgPushButtonClicked()
 #else
 
     #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-    bool willShow = ui->validImgPushButton->isChecked();
+    bool willShow = m_validImgBtn->isChecked();
     #endif
     if (!willShow) {
         m_emulating = false;
@@ -3992,7 +4287,7 @@ void AiModelSet::onValidImgPushButtonClicked()
     // ① 模型必须选中
     if (modelName.isEmpty()) {
         #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-        ui->validImgPushButton->setChecked(false);
+        m_validImgBtn->setChecked(false);
         #endif
         QMessageBox::warning(this, tr("提示"), tr("请先在模型加载中选择仿真模型！"));
         return;
@@ -4000,7 +4295,7 @@ void AiModelSet::onValidImgPushButtonClicked()
     // ② 图片必须加载
     if (m_currentPixmap.isNull()) {
         #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-        ui->validImgPushButton->setChecked(false);
+        m_validImgBtn->setChecked(false);
         #endif
         showTip(tr("请先加载图片"), true);
         return;
@@ -4018,7 +4313,7 @@ void AiModelSet::onValidImgPushButtonClicked()
     // ④ 板卡模型 MD5 校验 + 自动上传（只在 pred 不存在、需要远程推理时才做）
     if (!ensureBoardModelUploaded(modelName)) {
         #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-        ui->validImgPushButton->setChecked(false);
+        m_validImgBtn->setChecked(false);
         #endif
         m_emulating = false;
         return;
@@ -4048,7 +4343,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
 
     // 互斥：关掉其他两个按钮的选中态
     #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-    ui->validImgPushButton->setChecked(false);
+    m_validImgBtn->setChecked(false);
     #endif
     ui->validvsAnnoImgPushButton->setChecked(false);
     m_vsAnnoMode = false;
@@ -4101,7 +4396,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
         ui->batchValidImgPushButton->setChecked(true);
         ui->batchValidImgPushButton->setEnabled(true);
         #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-        ui->validImgPushButton->setChecked(false);
+        m_validImgBtn->setChecked(false);
         #endif
         m_emulating = true;
         m_emulateObjInfos.clear();
@@ -4240,7 +4535,7 @@ void AiModelSet::onBatchValidImgPushButtonClicked()
     ui->batchValidImgPushButton->setChecked(true);   // 批量按钮保持选中
     ui->batchValidImgPushButton->setEnabled(true);
     #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-    ui->validImgPushButton->setChecked(false);         // 互斥：仿真按钮取消选中
+    m_validImgBtn->setChecked(false);         // 互斥：仿真按钮取消选中
     #endif
     for (auto* b : allBtns) b->setEnabled(true);
 
@@ -4278,7 +4573,7 @@ void AiModelSet::onValidvsAnnoImgPushButtonClicked()
 
     // 和其他按钮互斥
     #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-    ui->validImgPushButton->setChecked(false);
+    m_validImgBtn->setChecked(false);
     #endif
     ui->batchValidImgPushButton->setChecked(false);
     m_emulating = false;
@@ -4387,7 +4682,7 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     ui->modelTrainPushButton->setEnabled(false);   // 训练按钮置灰
     // 仿真相关按钮全部禁用，直到训练结束/异常退出 → resetTrainingState 统一恢复
 #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
-    ui->validImgPushButton->setEnabled(false);
+    m_validImgBtn->setEnabled(false);
 #endif
     ui->batchValidImgPushButton->setEnabled(false);
     ui->validvsAnnoImgPushButton->setEnabled(false);
@@ -4396,6 +4691,20 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     m_modelApi->createDirTrain(m_currentTaskId);
 }
 
+// ═══ 对话框专属输入框样式：白底黑字（仅用于“新建模型/训练服务器配置”等弹窗，
+//     覆盖全局深色 QLineEdit 九宫格贴图，不影响其他页面） ═══
+static const char* kDialogLineEditQss =
+    "QLineEdit {"
+    "  border-width: 1px; border-style: solid; border-color: #9FB4BF; border-image: none;"
+    "  background-color: #FFFFFF; color: #000000; border-radius: 3px;"
+    "  padding: 0px 6px;"
+    "  selection-background-color: #22D3EE; selection-color: #000000;"
+    "}"
+    "QLineEdit:hover { border-color: #22D3EE; border-image: none; }"
+    "QLineEdit:focus { border-color: #22D3EE; border-image: none; }"
+    "QLineEdit:disabled { background-color: #E8EEF1; color: #7A8A94;"
+    " border-color: #C7D3D9; border-image: none; }";
+
 void AiModelSet::onModelNewPushButtonClicked()
 {
     // ── 创建对话框 ──
@@ -4403,6 +4712,7 @@ void AiModelSet::onModelNewPushButtonClicked()
     dlg.setWindowTitle(tr("新建模型"));
     dlg.setWindowModality(Qt::ApplicationModal);
     dlg.setMinimumWidth(480);
+    dlg.setStyleSheet(kDialogLineEditQss);   // 本弹窗内输入框：白底黑字
 
     QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
 
@@ -4693,6 +5003,7 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
     dlg.setWindowTitle(tr("训练服务器配置"));
     dlg.setWindowModality(Qt::ApplicationModal);
     dlg.setMinimumWidth(480);
+    dlg.setStyleSheet(kDialogLineEditQss);   // 本弹窗内输入框：白底黑字
 
     QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
 

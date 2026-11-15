@@ -50,14 +50,31 @@ PageParams::PageParams(QWidget *parent)
 //    pageListWidget->setIconSize(QSize(ICON_WID, ICON_HEI));
     pageListWidget->setMovement(QListView::Static);
     pageListWidget->setStyleSheet(
-        "QListWidget { background-color: transparent; }"
-        "QListWidget::item { color: white; }"
-        "QListWidget::item:selected { color: white; }"
+        "QListWidget { background: transparent; border: none; }"
+        "QListWidget::item {"
+        "  color: #9FD0E0; font-size: 13px;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  margin-right: 8px;"
+        "}"
+        "QListWidget::item:hover {"
+        "  border-width: 8px 16px 8px 16px; border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QListWidget::item:selected {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
     );
 
     if (LCD_WIDTH == 1024) {
-        pageListWidget->setFixedWidth(LCD_WIDTH-BTN_WIDTH-180);
-        pageListWidget->setFixedHeight(40);
+        pageListWidget->setFixedWidth(LCD_WIDTH-BTN_WIDTH-166);
+        pageListWidget->setFixedHeight(48);
+        /* IconMode 下 item 尺寸由 gridSize 决定，固定格子才能放大按钮框 */
+        pageListWidget->setGridSize(QSize(138, 44));
+        /* 页签无图标，压缩 icon 占位，否则文字被省略号截断 */
+        pageListWidget->setIconSize(QSize(1, 1));
         pageListWidget->setSpacing(0);
     } else {
         pageListWidget->setFixedWidth(LCD_WIDTH-BTN_WIDTH-30-25);
@@ -106,7 +123,9 @@ PageParams::PageParams(QWidget *parent)
  */
 void PageParams::createPageListItem()
 {
-    int width = (LCD_WIDTH == 640) ? 80 : 130;
+    //! 与 setGridSize 保持一致：126×44，避免 IconMode 下被更小的 sizeHint 压缩
+    const int tabW = (LCD_WIDTH == 640) ? 96 : 138;
+    const int tabH = (LCD_WIDTH == 640) ? 36 : 44;
 
     //! 获取全部列表索引项
     QList<int> list = getAllPageParamsList();
@@ -122,7 +141,7 @@ void PageParams::createPageListItem()
         pageListWidget->addItem(getPageParamsListName(pageId));
 //        pageListWidget->item(i)->setIcon(getPageParamsListIcon(pageId));
         pageListWidget->item(i)->setData(Qt::UserRole, pageId);
-        pageListWidget->item(i)->setSizeHint(QSize(width, 30));
+        pageListWidget->item(i)->setSizeHint(QSize(tabW, tabH));
         pageListWidget->item(i)->setTextAlignment(Qt::AlignCenter);
         pageListWidget->item(i)->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 //        pageListWidget->setPalette(palette);

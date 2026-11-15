@@ -40,8 +40,33 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
 
     //    palette1.setBrush(backgroundRole(),QBrush(pixmap1));
 
-    QString strStyle = QString("QPushButton {border-image: url(:/res/png/materialButton.png); color: white;}"
-        "QToolTip {border-image: url(:/res/png/materialButton.png);}");
+    /* 与底部导航键统一的点击动效样式（9-slice 三态） */
+    QString strStyle = QString(
+        "QPushButton {"
+        "  text-align: center;"
+        "  outline: none;"
+        "  border-width: 8px 16px 8px 16px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
+        "  color: #E8F6FF;"
+        "  font-size: 14px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:pressed {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:disabled {"
+        "  border-image: url(:/res/png2/button/btn_disabled.png) 8 16 8 16 stretch stretch;"
+        "  color: #5A7686;"
+        "}"
+        "QToolTip { border-image: url(:/res/png/materialButton.png);}"
+    );
 
     m_newSchemeBtn->setStyleSheet(strStyle);
     m_copySchemeBtn->setStyleSheet(strStyle);
@@ -52,6 +77,7 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
     m_changeModeBtn->setStyleSheet(strStyle);
     m_copyMajorBtn->setStyleSheet(strStyle);
     m_okBtn->setStyleSheet(strStyle);
+    m_cancelBtn->setStyleSheet(strStyle);
 
     
     /* update scheme list widget and button status */

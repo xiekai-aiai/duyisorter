@@ -576,7 +576,7 @@ MainWidget::MainWidget(QWidget* parent)
     QTimer::singleShot(100, pageComm, SLOT(startComSlt()));
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back.png");
+    QPixmap pixmap(":/res/png/back_deep_clear.png");
     pixmap = pixmap.scaled(this->size());
 
     palette.setBrush(backgroundRole(), QBrush(pixmap));
@@ -701,7 +701,7 @@ void MainWidget::goToCommListPageSlt()
 void MainWidget::goToInitPageSlt()
 {
     this->stackedWidget->setCurrentIndex(SM_INIT_PAGE);
-    myFlow.sleep(2);
+    myFlow.msleep(150);
     emit goToInitPageSig();
 }
 
@@ -1130,28 +1130,34 @@ void MainWidget::CreateHomeWidget()
 //    operateListWidget->setMovement(QListView::Static);
 //    operateListWidget->setFixedWidth(BTN_WIDTH);
 
-    // 方案C：深蓝渐变带高光的胶囊按钮（底部 tabbar 7 个按钮，高度 BTN_HEIGHT+10=50px → border-radius=25px 胶囊形）
+    // 方案D：底部 7 键采用点击动效贴图（9-slice：上下 8px、左右 16px 固定，中段拉伸）
     QString strStyle = QString(
         "QPushButton {"
         "  text-align: center;"
-        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #3a7ab5, stop:1 #0d2440);"
-        "  border: 1px solid #4a8fc0;"
-        "  border-radius: 12px;"
-        "  color: white;"
-        "  padding: 4px 12px;"
         "  outline: none;"
+        "  border-width: 8px 16px 8px 16px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
+        "  color: #E8F6FF;"
+        "  font-size: 14px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
         "}"
         "QPushButton:pressed {"
-        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #0d2440, stop:1 #3a7ab5);"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
         "}"
         "QPushButton:checked {"
-        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #4d94c8, stop:1 #132f4f);"
-        "  border: 1px solid #5fa5d8;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
         "}"
         "QPushButton:disabled {"
-        "  background: #3d4a57;"
-        "  border: 1px solid #4a5a68;"
-        "  color: rgba(255,255,255,120);"
+        "  border-image: url(:/res/png2/button/btn_disabled.png) 8 16 8 16 stretch stretch;"
+        "  color: #5A7686;"
         "}"
     );
 
@@ -1376,15 +1382,15 @@ void MainWidget::CreateHomeWidget()
 
 
         /* 槽函数 */
-    connect(operateButton[0], SIGNAL(pressed()), this, SLOT(onManageSchemeBtnClickedSlt()));
-    connect(operateButton[1], SIGNAL(pressed()), this, SLOT(onSetSensBtnClickedSlt()));    // 感度调节按钮 
-    connect(operateButton[2], SIGNAL(pressed()), this, SLOT(onSetFeedBtnClickedSlt()));
+    connect(operateButton[0], SIGNAL(clicked()), this, SLOT(onManageSchemeBtnClickedSlt()));
+    connect(operateButton[1], SIGNAL(clicked()), this, SLOT(onSetSensBtnClickedSlt()));    // 感度调节按钮 
+    connect(operateButton[2], SIGNAL(clicked()), this, SLOT(onSetFeedBtnClickedSlt()));
 
-    connect(operateButton[3], SIGNAL(pressed()), this, SLOT(onTestEjectBtnClickedSlt()));
-    connect(operateButton[4], SIGNAL(pressed()), this, SLOT(onSetWipeBtnClickedSlt()));
-    connect(operateButton[5], SIGNAL(pressed()), this, SLOT(onSchemeParamBtnClickedSlt()));
+    connect(operateButton[3], SIGNAL(clicked()), this, SLOT(onTestEjectBtnClickedSlt()));
+    connect(operateButton[4], SIGNAL(clicked()), this, SLOT(onSetWipeBtnClickedSlt()));
+    connect(operateButton[5], SIGNAL(clicked()), this, SLOT(onSchemeParamBtnClickedSlt()));
 
-    connect(operateButton[6], SIGNAL(pressed()), this, SLOT(onOprTypeBtnClickedSlt()));
+    connect(operateButton[6], SIGNAL(clicked()), this, SLOT(onOprTypeBtnClickedSlt()));
 
     connect(homePageStackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onHomePageStackedWidgetIndexChangedSlt(int)));
 

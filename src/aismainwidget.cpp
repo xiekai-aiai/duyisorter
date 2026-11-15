@@ -20,7 +20,7 @@ AisMainWidget::AisMainWidget(QWidget *parent)
     this->setAutoFillBackground(true);
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back.png");
+    QPixmap pixmap(":/res/png/back_deep_clear.png");
     pixmap = pixmap.scaled(this->size());
 
     palette.setBrush(backgroundRole(),QBrush(pixmap));
@@ -39,13 +39,48 @@ AisMainWidget::AisMainWidget(QWidget *parent)
     listWidget->setViewMode(QListView::ListMode);
     listWidget->setMovement(QListView::Static);
     listWidget->setFixedWidth(BTN_WIDTH);
-    listWidget->setStyleSheet("background-color:transparent");
+    listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    listWidget->setUniformItemSizes(true);   // 所有行高度一致
+    listWidget->setSpacing(10);
+    /* 与算法设置页左侧列表统一的线框卡片风 */
+    listWidget->setStyleSheet(
+        "QListWidget {"
+        "  background: transparent;"
+        "  border: none;"
+        "  border-image: url(:/res/png2/sidelist/list_panel.png) 12 12 12 12 stretch stretch;"
+        "  padding: 10px 10px;"
+        "  outline: none;"
+        "}"
+        "QListWidget::item {"
+        "  background-color: rgba(13, 34, 50, 0.55);"
+        "  border: 1px solid #2A5B6E;"
+        "  border-radius: 8px;"
+        "  color: #DCEEF5;"
+        "  font-size: 12px;"
+        "  padding: 0px 10px;"
+        "}"
+        "QListWidget::item:hover {"
+        "  background-color: rgba(24, 54, 74, 0.72);"
+        "  border: 1px solid #3FA9BF;"
+        "  color: #FFFFFF;"
+        "}"
+        "QListWidget::item:selected {"
+        "  background-color: rgba(20, 58, 76, 0.75);"
+        "  border: 1px solid #45D2E4;"
+        "  color: #FFFFFF;"
+        "}"
+        "QScrollBar:vertical { width: 6px; background: transparent; margin: 6px 0; }"
+        "QScrollBar::handle:vertical { background: #2A6076; border-radius: 3px; min-height: 40px; }"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }");
     listWidget->setFixedSize(LCD_WIDTH/5,LCD_HEIGHT-200);
 
 
     for(int i = 0; i < 8; i++) {
         statusListItem[i] = new myListWidgetItem(QString(""),QIcon(),QSize());
-        statusListItem[i]->setSizeHint(QSize(100,70));
+        statusListItem[i]->setSizeHint(QSize(170, 56));
+        QFont itemFont = font();
+        itemFont.setPixelSize(12);
+        statusListItem[i]->setFont(itemFont);
         listWidget->addItem(statusListItem[i]);
     }
     statusListItem[AI_PAGE_PIXEL]->setText(myLan.pixel_info);

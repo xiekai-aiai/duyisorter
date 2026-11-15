@@ -25,7 +25,7 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     this->setAutoFillBackground(true);
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back.png");
+    QPixmap pixmap(":/res/png/back_deep_clear.png");
     pixmap = pixmap.scaled(this->size());
     palette.setBrush(backgroundRole(), QBrush(pixmap));
     this->setPalette(palette);
@@ -36,10 +36,39 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     listWidget->setViewMode(QListView::ListMode);
     listWidget->setMovement(QListView::Static);
     listWidget->setFixedWidth(BTN_WIDTH);
+    listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    listWidget->setUniformItemSizes(true);   // 所有行高度一致
+    listWidget->setSpacing(10);
+    /* 与算法设置页左侧列表统一的线框卡片风 */
     listWidget->setStyleSheet(
-        "QListWidget { background-color: transparent; }"
-        "QListWidget::item { color: white; }"
-        "QListWidget::item:selected { color: white; }");
+        "QListWidget {"
+        "  background: transparent;"
+        "  border: none;"
+        "  border-image: url(:/res/png2/sidelist/list_panel.png) 12 12 12 12 stretch stretch;"
+        "  padding: 10px 10px;"
+        "  outline: none;"
+        "}"
+        "QListWidget::item {"
+        "  background-color: rgba(13, 34, 50, 0.55);"
+        "  border: 1px solid #2A5B6E;"
+        "  border-radius: 8px;"
+        "  color: #DCEEF5;"
+        "  font-size: 12px;"
+        "  padding: 0px 10px;"
+        "}"
+        "QListWidget::item:hover {"
+        "  background-color: rgba(24, 54, 74, 0.72);"
+        "  border: 1px solid #3FA9BF;"
+        "  color: #FFFFFF;"
+        "}"
+        "QListWidget::item:selected {"
+        "  background-color: rgba(20, 58, 76, 0.75);"
+        "  border: 1px solid #45D2E4;"
+        "  color: #FFFFFF;"
+        "}"
+        "QScrollBar:vertical { width: 6px; background: transparent; margin: 6px 0; }"
+        "QScrollBar::handle:vertical { background: #2A6076; border-radius: 3px; min-height: 40px; }"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }");
     listWidget->setFixedSize(LCD_WIDTH / 5, LCD_HEIGHT - 200);
 
 
@@ -51,9 +80,13 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     AiImageAcquisitionWidget* imgAcqWidget = new AiImageAcquisitionWidget();
     stackedWidget->addWidget(imgAcqWidget);
 
+    QFont listItemFont = font();
+    listItemFont.setPixelSize(12);
+
     myListWidgetItem* item1 = new myListWidgetItem(QString(""), QIcon(), QSize());
     item1->setText(myLan.default_params);
-    item1->setSizeHint(QSize(100, 70));
+    item1->setSizeHint(QSize(170, 56));
+    item1->setFont(listItemFont);
     listWidget->addItem(item1);
 
     // 第二个widget是磁盘信息Widget
@@ -62,7 +95,8 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
 
     myListWidgetItem* item2 = new myListWidgetItem(QString(""), QIcon(), QSize());
     item2->setText(myLan.disk_space);
-    item2->setSizeHint(QSize(100, 70));
+    item2->setSizeHint(QSize(170, 56));
+    item2->setFont(listItemFont);
     listWidget->addItem(item2);
 
     // 应用按钮

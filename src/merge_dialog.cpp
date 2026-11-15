@@ -20,6 +20,19 @@
 #include <QApplication>
 #include <functional>
 
+// 对话框专属输入框样式：白底黑字（仅本弹窗，覆盖全局深色 QLineEdit 九宫格贴图）
+static const char* kMergeDialogLineEditQss =
+    "QLineEdit {"
+    "  border-width: 1px; border-style: solid; border-color: #9FB4BF; border-image: none;"
+    "  background-color: #FFFFFF; color: #000000; border-radius: 3px;"
+    "  padding: 0px 6px;"
+    "  selection-background-color: #22D3EE; selection-color: #000000;"
+    "}"
+    "QLineEdit:hover { border-color: #22D3EE; border-image: none; }"
+    "QLineEdit:focus { border-color: #22D3EE; border-image: none; }"
+    "QLineEdit:disabled { background-color: #E8EEF1; color: #7A8A94;"
+    " border-color: #C7D3D9; border-image: none; }";
+
 // 解析浏览起始目录：路径不存在时回退到其父目录，最终回退到 LOCAL_IMG_PATH
 static QString resolveStartDir(const QString& text)
 {
@@ -49,6 +62,7 @@ void MergeDialog::initUi()
     setWindowTitle(tr("合并标注目录"));
     setMinimumSize(700, 480);
     resize(800, 560);
+    setStyleSheet(kMergeDialogLineEditQss);   // 本弹窗内输入框：白底黑字
 
     auto* mainLayout = new QVBoxLayout(this);
 

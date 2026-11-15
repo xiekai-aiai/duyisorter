@@ -156,7 +156,55 @@
         <file alias="res/png/pic5.png">res/png2/pic5.png</file>
         <file alias="res/png/pic6.png">res/png2/pic6.png</file>
         <file alias="res/png/back.png">res/png2/back.png</file>
+        <file alias="res/png/back_deep_clear.png">res/png2/back_deep_clear.png</file>
         <file alias="res/png/schemeBack.png">res/png2/schemeBack.png</file>
+        <file alias="res/png2/button/btn_normal.png">res/png2/button/btn_normal.png</file>
+        <file alias="res/png2/button/btn_pressed.png">res/png2/button/btn_pressed.png</file>
+        <file alias="res/png2/button/btn_disabled.png">res/png2/button/btn_disabled.png</file>
+        <file alias="res/png2/button/toast_bg.png">res/png2/button/toast_bg.png</file>
+        <file alias="res/png2/button/icon_check.png">res/png2/button/icon_check.png</file>
+        <file alias="res/png2/algo/algo_card_normal.png">res/png2/algo/algo_card_normal.png</file>
+        <file alias="res/png2/algo/algo_card_hover.png">res/png2/algo/algo_card_hover.png</file>
+        <file alias="res/png2/algo/algo_card_active.png">res/png2/algo/algo_card_active.png</file>
+        <file alias="res/png2/algo/algo_card_deco.png">res/png2/algo/algo_card_deco.png</file>
+        <file alias="res/png2/algo/algo_check_normal.png">res/png2/algo/algo_check_normal.png</file>
+        <file alias="res/png2/algo/algo_check_checked.png">res/png2/algo/algo_check_checked.png</file>
+        <file alias="res/png2/algo/algo_combo.png">res/png2/algo/algo_combo.png</file>
+        <file alias="res/png2/algo/algo_panel.png">res/png2/algo/algo_panel.png</file>
+        <file alias="res/png2/algo/algo_dot_dim.png">res/png2/algo/algo_dot_dim.png</file>
+        <file alias="res/png2/algo/algo_dot_on.png">res/png2/algo/algo_dot_on.png</file>
+        <file alias="res/png2/algo/algo_arrow.png">res/png2/algo/algo_arrow.png</file>
+        <file alias="res/png2/radio/radio_bg.png">res/png2/radio/radio_bg.png</file>
+        <file alias="res/png2/radio/radio_row.png">res/png2/radio/radio_row.png</file>
+        <file alias="res/png2/radio/radio_row_hover.png">res/png2/radio/radio_row_hover.png</file>
+        <file alias="res/png2/radio/radio_row_checked.png">res/png2/radio/radio_row_checked.png</file>
+        <file alias="res/png2/radio/radio_dot_off.png">res/png2/radio/radio_dot_off.png</file>
+        <file alias="res/png2/radio/radio_dot_on.png">res/png2/radio/radio_dot_on.png</file>
+        <file alias="res/png2/radio/radio_sep.png">res/png2/radio/radio_sep.png</file>
+        <file alias="res/png2/radio/radio_deco_bar.png">res/png2/radio/radio_deco_bar.png</file>
+        <file alias="res/png2/sidelist/list_panel.png">res/png2/sidelist/list_panel.png</file>
+        <file alias="res/png2/sidelist/list_header_bar.png">res/png2/sidelist/list_header_bar.png</file>
+        <file alias="res/png2/sidelist/list_count_badge.png">res/png2/sidelist/list_count_badge.png</file>
+        <file alias="res/png2/sidelist/list_footer_bar.png">res/png2/sidelist/list_footer_bar.png</file>
+        <file alias="res/png2/sidelist/scheme_row_normal.png">res/png2/sidelist/scheme_row_normal.png</file>
+        <file alias="res/png2/sidelist/scheme_row_hover.png">res/png2/sidelist/scheme_row_hover.png</file>
+        <file alias="res/png2/sidelist/scheme_row_active.png">res/png2/sidelist/scheme_row_active.png</file>
+        <file alias="res/png2/sidelist/scheme_row_index.png">res/png2/sidelist/scheme_row_index.png</file>
+        <file alias="res/png2/sidelist/scheme_dot.png">res/png2/sidelist/scheme_dot.png</file>
+        <file alias="res/png2/sidelist/scheme_dot_dim.png">res/png2/sidelist/scheme_dot_dim.png</file>
+        <file alias="res/png2/sidelist/scheme_tag_active.png">res/png2/sidelist/scheme_tag_active.png</file>
+        <file alias="res/png2/sidelist/sens_value_box.png">res/png2/sidelist/sens_value_box.png</file>
+        <file alias="res/png2/sidelist/sens_value_box_active.png">res/png2/sidelist/sens_value_box_active.png</file>
+        <file alias="res/png2/sidelist/section_mark.png">res/png2/sidelist/section_mark.png</file>
+        <file alias="res/png2/sidelist/bar_bg.png">res/png2/sidelist/bar_bg.png</file>
+        <file alias="res/png2/sidelist/btn_line_normal.png">res/png2/sidelist/btn_line_normal.png</file>
+        <file alias="res/png2/sidelist/btn_line_active.png">res/png2/sidelist/btn_line_active.png</file>
+        <file alias="res/png2/lineedit/lineedit_normal.png">res/png2/lineedit/lineedit_normal.png</file>
+        <file alias="res/png2/lineedit/lineedit_hover.png">res/png2/lineedit/lineedit_hover.png</file>
+        <file alias="res/png2/lineedit/lineedit_focus.png">res/png2/lineedit/lineedit_focus.png</file>
+        <file alias="res/png2/lineedit/lineedit_disabled.png">res/png2/lineedit/lineedit_disabled.png</file>
+        <file alias="res/png2/lineedit/lineedit_glow.png">res/png2/lineedit/lineedit_glow.png</file>
+        <file alias="res/png2/lineedit/lineedit_caret.png">res/png2/lineedit/lineedit_caret.png</file>
         <file alias="res/png/material.png">res/png2/material.png</file>
         <file alias="res/png/materialButton.png">res/png2/materialButton.png</file>
         <file alias="res/png/materialSelect.png">res/png2/materialSelect.png</file>
@@ -201,5 +249,56 @@
         <file alias="res/png/Al_Ai.png">res/png2/Al_Ai.png</file>
         <file alias="res/png/Al_General.png">res/png2/Al_General.png</file>
         <file alias="res/png/Al_Shape.png">res/png2/Al_Shape.png</file>
+        <!-- ===== 启动画面资源（loading_qt_kit）===== -->
+        <file alias="res/start/loading_bg.png">res/start/loading_qt_kit/loading_bg@1024.png</file>
+        <file>res/start/loading_qt_kit/brand_logo.png</file>
+        <file>res/start/loading_qt_kit/seg_idle.png</file>
+        <file>res/start/loading_qt_kit/seg_active.png</file>
+        <file>res/start/loading_qt_kit/seg_ok.png</file>
+        <file>res/start/loading_qt_kit/seg_error.png</file>
+        <file>res/start/loading_qt_kit/seg_idle_glow.png</file>
+        <file>res/start/loading_qt_kit/seg_active_glow.png</file>
+        <file>res/start/loading_qt_kit/seg_ok_glow.png</file>
+        <file>res/start/loading_qt_kit/seg_error_glow.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_00.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_01.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_02.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_03.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_04.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_05.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_06.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_07.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_08.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_09.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_10.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_11.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_12.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_13.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_14.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_15.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_16.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_17.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_18.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_19.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_20.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_21.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_22.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_23.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_24.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_25.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_26.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_27.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_28.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_29.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_30.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_31.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_32.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_33.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_34.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_35.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_36.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_37.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_38.png</file>
+        <file>res/start/loading_qt_kit/loading_ring_seq/ring_39.png</file>
     </qresource>
 </RCC>
