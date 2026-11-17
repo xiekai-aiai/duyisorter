@@ -82,6 +82,9 @@ factorySet::factorySet(QWidget* parent)
     //! 设置AI高度参数设置界面
     setAiParams();
 
+    //! 设置变频器参数设置页面
+    createVFDPage();
+
     connect(setColorCameraWidget, SIGNAL(backToMainWindow()), this, SLOT(backToFactorySet()));
     connect(m_degaussTimeWidget, SIGNAL(backToVenderset()), this, SLOT(onDegaussTimeBackBtnClicked()));
 
@@ -101,6 +104,64 @@ factorySet::factorySet(QWidget* parent)
 
 factorySet::~factorySet()
 {
+}
+
+void factorySet::createVFDPage()
+{
+    m_pVFDPageWidget = new QWidget();
+    m_pVFDPageWidget->setGeometry(0, 0, stackedWidget->width(), stackedWidget->height());
+    stackedWidget->addWidget(m_pVFDPageWidget);
+
+    VfdCfgInfo cfg_info = ConfigMgr::Instance().GetVfdInfo();
+
+    // 是否使能变频器
+    m_pVFDEnableCbx = new myCustomCheckBox(myLan.vfd_enable, cfg_info.enable_);
+    // 振动频率
+    m_pVFDSetFreqLbl = new myLabel(myLan.vfd_frequency, m_pVFDPageWidget);
+    m_pVFDSetFreqLdt = new myLineEdit(QString("%1").arg(cfg_info.frequency_), m_pVFDPageWidget);
+    m_pVFDSetFreqLdt->setReadOnly(true);
+    m_pVFDSetFreqLdt->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT);
+    // 确认按钮
+    m_pVFDOkBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);
+    m_pVFDOkBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    // 返回按钮
+    m_pVFDBackBtn = new myPushButton(myLan.back, myIcon.Action_Back);
+    m_pVFDBackBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    // 变频器操作按钮
+    m_pVFDOprBtn = new myPushButton(myLan.start, myIcon.Action_Apply);
+    m_pVFDOprBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    m_pVFDOprBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
+
+    QVBoxLayout* upLay = new QVBoxLayout;
+    QHBoxLayout* downLay = new QHBoxLayout;
+    QVBoxLayout* mainLay = new QVBoxLayout(m_pVFDPageWidget);
+
+    // 振动频率布局
+    QHBoxLayout* freqLayout = new QHBoxLayout;
+    freqLayout->addWidget(m_pVFDSetFreqLbl);
+    freqLayout->addWidget(m_pVFDSetFreqLdt);
+    freqLayout->addSpacing(300);
+
+    upLay->setContentsMargins(80, 10, 20, 10);
+    upLay->addWidget(m_pVFDEnableCbx, Qt::AlignCenter);
+    upLay->addLayout(freqLayout);
+
+    downLay->addWidget(m_pVFDOkBtn, Qt::AlignLeft);
+    downLay->addStretch();
+    downLay->addWidget(m_pVFDOprBtn, Qt::AlignCenter);
+    downLay->addStretch();
+    downLay->addWidget(m_pVFDBackBtn, Qt::AlignRight);
+
+    mainLay->addStretch();
+    mainLay->addLayout(upLay);
+    mainLay->addStretch();
+    mainLay->addLayout(downLay);
+
+    connect(m_pVFDEnableCbx, SIGNAL(pressed()), this, SLOT(onVfdEnableChxBtnClicked()));
+    connect(m_pVFDSetFreqLdt, SIGNAL(pressed()), this, SLOT(onVfdFrequencyEdtPressSlt()));
+    connect(m_pVFDBackBtn, SIGNAL(pressed()), this, SLOT(onVfdSetBackBtnClickedSlt()));
+    connect(m_pVFDOkBtn, SIGNAL(pressed()), this, SLOT(onVfdOkBtnClickedSlt()));
+    connect(m_pVFDOprBtn, SIGNAL(pressed()), this, SLOT(onVfdOprBtnClickedSlt()));
 }
 
 void factorySet::setAiParams()
@@ -207,6 +268,44 @@ void factorySet::setAiParams()
     connect(imgSliderHeightEdit, SIGNAL(pressed()), this, SLOT(onImgSliderHeightEditPressedSlt()));
     connect(setAiSureBtn, SIGNAL(pressed()), this, SLOT(onSetAiSureBtnClicked()));
     connect(setAiBackbtn, SIGNAL(pressed()), this, SLOT(onSetAiBackBtnClicked()));
+}
+
+void factorySet::onVfdOkBtnClickedSlt()
+{
+    VfdCfgInfo cfg_info;
+    cfg_info.enable_ = m_pVFDEnableCbx->getChecked();
+    cfg_info.frequency_ = m_pVFDSetFreqLdt->text().toFloat();
+    ConfigMgr::Instance().SetVfdInfo(cfg_info);
+    // 更新变频器振动频率
+    myFlow.chgVFDFreq();
+}
+
+void factorySet::onVfdOprBtnClickedSlt()
+{
+    if (1 == struGsh.bStatFeed)
+    {
+        LOG_WARN_STM("==== feeding, so ignore it!==================");
+        return;
+    }
+
+    LOG_INFO_STM("struGsh.bStatFeed:" << struGsh.bStatFeed << ", m_bVFDStart:" << m_bVFDStart);
+    // 下发变频器操作指令
+    if (m_bVFDStart)
+    {
+        // 停止变频器
+        myFlow.operatorVFG(false);
+        m_pVFDOprBtn->setText(myLan.start);
+        m_pVFDOprBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
+        m_bVFDStart = false;
+    }
+    else
+    {
+        // 启动变频器
+        myFlow.operatorVFG(true);
+        m_pVFDOprBtn->setText(myLan.stop);
+        m_pVFDOprBtn->setIcon(QIcon(":/res/png2/topbar/workStop.png"));
+        m_bVFDStart = true;
+    }
 }
 
 void factorySet::onSetAiSureBtnClicked()
@@ -348,6 +447,9 @@ void factorySet::createFactorySetPage()
 
     setAiBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
+    m_pVFDBtn = new myPushButton(myLan.vfd_name, QIcon(), true, true);
+    m_pVFDBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+
     //设备加密
     m_encryptBtn = new myPushButton(myLan.encrypt, QIcon(), true, true);
     setColorCameraBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -408,8 +510,8 @@ void factorySet::createFactorySetPage()
     connect(m_througPutBtn, SIGNAL(pressed()), this, SLOT(onThroughPutBtnPressedSlt()));      //吞吐量按钮
     connect(m_tickModeBtn, SIGNAL(pressed()), this, SLOT(onTickModeBtnPressedSlt()));
     connect(setAiBtn, SIGNAL(pressed()), this, SLOT(onAiSetBtnPressedSlt()));
-
     connect(m_encryptBtn, SIGNAL(pressed()), this, SLOT(onEncryptBtnBtnClickedSlt()));
+    connect(m_pVFDBtn, SIGNAL(pressed()), this, SLOT(onVfdSetBtnClickedSlt()));
 
 }
 
@@ -429,10 +531,11 @@ void factorySet::factoryUpdateSlt()
         upLay->addWidget(setFPGAStartModeBtn, 1, 1);
         upLay->addWidget(m_througPutBtn, 1, 2);
         upLay->addWidget(ageingTestBtn, 1, 3);
-        upLay->addWidget(setBacklightPasswordBtn, 2, 1);
-        upLay->addWidget(setFeederVoltageBtn, 2, 2);
+        upLay->addWidget(setBacklightPasswordBtn, 2, 0);
+        upLay->addWidget(setFeederVoltageBtn, 2, 1);
         //                  upLay->addWidget(lampCtrlBtn, 2, 3);
-        upLay->addWidget(setAiBtn, 2, 3);
+        upLay->addWidget(setAiBtn, 2, 2);
+        upLay->addWidget(m_pVFDBtn, 2, 3);
 
         upLay->addWidget(updateARMBtn, 3, 0);
         upLay->addWidget(updateFPGABtn, 3, 1);
@@ -456,6 +559,7 @@ void factorySet::factoryUpdateSlt()
             lampCtrlBtn->show();
             setFPGAStartModeBtn->show();
             setAiBtn->show();
+            m_pVFDBtn->show();
 
             updateARMBtn->hide();
             updateFPGABtn->hide();
@@ -479,6 +583,7 @@ void factorySet::factoryUpdateSlt()
             lampCtrlBtn->hide();
             setFPGAStartModeBtn->hide();
             setAiBtn->hide();
+            m_pVFDBtn->hide();
 
             updateARMBtn->show();
             updateFPGABtn->show();
@@ -1495,6 +1600,19 @@ void factorySet::onAiSetBtnPressedSlt()
     imgSliderHeightEdit->setText(QString("%1").arg(ai_cfg_info.sliding_step_));
 }
 
+void factorySet::onVfdSetBtnClickedSlt()
+{
+    stackedWidget->setCurrentIndex(VFD_SET_PAGE);
+    VfdCfgInfo vfd_cfg_info = ConfigMgr::Instance().GetVfdInfo();
+    m_pVFDEnableCbx->setChecked(vfd_cfg_info.enable_);
+    m_pVFDSetFreqLdt->setText(QString("%1").arg(vfd_cfg_info.frequency_));
+}
+
+void factorySet::onVfdSetBackBtnClickedSlt()
+{
+    stackedWidget->setCurrentIndex(FACTORY_SET_PAGE);
+}
+
 /* 页面切至第一页 */
 void factorySet::gotoFirstPageSlt()
 {
@@ -1553,6 +1671,12 @@ void factorySet::onStackedWidgetIndexChangedSlt(int index)
     case TICK_MODE_PAGE:
         title = QString("%1 > %2").arg(myLan.factory_set).arg("剔除模式");
         break;
+    case AI_SET_PAGE:
+        title = QString("%1 > %2").arg(myLan.factory_set).arg("AI " + myLan.set);
+        break;
+    case VFD_SET_PAGE:
+        title = QString("%1 > %2").arg(myLan.factory_set).arg(myLan.vfd_name);
+        break;
     default:
         break;
     }
@@ -1571,3 +1695,23 @@ void factorySet::onEncryptBtnBtnClickedSlt()
 
     //     }
 }
+
+void factorySet::onVfdEnableChxBtnClicked()
+{
+    LOG_INFO_STM("vfd enable:" << m_pVFDEnableCbx->getChecked());
+}
+
+void factorySet::onVfdFrequencyEdtPressSlt()
+{
+    myInputPanel inputDlg(floatType, 0, 50, ConfigMgr::Instance().GetVfdInfo().frequency_);
+    int ret = inputDlg.exec();
+    if (ret == QDialog::Accepted)
+    {
+        float value = inputDlg.getValue();
+        // 限制最小振动频率为35HZ
+        value = (value < 35) ? 35 : value;
+        QString str = QString("%1").arg(value);
+        m_pVFDSetFreqLdt->setText(str);
+    }
+}
+

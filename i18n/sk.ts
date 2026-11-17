@@ -4,22 +4,30 @@
 <context>
     <name>AIMainWidget</name>
     <message>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4697"/>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4772"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="5065"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="5140"/>
         <source>( </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4697"/>
-        <location filename="../src/rgb/aimainwidget.cpp" line="4772"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="5065"/>
+        <location filename="../src/rgb/aimainwidget.cpp" line="5140"/>
         <source> )</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AIPreviewWidget</name>
+    <message>
+        <location filename="../src/rgb/aipreviewwidget.cpp" line="198"/>
+        <source>前景显示</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>AiDeviceWidget</name>
     <message>
-        <location filename="../src/aidevicewidget.cpp" line="330"/>
+        <location filename="../src/aidevicewidget.cpp" line="370"/>
         <source>Image Downing... %1%</source>
         <translation type="unfinished"></translation>
     </message>
@@ -37,7 +45,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1048"/>
+        <location filename="../aimodelset.ui" line="1054"/>
         <source>仿真</source>
         <translation type="unfinished"></translation>
     </message>
@@ -118,8 +126,8 @@
     </message>
     <message>
         <location filename="../aimodelset.ui" line="842"/>
-        <location filename="../src/aimodelset.cpp" line="4403"/>
-        <location filename="../src/aimodelset.cpp" line="4430"/>
+        <location filename="../src/aimodelset.cpp" line="4712"/>
+        <location filename="../src/aimodelset.cpp" line="4740"/>
         <source>新建模型</source>
         <translation type="unfinished"></translation>
     </message>
@@ -139,29 +147,29 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="965"/>
-        <location filename="../src/aimodelset.cpp" line="333"/>
+        <location filename="../aimodelset.ui" line="968"/>
+        <location filename="../src/aimodelset.cpp" line="457"/>
         <source>面积阈值</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="987"/>
-        <location filename="../src/aimodelset.cpp" line="336"/>
+        <location filename="../aimodelset.ui" line="993"/>
+        <location filename="../src/aimodelset.cpp" line="460"/>
         <source>色差阈值</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1003"/>
+        <location filename="../aimodelset.ui" line="1009"/>
         <source>30</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1090"/>
+        <location filename="../aimodelset.ui" line="1096"/>
         <source>仿真vs标注</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aimodelset.ui" line="1136"/>
+        <location filename="../aimodelset.ui" line="1142"/>
         <source>选大小</source>
         <translation type="unfinished"></translation>
     </message>
@@ -171,1153 +179,1159 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2293"/>
+        <location filename="../src/aimodelset.cpp" line="2588"/>
         <source>模型删除</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2294"/>
+        <location filename="../src/aimodelset.cpp" line="2589"/>
         <source>模型导出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2295"/>
+        <location filename="../src/aimodelset.cpp" line="2590"/>
         <source>模型导入</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2300"/>
-        <location filename="../src/aimodelset.cpp" line="2464"/>
-        <location filename="../src/aimodelset.cpp" line="4538"/>
-        <location filename="../src/aimodelset.cpp" line="4846"/>
+        <location filename="../src/aimodelset.cpp" line="2595"/>
+        <location filename="../src/aimodelset.cpp" line="2759"/>
+        <location filename="../src/aimodelset.cpp" line="4848"/>
+        <location filename="../src/aimodelset.cpp" line="5157"/>
         <source>确定</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2301"/>
-        <location filename="../src/aimodelset.cpp" line="2465"/>
-        <location filename="../src/aimodelset.cpp" line="2732"/>
-        <location filename="../src/aimodelset.cpp" line="2802"/>
-        <location filename="../src/aimodelset.cpp" line="4539"/>
-        <location filename="../src/aimodelset.cpp" line="4847"/>
+        <location filename="../src/aimodelset.cpp" line="2596"/>
+        <location filename="../src/aimodelset.cpp" line="2760"/>
+        <location filename="../src/aimodelset.cpp" line="3027"/>
+        <location filename="../src/aimodelset.cpp" line="3097"/>
+        <location filename="../src/aimodelset.cpp" line="4849"/>
+        <location filename="../src/aimodelset.cpp" line="5158"/>
         <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2285"/>
-        <location filename="../src/aimodelset.cpp" line="2332"/>
+        <location filename="../src/aimodelset.cpp" line="2580"/>
+        <location filename="../src/aimodelset.cpp" line="2627"/>
         <source>(该目录下没有 .bin 模型文件)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="254"/>
+        <location filename="../src/aimodelset.cpp" line="374"/>
         <source>跳转页码</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="405"/>
+        <location filename="../src/aimodelset.cpp" line="662"/>
         <source>训练服务连接波动（%1/3）：%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="409"/>
+        <location filename="../src/aimodelset.cpp" line="666"/>
         <source>训练服务连接连续失败 3 次，已停止轮询</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="423"/>
+        <location filename="../src/aimodelset.cpp" line="680"/>
         <source>训练启动失败：%1（错误码：%2）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="427"/>
+        <location filename="../src/aimodelset.cpp" line="684"/>
         <source>训练任务已提交，开始查询进度...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="439"/>
+        <location filename="../src/aimodelset.cpp" line="696"/>
         <source>模型下载中：%1%（%2/%3）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="456"/>
+        <location filename="../src/aimodelset.cpp" line="713"/>
         <source>硬件架构：%1，先下载 JSON：%2.json</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="466"/>
+        <location filename="../src/aimodelset.cpp" line="723"/>
         <source>JSON 下载失败：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="501"/>
+        <location filename="../src/aimodelset.cpp" line="758"/>
         <source>JSON 已下载，开始下载模型：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="510"/>
+        <location filename="../src/aimodelset.cpp" line="767"/>
         <source>模型下载失败：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="531"/>
+        <location filename="../src/aimodelset.cpp" line="788"/>
         <source>✗ 模型 MD5 校验失败！expected=%1 actual=%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="538"/>
+        <location filename="../src/aimodelset.cpp" line="795"/>
         <source>模型下载完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="628"/>
+        <location filename="../src/aimodelset.cpp" line="885"/>
         <source>创建远程目录失败：%1（错误码：%2）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="632"/>
+        <location filename="../src/aimodelset.cpp" line="889"/>
         <source>远程目录已创建，准备 SFTP 上传...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="656"/>
+        <location filename="../src/aimodelset.cpp" line="913"/>
         <source>图片上传</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="657"/>
+        <location filename="../src/aimodelset.cpp" line="914"/>
         <source>标签上传</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="658"/>
+        <location filename="../src/aimodelset.cpp" line="915"/>
         <source>classes 上传</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="665"/>
+        <location filename="../src/aimodelset.cpp" line="922"/>
         <source>上传失败: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="669"/>
+        <location filename="../src/aimodelset.cpp" line="926"/>
         <source>SFTP 错误：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="679"/>
+        <location filename="../src/aimodelset.cpp" line="936"/>
         <source>SFTP connect 失败：%1:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="683"/>
+        <location filename="../src/aimodelset.cpp" line="940"/>
         <source>SFTP 已连接，开始上传训练数据...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="712"/>
+        <location filename="../src/aimodelset.cpp" line="969"/>
         <source>SFTP 上传出现错误，继续验证...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="725"/>
-        <location filename="../src/aimodelset.cpp" line="784"/>
+        <location filename="../src/aimodelset.cpp" line="982"/>
+        <location filename="../src/aimodelset.cpp" line="1041"/>
         <source>图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="731"/>
-        <location filename="../src/aimodelset.cpp" line="785"/>
+        <location filename="../src/aimodelset.cpp" line="988"/>
+        <location filename="../src/aimodelset.cpp" line="1042"/>
         <source>标签</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="752"/>
+        <location filename="../src/aimodelset.cpp" line="1009"/>
         <source>%1上传完成，正在验证...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="760"/>
+        <location filename="../src/aimodelset.cpp" line="1017"/>
         <source>训练数据上传验证通过，正在启动远程训练...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="794"/>
+        <location filename="../src/aimodelset.cpp" line="1051"/>
         <source>%1验证通过（%2/%3）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="804"/>
+        <location filename="../src/aimodelset.cpp" line="1061"/>
         <source>%1验证失败（远程%2 &lt; 本地%3），重试上传 (%4/3)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="819"/>
+        <location filename="../src/aimodelset.cpp" line="1076"/>
         <source>%1上传验证失败（远程%2 &lt; 本地%3），重试 3 次仍不通过，终止训练</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="907"/>
+        <location filename="../src/aimodelset.cpp" line="1164"/>
         <source>训练服务错误：%1（错误码：%2）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="915"/>
+        <location filename="../src/aimodelset.cpp" line="1172"/>
         <source>排队中（前面还有 %1 个任务）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="917"/>
+        <location filename="../src/aimodelset.cpp" line="1174"/>
         <source>训练完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="919"/>
+        <location filename="../src/aimodelset.cpp" line="1176"/>
         <source>数据准备中</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="921"/>
+        <location filename="../src/aimodelset.cpp" line="1178"/>
         <source>模型转换中</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="923"/>
+        <location filename="../src/aimodelset.cpp" line="1180"/>
         <source>训练中</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="927"/>
+        <location filename="../src/aimodelset.cpp" line="1184"/>
         <source>训练进度：%1% | %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="940"/>
+        <location filename="../src/aimodelset.cpp" line="1197"/>
         <source>训练完成！开始下载模型：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1049"/>
+        <location filename="../src/aimodelset.cpp" line="1333"/>
         <source>当前标注类型：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1122"/>
-        <location filename="../src/aimodelset.cpp" line="1484"/>
+        <location filename="../src/aimodelset.cpp" line="1412"/>
+        <location filename="../src/aimodelset.cpp" line="1774"/>
         <source>请先选一个类别 checkbox</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1130"/>
+        <location filename="../src/aimodelset.cpp" line="1420"/>
         <source>未检测到前景框，无法一键标注</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1144"/>
+        <location filename="../src/aimodelset.cpp" line="1434"/>
         <source>一键标注完成，共 %1 个框（类别 %2）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1157"/>
-        <location filename="../src/aimodelset.cpp" line="1172"/>
-        <location filename="../src/aimodelset.cpp" line="1429"/>
-        <location filename="../src/aimodelset.cpp" line="3577"/>
+        <location filename="../src/aimodelset.cpp" line="1447"/>
+        <location filename="../src/aimodelset.cpp" line="1462"/>
+        <location filename="../src/aimodelset.cpp" line="1719"/>
+        <location filename="../src/aimodelset.cpp" line="3872"/>
         <source>请先选择类别 checkbox</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1162"/>
+        <location filename="../src/aimodelset.cpp" line="1452"/>
         <source>点击前景框 → 标记为当前类别</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1177"/>
+        <location filename="../src/aimodelset.cpp" line="1467"/>
         <source>按住鼠标左键拖动 → 手动画框</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1284"/>
+        <location filename="../src/aimodelset.cpp" line="1574"/>
         <source>请先选中标注</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1371"/>
+        <location filename="../src/aimodelset.cpp" line="1661"/>
         <source>未知类型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1372"/>
+        <location filename="../src/aimodelset.cpp" line="1662"/>
         <source>类型%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1407"/>
+        <location filename="../src/aimodelset.cpp" line="322"/>
+        <location filename="../src/aimodelset.cpp" line="1697"/>
         <source>请先选择图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1419"/>
+        <location filename="../src/aimodelset.cpp" line="323"/>
+        <source>从训练资源列表选择图片，或导入新的图片资源</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aimodelset.cpp" line="1709"/>
         <source>请在图片内操作</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1443"/>
+        <location filename="../src/aimodelset.cpp" line="1733"/>
         <source>选中标注 %1: x=%2 y=%3 w=%4 h=%5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1446"/>
+        <location filename="../src/aimodelset.cpp" line="1736"/>
         <source>已改为类别 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1452"/>
+        <location filename="../src/aimodelset.cpp" line="1742"/>
         <source>请先点「前景目标」显示自动标注框</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1463"/>
+        <location filename="../src/aimodelset.cpp" line="1753"/>
         <source>请点击一个前景框或已有标注</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1475"/>
+        <location filename="../src/aimodelset.cpp" line="1765"/>
         <source>点击标注：类别 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1491"/>
-        <location filename="../src/aimodelset.cpp" line="1509"/>
+        <location filename="../src/aimodelset.cpp" line="1781"/>
+        <location filename="../src/aimodelset.cpp" line="1799"/>
         <source>选中标注：%1  x=%2 y=%3 w=%4 h=%5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1542"/>
+        <location filename="../src/aimodelset.cpp" line="1832"/>
         <source>标注[%1] 前景像素=%2 %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1544"/>
-        <location filename="../src/aimodelset.cpp" line="1558"/>
-        <location filename="../src/aimodelset.cpp" line="1575"/>
+        <location filename="../src/aimodelset.cpp" line="1834"/>
+        <location filename="../src/aimodelset.cpp" line="1848"/>
+        <location filename="../src/aimodelset.cpp" line="1865"/>
         <source>≥阈值 ✓</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1544"/>
-        <location filename="../src/aimodelset.cpp" line="1558"/>
-        <location filename="../src/aimodelset.cpp" line="1575"/>
+        <location filename="../src/aimodelset.cpp" line="1834"/>
+        <location filename="../src/aimodelset.cpp" line="1848"/>
+        <location filename="../src/aimodelset.cpp" line="1865"/>
         <source>&lt;阈值 ✗</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1556"/>
+        <location filename="../src/aimodelset.cpp" line="1846"/>
         <source>前景框[%1] 前景像素=%2 %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1573"/>
+        <location filename="../src/aimodelset.cpp" line="1863"/>
         <source>预测框[%1] 前景像素=%2 %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1623"/>
+        <location filename="../src/aimodelset.cpp" line="1913"/>
         <source>标注矩形过小，请重新绘制</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1640"/>
+        <location filename="../src/aimodelset.cpp" line="1930"/>
         <source>标注完成：类型：%1; 边框：x=%2, y=%3, 宽=%4, 高=%5; 中心：x=%6, y=%7</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="1802"/>
+        <location filename="../src/aimodelset.cpp" line="2097"/>
         <source>绘制中...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2076"/>
-        <location filename="../src/aimodelset.cpp" line="3570"/>
-        <location filename="../src/aimodelset.cpp" line="3601"/>
-        <location filename="../src/aimodelset.cpp" line="4005"/>
+        <location filename="../src/aimodelset.cpp" line="2371"/>
+        <location filename="../src/aimodelset.cpp" line="3865"/>
+        <location filename="../src/aimodelset.cpp" line="3896"/>
+        <location filename="../src/aimodelset.cpp" line="4300"/>
         <source>请先加载图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2103"/>
+        <location filename="../src/aimodelset.cpp" line="2398"/>
         <source>训练集已为空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2112"/>
+        <location filename="../src/aimodelset.cpp" line="2407"/>
         <source>已从训练集移除 %1 张图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2119"/>
+        <location filename="../src/aimodelset.cpp" line="2414"/>
         <source>请先导入图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2146"/>
+        <location filename="../src/aimodelset.cpp" line="2441"/>
         <source>批量添加完成：新增 %1 张，跳过 %2 张</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2254"/>
+        <location filename="../src/aimodelset.cpp" line="2549"/>
         <source>加载模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2341"/>
-        <location filename="../src/aimodelset.cpp" line="2369"/>
-        <location filename="../src/aimodelset.cpp" line="2388"/>
-        <location filename="../src/aimodelset.cpp" line="2394"/>
-        <location filename="../src/aimodelset.cpp" line="2406"/>
-        <location filename="../src/aimodelset.cpp" line="2427"/>
-        <location filename="../src/aimodelset.cpp" line="2439"/>
-        <location filename="../src/aimodelset.cpp" line="2447"/>
-        <location filename="../src/aimodelset.cpp" line="2481"/>
-        <location filename="../src/aimodelset.cpp" line="2555"/>
-        <location filename="../src/aimodelset.cpp" line="2633"/>
-        <location filename="../src/aimodelset.cpp" line="2639"/>
-        <location filename="../src/aimodelset.cpp" line="2702"/>
-        <location filename="../src/aimodelset.cpp" line="2707"/>
-        <location filename="../src/aimodelset.cpp" line="2713"/>
+        <location filename="../src/aimodelset.cpp" line="2636"/>
+        <location filename="../src/aimodelset.cpp" line="2664"/>
+        <location filename="../src/aimodelset.cpp" line="2683"/>
+        <location filename="../src/aimodelset.cpp" line="2689"/>
+        <location filename="../src/aimodelset.cpp" line="2701"/>
         <location filename="../src/aimodelset.cpp" line="2722"/>
-        <location filename="../src/aimodelset.cpp" line="2747"/>
-        <location filename="../src/aimodelset.cpp" line="2749"/>
-        <location filename="../src/aimodelset.cpp" line="2818"/>
-        <location filename="../src/aimodelset.cpp" line="3997"/>
-        <location filename="../src/aimodelset.cpp" line="4068"/>
-        <location filename="../src/aimodelset.cpp" line="4307"/>
-        <location filename="../src/aimodelset.cpp" line="4681"/>
+        <location filename="../src/aimodelset.cpp" line="2734"/>
+        <location filename="../src/aimodelset.cpp" line="2742"/>
+        <location filename="../src/aimodelset.cpp" line="2776"/>
+        <location filename="../src/aimodelset.cpp" line="2850"/>
+        <location filename="../src/aimodelset.cpp" line="2928"/>
+        <location filename="../src/aimodelset.cpp" line="2934"/>
+        <location filename="../src/aimodelset.cpp" line="2997"/>
+        <location filename="../src/aimodelset.cpp" line="3002"/>
+        <location filename="../src/aimodelset.cpp" line="3008"/>
+        <location filename="../src/aimodelset.cpp" line="3017"/>
+        <location filename="../src/aimodelset.cpp" line="3042"/>
+        <location filename="../src/aimodelset.cpp" line="3044"/>
+        <location filename="../src/aimodelset.cpp" line="3113"/>
+        <location filename="../src/aimodelset.cpp" line="4292"/>
+        <location filename="../src/aimodelset.cpp" line="4363"/>
+        <location filename="../src/aimodelset.cpp" line="4602"/>
+        <location filename="../src/aimodelset.cpp" line="4991"/>
         <source>提示</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2341"/>
-        <location filename="../src/aimodelset.cpp" line="2388"/>
+        <location filename="../src/aimodelset.cpp" line="2636"/>
+        <location filename="../src/aimodelset.cpp" line="2683"/>
         <source>请先选择一个模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2345"/>
+        <location filename="../src/aimodelset.cpp" line="2640"/>
         <source>删除模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2346"/>
+        <location filename="../src/aimodelset.cpp" line="2641"/>
         <source>确定删除模型 %1 吗？
 将同时删除 .bin 和 .json 文件，此操作不可恢复！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2366"/>
+        <location filename="../src/aimodelset.cpp" line="2661"/>
         <source>(bin 删除失败)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2367"/>
+        <location filename="../src/aimodelset.cpp" line="2662"/>
         <source>(json 不存在)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2368"/>
+        <location filename="../src/aimodelset.cpp" line="2663"/>
         <source>(数据库已清除)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2368"/>
+        <location filename="../src/aimodelset.cpp" line="2663"/>
         <source>(数据库清除失败)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2369"/>
+        <location filename="../src/aimodelset.cpp" line="2664"/>
         <source>已删除: %1
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2380"/>
-        <location filename="../src/aimodelset.cpp" line="2655"/>
+        <location filename="../src/aimodelset.cpp" line="2675"/>
+        <location filename="../src/aimodelset.cpp" line="2950"/>
         <source>删除失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2380"/>
+        <location filename="../src/aimodelset.cpp" line="2675"/>
         <source>无法删除模型文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2395"/>
+        <location filename="../src/aimodelset.cpp" line="2690"/>
         <source>模型 %1 缺少 .json 文件，是否仍要导出 .bin？</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2403"/>
-        <location filename="../src/aimodelset.cpp" line="2437"/>
-        <location filename="../src/aimodelset.cpp" line="2705"/>
+        <location filename="../src/aimodelset.cpp" line="2698"/>
+        <location filename="../src/aimodelset.cpp" line="2732"/>
+        <location filename="../src/aimodelset.cpp" line="3000"/>
         <source>检测U盘...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2406"/>
-        <location filename="../src/aimodelset.cpp" line="2439"/>
-        <location filename="../src/aimodelset.cpp" line="2708"/>
+        <location filename="../src/aimodelset.cpp" line="2701"/>
+        <location filename="../src/aimodelset.cpp" line="2734"/>
+        <location filename="../src/aimodelset.cpp" line="3003"/>
         <source>未检测到U盘！
 请插上U盘后再试。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2411"/>
+        <location filename="../src/aimodelset.cpp" line="2706"/>
         <source>正在拷贝 %1.bin ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2418"/>
+        <location filename="../src/aimodelset.cpp" line="2713"/>
         <source>正在拷贝 %1.json ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2426"/>
+        <location filename="../src/aimodelset.cpp" line="2721"/>
         <source>模型导出完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2428"/>
+        <location filename="../src/aimodelset.cpp" line="2723"/>
         <source>导出完成！
 已拷贝到 /udisk/%1/</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2430"/>
+        <location filename="../src/aimodelset.cpp" line="2725"/>
         <source>模型导出失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2431"/>
+        <location filename="../src/aimodelset.cpp" line="2726"/>
         <source>导出失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2431"/>
+        <location filename="../src/aimodelset.cpp" line="2726"/>
         <source>U盘写入失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2447"/>
+        <location filename="../src/aimodelset.cpp" line="2742"/>
         <source>U 盘里没有 .bin 模型文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2452"/>
+        <location filename="../src/aimodelset.cpp" line="2747"/>
         <source>从U盘导入模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2482"/>
+        <location filename="../src/aimodelset.cpp" line="2777"/>
         <source>本地已存在 %1，是否覆盖？</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2556"/>
+        <location filename="../src/aimodelset.cpp" line="2851"/>
         <source>导入完成：%1
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2558"/>
+        <location filename="../src/aimodelset.cpp" line="2853"/>
         <source>(无 json 文件)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2561"/>
+        <location filename="../src/aimodelset.cpp" line="2856"/>
         <source>导入失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2561"/>
+        <location filename="../src/aimodelset.cpp" line="2856"/>
         <source>拷贝 .bin 失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2609"/>
+        <location filename="../src/aimodelset.cpp" line="2904"/>
         <source>加载模型: %1  (%2 类)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2615"/>
+        <location filename="../src/aimodelset.cpp" line="2910"/>
         <source>加载模型: %1 (json 读取失败, 默认 1 类)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2634"/>
+        <location filename="../src/aimodelset.cpp" line="2929"/>
         <source>请先在列表中选择要删除的目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2640"/>
+        <location filename="../src/aimodelset.cpp" line="2935"/>
         <source>不能删除图片根目录：
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2643"/>
+        <location filename="../src/aimodelset.cpp" line="2938"/>
         <source>删除目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2644"/>
+        <location filename="../src/aimodelset.cpp" line="2939"/>
         <source>确定删除该目录及其全部内容吗？此操作不可恢复！
 
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2656"/>
+        <location filename="../src/aimodelset.cpp" line="2951"/>
         <source>无法删除目录：
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2702"/>
+        <location filename="../src/aimodelset.cpp" line="2997"/>
         <source>源目录不存在！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2713"/>
+        <location filename="../src/aimodelset.cpp" line="3008"/>
         <source>U盘挂载失败（/udisk 不存在）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2722"/>
+        <location filename="../src/aimodelset.cpp" line="3017"/>
         <source>目录为空，无需导出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2726"/>
+        <location filename="../src/aimodelset.cpp" line="3021"/>
         <source>导出到U盘</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2731"/>
+        <location filename="../src/aimodelset.cpp" line="3026"/>
         <source>准备中...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2747"/>
+        <location filename="../src/aimodelset.cpp" line="3042"/>
         <source>已取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2750"/>
+        <location filename="../src/aimodelset.cpp" line="3045"/>
         <source>导出完成！
 已拷贝到 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2773"/>
+        <location filename="../src/aimodelset.cpp" line="3068"/>
         <source>选择图片文件夹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2798"/>
+        <location filename="../src/aimodelset.cpp" line="3093"/>
         <source>选择</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2809"/>
+        <location filename="../src/aimodelset.cpp" line="3104"/>
         <source>删除</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2810"/>
+        <location filename="../src/aimodelset.cpp" line="3105"/>
         <source>导出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2818"/>
+        <location filename="../src/aimodelset.cpp" line="3113"/>
         <source>请先选择要导出的目录！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2830"/>
+        <location filename="../src/aimodelset.cpp" line="3125"/>
         <source>扫描中...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2844"/>
+        <location filename="../src/aimodelset.cpp" line="3139"/>
         <source>扫描中：已找到 %1 张</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2956"/>
+        <location filename="../src/aimodelset.cpp" line="3251"/>
         <source>导入目录必须包含 2 张以上 bg_ 开头的背景图像（当前 %1 张）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2957"/>
+        <location filename="../src/aimodelset.cpp" line="3252"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2958"/>
+        <location filename="../src/aimodelset.cpp" line="3253"/>
         <source>导入目录必须包含 2 张以上 bg_ 开头的背景图像
 当前目录仅有 %1 张 bg_ 图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="2962"/>
+        <location filename="../src/aimodelset.cpp" line="3257"/>
         <source>bg_ 图片不足，导入取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3007"/>
+        <location filename="../src/aimodelset.cpp" line="3302"/>
         <source>未找到支持的图片文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3013"/>
+        <location filename="../src/aimodelset.cpp" line="3308"/>
         <source>共找到 %1 张图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3064"/>
+        <location filename="../src/aimodelset.cpp" line="3359"/>
         <source> (加载失败)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3138"/>
+        <location filename="../src/aimodelset.cpp" line="3433"/>
         <source>第%1页/共%2页 | 当前第%3张/共%4张</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3188"/>
+        <location filename="../src/aimodelset.cpp" line="3483"/>
         <source>请输入有效页码</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3193"/>
+        <location filename="../src/aimodelset.cpp" line="3488"/>
         <source>暂无图片，无法跳转</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3215"/>
+        <location filename="../src/aimodelset.cpp" line="3510"/>
         <source>保存标注失败：无法打开文件 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3236"/>
+        <location filename="../src/aimodelset.cpp" line="3531"/>
         <source>标注已保存：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3253"/>
+        <location filename="../src/aimodelset.cpp" line="3548"/>
         <source>标注文件不存在：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3258"/>
+        <location filename="../src/aimodelset.cpp" line="3553"/>
         <source>无法打开标注文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3291"/>
+        <location filename="../src/aimodelset.cpp" line="3586"/>
         <source>标注已加载：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3317"/>
+        <location filename="../src/aimodelset.cpp" line="3612"/>
         <source>图片路径无效</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3324"/>
+        <location filename="../src/aimodelset.cpp" line="3619"/>
         <source>图片加载失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3535"/>
+        <location filename="../src/aimodelset.cpp" line="3830"/>
         <source>当前模型类别数为 %1（0 ~ %2），但标注中扫描到的类别不匹配：
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3540"/>
+        <location filename="../src/aimodelset.cpp" line="3835"/>
         <source>❌ 缺少类别：%1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3542"/>
+        <location filename="../src/aimodelset.cpp" line="3837"/>
         <source>⚠️  存在超范围类别：%1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3544"/>
+        <location filename="../src/aimodelset.cpp" line="3839"/>
         <source>类别不匹配，无法提交训练</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3545"/>
+        <location filename="../src/aimodelset.cpp" line="3840"/>
         <source>类别不匹配，请检查标注文件后重试</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3584"/>
+        <location filename="../src/aimodelset.cpp" line="3879"/>
         <source>前景目标显示中（%1 个框）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3611"/>
+        <location filename="../src/aimodelset.cpp" line="3906"/>
         <source>前景像素过滤开启（%1 个框已统计）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3759"/>
+        <location filename="../src/aimodelset.cpp" line="4054"/>
         <source>本地模型文件不存在: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3763"/>
+        <location filename="../src/aimodelset.cpp" line="4058"/>
         <source>连接板卡上传模型 %1 ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3770"/>
-        <location filename="../src/aimodelset.cpp" line="3825"/>
-        <location filename="../src/aimodelset.cpp" line="4128"/>
+        <location filename="../src/aimodelset.cpp" line="4065"/>
+        <location filename="../src/aimodelset.cpp" line="4120"/>
+        <location filename="../src/aimodelset.cpp" line="4423"/>
         <source>板卡 SFTP 连接失败 %1:22</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3775"/>
+        <location filename="../src/aimodelset.cpp" line="4070"/>
         <source>板卡创建目录失败 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3794"/>
+        <location filename="../src/aimodelset.cpp" line="4089"/>
         <source>板卡模型 %1 上传失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3799"/>
+        <location filename="../src/aimodelset.cpp" line="4094"/>
         <source>板卡模型 %1 上传完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3816"/>
+        <location filename="../src/aimodelset.cpp" line="4111"/>
         <source>上传图片到板卡：%1 → %2 ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3840"/>
+        <location filename="../src/aimodelset.cpp" line="4135"/>
         <source>图片上传到板卡失败：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3863"/>
+        <location filename="../src/aimodelset.cpp" line="4158"/>
         <source>仿真中：model=%1, img=%2 ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3875"/>
+        <location filename="../src/aimodelset.cpp" line="4170"/>
         <source>仿真通信失败：板卡 %1:%2 无响应</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3883"/>
+        <location filename="../src/aimodelset.cpp" line="4178"/>
         <source>仿真响应解析失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3889"/>
+        <location filename="../src/aimodelset.cpp" line="4184"/>
         <source>仿真执行失败（板卡返回 code=%1，可能图片/模型路径问题）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3896"/>
+        <location filename="../src/aimodelset.cpp" line="4191"/>
         <source>仿真完成：检测到 %1 个目标</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3973"/>
+        <location filename="../src/aimodelset.cpp" line="4268"/>
         <source>仿真查看已关闭</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="3997"/>
-        <location filename="../src/aimodelset.cpp" line="4068"/>
+        <location filename="../src/aimodelset.cpp" line="4292"/>
+        <location filename="../src/aimodelset.cpp" line="4363"/>
         <source>请先在模型加载中选择仿真模型！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4013"/>
+        <location filename="../src/aimodelset.cpp" line="4308"/>
         <source>仿真查看（从缓存加载，%1 个目标）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4076"/>
+        <location filename="../src/aimodelset.cpp" line="4371"/>
         <source>图片列表为空，请先导入图片目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4100"/>
+        <location filename="../src/aimodelset.cpp" line="4395"/>
         <source>批量仿真已完成（从缓存加载，共 %1 张）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4178"/>
+        <location filename="../src/aimodelset.cpp" line="4473"/>
         <source>批量仿真 %1/%2（%3%）%4 [已缓存]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4185"/>
+        <location filename="../src/aimodelset.cpp" line="4480"/>
         <source>批量仿真 %1/%2（%3%） %4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4253"/>
+        <location filename="../src/aimodelset.cpp" line="4548"/>
         <source>批量仿真完成：成功 %1 / 总计 %2（失败 %3）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4254"/>
+        <location filename="../src/aimodelset.cpp" line="4549"/>
         <source>   [仿真查看模式：%1 按钮开启中]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4288"/>
+        <location filename="../src/aimodelset.cpp" line="4583"/>
         <source>筛选错标图片中...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4297"/>
+        <location filename="../src/aimodelset.cpp" line="4592"/>
         <source>筛选错标图片中... %1/%2（%3 张错标）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4302"/>
+        <location filename="../src/aimodelset.cpp" line="4597"/>
         <source>筛选完成：%1 张图片有错标 / 总计 %2 张</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4308"/>
+        <location filename="../src/aimodelset.cpp" line="4603"/>
         <source>全部 %1 张图片标注和仿真结果一致，没有错标！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4334"/>
+        <location filename="../src/aimodelset.cpp" line="4629"/>
         <source>正在训练，查询最新进度...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4337"/>
+        <location filename="../src/aimodelset.cpp" line="4632"/>
         <source>训练流程正在进行中，请等待完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4344"/>
+        <location filename="../src/aimodelset.cpp" line="4639"/>
         <source>训练集为空，请先添加训练图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4348"/>
+        <location filename="../src/aimodelset.cpp" line="4643"/>
         <source>训练图片数量不足（当前 %1 张，需超过 20 张，不含背景图）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4352"/>
+        <location filename="../src/aimodelset.cpp" line="4647"/>
         <source>模型名为空，请先创建或加载模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4357"/>
+        <location filename="../src/aimodelset.cpp" line="4652"/>
         <source>准备训练数据（%1 张图片）...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4368"/>
+        <location filename="../src/aimodelset.cpp" line="4663"/>
         <source>prepareTrain 失败：tmp/image 为空，请检查训练图片路径</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4371"/>
+        <location filename="../src/aimodelset.cpp" line="4666"/>
         <source>训练数据准备完成：%1 张图片 + %2 个标签</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4395"/>
+        <location filename="../src/aimodelset.cpp" line="4690"/>
         <source>正在创建远程训练任务目录... 任务ID：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4410"/>
+        <location filename="../src/aimodelset.cpp" line="4720"/>
         <source>模型名称:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4412"/>
+        <location filename="../src/aimodelset.cpp" line="4722"/>
         <source>仅允许英文字母、数字、下划线 _</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4444"/>
+        <location filename="../src/aimodelset.cpp" line="4754"/>
         <source>类别列表:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4489"/>
-        <location filename="../src/aimodelset.cpp" line="4491"/>
-        <location filename="../src/aimodelset.cpp" line="4561"/>
+        <location filename="../src/aimodelset.cpp" line="4799"/>
+        <location filename="../src/aimodelset.cpp" line="4801"/>
+        <location filename="../src/aimodelset.cpp" line="4871"/>
         <source>类别%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4496"/>
+        <location filename="../src/aimodelset.cpp" line="4806"/>
         <source>删除此类</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4527"/>
+        <location filename="../src/aimodelset.cpp" line="4837"/>
         <source>+ 新增类别</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4572"/>
+        <location filename="../src/aimodelset.cpp" line="4882"/>
         <source>新建模型: %1, 类别数: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4682"/>
+        <location filename="../src/aimodelset.cpp" line="4992"/>
         <source>训练服务器尚未配置，请先配置训练服务器参数</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4693"/>
+        <location filename="../src/aimodelset.cpp" line="5003"/>
         <source>训练服务器配置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4731"/>
+        <location filename="../src/aimodelset.cpp" line="5042"/>
         <source>训练服务器 IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4732"/>
+        <location filename="../src/aimodelset.cpp" line="5043"/>
         <source>HTTP 端口</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4733"/>
+        <location filename="../src/aimodelset.cpp" line="5044"/>
         <source>SFTP 端口</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4734"/>
+        <location filename="../src/aimodelset.cpp" line="5045"/>
         <source>SFTP 用户名</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4735"/>
+        <location filename="../src/aimodelset.cpp" line="5046"/>
         <source>SFTP 密码</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4747"/>
+        <location filename="../src/aimodelset.cpp" line="5058"/>
         <source>服务器 IP:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4748"/>
+        <location filename="../src/aimodelset.cpp" line="5059"/>
         <source>HTTP 端口:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4749"/>
+        <location filename="../src/aimodelset.cpp" line="5060"/>
         <source>SFTP 端口:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4750"/>
+        <location filename="../src/aimodelset.cpp" line="5061"/>
         <source>SFTP 用户名:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4751"/>
+        <location filename="../src/aimodelset.cpp" line="5062"/>
         <source>SFTP 密码:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4756"/>
+        <location filename="../src/aimodelset.cpp" line="5067"/>
         <source>测试 HTTP 连接</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4757"/>
+        <location filename="../src/aimodelset.cpp" line="5068"/>
         <source>测试 SFTP 连接</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4773"/>
+        <location filename="../src/aimodelset.cpp" line="5084"/>
         <source>请先填写有效的 IP 和 HTTP 端口</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4779"/>
+        <location filename="../src/aimodelset.cpp" line="5090"/>
         <source>正在测试 HTTP 连接 %1:%2 ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4802"/>
+        <location filename="../src/aimodelset.cpp" line="5113"/>
         <source>HTTP 连接失败：5 秒超时（%1:%2）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4805"/>
+        <location filename="../src/aimodelset.cpp" line="5116"/>
         <source>HTTP 连接失败：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4809"/>
+        <location filename="../src/aimodelset.cpp" line="5120"/>
         <source>HTTP 连接成功（HTTP %1）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4822"/>
+        <location filename="../src/aimodelset.cpp" line="5133"/>
         <source>请先填写有效的 IP 和 SFTP 端口</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4828"/>
+        <location filename="../src/aimodelset.cpp" line="5139"/>
         <source>正在测试 SFTP 连接 %1:%2 ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4835"/>
+        <location filename="../src/aimodelset.cpp" line="5146"/>
         <source>SFTP 连接成功（%1@%2:%3）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4838"/>
+        <location filename="../src/aimodelset.cpp" line="5149"/>
         <source>SFTP 连接失败：%1:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4858"/>
+        <location filename="../src/aimodelset.cpp" line="5169"/>
         <source>输入错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4858"/>
+        <location filename="../src/aimodelset.cpp" line="5169"/>
         <source>请填写有效的 IP 和端口</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4881"/>
+        <location filename="../src/aimodelset.cpp" line="5192"/>
         <source>训练服务器已更新：HTTP %1，SFTP %2:%3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1329,3533 +1343,3623 @@
 <context>
     <name>GlobalFlow</name>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="6"/>
+        <location filename="../src/params/paramslang.cpp" line="14"/>
         <source>ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="7"/>
+        <location filename="../src/params/paramslang.cpp" line="15"/>
         <source>cancel</source>
         <translation>Zrusit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="8"/>
+        <location filename="../src/params/paramslang.cpp" line="16"/>
         <source>enable</source>
         <translation>Povolit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="9"/>
+        <location filename="../src/params/paramslang.cpp" line="17"/>
         <source>disable</source>
         <translation>Zakazat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="10"/>
+        <location filename="../src/params/paramslang.cpp" line="18"/>
         <source>back</source>
         <translation>Spat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="11"/>
+        <location filename="../src/params/paramslang.cpp" line="19"/>
         <source>space</source>
         <translation>Medzera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="12"/>
+        <location filename="../src/params/paramslang.cpp" line="20"/>
         <source>input</source>
         <translation>Vlozit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="13"/>
+        <location filename="../src/params/paramslang.cpp" line="21"/>
         <source>del</source>
         <translation>Zmazat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="14"/>
+        <location filename="../src/params/paramslang.cpp" line="22"/>
         <source>on</source>
         <translation>Zapnut</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="15"/>
+        <location filename="../src/params/paramslang.cpp" line="23"/>
         <source>off</source>
         <translation>Vypnut</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="17"/>
+        <location filename="../src/params/paramslang.cpp" line="25"/>
         <source>apply</source>
         <translation>Pouzit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="18"/>
+        <location filename="../src/params/paramslang.cpp" line="26"/>
         <source>name</source>
         <translation>Nazov</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="19"/>
+        <location filename="../src/params/paramslang.cpp" line="27"/>
         <source>list</source>
         <translation>Zoznam</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="20"/>
+        <location filename="../src/params/paramslang.cpp" line="28"/>
         <source>start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="21"/>
+        <location filename="../src/params/paramslang.cpp" line="29"/>
         <source>stop</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="22"/>
+        <location filename="../src/params/paramslang.cpp" line="30"/>
         <source>skip_preheat</source>
         <translation>Preskocit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="23"/>
+        <location filename="../src/params/paramslang.cpp" line="31"/>
         <source>page_communicate</source>
         <translation>Komunikovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="24"/>
+        <location filename="../src/params/paramslang.cpp" line="32"/>
         <source>communication_list</source>
         <translation>Zoznam</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="25"/>
+        <location filename="../src/params/paramslang.cpp" line="33"/>
         <source>page_home</source>
         <translation>Domov</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="26"/>
+        <location filename="../src/params/paramslang.cpp" line="34"/>
         <source>save_parameters</source>
         <translation>Ulozit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="27"/>
+        <location filename="../src/params/paramslang.cpp" line="35"/>
         <source>set_purview</source>
         <translation>Opravnenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="535"/>
+        <location filename="../src/params/paramslang.cpp" line="543"/>
         <source>sorter_manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="28"/>
+        <location filename="../src/params/paramslang.cpp" line="36"/>
         <source>enter_system</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="16"/>
+        <location filename="../src/params/paramslang.cpp" line="24"/>
         <source>reboot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="29"/>
+        <location filename="../src/params/paramslang.cpp" line="37"/>
         <source>halt</source>
         <translation>Vypnutie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="30"/>
+        <location filename="../src/params/paramslang.cpp" line="38"/>
         <source>engineering_mode</source>
         <translation>Rezim inzinier</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="31"/>
+        <location filename="../src/params/paramslang.cpp" line="39"/>
         <source>system_initial</source>
         <translation>Systemove inicialy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="32"/>
+        <location filename="../src/params/paramslang.cpp" line="40"/>
         <source>preheat</source>
         <translation>Prehriatie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="33"/>
+        <location filename="../src/params/paramslang.cpp" line="41"/>
         <source>sensitivity</source>
         <translation>Citlivost</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="34"/>
+        <location filename="../src/params/paramslang.cpp" line="42"/>
         <source>proportion</source>
         <translation>Pomer</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="35"/>
+        <location filename="../src/params/paramslang.cpp" line="43"/>
         <source>background_lamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="36"/>
+        <location filename="../src/params/paramslang.cpp" line="44"/>
         <source>sensitivity_minimum</source>
         <translation>Minimalna citlivost</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="37"/>
+        <location filename="../src/params/paramslang.cpp" line="45"/>
         <source>sensitivity_maximum</source>
         <translation>Maximalna citlivost</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="38"/>
+        <location filename="../src/params/paramslang.cpp" line="46"/>
         <source>sensitivity_set</source>
         <translation>Nastavenie citlivosti</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="39"/>
+        <location filename="../src/params/paramslang.cpp" line="47"/>
         <source>vendor_mode</source>
         <translation>Vyrobca</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="40"/>
+        <location filename="../src/params/paramslang.cpp" line="48"/>
         <source>operator_mode</source>
         <translation>Prevadzkovatel</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="41"/>
+        <location filename="../src/params/paramslang.cpp" line="49"/>
         <source>engineer</source>
         <translation>Inzinier</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="42"/>
+        <location filename="../src/params/paramslang.cpp" line="50"/>
         <source>last_page</source>
         <translation>Posledna strana</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="43"/>
+        <location filename="../src/params/paramslang.cpp" line="51"/>
         <source>next_page</source>
         <translation>Nasledujuca strana</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="44"/>
-        <location filename="../src/params/paramslang.cpp" line="901"/>
+        <location filename="../src/params/paramslang.cpp" line="52"/>
+        <location filename="../src/params/paramslang.cpp" line="939"/>
         <source>camera_signal</source>
         <translation>Signal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="45"/>
+        <location filename="../src/params/paramslang.cpp" line="53"/>
         <source>select_sensitivity</source>
         <translation>Vyber citlivosti</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="46"/>
+        <location filename="../src/params/paramslang.cpp" line="54"/>
         <source>general</source>
         <translation>Vseobecny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="47"/>
+        <location filename="../src/params/paramslang.cpp" line="55"/>
         <source>other</source>
         <translation>Iny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="48"/>
+        <location filename="../src/params/paramslang.cpp" line="56"/>
         <source>machine_info</source>
         <translation>Stroj info</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="49"/>
+        <location filename="../src/params/paramslang.cpp" line="57"/>
         <source>engineer_info</source>
         <translation>Technik info</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="50"/>
+        <location filename="../src/params/paramslang.cpp" line="58"/>
         <source>vendor_info</source>
         <translation>Predajca</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="51"/>
+        <location filename="../src/params/paramslang.cpp" line="59"/>
         <source>device_info</source>
         <translation>Zariadenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="52"/>
+        <location filename="../src/params/paramslang.cpp" line="60"/>
         <source>device_id</source>
         <translation>Seriove cislo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="53"/>
+        <location filename="../src/params/paramslang.cpp" line="61"/>
         <source>times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="54"/>
+        <location filename="../src/params/paramslang.cpp" line="62"/>
         <source>set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="55"/>
+        <location filename="../src/params/paramslang.cpp" line="63"/>
         <source>capacity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="56"/>
+        <location filename="../src/params/paramslang.cpp" line="64"/>
         <source>clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="57"/>
+        <location filename="../src/params/paramslang.cpp" line="65"/>
         <source>compute</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="58"/>
+        <location filename="../src/params/paramslang.cpp" line="66"/>
         <source>weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="61"/>
+        <location filename="../src/params/paramslang.cpp" line="69"/>
         <source>dc_input</source>
         <translation>K pokracovaniu prosim vlozte kod oddialenia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="62"/>
+        <location filename="../src/params/paramslang.cpp" line="70"/>
         <source>dc_productsn</source>
         <translation>Produkt SN</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="63"/>
+        <location filename="../src/params/paramslang.cpp" line="71"/>
         <source>dc_productsn_mismatch</source>
         <translation>Nezhodny produkt SN</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="64"/>
+        <location filename="../src/params/paramslang.cpp" line="72"/>
         <source>dc_illegal</source>
         <translation>Neplatny kod oddialenia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="65"/>
+        <location filename="../src/params/paramslang.cpp" line="73"/>
         <source>dc_illegal_used</source>
         <translation>Pouzity kod oddialenia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="66"/>
+        <location filename="../src/params/paramslang.cpp" line="74"/>
         <source>dc_save_erro</source>
         <translation>Ulozit chybu kodu oddialenia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="67"/>
+        <location filename="../src/params/paramslang.cpp" line="75"/>
         <source>dc_limit</source>
         <translation>Limit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="68"/>
+        <location filename="../src/params/paramslang.cpp" line="76"/>
         <source>dc_limit_info</source>
         <translation>Zostavajuci limit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="69"/>
+        <location filename="../src/params/paramslang.cpp" line="77"/>
         <source>dc_rtc_erro</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="70"/>
+        <location filename="../src/params/paramslang.cpp" line="78"/>
         <source>dc_cnt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="73"/>
+        <location filename="../src/params/paramslang.cpp" line="81"/>
         <source>chute</source>
         <translation>Sklz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="74"/>
+        <location filename="../src/params/paramslang.cpp" line="82"/>
         <source>front</source>
         <translation>Predny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="75"/>
+        <location filename="../src/params/paramslang.cpp" line="83"/>
         <source>front_view</source>
         <translation>Predny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="76"/>
+        <location filename="../src/params/paramslang.cpp" line="84"/>
         <source>master_view</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="77"/>
+        <location filename="../src/params/paramslang.cpp" line="85"/>
         <source>slave_view</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="78"/>
+        <location filename="../src/params/paramslang.cpp" line="86"/>
         <source>rear</source>
         <translation>Zadny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="79"/>
+        <location filename="../src/params/paramslang.cpp" line="87"/>
         <source>rear_view</source>
         <translation>Zadny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="80"/>
+        <location filename="../src/params/paramslang.cpp" line="88"/>
         <source>front_rear_view</source>
         <translation>P-Z</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="81"/>
+        <location filename="../src/params/paramslang.cpp" line="89"/>
         <source>upper</source>
         <translation>Hore</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="82"/>
+        <location filename="../src/params/paramslang.cpp" line="90"/>
         <source>upper_view</source>
         <translation>Horny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="83"/>
+        <location filename="../src/params/paramslang.cpp" line="91"/>
         <source>mid</source>
         <translation>Stred</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="84"/>
+        <location filename="../src/params/paramslang.cpp" line="92"/>
         <source>lower</source>
         <translation>Nizko</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="85"/>
+        <location filename="../src/params/paramslang.cpp" line="93"/>
         <source>lower_view</source>
         <translation>Nizky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="86"/>
+        <location filename="../src/params/paramslang.cpp" line="94"/>
         <source>first_front</source>
         <translation>1. predny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="87"/>
+        <location filename="../src/params/paramslang.cpp" line="95"/>
         <source>first_rear</source>
         <translation>1. zadny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="88"/>
+        <location filename="../src/params/paramslang.cpp" line="96"/>
         <source>second_front</source>
         <translation>2. predny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="89"/>
+        <location filename="../src/params/paramslang.cpp" line="97"/>
         <source>second_rear</source>
         <translation>2. zadny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="90"/>
+        <location filename="../src/params/paramslang.cpp" line="98"/>
         <source>third_front</source>
         <translation>3. predny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="91"/>
+        <location filename="../src/params/paramslang.cpp" line="99"/>
         <source>third_rear</source>
         <translation>3. zadny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="92"/>
+        <location filename="../src/params/paramslang.cpp" line="100"/>
         <source>fourth_front</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="93"/>
+        <location filename="../src/params/paramslang.cpp" line="101"/>
         <source>fourth_rear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="94"/>
+        <location filename="../src/params/paramslang.cpp" line="102"/>
         <source>first_upper</source>
         <translation>1. vyssi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="95"/>
+        <location filename="../src/params/paramslang.cpp" line="103"/>
         <source>first_lower</source>
         <translation>1. nizsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="96"/>
+        <location filename="../src/params/paramslang.cpp" line="104"/>
         <source>second_upper</source>
         <translation>2. vyssi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="97"/>
+        <location filename="../src/params/paramslang.cpp" line="105"/>
         <source>second_lower</source>
         <translation>2. nizsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="98"/>
+        <location filename="../src/params/paramslang.cpp" line="106"/>
         <source>first_down_front</source>
         <translation>1. predny nizsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="99"/>
+        <location filename="../src/params/paramslang.cpp" line="107"/>
         <source>first_up_front</source>
         <translation>1. predny vyssi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="100"/>
+        <location filename="../src/params/paramslang.cpp" line="108"/>
         <source>first_down_rear</source>
         <translation>1. zadny nizsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="101"/>
+        <location filename="../src/params/paramslang.cpp" line="109"/>
         <source>first_up_rear</source>
         <translation>1. zadny vyssi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="102"/>
+        <location filename="../src/params/paramslang.cpp" line="110"/>
         <source>second_down_front</source>
         <translation>2. predny M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="103"/>
+        <location filename="../src/params/paramslang.cpp" line="111"/>
         <source>second_up_front</source>
         <translation>2. predny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="104"/>
+        <location filename="../src/params/paramslang.cpp" line="112"/>
         <source>second_down_rear</source>
         <translation>2. zadny M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="105"/>
+        <location filename="../src/params/paramslang.cpp" line="113"/>
         <source>second_up_rear</source>
         <translation>2. zadny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="106"/>
+        <location filename="../src/params/paramslang.cpp" line="114"/>
         <source>upper_layer</source>
         <translation>Vyssi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="107"/>
+        <location filename="../src/params/paramslang.cpp" line="115"/>
         <source>lower_layer</source>
         <translation>Nizsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="108"/>
+        <location filename="../src/params/paramslang.cpp" line="116"/>
         <source>middle_layer</source>
         <translation>Stredny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="109"/>
+        <location filename="../src/params/paramslang.cpp" line="117"/>
         <source>layer</source>
         <translation>Vrstva</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="110"/>
+        <location filename="../src/params/paramslang.cpp" line="118"/>
         <source>unit_info</source>
         <translation>Jednotka info</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="111"/>
+        <location filename="../src/params/paramslang.cpp" line="119"/>
         <source>first</source>
         <translation>1.</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="112"/>
+        <location filename="../src/params/paramslang.cpp" line="120"/>
         <source>second</source>
         <translation>2.</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="113"/>
+        <location filename="../src/params/paramslang.cpp" line="121"/>
         <source>third</source>
         <translation>3.</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="114"/>
+        <location filename="../src/params/paramslang.cpp" line="122"/>
         <source>fourth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="115"/>
+        <location filename="../src/params/paramslang.cpp" line="123"/>
         <source>enable_third_level</source>
         <translation>Povolit 3. vrstvu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="116"/>
+        <location filename="../src/params/paramslang.cpp" line="124"/>
         <source>msg_channel_error</source>
         <translation>Chyba pridelenia jednotky!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="117"/>
+        <location filename="../src/params/paramslang.cpp" line="125"/>
         <source>msg_need_first_unit</source>
         <translation>Potreba 1. jednotky!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="118"/>
+        <location filename="../src/params/paramslang.cpp" line="126"/>
         <source>msg_need_second_unit</source>
         <translation>Potreba 2. jednotky!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="119"/>
+        <location filename="../src/params/paramslang.cpp" line="127"/>
         <source>eject_num</source>
         <translation>Vysunovace</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="120"/>
+        <location filename="../src/params/paramslang.cpp" line="128"/>
         <source>front_sens</source>
         <translation>Predny senzor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="121"/>
+        <location filename="../src/params/paramslang.cpp" line="129"/>
         <source>rear_sens</source>
         <translation>Zadny senzor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="122"/>
+        <location filename="../src/params/paramslang.cpp" line="130"/>
         <source>current_camera</source>
         <translation>Kamera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="125"/>
+        <location filename="../src/params/paramslang.cpp" line="133"/>
         <source>ai_simulate</source>
         <translation>Simulovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="126"/>
+        <location filename="../src/params/paramslang.cpp" line="134"/>
         <source>ai_basic</source>
         <translation>Zakladny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="127"/>
+        <location filename="../src/params/paramslang.cpp" line="135"/>
         <source>ai_more</source>
         <translation>Viac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="128"/>
+        <location filename="../src/params/paramslang.cpp" line="136"/>
         <source>ai_no_image</source>
         <translation>Obrazok nie je k dispozicii</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="129"/>
+        <location filename="../src/params/paramslang.cpp" line="137"/>
         <source>ai_reselect_whole</source>
         <translation>Vsetko spat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="130"/>
+        <location filename="../src/params/paramslang.cpp" line="138"/>
         <source>ai_reselect_last</source>
         <translation>Zrusit posledne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="131"/>
+        <location filename="../src/params/paramslang.cpp" line="139"/>
         <source>ai_optimize_calculate</source>
         <translation>Optimalizovane</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="132"/>
+        <location filename="../src/params/paramslang.cpp" line="140"/>
         <source>ai_optimize_sample</source>
         <translation>Preskocit okraj</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="133"/>
+        <location filename="../src/params/paramslang.cpp" line="141"/>
         <source>ai_set_material</source>
         <translation>Material</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="134"/>
+        <location filename="../src/params/paramslang.cpp" line="142"/>
         <source>ai_material</source>
         <translation>Material</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="135"/>
+        <location filename="../src/params/paramslang.cpp" line="143"/>
         <source>ai_msg_set_material</source>
         <translation>Prosim nastavte material</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="136"/>
+        <location filename="../src/params/paramslang.cpp" line="144"/>
         <source>ai_calculate</source>
         <translation>Vypocitat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="137"/>
+        <location filename="../src/params/paramslang.cpp" line="145"/>
         <source>ai_update_sample</source>
         <translation>Aktualizovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="138"/>
+        <location filename="../src/params/paramslang.cpp" line="146"/>
         <source>ai_sample_color</source>
         <translation>Vzor farba</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="139"/>
+        <location filename="../src/params/paramslang.cpp" line="147"/>
         <source>ai_sample_sens</source>
         <translation>Vzor senz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="140"/>
+        <location filename="../src/params/paramslang.cpp" line="148"/>
         <source>ai_trans_mode</source>
         <translation>Rychlost trans</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="141"/>
+        <location filename="../src/params/paramslang.cpp" line="149"/>
         <source>ai_low_speed</source>
         <translation>Nizky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="142"/>
+        <location filename="../src/params/paramslang.cpp" line="150"/>
         <source>ai_high_speed</source>
         <translation>Vysoky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="143"/>
+        <location filename="../src/params/paramslang.cpp" line="151"/>
         <source>ai_sample_mode</source>
         <translation>Rezim vzor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="144"/>
+        <location filename="../src/params/paramslang.cpp" line="152"/>
         <source>ai_trigger_threshold</source>
         <translation>Prah</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="145"/>
+        <location filename="../src/params/paramslang.cpp" line="153"/>
         <source>ai_enable_mode</source>
         <translation>Umoznit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="146"/>
+        <location filename="../src/params/paramslang.cpp" line="154"/>
         <source>ai_normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="147"/>
+        <location filename="../src/params/paramslang.cpp" line="155"/>
         <source>ai_infrared</source>
         <translation>Infracerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="148"/>
+        <location filename="../src/params/paramslang.cpp" line="156"/>
         <source>ai_multi_mode</source>
         <translation>Rezim multi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="149"/>
+        <location filename="../src/params/paramslang.cpp" line="157"/>
         <source>ai_material_name</source>
         <translation>Nazov materialu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="150"/>
+        <location filename="../src/params/paramslang.cpp" line="158"/>
         <source>ai_good</source>
         <translation>Dobry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="151"/>
+        <location filename="../src/params/paramslang.cpp" line="159"/>
         <source>ai_bad</source>
         <translation>Zly</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="152"/>
+        <location filename="../src/params/paramslang.cpp" line="160"/>
         <source>ai_cancel_optimize_calculate</source>
         <translation>Zrusit optimalizovany vypocet!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="153"/>
+        <location filename="../src/params/paramslang.cpp" line="161"/>
         <source>ai_cancel_optimize_sample</source>
         <translation>Zrusit preskocenie okraja!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="154"/>
+        <location filename="../src/params/paramslang.cpp" line="162"/>
         <source>ai_select_1000_pixels</source>
         <translation>Prosim zvolte viac ako 1000 pixelov!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="155"/>
+        <location filename="../src/params/paramslang.cpp" line="163"/>
         <source>ai_computing</source>
         <translation>Vypocet, prosim cakajte...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="156"/>
+        <location filename="../src/params/paramslang.cpp" line="164"/>
         <source>ai_save_error</source>
         <translation>Ulozit datovu chybu!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="157"/>
+        <location filename="../src/params/paramslang.cpp" line="165"/>
         <source>ai_msg_need_resample</source>
         <translation>Vypocet chyby, prosim novu vzorku!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="158"/>
+        <location filename="../src/params/paramslang.cpp" line="166"/>
         <source>ai_msg_usb_insert</source>
         <translation>Prosim vlozte velke ulozisko USB </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="159"/>
+        <location filename="../src/params/paramslang.cpp" line="167"/>
         <source>ai_msg_copy_image</source>
         <translation>Kopirovanie, prosim cakajte...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="160"/>
+        <location filename="../src/params/paramslang.cpp" line="168"/>
         <source>msg_export_image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="161"/>
+        <location filename="../src/params/paramslang.cpp" line="169"/>
         <source>msg_import_image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="162"/>
+        <location filename="../src/params/paramslang.cpp" line="170"/>
         <source>success</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="163"/>
+        <location filename="../src/params/paramslang.cpp" line="171"/>
         <source>failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="164"/>
+        <location filename="../src/params/paramslang.cpp" line="172"/>
         <source>sd_no_imageBak_dir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="165"/>
+        <location filename="../src/params/paramslang.cpp" line="173"/>
         <source>dir_no_png_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="166"/>
+        <location filename="../src/params/paramslang.cpp" line="174"/>
         <source>usb_no_imageBak_dir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="167"/>
+        <location filename="../src/params/paramslang.cpp" line="175"/>
         <source>select_png_dir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="168"/>
+        <location filename="../src/params/paramslang.cpp" line="176"/>
         <source>ai_msg_clear_local_pics</source>
         <translation>Vymazat miestne obrazky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="169"/>
+        <location filename="../src/params/paramslang.cpp" line="177"/>
         <source>ai_set_good_bad</source>
         <translation>Dobry alebo zly?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="170"/>
+        <location filename="../src/params/paramslang.cpp" line="178"/>
         <source>ai_set_more_material</source>
         <translation>Potreba viac ako 2 materialov</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="171"/>
+        <location filename="../src/params/paramslang.cpp" line="179"/>
         <source>ai_need_bad_material</source>
         <translation>Potreba zlych materialov</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="172"/>
+        <location filename="../src/params/paramslang.cpp" line="180"/>
         <source>ai_need_good_material</source>
         <translation>Potreba dobrych materialov</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="173"/>
+        <location filename="../src/params/paramslang.cpp" line="181"/>
         <source>ai_name_material</source>
         <translation>Prosim pomenujte material</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="174"/>
+        <location filename="../src/params/paramslang.cpp" line="182"/>
         <source>ai_exceed_max_times</source>
         <translation>Prekrocenie max zvolených dob</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="175"/>
+        <location filename="../src/params/paramslang.cpp" line="183"/>
         <source>ai_image_capturing</source>
         <translation>Zachytavanie...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="176"/>
+        <location filename="../src/params/paramslang.cpp" line="184"/>
         <source>ai_image_capture_error</source>
         <translation>Zachytena chyba!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="177"/>
+        <location filename="../src/params/paramslang.cpp" line="185"/>
         <source>ai_unsupervised_less_point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="178"/>
+        <location filename="../src/params/paramslang.cpp" line="186"/>
         <source>ai_unsupervised_more_point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="179"/>
+        <location filename="../src/params/paramslang.cpp" line="187"/>
         <source>ai_cfm_reselect_sample</source>
         <translation>Potvrdenie novej vzorky?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="180"/>
+        <location filename="../src/params/paramslang.cpp" line="188"/>
         <source>ai_optimizing</source>
         <translation>Optimalizacia...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="181"/>
+        <location filename="../src/params/paramslang.cpp" line="189"/>
         <source>ai_analysis</source>
         <translation>Analyza</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="182"/>
+        <location filename="../src/params/paramslang.cpp" line="190"/>
         <source>ai_analysis_set</source>
         <translation>Analyza</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="183"/>
+        <location filename="../src/params/paramslang.cpp" line="191"/>
         <source>ai_analysis_material</source>
         <translation>Material</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="184"/>
+        <location filename="../src/params/paramslang.cpp" line="192"/>
         <source>ai_msg_compute_error</source>
         <translation>Vypocet chyby, prosim novu vzorku!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="186"/>
+        <location filename="../src/params/paramslang.cpp" line="194"/>
         <source>ai_camera_mode</source>
         <translation>Farebna kamera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="187"/>
+        <location filename="../src/params/paramslang.cpp" line="195"/>
         <source>ai_color_space</source>
         <translation>Farebny priestor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="188"/>
+        <location filename="../src/params/paramslang.cpp" line="196"/>
         <source>ai_material_image</source>
         <translation>Obrazok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="189"/>
+        <location filename="../src/params/paramslang.cpp" line="197"/>
         <source>ai_auto_cal</source>
         <translation>Auto kal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="190"/>
+        <location filename="../src/params/paramslang.cpp" line="198"/>
         <source>ai_del_img</source>
         <translation>Vymazat obrazok?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="191"/>
+        <location filename="../src/params/paramslang.cpp" line="199"/>
         <source>ai_preview_mode</source>
         <translation>Nahlad</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="192"/>
+        <location filename="../src/params/paramslang.cpp" line="200"/>
         <source>ai_cal_set_same</source>
         <translation>Rovnako</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="193"/>
+        <location filename="../src/params/paramslang.cpp" line="201"/>
         <source>ai_cal_set_self</source>
         <translation>Nezavislost</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="194"/>
+        <location filename="../src/params/paramslang.cpp" line="202"/>
         <source>ai_class_mode_null</source>
         <translation>Vypnut Al</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="195"/>
+        <location filename="../src/params/paramslang.cpp" line="203"/>
         <source>ai_class_mode_usual</source>
         <translation>Obvykly</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="196"/>
+        <location filename="../src/params/paramslang.cpp" line="204"/>
         <source>ai_class_mode_multiple</source>
         <translation>Umoznit Al</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="197"/>
+        <location filename="../src/params/paramslang.cpp" line="205"/>
         <source>ai_capture</source>
         <translation>Zachytit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="198"/>
+        <location filename="../src/params/paramslang.cpp" line="206"/>
         <source>ai_delete</source>
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="199"/>
+        <location filename="../src/params/paramslang.cpp" line="207"/>
         <source>ai_err_no_bad</source>
         <translation>Chyba! Nast. zly material!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="200"/>
+        <location filename="../src/params/paramslang.cpp" line="208"/>
         <source>ai_err_no_good</source>
         <translation>Chyba! Nast. dobry material!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="201"/>
+        <location filename="../src/params/paramslang.cpp" line="209"/>
         <source>ai_err_no_set</source>
         <translation>Chyba! Nast. dobry alebo zly material!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="202"/>
+        <location filename="../src/params/paramslang.cpp" line="210"/>
         <source>ai_err_overflow</source>
         <translation>Chyba! Presiahnuty pocet materialu!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="203"/>
+        <location filename="../src/params/paramslang.cpp" line="211"/>
         <source>ai_cal_warn</source>
         <translation>Auto vzorka?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="204"/>
+        <location filename="../src/params/paramslang.cpp" line="212"/>
         <source>ai_cal_open</source>
         <translation>Prosim umoznite rezim Al!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="205"/>
+        <location filename="../src/params/paramslang.cpp" line="213"/>
         <source>ai_img_import</source>
         <translation>Import</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="206"/>
+        <location filename="../src/params/paramslang.cpp" line="214"/>
         <source>ai_img_export</source>
         <translation>Export</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="207"/>
+        <location filename="../src/params/paramslang.cpp" line="215"/>
         <source>ai_img_import_export</source>
         <translation>Obrazky Import / Export</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="208"/>
+        <location filename="../src/params/paramslang.cpp" line="216"/>
         <source>ai_img_threshold</source>
         <translation>Zachytit prah</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="209"/>
+        <location filename="../src/params/paramslang.cpp" line="217"/>
         <source>ai_img_colorSpace</source>
         <translation>FarbaPriestor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="210"/>
+        <location filename="../src/params/paramslang.cpp" line="218"/>
         <source>ai_img_colorSpace1</source>
         <translation>FarbaPriestor1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="211"/>
+        <location filename="../src/params/paramslang.cpp" line="219"/>
         <source>ai_img_colorSpace2</source>
         <translation>FarbaPriestor2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="212"/>
+        <location filename="../src/params/paramslang.cpp" line="220"/>
         <source>ai_img_msg_export</source>
         <translation>Export obrazkov?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="213"/>
+        <location filename="../src/params/paramslang.cpp" line="221"/>
         <source>ai_img_msg_import</source>
         <translation>Import obrazkov?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="214"/>
+        <location filename="../src/params/paramslang.cpp" line="222"/>
         <source>ai_mode</source>
         <translation>Rezim trieda</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="215"/>
+        <location filename="../src/params/paramslang.cpp" line="223"/>
         <source>ai_mode1</source>
         <translation>Rezim 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="216"/>
+        <location filename="../src/params/paramslang.cpp" line="224"/>
         <source>ai_mode2</source>
         <translation>Rezim 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="217"/>
+        <location filename="../src/params/paramslang.cpp" line="225"/>
         <source>ai_start_purity</source>
         <translation>Cistota</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="218"/>
+        <location filename="../src/params/paramslang.cpp" line="226"/>
         <source>ai_unsupervisedLearning</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="219"/>
+        <location filename="../src/params/paramslang.cpp" line="227"/>
         <source>ai_reserved_sens</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="222"/>
+        <location filename="../src/params/paramslang.cpp" line="230"/>
         <source>identify_params</source>
         <translation>Identifikovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="223"/>
+        <location filename="../src/params/paramslang.cpp" line="231"/>
         <source>infra_identify_params</source>
         <translation>Identifikovat Infra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="224"/>
+        <location filename="../src/params/paramslang.cpp" line="232"/>
         <source>material_general</source>
         <translation>Vseobecny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="225"/>
+        <location filename="../src/params/paramslang.cpp" line="233"/>
         <source>infra_material_general</source>
         <translation>Veobec. Infra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="226"/>
+        <location filename="../src/params/paramslang.cpp" line="234"/>
         <source>material_color</source>
         <translation>Farebne parametre</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="227"/>
+        <location filename="../src/params/paramslang.cpp" line="235"/>
         <source>material_defect_grey_a</source>
         <translation>Sivy A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="228"/>
+        <location filename="../src/params/paramslang.cpp" line="236"/>
         <source>material_defect_grey_b</source>
         <translation>Sivy B</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="229"/>
+        <location filename="../src/params/paramslang.cpp" line="237"/>
         <source>material_defect_discolor_a</source>
         <translation>Vyblednut A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="230"/>
+        <location filename="../src/params/paramslang.cpp" line="238"/>
         <source>material_defect_discolor_b</source>
         <translation>Vyblednut B</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="231"/>
+        <location filename="../src/params/paramslang.cpp" line="239"/>
         <source>material_cross</source>
         <translation>Rozdiel</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="232"/>
+        <location filename="../src/params/paramslang.cpp" line="240"/>
         <source>material_shape</source>
         <translation>Tvar</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="233"/>
+        <location filename="../src/params/paramslang.cpp" line="241"/>
         <source>material_shape_length</source>
         <translation>Dlzka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="234"/>
+        <location filename="../src/params/paramslang.cpp" line="242"/>
         <source>material_shape_pole</source>
         <translation>Pol</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="235"/>
+        <location filename="../src/params/paramslang.cpp" line="243"/>
         <source>material_shape_pole_a</source>
         <translation>Tenky pol</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="236"/>
+        <location filename="../src/params/paramslang.cpp" line="244"/>
         <source>material_shape_pole_b</source>
         <translation>Siroky pol</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="237"/>
+        <location filename="../src/params/paramslang.cpp" line="245"/>
         <source>material_scale_params</source>
         <translation>Skala</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="238"/>
+        <location filename="../src/params/paramslang.cpp" line="246"/>
         <source>material_shape_slice</source>
         <translation>Platok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="239"/>
+        <location filename="../src/params/paramslang.cpp" line="247"/>
         <source>material_shape_leaf</source>
         <translation>Bud</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="240"/>
+        <location filename="../src/params/paramslang.cpp" line="248"/>
         <source>material_bud_1</source>
         <translation>Bud A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="241"/>
+        <location filename="../src/params/paramslang.cpp" line="249"/>
         <source>material_bud_2</source>
         <translation>Bud B</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="242"/>
+        <location filename="../src/params/paramslang.cpp" line="250"/>
         <source>material_defect_a</source>
         <translation>Vada A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="243"/>
+        <location filename="../src/params/paramslang.cpp" line="251"/>
         <source>material_defect_b</source>
         <translation>Vada B</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="244"/>
+        <location filename="../src/params/paramslang.cpp" line="252"/>
         <source>material_defect_c</source>
         <translation>Vada C</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="245"/>
+        <location filename="../src/params/paramslang.cpp" line="253"/>
         <source>material_defect_d</source>
         <translation>Vada D</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="246"/>
+        <location filename="../src/params/paramslang.cpp" line="254"/>
         <source>material_infra</source>
         <translation>Infracerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="247"/>
+        <location filename="../src/params/paramslang.cpp" line="255"/>
         <source>material_intelligent_mode_a</source>
         <translation>Inteligentny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="248"/>
+        <location filename="../src/params/paramslang.cpp" line="256"/>
         <source>material_intelligent_mode_b</source>
         <translation>Inteligentny B</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="249"/>
+        <location filename="../src/params/paramslang.cpp" line="257"/>
         <source>material_intelligent_mode_c</source>
         <translation>Inteligentny C</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="250"/>
+        <location filename="../src/params/paramslang.cpp" line="258"/>
         <source>material_intelligent_mode_d</source>
         <translation>Inteligentny D</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="251"/>
+        <location filename="../src/params/paramslang.cpp" line="259"/>
         <source>material_tea</source>
         <translation>Caj</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="252"/>
+        <location filename="../src/params/paramslang.cpp" line="260"/>
         <source>material_watermelon</source>
         <translation>Vodny melon</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="253"/>
+        <location filename="../src/params/paramslang.cpp" line="261"/>
         <source>material_reserved</source>
         <translation>Rezervovany</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="254"/>
+        <location filename="../src/params/paramslang.cpp" line="262"/>
         <source>material_maize_param</source>
         <translation>Kukurica</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="255"/>
+        <location filename="../src/params/paramslang.cpp" line="263"/>
         <source>material_watermelon_edge_red</source>
         <translation>Okraj cerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="256"/>
+        <location filename="../src/params/paramslang.cpp" line="264"/>
         <source>material_watermelon_red_sens</source>
         <translation>Cerveny senz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="257"/>
+        <location filename="../src/params/paramslang.cpp" line="265"/>
         <source>material_watermelon_red_ratio</source>
         <translation>Cerveny pomer</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="258"/>
+        <location filename="../src/params/paramslang.cpp" line="266"/>
         <source>material_watermelon_edge_damaged</source>
         <translation>Okraj poskodeny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="259"/>
+        <location filename="../src/params/paramslang.cpp" line="267"/>
         <source>material_watermelon_damaged_ratio</source>
         <translation>Pomer poskodeny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="260"/>
+        <location filename="../src/params/paramslang.cpp" line="268"/>
         <source>material_watermelon_damaged_sens</source>
         <translation>Poskodeny senz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="261"/>
+        <location filename="../src/params/paramslang.cpp" line="269"/>
         <source>material_watermelon_rugged1</source>
         <translation>Nerovny1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="262"/>
+        <location filename="../src/params/paramslang.cpp" line="270"/>
         <source>material_watermelon_rugged2</source>
         <translation>Nerovny2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="263"/>
+        <location filename="../src/params/paramslang.cpp" line="271"/>
         <source>material_watermelon_white_small</source>
         <translation>Biely maly</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="264"/>
+        <location filename="../src/params/paramslang.cpp" line="272"/>
         <source>material_watermelon_white_sens</source>
         <translation>Biely senz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="265"/>
+        <location filename="../src/params/paramslang.cpp" line="273"/>
         <source>material_watermelon_rugged_save_white</source>
         <translation>Nerovny1 ulozit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="266"/>
+        <location filename="../src/params/paramslang.cpp" line="274"/>
         <source>material_watermelon_rugged_save_black</source>
         <translation>Nerovny2 ulozit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="267"/>
+        <location filename="../src/params/paramslang.cpp" line="275"/>
         <source>material_watermelon_ai_whole</source>
         <translation>Cely</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="268"/>
+        <location filename="../src/params/paramslang.cpp" line="276"/>
         <source>material_watermelon_ai_edge</source>
         <translation>Okraj</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="269"/>
+        <location filename="../src/params/paramslang.cpp" line="277"/>
         <source>material_ai_alg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="270"/>
+        <location filename="../src/params/paramslang.cpp" line="278"/>
         <source>cfm_use_watermelon</source>
         <translation>Pouzi melon</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="271"/>
+        <location filename="../src/params/paramslang.cpp" line="279"/>
         <source>cfm_rename_impurity</source>
         <translation>Potvrdit premenovanie vady?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="272"/>
+        <location filename="../src/params/paramslang.cpp" line="280"/>
         <source>defect_name</source>
         <translation>Pomenovanie vady</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="273"/>
+        <location filename="../src/params/paramslang.cpp" line="281"/>
         <source>mode</source>
         <translation>Rezim</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="274"/>
+        <location filename="../src/params/paramslang.cpp" line="282"/>
         <source>scale</source>
         <translation>Mierka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="275"/>
+        <location filename="../src/params/paramslang.cpp" line="283"/>
         <source>purity</source>
         <translation>Cistota</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="276"/>
+        <location filename="../src/params/paramslang.cpp" line="284"/>
         <source>red</source>
         <translation>Cerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="277"/>
+        <location filename="../src/params/paramslang.cpp" line="285"/>
         <source>green</source>
         <translation>Zeleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="278"/>
+        <location filename="../src/params/paramslang.cpp" line="286"/>
         <source>blue</source>
         <translation>Modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="279"/>
+        <location filename="../src/params/paramslang.cpp" line="287"/>
         <source>dark</source>
         <translation>Tmavy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="280"/>
+        <location filename="../src/params/paramslang.cpp" line="288"/>
         <source>light</source>
         <translation>Svetly</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="281"/>
+        <location filename="../src/params/paramslang.cpp" line="289"/>
         <source>light_limit</source>
         <translation>Svetly limit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="282"/>
+        <location filename="../src/params/paramslang.cpp" line="290"/>
         <source>red_green</source>
         <translation>Cerveno-zeleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="283"/>
+        <location filename="../src/params/paramslang.cpp" line="291"/>
         <source>red_blue</source>
         <translation>Cerveno-modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="284"/>
+        <location filename="../src/params/paramslang.cpp" line="292"/>
         <source>green_blue</source>
         <translation>Zeleno-modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="285"/>
+        <location filename="../src/params/paramslang.cpp" line="293"/>
         <source>sort_circular</source>
         <translation>Kruhovy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="286"/>
+        <location filename="../src/params/paramslang.cpp" line="294"/>
         <source>sort_long</source>
         <translation>Dlhy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="287"/>
+        <location filename="../src/params/paramslang.cpp" line="295"/>
         <source>sort_short</source>
         <translation>Kratky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="288"/>
+        <location filename="../src/params/paramslang.cpp" line="296"/>
         <source>sort_small</source>
         <translation>Maly</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="289"/>
+        <location filename="../src/params/paramslang.cpp" line="297"/>
         <source>sort_big</source>
         <translation>Velky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="290"/>
+        <location filename="../src/params/paramslang.cpp" line="298"/>
         <source>params_limit</source>
         <translation>Limit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="291"/>
+        <location filename="../src/params/paramslang.cpp" line="299"/>
         <source>area</source>
         <translation>Oblast </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="292"/>
+        <location filename="../src/params/paramslang.cpp" line="300"/>
         <source>arithmetic_list</source>
         <translation>Aritmeticky zoznam</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="293"/>
+        <location filename="../src/params/paramslang.cpp" line="301"/>
         <source>material_mode</source>
         <translation>Rezim material</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="294"/>
+        <location filename="../src/params/paramslang.cpp" line="302"/>
         <source>first_second</source>
         <translation>1. a 2. a 3. podobne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="295"/>
+        <location filename="../src/params/paramslang.cpp" line="303"/>
         <source>all_seperate</source>
         <translation>Vsetko nastavit jednotlilvo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="296"/>
+        <location filename="../src/params/paramslang.cpp" line="304"/>
         <source>front_rear</source>
         <translation>Predny a zadny podobne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="297"/>
+        <location filename="../src/params/paramslang.cpp" line="305"/>
         <source>all_alike</source>
         <translation>Vsetky podobne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="298"/>
+        <location filename="../src/params/paramslang.cpp" line="306"/>
         <source>reserved</source>
         <translation>Rezervovany</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="299"/>
+        <location filename="../src/params/paramslang.cpp" line="307"/>
         <source>reserved_1</source>
         <translation>Rezervovany 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="300"/>
+        <location filename="../src/params/paramslang.cpp" line="308"/>
         <source>reserved_2</source>
         <translation>Rezervovany 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="301"/>
+        <location filename="../src/params/paramslang.cpp" line="309"/>
         <source>reserved_dark_red</source>
         <translation>Rezervovany cerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="302"/>
+        <location filename="../src/params/paramslang.cpp" line="310"/>
         <source>reserved_peeled</source>
         <translation>Rezervovany lupany</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="303"/>
+        <location filename="../src/params/paramslang.cpp" line="311"/>
         <source>reserved_burnt</source>
         <translation>Rezervovany spaleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="304"/>
+        <location filename="../src/params/paramslang.cpp" line="312"/>
         <source>slice_sensitivity</source>
         <translation>Platok senz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="305"/>
+        <location filename="../src/params/paramslang.cpp" line="313"/>
         <source>slice_size</source>
         <translation>Platok rozmer</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="306"/>
+        <location filename="../src/params/paramslang.cpp" line="314"/>
         <source>pole_size</source>
         <translation>Pol rozmer</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="307"/>
+        <location filename="../src/params/paramslang.cpp" line="315"/>
         <source>grain_sensitivity</source>
         <translation>Zrno senz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="308"/>
+        <location filename="../src/params/paramslang.cpp" line="316"/>
         <source>grain_size</source>
         <translation>Zrno rozmer</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="309"/>
+        <location filename="../src/params/paramslang.cpp" line="317"/>
         <source>balance</source>
         <translation>Zostatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="310"/>
+        <location filename="../src/params/paramslang.cpp" line="318"/>
         <source>hard_code</source>
         <translation>Silny param</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="311"/>
+        <location filename="../src/params/paramslang.cpp" line="319"/>
         <source>min_limit</source>
         <translation>Horny limit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="312"/>
+        <location filename="../src/params/paramslang.cpp" line="320"/>
         <source>max_limit</source>
         <translation>Dolny limit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="313"/>
+        <location filename="../src/params/paramslang.cpp" line="321"/>
         <source>threshold</source>
         <translation>Prah</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="316"/>
+        <location filename="../src/params/paramslang.cpp" line="324"/>
         <source>lamp_front_bg_red</source>
         <translation>Predny BG-cerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="317"/>
+        <location filename="../src/params/paramslang.cpp" line="325"/>
         <source>lamp_front_bg_green</source>
         <translation>Predny BG-zeleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="318"/>
+        <location filename="../src/params/paramslang.cpp" line="326"/>
         <source>lamp_front_bg_blue</source>
         <translation>Predny BG-modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="319"/>
+        <location filename="../src/params/paramslang.cpp" line="327"/>
         <source>lamp_rear_bg_red</source>
         <translation>Zadny BG-cerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="320"/>
+        <location filename="../src/params/paramslang.cpp" line="328"/>
         <source>lamp_rear_bg_green</source>
         <translation>Zadny BG-zeleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="321"/>
+        <location filename="../src/params/paramslang.cpp" line="329"/>
         <source>lamp_rear_bg_blue</source>
         <translation>Zadny BG-modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="322"/>
+        <location filename="../src/params/paramslang.cpp" line="330"/>
         <source>lamp_rear</source>
         <translation>Zadny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="323"/>
+        <location filename="../src/params/paramslang.cpp" line="331"/>
         <source>lamp_rear_1</source>
         <translation>Zadny 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="324"/>
+        <location filename="../src/params/paramslang.cpp" line="332"/>
         <source>lamp_rear_2</source>
         <translation>Zadny 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="325"/>
+        <location filename="../src/params/paramslang.cpp" line="333"/>
         <source>lamp_rear_3</source>
         <translation>Zadny 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="326"/>
+        <location filename="../src/params/paramslang.cpp" line="334"/>
         <source>lamp_rear_4</source>
         <translation>Zadny 4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="327"/>
+        <location filename="../src/params/paramslang.cpp" line="335"/>
         <source>lamp_upper_1</source>
         <translation>Horny 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="328"/>
+        <location filename="../src/params/paramslang.cpp" line="336"/>
         <source>lamp_upper_2</source>
         <translation>Horny 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="329"/>
+        <location filename="../src/params/paramslang.cpp" line="337"/>
         <source>lamp_upper_3</source>
         <translation>Horny 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="330"/>
+        <location filename="../src/params/paramslang.cpp" line="338"/>
         <source>lamp_upper_4</source>
         <translation>Horny 4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="331"/>
+        <location filename="../src/params/paramslang.cpp" line="339"/>
         <source>lamp_front</source>
         <translation>Predny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="332"/>
+        <location filename="../src/params/paramslang.cpp" line="340"/>
         <source>lamp_front_1</source>
         <translation>Predny 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="333"/>
+        <location filename="../src/params/paramslang.cpp" line="341"/>
         <source>lamp_front_2</source>
         <translation>Predny 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="334"/>
+        <location filename="../src/params/paramslang.cpp" line="342"/>
         <source>lamp_front_3</source>
         <translation>Predny 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="335"/>
+        <location filename="../src/params/paramslang.cpp" line="343"/>
         <source>lamp_upper_bg</source>
         <translation>Horny BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="336"/>
+        <location filename="../src/params/paramslang.cpp" line="344"/>
         <source>lamp_low_1</source>
         <translation>Dolny 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="337"/>
+        <location filename="../src/params/paramslang.cpp" line="345"/>
         <source>lamp_low_2</source>
         <translation>Dolny 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="338"/>
+        <location filename="../src/params/paramslang.cpp" line="346"/>
         <source>lamp_low_3</source>
         <translation>Dolny 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="339"/>
+        <location filename="../src/params/paramslang.cpp" line="347"/>
         <source>lamp_low_4</source>
         <translation>Dolny 4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="340"/>
+        <location filename="../src/params/paramslang.cpp" line="348"/>
         <source>lamp_low_bg</source>
         <translation>Dolny BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="341"/>
+        <location filename="../src/params/paramslang.cpp" line="349"/>
         <source>lamp_upper_bg_red</source>
         <translation>Horny BG-cerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="342"/>
+        <location filename="../src/params/paramslang.cpp" line="350"/>
         <source>lamp_upper_bg_green</source>
         <translation>Horny BG-zeleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="343"/>
+        <location filename="../src/params/paramslang.cpp" line="351"/>
         <source>lamp_upper_bg_blue</source>
         <translation>Horny BG-modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="344"/>
+        <location filename="../src/params/paramslang.cpp" line="352"/>
         <source>lamp_low_bg_red</source>
         <translation>Dolny BG-cerveny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="345"/>
+        <location filename="../src/params/paramslang.cpp" line="353"/>
         <source>lamp_low_bg_green</source>
         <translation>Dolny BG-zeleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="346"/>
+        <location filename="../src/params/paramslang.cpp" line="354"/>
         <source>lamp_low_bg_blue</source>
         <translation>Dolny BG-modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="347"/>
+        <location filename="../src/params/paramslang.cpp" line="355"/>
         <source>lamp_mid_1</source>
         <translation>Stred 1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="348"/>
+        <location filename="../src/params/paramslang.cpp" line="356"/>
         <source>lamp_mid_2</source>
         <translation>Stred 2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="349"/>
+        <location filename="../src/params/paramslang.cpp" line="357"/>
         <source>lamp_mid_3</source>
         <translation>Stred 3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="350"/>
+        <location filename="../src/params/paramslang.cpp" line="358"/>
         <source>lamp_mid_4</source>
         <translation>Stred 4</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="351"/>
+        <location filename="../src/params/paramslang.cpp" line="359"/>
         <source>lamp_mid_bg</source>
         <translation>Stred BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="352"/>
+        <location filename="../src/params/paramslang.cpp" line="360"/>
         <source>lamp_rear_bg</source>
         <translation>Zadny BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="353"/>
+        <location filename="../src/params/paramslang.cpp" line="361"/>
         <source>lamp_front_bg</source>
         <translation>Predny BG</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="356"/>
+        <location filename="../src/params/paramslang.cpp" line="364"/>
         <source>feeder_set</source>
         <translation>Podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="357"/>
+        <location filename="../src/params/paramslang.cpp" line="365"/>
         <source>feeder</source>
         <translation>Podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="358"/>
+        <location filename="../src/params/paramslang.cpp" line="366"/>
         <source>feed</source>
         <translation>Podat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="359"/>
+        <location filename="../src/params/paramslang.cpp" line="367"/>
         <source>feeder_ac</source>
         <translation>Podat AC</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="360"/>
+        <location filename="../src/params/paramslang.cpp" line="368"/>
         <source>feed_enable</source>
         <translation>Podat umoznit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="361"/>
+        <location filename="../src/params/paramslang.cpp" line="369"/>
         <source>feeder_value</source>
         <translation>Podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="362"/>
+        <location filename="../src/params/paramslang.cpp" line="370"/>
         <source>enable_all</source>
         <translation>Vsetko zapnut</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="363"/>
+        <location filename="../src/params/paramslang.cpp" line="371"/>
         <source>disable_all</source>
         <translation>Vsetko vypnut</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="364"/>
+        <location filename="../src/params/paramslang.cpp" line="372"/>
         <source>single</source>
         <translation>Jeden</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="365"/>
+        <location filename="../src/params/paramslang.cpp" line="373"/>
         <source>complex</source>
         <translation>Komplexny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="366"/>
+        <location filename="../src/params/paramslang.cpp" line="374"/>
         <source>feeder_level</source>
         <translation>Uroven</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="367"/>
+        <location filename="../src/params/paramslang.cpp" line="375"/>
         <source>feeder_empty</source>
         <translation>Prazdny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="368"/>
+        <location filename="../src/params/paramslang.cpp" line="376"/>
         <source>feeder_conbine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="369"/>
+        <location filename="../src/params/paramslang.cpp" line="377"/>
         <source>no_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="370"/>
+        <location filename="../src/params/paramslang.cpp" line="378"/>
         <source>exist_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="373"/>
+        <location filename="../src/params/paramslang.cpp" line="381"/>
         <source>belt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="376"/>
+        <location filename="../src/params/paramslang.cpp" line="384"/>
         <source>wipe_set</source>
         <translation>Utriet</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="377"/>
+        <location filename="../src/params/paramslang.cpp" line="385"/>
         <source>wipe_duration</source>
         <translation>Trvanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="378"/>
+        <location filename="../src/params/paramslang.cpp" line="386"/>
         <source>wipe_interval</source>
         <translation>Interval</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="379"/>
+        <location filename="../src/params/paramslang.cpp" line="387"/>
         <source>wipe_enable</source>
         <translation>Umoznit utriet</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="380"/>
+        <location filename="../src/params/paramslang.cpp" line="388"/>
         <source>wipe_manual</source>
         <translation>Manual utriet</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="381"/>
+        <location filename="../src/params/paramslang.cpp" line="389"/>
         <source>wipe_wind</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="382"/>
+        <location filename="../src/params/paramslang.cpp" line="390"/>
         <source>wipe_wind_duration</source>
         <translation>Trvanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="383"/>
+        <location filename="../src/params/paramslang.cpp" line="391"/>
         <source>wipe_wind_interval</source>
         <translation>Interval</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="384"/>
+        <location filename="../src/params/paramslang.cpp" line="392"/>
         <source>wipe_wind_manual</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="385"/>
+        <location filename="../src/params/paramslang.cpp" line="393"/>
         <source>wipe_water</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="386"/>
+        <location filename="../src/params/paramslang.cpp" line="394"/>
         <source>wipe_water_duration</source>
         <translation>Trvanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="387"/>
+        <location filename="../src/params/paramslang.cpp" line="395"/>
         <source>wipe_water_delay</source>
         <translation>Oddialenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="388"/>
+        <location filename="../src/params/paramslang.cpp" line="396"/>
         <source>wipe_delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="391"/>
+        <location filename="../src/params/paramslang.cpp" line="399"/>
         <source>select</source>
         <translation>Vybrat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="392"/>
+        <location filename="../src/params/paramslang.cpp" line="400"/>
         <source>scheme_select</source>
         <translation>Schema</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="393"/>
+        <location filename="../src/params/paramslang.cpp" line="401"/>
         <source>scheme_parameter</source>
         <translation>Parametre program</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="394"/>
+        <location filename="../src/params/paramslang.cpp" line="402"/>
         <source>scheme_manage</source>
         <translation>Schema manaz.</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="395"/>
+        <location filename="../src/params/paramslang.cpp" line="403"/>
         <source>scheme_new</source>
         <translation>Novy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="396"/>
+        <location filename="../src/params/paramslang.cpp" line="404"/>
         <source>scheme_copy</source>
         <translation>Kopirovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="397"/>
+        <location filename="../src/params/paramslang.cpp" line="405"/>
         <source>scheme_delete</source>
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="398"/>
+        <location filename="../src/params/paramslang.cpp" line="406"/>
         <source>scheme_rename</source>
         <translation>Premenovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="399"/>
+        <location filename="../src/params/paramslang.cpp" line="407"/>
         <source>scheme_restore</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="400"/>
+        <location filename="../src/params/paramslang.cpp" line="408"/>
         <source>scheme_backup</source>
         <translation>Zalohovanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="401"/>
+        <location filename="../src/params/paramslang.cpp" line="409"/>
         <source>scheme_change_mode</source>
         <translation>Rezim upravit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="402"/>
+        <location filename="../src/params/paramslang.cpp" line="410"/>
         <source>scheme_copy_major</source>
         <translation>Parametre kopirovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="403"/>
+        <location filename="../src/params/paramslang.cpp" line="411"/>
         <source>cfm_create_scheme</source>
         <translation>Vytvorit novu schemu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="404"/>
+        <location filename="../src/params/paramslang.cpp" line="412"/>
         <source>cfm_scheme_copy</source>
         <translation>Kopirovat tuto schemu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="405"/>
+        <location filename="../src/params/paramslang.cpp" line="413"/>
         <source>cfm_scheme_delete</source>
         <translation>Vymazat tuto schemu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="406"/>
+        <location filename="../src/params/paramslang.cpp" line="414"/>
         <source>msg_delete_forbidden</source>
         <translation>Posledna schema sa neda vymazat!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="407"/>
+        <location filename="../src/params/paramslang.cpp" line="415"/>
         <source>cfm_scheme_rename</source>
         <translation>Premenovat tuto schemu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="408"/>
+        <location filename="../src/params/paramslang.cpp" line="416"/>
         <source>msg_scheme_name_input</source>
         <translation>Zadajte meno schemy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="409"/>
+        <location filename="../src/params/paramslang.cpp" line="417"/>
         <source>cfm_restore_from_local</source>
         <translation>Obnovit param schemy z miestneho?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="410"/>
+        <location filename="../src/params/paramslang.cpp" line="418"/>
         <source>cfm_restore_from_usb</source>
         <translation>Obnovit parametre z USB uloziska?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="411"/>
+        <location filename="../src/params/paramslang.cpp" line="419"/>
         <source>msg_restore_from_usb_error</source>
         <translation>Nepodarilo sa obnovit schemu z U disku</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="412"/>
+        <location filename="../src/params/paramslang.cpp" line="420"/>
         <source>cfm_backup_to_local</source>
         <translation>Zalohovat schemu do miestneho?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="413"/>
+        <location filename="../src/params/paramslang.cpp" line="421"/>
         <source>cfm_backup_to_usb</source>
         <translation>Zalohovat schemu na USB ulozisko?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="414"/>
+        <location filename="../src/params/paramslang.cpp" line="422"/>
         <source>cfm_select_current_scheme</source>
         <translation>Vybrat tuto schemu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="415"/>
+        <location filename="../src/params/paramslang.cpp" line="423"/>
         <source>cfm_change_profile_mode</source>
         <translation>Potvrdit zmenu rezimu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="416"/>
+        <location filename="../src/params/paramslang.cpp" line="424"/>
         <source>msg_custom_language_input</source>
         <translation>Vlozit nazov zakazky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="417"/>
+        <location filename="../src/params/paramslang.cpp" line="425"/>
         <source>msg_rename_custom_language</source>
         <translation>Prilis dlhe vlakno, prosim vlozte znova</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="420"/>
+        <location filename="../src/params/paramslang.cpp" line="428"/>
         <source>background_set</source>
         <translation>Pozadie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="421"/>
+        <location filename="../src/params/paramslang.cpp" line="429"/>
         <source>value</source>
         <translation>Hodnota</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="422"/>
+        <location filename="../src/params/paramslang.cpp" line="430"/>
         <source>percent</source>
         <translation>Percento</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="423"/>
+        <location filename="../src/params/paramslang.cpp" line="431"/>
         <source>black</source>
         <translation>Cierny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="424"/>
+        <location filename="../src/params/paramslang.cpp" line="432"/>
         <source>white</source>
         <translation>Biely</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="425"/>
+        <location filename="../src/params/paramslang.cpp" line="433"/>
         <source>automatic</source>
         <translation>Automaticky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="426"/>
+        <location filename="../src/params/paramslang.cpp" line="434"/>
         <source>msg_auto_bgk_ckeck_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="427"/>
+        <location filename="../src/params/paramslang.cpp" line="435"/>
         <source>msg_strip_frame_data_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="429"/>
+        <location filename="../src/params/paramslang.cpp" line="437"/>
         <source>eject_on</source>
         <translation>Vydavac zapnuty</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="430"/>
+        <location filename="../src/params/paramslang.cpp" line="438"/>
         <source>eject_duration</source>
         <translation>Trvanie (ms)</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="431"/>
+        <location filename="../src/params/paramslang.cpp" line="439"/>
         <source>eject_delay</source>
         <translation>Omeskanie (ms)</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="432"/>
+        <location filename="../src/params/paramslang.cpp" line="440"/>
         <source>eject_bias</source>
         <translation>Predpatie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="433"/>
+        <location filename="../src/params/paramslang.cpp" line="441"/>
         <source>eject_test</source>
         <translation>Vydavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="434"/>
+        <location filename="../src/params/paramslang.cpp" line="442"/>
         <source>ejector_current</source>
         <translation>Vydavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="435"/>
+        <location filename="../src/params/paramslang.cpp" line="443"/>
         <source>ejector_keep_loop</source>
         <translation>Slucka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="436"/>
+        <location filename="../src/params/paramslang.cpp" line="444"/>
         <source>eject_time</source>
         <translation>Cas vydavania</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="437"/>
+        <location filename="../src/params/paramslang.cpp" line="445"/>
         <source>eject_fast_test</source>
         <translation>Rychlejsie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="438"/>
+        <location filename="../src/params/paramslang.cpp" line="446"/>
         <source>lamp_control</source>
         <translation>Svetlo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="439"/>
+        <location filename="../src/params/paramslang.cpp" line="447"/>
         <source>tick_params</source>
         <translation>Param. vydavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="440"/>
+        <location filename="../src/params/paramslang.cpp" line="448"/>
         <source>infra_tick_params</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="441"/>
+        <location filename="../src/params/paramslang.cpp" line="449"/>
         <source>infra_background_set</source>
         <translation>Infra pozadie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="442"/>
+        <location filename="../src/params/paramslang.cpp" line="450"/>
         <source>fixed_mode</source>
         <translation>Ulozenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="443"/>
+        <location filename="../src/params/paramslang.cpp" line="451"/>
         <source>extended_mode</source>
         <translation>Dobre zvoleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="444"/>
+        <location filename="../src/params/paramslang.cpp" line="452"/>
         <source>accurate_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="445"/>
+        <location filename="../src/params/paramslang.cpp" line="453"/>
         <source>eject_mode</source>
         <translation>Rezim vydavania</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="446"/>
+        <location filename="../src/params/paramslang.cpp" line="454"/>
         <source>infect_arithmetic</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="447"/>
+        <location filename="../src/params/paramslang.cpp" line="455"/>
         <source>edge_cut</source>
         <translation>Rezany okraj</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="448"/>
+        <location filename="../src/params/paramslang.cpp" line="456"/>
         <source>remove_joint</source>
         <translation>Odstranit clanok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="449"/>
+        <location filename="../src/params/paramslang.cpp" line="457"/>
         <source>remove_tick</source>
         <translation>Odstranit tikanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="450"/>
+        <location filename="../src/params/paramslang.cpp" line="458"/>
         <source>edge_revise</source>
         <translation>Upravit okraj</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="451"/>
+        <location filename="../src/params/paramslang.cpp" line="459"/>
         <source>mat_width</source>
         <translation>Sirka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="452"/>
+        <location filename="../src/params/paramslang.cpp" line="460"/>
         <source>bad_number</source>
         <translation>Zle cislo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="453"/>
+        <location filename="../src/params/paramslang.cpp" line="461"/>
         <source>good_number</source>
         <translation>Rovnovaha</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="454"/>
+        <location filename="../src/params/paramslang.cpp" line="462"/>
         <source>enable_balance</source>
         <translation>Rovnovaha</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="455"/>
+        <location filename="../src/params/paramslang.cpp" line="463"/>
         <source>logic_or</source>
         <translation>Alebo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="456"/>
+        <location filename="../src/params/paramslang.cpp" line="464"/>
         <source>logic_and</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="457"/>
+        <location filename="../src/params/paramslang.cpp" line="465"/>
         <source>logical_relation</source>
         <translation>Spojenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="458"/>
+        <location filename="../src/params/paramslang.cpp" line="466"/>
         <source>sort</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="459"/>
+        <location filename="../src/params/paramslang.cpp" line="467"/>
         <source>reverse</source>
         <translation>Vratit sa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="460"/>
+        <location filename="../src/params/paramslang.cpp" line="468"/>
         <source>sort_mode</source>
         <translation>Rezim druh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="461"/>
+        <location filename="../src/params/paramslang.cpp" line="469"/>
         <source>unknown</source>
         <translation>Neznamy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="462"/>
+        <location filename="../src/params/paramslang.cpp" line="470"/>
         <source>enable_default</source>
         <translation>Povodne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="463"/>
+        <location filename="../src/params/paramslang.cpp" line="471"/>
         <source>color_sort</source>
         <translation>Farba druh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="464"/>
+        <location filename="../src/params/paramslang.cpp" line="472"/>
         <source>shape_sort</source>
         <translation>Tvar druh</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="465"/>
+        <location filename="../src/params/paramslang.cpp" line="473"/>
         <source>huff_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="466"/>
+        <location filename="../src/params/paramslang.cpp" line="474"/>
         <source>huff_width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="469"/>
+        <location filename="../src/params/paramslang.cpp" line="477"/>
         <source>system_stat</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="470"/>
+        <location filename="../src/params/paramslang.cpp" line="478"/>
         <source>screen</source>
         <translation>Obrazovka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="471"/>
+        <location filename="../src/params/paramslang.cpp" line="479"/>
         <source>interface_board</source>
         <translation>Rozhranie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="472"/>
+        <location filename="../src/params/paramslang.cpp" line="480"/>
         <source>control_board</source>
         <translation>Ovladanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="473"/>
+        <location filename="../src/params/paramslang.cpp" line="481"/>
         <source>color_board</source>
         <translation>Kamera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="474"/>
+        <location filename="../src/params/paramslang.cpp" line="482"/>
         <source>color</source>
         <translation>Farba</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="475"/>
+        <location filename="../src/params/paramslang.cpp" line="483"/>
         <source>mono_board</source>
         <translation>Mono doska</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="476"/>
+        <location filename="../src/params/paramslang.cpp" line="484"/>
         <source>infra_board</source>
         <translation>Infra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="477"/>
+        <location filename="../src/params/paramslang.cpp" line="485"/>
         <source>light_src_board</source>
         <translation>LED doska</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="478"/>
+        <location filename="../src/params/paramslang.cpp" line="486"/>
         <source>recheck</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="479"/>
+        <location filename="../src/params/paramslang.cpp" line="487"/>
         <source>infra</source>
         <translation>Infra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="480"/>
+        <location filename="../src/params/paramslang.cpp" line="488"/>
         <source>software_version</source>
         <translation>Verzia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="481"/>
+        <location filename="../src/params/paramslang.cpp" line="489"/>
         <source>normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="482"/>
+        <location filename="../src/params/paramslang.cpp" line="490"/>
         <source>abnormal</source>
         <translation>Abnormal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="483"/>
+        <location filename="../src/params/paramslang.cpp" line="491"/>
         <source>eject_frequency</source>
         <translation>Frekvencia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="484"/>
+        <location filename="../src/params/paramslang.cpp" line="492"/>
         <source>system_time</source>
         <translation>Systemovy cas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="485"/>
+        <location filename="../src/params/paramslang.cpp" line="493"/>
         <source>year</source>
         <translation>Rok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="486"/>
+        <location filename="../src/params/paramslang.cpp" line="494"/>
         <source>month</source>
         <translation>Mesiac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="487"/>
+        <location filename="../src/params/paramslang.cpp" line="495"/>
         <source>day</source>
         <translation>Den</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="488"/>
+        <location filename="../src/params/paramslang.cpp" line="496"/>
         <source>hour</source>
         <translation>Hodina</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="489"/>
+        <location filename="../src/params/paramslang.cpp" line="497"/>
         <source>minute</source>
         <translation>Minuta</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="490"/>
+        <location filename="../src/params/paramslang.cpp" line="498"/>
         <source>sec</source>
         <translation>Sekunda</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="491"/>
+        <location filename="../src/params/paramslang.cpp" line="499"/>
         <source>information</source>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="492"/>
+        <location filename="../src/params/paramslang.cpp" line="500"/>
         <source>this_run</source>
         <translation>Toto spustenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="493"/>
+        <location filename="../src/params/paramslang.cpp" line="501"/>
         <source>this_feed_run</source>
         <translation>Toto podavanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="494"/>
+        <location filename="../src/params/paramslang.cpp" line="502"/>
         <source>total_run</source>
         <translation>Celkove spustenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="495"/>
+        <location filename="../src/params/paramslang.cpp" line="503"/>
         <source>total_feed_run</source>
         <translation>Celkove podavanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="496"/>
+        <location filename="../src/params/paramslang.cpp" line="504"/>
         <source>this_pressure_alarm_times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="497"/>
+        <location filename="../src/params/paramslang.cpp" line="505"/>
         <source>total_pressure_alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="498"/>
+        <location filename="../src/params/paramslang.cpp" line="506"/>
         <source>feed_stat</source>
         <translation>Status podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="499"/>
+        <location filename="../src/params/paramslang.cpp" line="507"/>
         <source>eject_stat</source>
         <translation>Status vydaj</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="500"/>
+        <location filename="../src/params/paramslang.cpp" line="508"/>
         <source>belt_1_status</source>
         <translation>Status Pas-1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="501"/>
+        <location filename="../src/params/paramslang.cpp" line="509"/>
         <source>belt_2_status</source>
         <translation>Status Pas-2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="502"/>
+        <location filename="../src/params/paramslang.cpp" line="510"/>
         <source>alarm_set</source>
         <translation>Alarm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="503"/>
+        <location filename="../src/params/paramslang.cpp" line="511"/>
         <source>msg_pressure_alarm_check_pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="504"/>
+        <location filename="../src/params/paramslang.cpp" line="512"/>
         <source>msg_pressure_alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="505"/>
+        <location filename="../src/params/paramslang.cpp" line="513"/>
         <source>pressure_not_enough</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="506"/>
+        <location filename="../src/params/paramslang.cpp" line="514"/>
         <source>warm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="507"/>
+        <location filename="../src/params/paramslang.cpp" line="515"/>
         <source>blower_alarm</source>
         <translation>Alarm fukac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="508"/>
+        <location filename="../src/params/paramslang.cpp" line="516"/>
         <source>lamp_alarm</source>
         <translation>Alarm lampa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="509"/>
+        <location filename="../src/params/paramslang.cpp" line="517"/>
         <source>pressure_alarm</source>
         <translation>Alarm tlak</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="510"/>
+        <location filename="../src/params/paramslang.cpp" line="518"/>
         <source>enable_press_alarm</source>
         <translation>Aktivovat alarm tlak</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="511"/>
+        <location filename="../src/params/paramslang.cpp" line="519"/>
         <source>enable_blower_alarm</source>
         <translation>Aktivovat alarm fukac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="512"/>
+        <location filename="../src/params/paramslang.cpp" line="520"/>
         <source>enable_lamp_alarm</source>
         <translation>Aktivovat alarm lampa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="513"/>
+        <location filename="../src/params/paramslang.cpp" line="521"/>
         <source>enable_belt_status</source>
         <translation>Aktivovat status pas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="515"/>
+        <location filename="../src/params/paramslang.cpp" line="523"/>
         <source>enable_communication_alarm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="516"/>
+        <location filename="../src/params/paramslang.cpp" line="524"/>
         <source>auto_calibrate</source>
         <translation>Kalibracia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="517"/>
+        <location filename="../src/params/paramslang.cpp" line="525"/>
         <source>auto_calibrate_tips</source>
         <translation>Start autom. kalibracie. Ovplyvni vysledok triedenia! Pred kalibraciou prosim vykonajte nasledovne:</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="518"/>
+        <location filename="../src/params/paramslang.cpp" line="526"/>
         <source>auto_calibrate_step1</source>
         <translation>1. Uistite sa, ze je sklo ciste a priehladne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="519"/>
+        <location filename="../src/params/paramslang.cpp" line="527"/>
         <source>auto_calibrate_step2</source>
         <translation>2. Uistite sa, ze kalibracna doska je cista</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="520"/>
+        <location filename="../src/params/paramslang.cpp" line="528"/>
         <source>auto_calibrate_step3</source>
         <translation>3. Zmente dosku pozadia z modrej na bielu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="521"/>
+        <location filename="../src/params/paramslang.cpp" line="529"/>
         <source>auto_calibrate_step4</source>
         <translation>4. Stlacte tlacitko Kalibracia k zacatiu 1 klucovej kalibracie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="522"/>
+        <location filename="../src/params/paramslang.cpp" line="530"/>
         <source>auto_calibrate_step5</source>
         <translation>5. Zmente dosku pozadia z bielej na modru</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="523"/>
+        <location filename="../src/params/paramslang.cpp" line="531"/>
         <source>auto_calibrate_step6</source>
         <translation>6. Kalibracia ukoncena</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="524"/>
+        <location filename="../src/params/paramslang.cpp" line="532"/>
         <source>background_angle</source>
         <translation>Uhol</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="525"/>
+        <location filename="../src/params/paramslang.cpp" line="533"/>
         <source>HowTo</source>
         <translation>Manual pouzivatela</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="526"/>
+        <location filename="../src/params/paramslang.cpp" line="534"/>
         <source>contact_us</source>
         <translation>Kkontaktujte nas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="527"/>
+        <location filename="../src/params/paramslang.cpp" line="535"/>
         <source>Reload</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="528"/>
+        <location filename="../src/params/paramslang.cpp" line="536"/>
         <source>one_key_feed</source>
         <translation>Okamzite podavanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="529"/>
+        <location filename="../src/params/paramslang.cpp" line="537"/>
         <source>communication_alarm</source>
         <translation>Komunkacia alarm</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="530"/>
+        <location filename="../src/params/paramslang.cpp" line="538"/>
         <source>level_stat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="531"/>
+        <location filename="../src/params/paramslang.cpp" line="539"/>
         <source>level_empty_alarm</source>
         <translation>Alarm prazdna uroven</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="532"/>
+        <location filename="../src/params/paramslang.cpp" line="540"/>
         <source>level_full_alarm</source>
         <translation>Alarm plna uroven</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="533"/>
+        <location filename="../src/params/paramslang.cpp" line="541"/>
         <source>level_sensor_alarm</source>
         <translation>Alarm senzor urovne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="534"/>
+        <location filename="../src/params/paramslang.cpp" line="542"/>
         <source>video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="743"/>
+        <location filename="../src/params/paramslang.cpp" line="751"/>
         <source>ejector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="744"/>
+        <location filename="../src/params/paramslang.cpp" line="752"/>
         <source>pixle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="745"/>
+        <location filename="../src/params/paramslang.cpp" line="753"/>
         <source>single_calibrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="746"/>
+        <location filename="../src/params/paramslang.cpp" line="754"/>
         <source>whole_calibrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="747"/>
+        <location filename="../src/params/paramslang.cpp" line="755"/>
         <source>default_params</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="748"/>
+        <location filename="../src/params/paramslang.cpp" line="756"/>
         <source>auto_cal_note</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="749"/>
+        <location filename="../src/params/paramslang.cpp" line="757"/>
         <source>auto_cal_lightset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="750"/>
+        <location filename="../src/params/paramslang.cpp" line="758"/>
         <source>auto_cal_gainset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="751"/>
+        <location filename="../src/params/paramslang.cpp" line="759"/>
         <source>auto_cal_get_target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="752"/>
+        <location filename="../src/params/paramslang.cpp" line="760"/>
         <source>rear_no_signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="753"/>
+        <location filename="../src/params/paramslang.cpp" line="761"/>
         <source>front_no_signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="843"/>
+        <location filename="../src/params/paramslang.cpp" line="849"/>
+        <source>init_link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="851"/>
+        <source>init_step_trans</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="853"/>
+        <source>init_step_camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="855"/>
+        <source>init_step_sort</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="857"/>
+        <source>init_step_control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="859"/>
+        <source>init_step_ai</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="861"/>
+        <source>init_running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="863"/>
+        <source>init_doing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="865"/>
+        <source>toast_scheme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="867"/>
+        <source>toast_sens</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="869"/>
+        <source>toast_feeder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="871"/>
+        <source>toast_ejector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="873"/>
+        <source>toast_wiper</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="875"/>
+        <source>toast_func</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="877"/>
+        <source>toast_oper</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="881"/>
         <source>msg_testing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1093"/>
+        <location filename="../src/params/paramslang.cpp" line="1131"/>
         <source>common</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1094"/>
+        <location filename="../src/params/paramslang.cpp" line="1132"/>
         <source>accurate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1095"/>
+        <location filename="../src/params/paramslang.cpp" line="1133"/>
         <source>eject_width_max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1096"/>
+        <location filename="../src/params/paramslang.cpp" line="1134"/>
         <source>eject_width_min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1097"/>
+        <location filename="../src/params/paramslang.cpp" line="1135"/>
         <source>eject_width_dif</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1098"/>
+        <location filename="../src/params/paramslang.cpp" line="1136"/>
         <source>rounds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1099"/>
+        <location filename="../src/params/paramslang.cpp" line="1137"/>
         <source>tick_mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1100"/>
+        <location filename="../src/params/paramslang.cpp" line="1138"/>
         <source>tick_sort_mode_warm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1102"/>
+        <location filename="../src/params/paramslang.cpp" line="1140"/>
         <source>contra_test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1103"/>
+        <location filename="../src/params/paramslang.cpp" line="1141"/>
         <source>bias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1104"/>
+        <location filename="../src/params/paramslang.cpp" line="1142"/>
         <source>correct</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1105"/>
+        <location filename="../src/params/paramslang.cpp" line="1143"/>
         <source>send_bias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1106"/>
+        <location filename="../src/params/paramslang.cpp" line="1144"/>
         <source>msg_accept_data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1107"/>
+        <location filename="../src/params/paramslang.cpp" line="1145"/>
         <source>msg_receiving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1109"/>
+        <location filename="../src/params/paramslang.cpp" line="1147"/>
         <source>pic_customer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1110"/>
+        <location filename="../src/params/paramslang.cpp" line="1148"/>
         <source>schemeNew_select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1111"/>
+        <location filename="../src/params/paramslang.cpp" line="1149"/>
         <source>videoNew</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1112"/>
+        <location filename="../src/params/paramslang.cpp" line="1150"/>
         <source>save_parameterNew</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1113"/>
+        <location filename="../src/params/paramslang.cpp" line="1151"/>
         <source>working_stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1114"/>
+        <location filename="../src/params/paramslang.cpp" line="1152"/>
         <source>working_start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1116"/>
+        <location filename="../src/params/paramslang.cpp" line="1154"/>
         <source>set_sens</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1117"/>
+        <location filename="../src/params/paramslang.cpp" line="1155"/>
         <source>feeder_speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1118"/>
+        <location filename="../src/params/paramslang.cpp" line="1156"/>
         <source>test_ejector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1119"/>
+        <location filename="../src/params/paramslang.cpp" line="1157"/>
         <source>set_wiper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1120"/>
+        <location filename="../src/params/paramslang.cpp" line="1158"/>
         <source>set_function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1121"/>
+        <location filename="../src/params/paramslang.cpp" line="1159"/>
         <source>operation_level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1123"/>
+        <location filename="../src/params/paramslang.cpp" line="1161"/>
         <source>new_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1124"/>
+        <location filename="../src/params/paramslang.cpp" line="1162"/>
         <source>copy_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1125"/>
+        <location filename="../src/params/paramslang.cpp" line="1163"/>
         <source>delte_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1126"/>
+        <location filename="../src/params/paramslang.cpp" line="1164"/>
         <source>rename_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1127"/>
+        <location filename="../src/params/paramslang.cpp" line="1165"/>
         <source>recover_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1128"/>
+        <location filename="../src/params/paramslang.cpp" line="1166"/>
         <source>backup_scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1130"/>
+        <location filename="../src/params/paramslang.cpp" line="1168"/>
         <source>customer_model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1131"/>
+        <location filename="../src/params/paramslang.cpp" line="1169"/>
         <source>sys_set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1132"/>
+        <location filename="../src/params/paramslang.cpp" line="1170"/>
         <source>network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1133"/>
+        <location filename="../src/params/paramslang.cpp" line="1171"/>
         <source>help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1134"/>
+        <location filename="../src/params/paramslang.cpp" line="1172"/>
         <source>device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1135"/>
+        <location filename="../src/params/paramslang.cpp" line="1173"/>
         <source>capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1136"/>
+        <location filename="../src/params/paramslang.cpp" line="1174"/>
         <source>algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1137"/>
+        <location filename="../src/params/paramslang.cpp" line="1175"/>
         <source>aux_parameter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1138"/>
+        <location filename="../src/params/paramslang.cpp" line="1176"/>
         <source>set_time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1139"/>
+        <location filename="../src/params/paramslang.cpp" line="1177"/>
         <source>io_set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1141"/>
+        <location filename="../src/params/paramslang.cpp" line="1179"/>
         <source>front_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1142"/>
+        <location filename="../src/params/paramslang.cpp" line="1180"/>
         <source>front_background</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1143"/>
+        <location filename="../src/params/paramslang.cpp" line="1181"/>
         <source>back_material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1144"/>
+        <location filename="../src/params/paramslang.cpp" line="1182"/>
         <source>back_background</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1146"/>
+        <location filename="../src/params/paramslang.cpp" line="1184"/>
         <source>camera_new</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1147"/>
+        <location filename="../src/params/paramslang.cpp" line="1185"/>
         <source>set_machine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1148"/>
+        <location filename="../src/params/paramslang.cpp" line="1186"/>
         <source>test_output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1149"/>
+        <location filename="../src/params/paramslang.cpp" line="1187"/>
         <source>old_test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1150"/>
+        <location filename="../src/params/paramslang.cpp" line="1188"/>
         <source>set_vib_voltage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1151"/>
+        <location filename="../src/params/paramslang.cpp" line="1189"/>
         <source>tdemag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1152"/>
+        <location filename="../src/params/paramslang.cpp" line="1190"/>
         <source>setLight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1154"/>
+        <location filename="../src/params/paramslang.cpp" line="1192"/>
         <source>encrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1155"/>
+        <location filename="../src/params/paramslang.cpp" line="1193"/>
         <source>out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1156"/>
+        <location filename="../src/params/paramslang.cpp" line="1194"/>
         <source>bad_ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1157"/>
+        <location filename="../src/params/paramslang.cpp" line="1195"/>
         <source>background_proportion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1160"/>
+        <location filename="../src/params/paramslang.cpp" line="1198"/>
         <source>salesperson</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1161"/>
+        <location filename="../src/params/paramslang.cpp" line="1199"/>
         <source>telephone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1162"/>
+        <location filename="../src/params/paramslang.cpp" line="1200"/>
         <source>expiration_time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1164"/>
+        <location filename="../src/params/paramslang.cpp" line="1202"/>
         <source>illegal_password_decryption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1165"/>
+        <location filename="../src/params/paramslang.cpp" line="1203"/>
         <source>decryption_successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1166"/>
+        <location filename="../src/params/paramslang.cpp" line="1204"/>
         <source>decryption_process_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1168"/>
+        <location filename="../src/params/paramslang.cpp" line="1206"/>
         <source>illegal_password_encryption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1169"/>
+        <location filename="../src/params/paramslang.cpp" line="1207"/>
         <source>encryption_successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1170"/>
+        <location filename="../src/params/paramslang.cpp" line="1208"/>
         <source>encryption_process_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1171"/>
+        <location filename="../src/params/paramslang.cpp" line="1209"/>
         <source>target_value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1173"/>
+        <location filename="../src/params/paramslang.cpp" line="1211"/>
         <source>download_image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1174"/>
+        <location filename="../src/params/paramslang.cpp" line="1212"/>
         <source>image_reasoning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1175"/>
+        <location filename="../src/params/paramslang.cpp" line="1213"/>
         <source>image_acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1177"/>
+        <location filename="../src/params/paramslang.cpp" line="1215"/>
         <source>pixel_info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1178"/>
+        <location filename="../src/params/paramslang.cpp" line="1216"/>
         <source>ejector_para</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1179"/>
+        <location filename="../src/params/paramslang.cpp" line="1217"/>
         <source>image_height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1180"/>
+        <location filename="../src/params/paramslang.cpp" line="1218"/>
         <source>model_para</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1181"/>
+        <location filename="../src/params/paramslang.cpp" line="1219"/>
         <source>model_update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1182"/>
+        <location filename="../src/params/paramslang.cpp" line="1220"/>
         <source>ai_version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1183"/>
+        <location filename="../src/params/paramslang.cpp" line="1221"/>
         <source>disk_space</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1185"/>
+        <location filename="../src/params/paramslang.cpp" line="1223"/>
         <source>img_downloading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1186"/>
+        <location filename="../src/params/paramslang.cpp" line="1224"/>
         <source>ftp_status_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1187"/>
+        <location filename="../src/params/paramslang.cpp" line="1225"/>
         <source>img_download_finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1188"/>
+        <location filename="../src/params/paramslang.cpp" line="1226"/>
         <source>delete_original_image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1189"/>
+        <location filename="../src/params/paramslang.cpp" line="1227"/>
         <source>deleting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1190"/>
+        <location filename="../src/params/paramslang.cpp" line="1228"/>
         <source>img_list_blank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1191"/>
+        <location filename="../src/params/paramslang.cpp" line="1229"/>
         <source>delete_original_image_finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1192"/>
+        <location filename="../src/params/paramslang.cpp" line="1230"/>
         <source>setting_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1193"/>
+        <location filename="../src/params/paramslang.cpp" line="1231"/>
         <source>setting_succeeded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1194"/>
+        <location filename="../src/params/paramslang.cpp" line="1232"/>
         <source>setting_value_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1196"/>
+        <location filename="../src/params/paramslang.cpp" line="1234"/>
         <source>model_list_blank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1197"/>
+        <location filename="../src/params/paramslang.cpp" line="1235"/>
         <source>model_para_error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1198"/>
+        <location filename="../src/params/paramslang.cpp" line="1236"/>
         <source>beginning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1199"/>
+        <location filename="../src/params/paramslang.cpp" line="1237"/>
         <source>error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1200"/>
+        <location filename="../src/params/paramslang.cpp" line="1238"/>
         <source>succeed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1201"/>
+        <location filename="../src/params/paramslang.cpp" line="1239"/>
         <source>fixed_delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1202"/>
+        <location filename="../src/params/paramslang.cpp" line="1240"/>
         <source>dynamic_delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1203"/>
+        <location filename="../src/params/paramslang.cpp" line="1241"/>
         <source>acquisition_height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1204"/>
+        <location filename="../src/params/paramslang.cpp" line="1242"/>
         <source>reasoning_height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1205"/>
+        <location filename="../src/params/paramslang.cpp" line="1243"/>
         <source>ai_pic_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1206"/>
+        <location filename="../src/params/paramslang.cpp" line="1244"/>
         <source>ai_pic_view_h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1207"/>
+        <location filename="../src/params/paramslang.cpp" line="1245"/>
         <source>ai_video_view_h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1208"/>
+        <location filename="../src/params/paramslang.cpp" line="1246"/>
         <source>ai_slider_h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1209"/>
+        <location filename="../src/params/paramslang.cpp" line="1247"/>
         <source>ai_det_status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1210"/>
+        <location filename="../src/params/paramslang.cpp" line="1248"/>
         <source>ai_front_discard_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1211"/>
+        <location filename="../src/params/paramslang.cpp" line="1249"/>
         <source>ai_rear_discard_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1212"/>
+        <location filename="../src/params/paramslang.cpp" line="1250"/>
         <source>ai_front_infer_cost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1213"/>
+        <location filename="../src/params/paramslang.cpp" line="1251"/>
         <source>ai_rear_infer_cost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1214"/>
+        <location filename="../src/params/paramslang.cpp" line="1252"/>
         <source>ai_front_delay_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1215"/>
+        <location filename="../src/params/paramslang.cpp" line="1253"/>
         <source>ai_rear_delay_num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1216"/>
+        <location filename="../src/params/paramslang.cpp" line="1254"/>
         <source>ai_status_info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1217"/>
+        <location filename="../src/params/paramslang.cpp" line="1255"/>
         <source>app_warn</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1218"/>
+        <location filename="../src/params/paramslang.cpp" line="1256"/>
         <source>mdl_prm_app_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1219"/>
+        <location filename="../src/params/paramslang.cpp" line="1257"/>
         <source>mdl_upload_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1220"/>
+        <location filename="../src/params/paramslang.cpp" line="1258"/>
         <source>mdl_del_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1221"/>
+        <location filename="../src/params/paramslang.cpp" line="1259"/>
         <source>mdl_applying</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1222"/>
+        <location filename="../src/params/paramslang.cpp" line="1260"/>
         <source>mdl_load_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1223"/>
+        <location filename="../src/params/paramslang.cpp" line="1261"/>
         <source>mdl_apply_failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1224"/>
+        <location filename="../src/params/paramslang.cpp" line="1262"/>
         <source>disk_space_insufficent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1226"/>
+        <location filename="../src/params/paramslang.cpp" line="1264"/>
         <source>rename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1227"/>
+        <location filename="../src/params/paramslang.cpp" line="1265"/>
         <source>add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1228"/>
+        <location filename="../src/params/paramslang.cpp" line="1266"/>
         <source>model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1229"/>
+        <location filename="../src/params/paramslang.cpp" line="1267"/>
         <source>id_blank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1230"/>
+        <location filename="../src/params/paramslang.cpp" line="1268"/>
         <source>json_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1231"/>
+        <location filename="../src/params/paramslang.cpp" line="1269"/>
         <source>dlc_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1232"/>
+        <location filename="../src/params/paramslang.cpp" line="1270"/>
         <source>content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1233"/>
+        <location filename="../src/params/paramslang.cpp" line="1271"/>
         <source>open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1234"/>
+        <location filename="../src/params/paramslang.cpp" line="1272"/>
         <source>notexist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1235"/>
+        <location filename="../src/params/paramslang.cpp" line="1273"/>
         <source>upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1236"/>
+        <location filename="../src/params/paramslang.cpp" line="1274"/>
         <source>model_exist_msg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1238"/>
+        <location filename="../src/params/paramslang.cpp" line="1276"/>
         <source>spray_valve_number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1239"/>
+        <location filename="../src/params/paramslang.cpp" line="1277"/>
         <source>nozzle_number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1240"/>
+        <location filename="../src/params/paramslang.cpp" line="1278"/>
         <source>spray_time_interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="514"/>
+        <location filename="../src/params/paramslang.cpp" line="1281"/>
+        <source>vfd_name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1282"/>
+        <source>vfd_enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="1283"/>
+        <source>vfd_frequency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/params/paramslang.cpp" line="522"/>
         <source>enable_temperature_alarm</source>
         <translation>Aktivovat alarm teplota</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="185"/>
+        <location filename="../src/params/paramslang.cpp" line="193"/>
         <source>ai_auto_computer_erro</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="220"/>
+        <location filename="../src/params/paramslang.cpp" line="228"/>
         <source>ai_params_set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="536"/>
+        <location filename="../src/params/paramslang.cpp" line="544"/>
         <source>auto_analysis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="537"/>
+        <location filename="../src/params/paramslang.cpp" line="545"/>
         <source>temperature</source>
         <translation>Teplota</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="538"/>
+        <location filename="../src/params/paramslang.cpp" line="546"/>
         <source>slave_list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="541"/>
+        <location filename="../src/params/paramslang.cpp" line="549"/>
         <source>remote_control</source>
         <translation>Dialkove ovladanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="542"/>
+        <location filename="../src/params/paramslang.cpp" line="550"/>
         <source>network_config</source>
         <translation>Siet</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="543"/>
+        <location filename="../src/params/paramslang.cpp" line="551"/>
         <source>local_host</source>
         <translation>Miestny hostitel</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="544"/>
+        <location filename="../src/params/paramslang.cpp" line="552"/>
         <source>ip_address</source>
         <translation>IP adresa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="545"/>
+        <location filename="../src/params/paramslang.cpp" line="553"/>
         <source>subnet_mask</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="546"/>
+        <location filename="../src/params/paramslang.cpp" line="554"/>
         <source>default_gateway</source>
         <translation>Brana</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="547"/>
+        <location filename="../src/params/paramslang.cpp" line="555"/>
         <source>dns_server</source>
         <translation>DNS server</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="548"/>
+        <location filename="../src/params/paramslang.cpp" line="556"/>
         <source>mac_address</source>
         <translation>MAC adresa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="549"/>
+        <location filename="../src/params/paramslang.cpp" line="557"/>
         <source>route_address</source>
         <translation>Route adresa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="550"/>
+        <location filename="../src/params/paramslang.cpp" line="558"/>
         <source>set_server</source>
         <translation>Server</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="551"/>
+        <location filename="../src/params/paramslang.cpp" line="559"/>
         <source>set_sms</source>
         <translation>Sms</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="552"/>
+        <location filename="../src/params/paramslang.cpp" line="560"/>
         <source>receiver_num</source>
         <translation>Prijemca cislo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="553"/>
+        <location filename="../src/params/paramslang.cpp" line="561"/>
         <source>sms_center_num</source>
         <translation>Centrum cislo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="554"/>
+        <location filename="../src/params/paramslang.cpp" line="562"/>
         <source>sms_content</source>
         <translation>Obsah</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="555"/>
+        <location filename="../src/params/paramslang.cpp" line="563"/>
         <source>sms_send</source>
         <translation>Poslat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="556"/>
+        <location filename="../src/params/paramslang.cpp" line="564"/>
         <source>test_signal</source>
         <translation>Test signal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="557"/>
+        <location filename="../src/params/paramslang.cpp" line="565"/>
         <source>obtain_auto</source>
         <translation>Automaticky ziskat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="558"/>
+        <location filename="../src/params/paramslang.cpp" line="566"/>
         <source>qrcode</source>
         <translation>QR kod</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="559"/>
+        <location filename="../src/params/paramslang.cpp" line="567"/>
         <source>qrcode_generator</source>
         <translation>Generator</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="560"/>
+        <location filename="../src/params/paramslang.cpp" line="568"/>
         <source>Device info</source>
         <translation>ID zariadenia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="563"/>
+        <location filename="../src/params/paramslang.cpp" line="571"/>
         <source>factory_set</source>
         <translation>Vyrobca</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="564"/>
+        <location filename="../src/params/paramslang.cpp" line="572"/>
         <source>language</source>
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="565"/>
+        <location filename="../src/params/paramslang.cpp" line="573"/>
         <source>product</source>
         <translation>Produkt</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="566"/>
+        <location filename="../src/params/paramslang.cpp" line="574"/>
         <source>clear_running_time</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="567"/>
+        <location filename="../src/params/paramslang.cpp" line="575"/>
         <source>aging_test</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="568"/>
+        <location filename="../src/params/paramslang.cpp" line="576"/>
         <source>upgrade_screen</source>
         <translation>Aktualizovat program obrazovka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="569"/>
+        <location filename="../src/params/paramslang.cpp" line="577"/>
         <source>upgrade_fpga</source>
         <translation>Aktualizovat program FPGA</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="570"/>
+        <location filename="../src/params/paramslang.cpp" line="578"/>
         <source>init_mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="571"/>
+        <location filename="../src/params/paramslang.cpp" line="579"/>
         <source>ts_calibrate</source>
         <translation>Kalibrovat dotykova obrazovka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="572"/>
+        <location filename="../src/params/paramslang.cpp" line="580"/>
         <source>throughput_test</source>
         <translation>Test priepustnost</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="573"/>
+        <location filename="../src/params/paramslang.cpp" line="581"/>
         <source>run_mode</source>
         <translation>Rezim spustenia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="574"/>
+        <location filename="../src/params/paramslang.cpp" line="582"/>
         <source>run_test</source>
         <translation>Sebakontrola</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="575"/>
+        <location filename="../src/params/paramslang.cpp" line="583"/>
         <source>run_fre</source>
         <translation>Sebakontrola hodnotenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="576"/>
+        <location filename="../src/params/paramslang.cpp" line="584"/>
         <source>test_time</source>
         <translation>Testovaci cas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="577"/>
+        <location filename="../src/params/paramslang.cpp" line="585"/>
         <source>mode_1</source>
         <translation>Rezim-1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="578"/>
+        <location filename="../src/params/paramslang.cpp" line="586"/>
         <source>mode_2</source>
         <translation>Rezim-2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="579"/>
+        <location filename="../src/params/paramslang.cpp" line="587"/>
         <source>mode_3</source>
         <translation>Rezim-3</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="580"/>
+        <location filename="../src/params/paramslang.cpp" line="588"/>
         <source>english</source>
         <translation>Anglicky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="581"/>
+        <location filename="../src/params/paramslang.cpp" line="589"/>
         <source>chinese_simplified</source>
         <translation>Jednoducha cinstina</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="582"/>
+        <location filename="../src/params/paramslang.cpp" line="590"/>
         <source>chinese_traditonal</source>
         <translation>Tradicna cinstina</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="583"/>
+        <location filename="../src/params/paramslang.cpp" line="591"/>
         <source>russian</source>
         <translation>Rusky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="584"/>
+        <location filename="../src/params/paramslang.cpp" line="592"/>
         <source>vietnam</source>
         <translation>Vietnamsky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="585"/>
+        <location filename="../src/params/paramslang.cpp" line="593"/>
         <source>thailand</source>
         <translation>Thajsky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="586"/>
+        <location filename="../src/params/paramslang.cpp" line="594"/>
         <source>spanish</source>
         <translation>Spanielsky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="587"/>
+        <location filename="../src/params/paramslang.cpp" line="595"/>
         <source>turkey</source>
         <translation>Turecky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="588"/>
+        <location filename="../src/params/paramslang.cpp" line="596"/>
         <source>farsi</source>
         <translation>Farsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="589"/>
+        <location filename="../src/params/paramslang.cpp" line="597"/>
         <source>french</source>
         <translation>Francuzsky </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="590"/>
+        <location filename="../src/params/paramslang.cpp" line="598"/>
         <source>uyghur</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="591"/>
+        <location filename="../src/params/paramslang.cpp" line="599"/>
         <source>korean</source>
         <translation>Korejsky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="592"/>
+        <location filename="../src/params/paramslang.cpp" line="600"/>
         <source>arabic</source>
         <translation>Arabsky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="593"/>
+        <location filename="../src/params/paramslang.cpp" line="601"/>
         <source>bulgarian</source>
         <translation>Bulharsky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="594"/>
+        <location filename="../src/params/paramslang.cpp" line="602"/>
         <source>slovak</source>
         <translation>Slovak</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="597"/>
+        <location filename="../src/params/paramslang.cpp" line="605"/>
         <source>bengali</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4868,2095 +4972,2189 @@
         <translation type="obsolete">Malay</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="595"/>
+        <location filename="../src/params/paramslang.cpp" line="603"/>
         <source>portuguese</source>
         <translation>Portuguese</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="596"/>
+        <location filename="../src/params/paramslang.cpp" line="604"/>
         <source>myanmar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="598"/>
+        <location filename="../src/params/paramslang.cpp" line="606"/>
         <source>indonesia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="599"/>
+        <location filename="../src/params/paramslang.cpp" line="607"/>
         <source>poland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="600"/>
+        <location filename="../src/params/paramslang.cpp" line="608"/>
         <source>cfm_change_language</source>
         <translation>Potvrdit zmenu aktualneho jazyka?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="601"/>
+        <location filename="../src/params/paramslang.cpp" line="609"/>
         <source>cfm_clear_time</source>
         <translation>Potvrdit vymazanie casu spustenia?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="602"/>
+        <location filename="../src/params/paramslang.cpp" line="610"/>
         <source>cfm_ts_calibrate</source>
         <translation>Potvrdit kalibraciu dotykovej obrazovky?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="603"/>
+        <location filename="../src/params/paramslang.cpp" line="611"/>
         <source>cfm_upgrade_screen</source>
         <translation>Potvrdit aktualizaciu obrazovky?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="604"/>
+        <location filename="../src/params/paramslang.cpp" line="612"/>
         <source>cfm_upgrade_fpga</source>
         <translation>Potvrdit aktualizaciu FPGA?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="605"/>
+        <location filename="../src/params/paramslang.cpp" line="613"/>
         <source>feeder_voltage</source>
         <translation>Napatie podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="606"/>
+        <location filename="../src/params/paramslang.cpp" line="614"/>
         <source>feeder_voltage_high</source>
         <translation>Vysoke</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="607"/>
+        <location filename="../src/params/paramslang.cpp" line="615"/>
         <source>feeder_voltage_low</source>
         <translation>Nizke</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="608"/>
+        <location filename="../src/params/paramslang.cpp" line="616"/>
         <source>standalone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="609"/>
+        <location filename="../src/params/paramslang.cpp" line="617"/>
         <source>master</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="610"/>
+        <location filename="../src/params/paramslang.cpp" line="618"/>
         <source>slave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="613"/>
+        <location filename="../src/params/paramslang.cpp" line="621"/>
         <source>server</source>
         <translation>Server</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="614"/>
+        <location filename="../src/params/paramslang.cpp" line="622"/>
         <source>server_ip</source>
         <translation>Server IP</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="615"/>
+        <location filename="../src/params/paramslang.cpp" line="623"/>
         <source>server_port</source>
         <translation>Server port</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="616"/>
+        <location filename="../src/params/paramslang.cpp" line="624"/>
         <source>local_virtual_ip</source>
         <translation>Miestne virtualne IP</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="617"/>
+        <location filename="../src/params/paramslang.cpp" line="625"/>
         <source>username</source>
         <translation>Uzivatel. meno</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="618"/>
+        <location filename="../src/params/paramslang.cpp" line="626"/>
         <source>password</source>
         <translation>Heslo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="619"/>
+        <location filename="../src/params/paramslang.cpp" line="627"/>
         <source>connect</source>
         <translation>Spojenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="620"/>
+        <location filename="../src/params/paramslang.cpp" line="628"/>
         <source>disconnect</source>
         <translation>Odpojenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="621"/>
+        <location filename="../src/params/paramslang.cpp" line="629"/>
         <source>msg_connecting</source>
         <translation>Pripajanie...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="622"/>
+        <location filename="../src/params/paramslang.cpp" line="630"/>
         <source>msg_connect_fail</source>
         <translation>Pripojenie zlyhalo, skuste znova</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="625"/>
+        <location filename="../src/params/paramslang.cpp" line="633"/>
         <source>big_data</source>
         <translation>Vela dat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="626"/>
+        <location filename="../src/params/paramslang.cpp" line="634"/>
         <source>data_center</source>
         <translation>Centrum dat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="627"/>
+        <location filename="../src/params/paramslang.cpp" line="635"/>
         <source>value_added</source>
         <translation>Pridana hodnota</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="628"/>
+        <location filename="../src/params/paramslang.cpp" line="636"/>
         <source>service</source>
         <translation>Servisne stredisko</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="631"/>
+        <location filename="../src/params/paramslang.cpp" line="639"/>
         <source>msg_insert_udisk</source>
         <translation>Prosim vlozte U disk</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="632"/>
+        <location filename="../src/params/paramslang.cpp" line="640"/>
         <source>last</source>
         <translation>Posledny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="633"/>
+        <location filename="../src/params/paramslang.cpp" line="641"/>
         <source>next</source>
         <translation>Nasledujuci</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="634"/>
+        <location filename="../src/params/paramslang.cpp" line="642"/>
         <source>msg_insert_data_wire</source>
         <translation>Prosim vysunte U disk, potom vlozte datovu linku USB</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="635"/>
+        <location filename="../src/params/paramslang.cpp" line="643"/>
         <source>msg_remove_data_wire</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="636"/>
+        <location filename="../src/params/paramslang.cpp" line="644"/>
         <source>user_mode</source>
         <translation>Rezim pouzivatel</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="637"/>
+        <location filename="../src/params/paramslang.cpp" line="645"/>
         <source>board_num</source>
         <translation>Cislo doska</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="638"/>
+        <location filename="../src/params/paramslang.cpp" line="646"/>
         <source>upgrade</source>
         <translation>Aktualizácia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="639"/>
+        <location filename="../src/params/paramslang.cpp" line="647"/>
         <source>upgrade_retry</source>
         <translation>Skuste znova</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="640"/>
+        <location filename="../src/params/paramslang.cpp" line="648"/>
         <source>upgrade_whole</source>
         <translation>Cely</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="641"/>
+        <location filename="../src/params/paramslang.cpp" line="649"/>
         <source>update_return</source>
         <translation>Vratit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="642"/>
+        <location filename="../src/params/paramslang.cpp" line="650"/>
         <source>msg_int_to_factory</source>
         <translation>Prepnut rozhranie do rezimu podnik</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="643"/>
+        <location filename="../src/params/paramslang.cpp" line="651"/>
         <source>msg_int_download_file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="644"/>
+        <location filename="../src/params/paramslang.cpp" line="652"/>
         <source>msg_int_burn_file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="645"/>
+        <location filename="../src/params/paramslang.cpp" line="653"/>
         <source>msg_int_to_user</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="646"/>
+        <location filename="../src/params/paramslang.cpp" line="654"/>
         <source>msg_color_download_file</source>
         <translation>Stiahnut aktualizacny subor pre farebnu kameru</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="647"/>
+        <location filename="../src/params/paramslang.cpp" line="655"/>
         <source>msg_color_to_factory</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="648"/>
+        <location filename="../src/params/paramslang.cpp" line="656"/>
         <source>msg_color_burn_file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="649"/>
+        <location filename="../src/params/paramslang.cpp" line="657"/>
         <source>msg_color_to_user</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="650"/>
+        <location filename="../src/params/paramslang.cpp" line="658"/>
         <source>msg_inf_download_file</source>
         <translation>Stiahnut aktualizacny subor pre infrakameru</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="651"/>
+        <location filename="../src/params/paramslang.cpp" line="659"/>
         <source>msg_inf_to_factory</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="652"/>
+        <location filename="../src/params/paramslang.cpp" line="660"/>
         <source>msg_inf_burn_file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="653"/>
+        <location filename="../src/params/paramslang.cpp" line="661"/>
         <source>msg_inf_to_user</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="654"/>
+        <location filename="../src/params/paramslang.cpp" line="662"/>
         <source>msg_ctrl_to_factory</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="655"/>
+        <location filename="../src/params/paramslang.cpp" line="663"/>
         <source>msg_ctrl_erase</source>
         <translation>Vymazat riadenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="656"/>
+        <location filename="../src/params/paramslang.cpp" line="664"/>
         <source>msg_ctrl_burn_file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="657"/>
+        <location filename="../src/params/paramslang.cpp" line="665"/>
         <source>msg_ctrl_to_user</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="659"/>
+        <location filename="../src/params/paramslang.cpp" line="667"/>
         <source>msg_enable_upgrade_board</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="660"/>
+        <location filename="../src/params/paramslang.cpp" line="668"/>
         <source>msg_major_to_factory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="661"/>
+        <location filename="../src/params/paramslang.cpp" line="669"/>
         <source>msg_major_file_to_int</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="662"/>
+        <location filename="../src/params/paramslang.cpp" line="670"/>
         <source>msg_major_download_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="663"/>
+        <location filename="../src/params/paramslang.cpp" line="671"/>
         <source>msg_major_burn_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="664"/>
+        <location filename="../src/params/paramslang.cpp" line="672"/>
         <source>msg_major_to_user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="666"/>
+        <location filename="../src/params/paramslang.cpp" line="674"/>
         <source>msg_assist_to_factory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="667"/>
+        <location filename="../src/params/paramslang.cpp" line="675"/>
         <source>msg_assist_file_to_int</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="668"/>
+        <location filename="../src/params/paramslang.cpp" line="676"/>
         <source>msg_assist_file_download_to_major</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="669"/>
+        <location filename="../src/params/paramslang.cpp" line="677"/>
         <source>msg_assist_download_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="670"/>
+        <location filename="../src/params/paramslang.cpp" line="678"/>
         <source>msg_assist_burn_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="671"/>
+        <location filename="../src/params/paramslang.cpp" line="679"/>
         <source>msg_assist_to_user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="673"/>
+        <location filename="../src/params/paramslang.cpp" line="681"/>
         <source>upgrade_file_list</source>
         <translation>Aktualizovat zoznam suborov</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="674"/>
+        <location filename="../src/params/paramslang.cpp" line="682"/>
         <source>upgrade_usb_communication</source>
         <translation>USB komunikacia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="675"/>
+        <location filename="../src/params/paramslang.cpp" line="683"/>
         <source>upgrade_board</source>
         <translation>Aktualizovat tabulu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="676"/>
+        <location filename="../src/params/paramslang.cpp" line="684"/>
         <source>upgrade_doing</source>
         <translation>Pracuje</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="677"/>
+        <location filename="../src/params/paramslang.cpp" line="685"/>
         <source>upgrade_fail</source>
         <translation>Chyba</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="678"/>
+        <location filename="../src/params/paramslang.cpp" line="686"/>
         <source>upgrade_untreated</source>
         <translation>Nezacaty</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="679"/>
+        <location filename="../src/params/paramslang.cpp" line="687"/>
         <source>upgrade_ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="680"/>
+        <location filename="../src/params/paramslang.cpp" line="688"/>
         <source>msg_file_open_error</source>
         <translation>Chyba otvarania suboru!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="681"/>
+        <location filename="../src/params/paramslang.cpp" line="689"/>
         <source>msg_no_inf</source>
         <translation>Infra nie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="682"/>
+        <location filename="../src/params/paramslang.cpp" line="690"/>
         <source>msg_no_color</source>
         <translation>Farba nie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="683"/>
+        <location filename="../src/params/paramslang.cpp" line="691"/>
         <source>msg_unknown_file</source>
         <translation>Nezname meno suboru</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="684"/>
+        <location filename="../src/params/paramslang.cpp" line="692"/>
         <source>cfm_insert_datawire</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="685"/>
+        <location filename="../src/params/paramslang.cpp" line="693"/>
         <source>msg_select_user_mode</source>
         <translation>Vyberte rezim pouzivatela!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="686"/>
+        <location filename="../src/params/paramslang.cpp" line="694"/>
         <source>cfm_upgrade_whole</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="687"/>
+        <location filename="../src/params/paramslang.cpp" line="695"/>
         <source>select_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="688"/>
+        <location filename="../src/params/paramslang.cpp" line="696"/>
         <source>msg_select_right_file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="691"/>
+        <location filename="../src/params/paramslang.cpp" line="699"/>
         <source>color_camera</source>
         <translation>Kamera farba</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="692"/>
+        <location filename="../src/params/paramslang.cpp" line="700"/>
         <source>confirm_set_camera</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="693"/>
+        <location filename="../src/params/paramslang.cpp" line="701"/>
         <source>confirm_set_infra_camera</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="694"/>
+        <location filename="../src/params/paramslang.cpp" line="702"/>
         <source>color_calibrate</source>
         <translation>Kalibracia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="695"/>
+        <location filename="../src/params/paramslang.cpp" line="703"/>
         <source>color_gain_adjust</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="696"/>
+        <location filename="../src/params/paramslang.cpp" line="704"/>
         <source>color_analog_gain</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="697"/>
+        <location filename="../src/params/paramslang.cpp" line="705"/>
         <source>color_lens_params</source>
         <translation>Sosovka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="698"/>
+        <location filename="../src/params/paramslang.cpp" line="706"/>
         <source>color_biasing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="699"/>
+        <location filename="../src/params/paramslang.cpp" line="707"/>
         <source>color_digital_gain</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="700"/>
+        <location filename="../src/params/paramslang.cpp" line="708"/>
         <source>color_digital_gain_set</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="701"/>
+        <location filename="../src/params/paramslang.cpp" line="709"/>
         <source>color_sensor_params</source>
         <translation>Senzor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="702"/>
+        <location filename="../src/params/paramslang.cpp" line="710"/>
         <source>gain_rough</source>
         <translation>Hruby</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="703"/>
+        <location filename="../src/params/paramslang.cpp" line="711"/>
         <source>gain_tiny</source>
         <translation>Drobny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="704"/>
+        <location filename="../src/params/paramslang.cpp" line="712"/>
         <source>channel_begin</source>
         <translation>Zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="705"/>
+        <location filename="../src/params/paramslang.cpp" line="713"/>
         <source>channel_end</source>
         <translation>Koniec </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="706"/>
+        <location filename="../src/params/paramslang.cpp" line="714"/>
         <source>channel_restore</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="707"/>
+        <location filename="../src/params/paramslang.cpp" line="715"/>
         <source>sensor</source>
         <translation>Typ senzor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="708"/>
+        <location filename="../src/params/paramslang.cpp" line="716"/>
         <source>row_fre</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="709"/>
+        <location filename="../src/params/paramslang.cpp" line="717"/>
         <source>sensor_mode</source>
         <translation>Rezim senzor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="710"/>
+        <location filename="../src/params/paramslang.cpp" line="718"/>
         <source>sensor_light</source>
         <translation>Svetly </translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="711"/>
+        <location filename="../src/params/paramslang.cpp" line="719"/>
         <source>sensor_dark</source>
         <translation>Tmavy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="712"/>
+        <location filename="../src/params/paramslang.cpp" line="720"/>
         <source>sensor_black_white</source>
         <translation>Cierno-biely</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="713"/>
+        <location filename="../src/params/paramslang.cpp" line="721"/>
         <source>sensor_pixel</source>
         <translation>Rozlisenie senzor</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="714"/>
+        <location filename="../src/params/paramslang.cpp" line="722"/>
         <source>front_begin</source>
         <translation>Predny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="715"/>
+        <location filename="../src/params/paramslang.cpp" line="723"/>
         <source>front_end</source>
         <translation>Predny koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="716"/>
+        <location filename="../src/params/paramslang.cpp" line="724"/>
         <source>rear_begin</source>
         <translation>Zadny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="717"/>
+        <location filename="../src/params/paramslang.cpp" line="725"/>
         <source>rear_end</source>
         <translation>Zadny koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="718"/>
+        <location filename="../src/params/paramslang.cpp" line="726"/>
         <source>upper_view_begin</source>
         <translation>Horny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="719"/>
+        <location filename="../src/params/paramslang.cpp" line="727"/>
         <source>upper_view_end</source>
         <translation>Horny koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="720"/>
+        <location filename="../src/params/paramslang.cpp" line="728"/>
         <source>lower_view_begin</source>
         <translation>Dolny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="721"/>
+        <location filename="../src/params/paramslang.cpp" line="729"/>
         <source>lower_view_end</source>
         <translation>Dolny koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="722"/>
+        <location filename="../src/params/paramslang.cpp" line="730"/>
         <source>upper_layer_begin</source>
         <translation>Horny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="723"/>
+        <location filename="../src/params/paramslang.cpp" line="731"/>
         <source>upper_layer_end</source>
         <translation>Horny koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="724"/>
+        <location filename="../src/params/paramslang.cpp" line="732"/>
         <source>lower_layer_begin</source>
         <translation>Dolny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="725"/>
+        <location filename="../src/params/paramslang.cpp" line="733"/>
         <source>lower_layer_end</source>
         <translation>Dolny koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="726"/>
+        <location filename="../src/params/paramslang.cpp" line="734"/>
         <source>mid_layer_begin</source>
         <translation>Stred zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="727"/>
+        <location filename="../src/params/paramslang.cpp" line="735"/>
         <source>mid_layer_end</source>
         <translation>Stred koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="728"/>
+        <location filename="../src/params/paramslang.cpp" line="736"/>
         <source>begin</source>
         <translation>Zacat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="729"/>
+        <location filename="../src/params/paramslang.cpp" line="737"/>
         <source>end</source>
         <translation>Koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="730"/>
+        <location filename="../src/params/paramslang.cpp" line="738"/>
         <source>auto_divide</source>
         <translation>Auto rozdelenie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="731"/>
+        <location filename="../src/params/paramslang.cpp" line="739"/>
         <source>align</source>
         <translation>Zoradit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="732"/>
+        <location filename="../src/params/paramslang.cpp" line="740"/>
         <source>update_capture</source>
         <translation>Zachytit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="733"/>
+        <location filename="../src/params/paramslang.cpp" line="741"/>
         <source>update_save</source>
         <translation>Ulozit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="734"/>
+        <location filename="../src/params/paramslang.cpp" line="742"/>
         <source>update_capture_dark</source>
         <translation>Tmavy zachytit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="735"/>
+        <location filename="../src/params/paramslang.cpp" line="743"/>
         <source>update_save_dark</source>
         <translation>Tmavy ulozit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="736"/>
+        <location filename="../src/params/paramslang.cpp" line="744"/>
         <source>update_auto</source>
         <translation>Auto aktualizacia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="737"/>
+        <location filename="../src/params/paramslang.cpp" line="745"/>
         <source>update_auto_level</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="738"/>
+        <location filename="../src/params/paramslang.cpp" line="746"/>
         <source>channel_divide</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="739"/>
+        <location filename="../src/params/paramslang.cpp" line="747"/>
         <source>front_upper_view</source>
         <translation>Predny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="740"/>
+        <location filename="../src/params/paramslang.cpp" line="748"/>
         <source>front_lower_view</source>
         <translation>Predny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="741"/>
+        <location filename="../src/params/paramslang.cpp" line="749"/>
         <source>rear_upper_view</source>
         <translation>Zadny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="742"/>
+        <location filename="../src/params/paramslang.cpp" line="750"/>
         <source>rear_lower_view</source>
         <translation>Zadny M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="755"/>
+        <location filename="../src/params/paramslang.cpp" line="763"/>
         <source>upper_master_view</source>
         <translation>Horny M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="756"/>
+        <location filename="../src/params/paramslang.cpp" line="764"/>
         <source>lower_master_view</source>
         <translation>Dolny M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="757"/>
+        <location filename="../src/params/paramslang.cpp" line="765"/>
         <source>upper_slave_view</source>
         <translation>Horny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="758"/>
+        <location filename="../src/params/paramslang.cpp" line="766"/>
         <source>lower_slave_view</source>
         <translation>Dolny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="760"/>
+        <location filename="../src/params/paramslang.cpp" line="768"/>
         <source>front_upper_view_begin</source>
         <translation>Predny A zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="761"/>
+        <location filename="../src/params/paramslang.cpp" line="769"/>
         <source>front_lower_view_begin</source>
         <translation>Predny M zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="762"/>
+        <location filename="../src/params/paramslang.cpp" line="770"/>
         <source>rear_upper_view_begin</source>
         <translation>Zadny A zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="763"/>
+        <location filename="../src/params/paramslang.cpp" line="771"/>
         <source>rear_lower_view_begin</source>
         <translation>Zadny M zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="764"/>
+        <location filename="../src/params/paramslang.cpp" line="772"/>
         <source>front_upper_view_end</source>
         <translation>Predny A koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="765"/>
+        <location filename="../src/params/paramslang.cpp" line="773"/>
         <source>front_lower_view_end</source>
         <translation>Predny M koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="766"/>
+        <location filename="../src/params/paramslang.cpp" line="774"/>
         <source>rear_upper_view_end</source>
         <translation>Zadny A koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="767"/>
+        <location filename="../src/params/paramslang.cpp" line="775"/>
         <source>rear_lower_view_end</source>
         <translation>Zadny M koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="768"/>
+        <location filename="../src/params/paramslang.cpp" line="776"/>
         <source>left_side</source>
         <translation>Lavy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="769"/>
+        <location filename="../src/params/paramslang.cpp" line="777"/>
         <source>right_side</source>
         <translation>Pravy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="770"/>
+        <location filename="../src/params/paramslang.cpp" line="778"/>
         <source>upper_view_page</source>
         <translation>Strana hore</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="771"/>
+        <location filename="../src/params/paramslang.cpp" line="779"/>
         <source>lower_view_page</source>
         <translation>Strana dole</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="772"/>
+        <location filename="../src/params/paramslang.cpp" line="780"/>
         <source>front_view_page</source>
         <translation>Strana predna</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="773"/>
+        <location filename="../src/params/paramslang.cpp" line="781"/>
         <source>rear_view_page</source>
         <translation>Strana zadna</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="774"/>
+        <location filename="../src/params/paramslang.cpp" line="782"/>
         <source>upper_layer_page</source>
         <translation>Strana hore</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="775"/>
+        <location filename="../src/params/paramslang.cpp" line="783"/>
         <source>lower_layer_page</source>
         <translation>Strana dole</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="776"/>
+        <location filename="../src/params/paramslang.cpp" line="784"/>
         <source>down_front_left_view_begin</source>
         <translation>Predny L zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="777"/>
+        <location filename="../src/params/paramslang.cpp" line="785"/>
         <source>down_front_left_view_end</source>
         <translation>Predny L koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="778"/>
+        <location filename="../src/params/paramslang.cpp" line="786"/>
         <source>down_front_right_view_begin</source>
         <translation>Predny P zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="779"/>
+        <location filename="../src/params/paramslang.cpp" line="787"/>
         <source>down_front_right_view_end</source>
         <translation>Predny P koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="780"/>
+        <location filename="../src/params/paramslang.cpp" line="788"/>
         <source>down_rear_left_view_begin</source>
         <translation>Zadny L zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="781"/>
+        <location filename="../src/params/paramslang.cpp" line="789"/>
         <source>down_rear_left_view_end</source>
         <translation>Zadny L koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="782"/>
+        <location filename="../src/params/paramslang.cpp" line="790"/>
         <source>down_rear_right_view_begin</source>
         <translation>Zadny P zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="783"/>
+        <location filename="../src/params/paramslang.cpp" line="791"/>
         <source>down_rear_right_view_end</source>
         <translation>Zadny P koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="784"/>
+        <location filename="../src/params/paramslang.cpp" line="792"/>
         <source>up_front_left_view_begin</source>
         <translation>Predny L zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="785"/>
+        <location filename="../src/params/paramslang.cpp" line="793"/>
         <source>up_front_left_view_end</source>
         <translation>Predny L koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="786"/>
+        <location filename="../src/params/paramslang.cpp" line="794"/>
         <source>up_front_right_view_begin</source>
         <translation>Predny P zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="787"/>
+        <location filename="../src/params/paramslang.cpp" line="795"/>
         <source>up_front_right_view_end</source>
         <translation>Predny P koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="788"/>
+        <location filename="../src/params/paramslang.cpp" line="796"/>
         <source>up_rear_left_view_begin</source>
         <translation>Zadny L zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="789"/>
+        <location filename="../src/params/paramslang.cpp" line="797"/>
         <source>up_rear_left_view_end</source>
         <translation>Zadny L koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="790"/>
+        <location filename="../src/params/paramslang.cpp" line="798"/>
         <source>up_rear_right_view_begin</source>
         <translation>Zadny P zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="791"/>
+        <location filename="../src/params/paramslang.cpp" line="799"/>
         <source>up_rear_right_view_end</source>
         <translation>Zadny P koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="794"/>
+        <location filename="../src/params/paramslang.cpp" line="802"/>
         <source>first_lower_layer</source>
         <translation>1. nizsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="795"/>
+        <location filename="../src/params/paramslang.cpp" line="803"/>
         <source>first_upper_layer</source>
         <translation>1. vyssi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="796"/>
+        <location filename="../src/params/paramslang.cpp" line="804"/>
         <source>second_lower_layer</source>
         <translation>2. nizsi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="797"/>
+        <location filename="../src/params/paramslang.cpp" line="805"/>
         <source>second_upper_layer</source>
         <translation>2. vyssi</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="798"/>
+        <location filename="../src/params/paramslang.cpp" line="806"/>
         <source>1st_upper_master</source>
         <translation>1. vyssi M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="799"/>
+        <location filename="../src/params/paramslang.cpp" line="807"/>
         <source>1st_lower_master</source>
         <translation>1. nizsi M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="800"/>
+        <location filename="../src/params/paramslang.cpp" line="808"/>
         <source>2nd_upper_master</source>
         <translation>2. vyssi M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="801"/>
+        <location filename="../src/params/paramslang.cpp" line="809"/>
         <source>2nd_lower_master</source>
         <translation>2. nizsi M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="802"/>
+        <location filename="../src/params/paramslang.cpp" line="810"/>
         <source>1st_upper_slave</source>
         <translation>1. vyssi A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="803"/>
+        <location filename="../src/params/paramslang.cpp" line="811"/>
         <source>1st_lower_slave</source>
         <translation>1. nizsi A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="804"/>
+        <location filename="../src/params/paramslang.cpp" line="812"/>
         <source>2nd_upper_slave</source>
         <translation>2. vyssi A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="805"/>
+        <location filename="../src/params/paramslang.cpp" line="813"/>
         <source>2nd_lower_slave</source>
         <translation>2. nizsi A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="808"/>
+        <location filename="../src/params/paramslang.cpp" line="816"/>
         <source>inf_camera</source>
         <translation>Infra kamera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="809"/>
+        <location filename="../src/params/paramslang.cpp" line="817"/>
         <source>inf_gain</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="810"/>
+        <location filename="../src/params/paramslang.cpp" line="818"/>
         <source>inf_channel</source>
         <translation>Kanal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="811"/>
+        <location filename="../src/params/paramslang.cpp" line="819"/>
         <source>inf_biasing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="812"/>
+        <location filename="../src/params/paramslang.cpp" line="820"/>
         <source>inf_update</source>
         <translation>Kalibracia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="813"/>
+        <location filename="../src/params/paramslang.cpp" line="821"/>
         <source>inf_odd</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="814"/>
+        <location filename="../src/params/paramslang.cpp" line="822"/>
         <source>inf_even</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="815"/>
+        <location filename="../src/params/paramslang.cpp" line="823"/>
         <source>inf_positive</source>
         <translation>Pozitivny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="816"/>
+        <location filename="../src/params/paramslang.cpp" line="824"/>
         <source>inf_negative</source>
         <translation>Negativny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="817"/>
+        <location filename="../src/params/paramslang.cpp" line="825"/>
         <source>inf_pixel_base</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="818"/>
+        <location filename="../src/params/paramslang.cpp" line="826"/>
         <source>inf_reference</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="819"/>
+        <location filename="../src/params/paramslang.cpp" line="827"/>
         <source>inf</source>
         <translation>Inf</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="822"/>
+        <location filename="../src/params/paramslang.cpp" line="830"/>
         <source>set_screensaver</source>
         <translation>Setric obrazovky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="823"/>
+        <location filename="../src/params/paramslang.cpp" line="831"/>
         <source>enable_screensaver</source>
         <translation>Umoznit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="824"/>
+        <location filename="../src/params/paramslang.cpp" line="832"/>
         <source>input_screensaver_password</source>
         <translation>Zadajte nove heslo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="825"/>
+        <location filename="../src/params/paramslang.cpp" line="833"/>
         <source>confirm_screensaver_password</source>
         <translation>Potvrdte nove heslo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="828"/>
+        <location filename="../src/params/paramslang.cpp" line="836"/>
         <source>msg_statistic</source>
         <translation>Statistika</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="829"/>
+        <location filename="../src/params/paramslang.cpp" line="837"/>
         <source>msg_applying</source>
         <translation>Aplikacia vasich nastaveni...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="830"/>
+        <location filename="../src/params/paramslang.cpp" line="838"/>
         <source>msg_turning_on</source>
         <translation>Zapinanie podavaca...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="831"/>
+        <location filename="../src/params/paramslang.cpp" line="839"/>
         <source>msg_turning_off</source>
         <translation>Vypinanie podavaca...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="832"/>
+        <location filename="../src/params/paramslang.cpp" line="840"/>
         <source>msg_turn_off_first</source>
         <translation>Prosim najprv vypnite podavac...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="833"/>
+        <location filename="../src/params/paramslang.cpp" line="841"/>
         <source>msg_shutdown</source>
         <translation>Zalohovanie parametrov a vypinanie, prosim cakajte...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="834"/>
+        <location filename="../src/params/paramslang.cpp" line="842"/>
         <source>msg_wiping</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="835"/>
+        <location filename="../src/params/paramslang.cpp" line="843"/>
         <source>msg_password_error</source>
         <translation>Neplatne heslo!</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="836"/>
+        <location filename="../src/params/paramslang.cpp" line="844"/>
         <source>msg_divide_channel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="837"/>
+        <location filename="../src/params/paramslang.cpp" line="845"/>
         <source>msg_communicating</source>
         <translation>Komunikacia, prosim cakajte...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="838"/>
+        <location filename="../src/params/paramslang.cpp" line="846"/>
         <source>msg_require_version</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="839"/>
+        <location filename="../src/params/paramslang.cpp" line="847"/>
         <source>msg_system_init</source>
         <translation>Inicializacia systemu...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="840"/>
+        <location filename="../src/params/paramslang.cpp" line="848"/>
         <source>msg_preheating</source>
         <translation>Prehrievanie, prosim cakajte...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="841"/>
+        <location filename="../src/params/paramslang.cpp" line="879"/>
         <source>msg_input_name</source>
         <translation>Prosim zadajte meno</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="842"/>
+        <location filename="../src/params/paramslang.cpp" line="880"/>
         <source>msg_mode_changing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="844"/>
+        <location filename="../src/params/paramslang.cpp" line="882"/>
         <source>msg_change_init_mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="845"/>
+        <location filename="../src/params/paramslang.cpp" line="883"/>
         <source>msg_delay_get_zero</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="846"/>
+        <location filename="../src/params/paramslang.cpp" line="884"/>
         <source>msg_saving_params</source>
         <translation>Ukladanie parametrov...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="847"/>
+        <location filename="../src/params/paramslang.cpp" line="885"/>
         <source>msg_params_save_error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="848"/>
+        <location filename="../src/params/paramslang.cpp" line="886"/>
         <source>msg_usb_init_error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="849"/>
+        <location filename="../src/params/paramslang.cpp" line="887"/>
         <source>timeout</source>
         <translation>Cas vyprsal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="850"/>
+        <location filename="../src/params/paramslang.cpp" line="888"/>
         <source>msg_auto_calibrating</source>
         <translation>Auto kalibracia...</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="851"/>
+        <location filename="../src/params/paramslang.cpp" line="889"/>
         <source>msg_auto_calibrate</source>
         <translation>Kalibracia uspesna</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="852"/>
+        <location filename="../src/params/paramslang.cpp" line="890"/>
         <source>msg_length_exceed_limit</source>
         <translation>Chyba dlzky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="853"/>
+        <location filename="../src/params/paramslang.cpp" line="891"/>
         <source>msg_set_impure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="856"/>
+        <location filename="../src/params/paramslang.cpp" line="894"/>
         <source>cfm_save_parameter</source>
         <translation>Potvrdit ulozenie parametrov?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="857"/>
+        <location filename="../src/params/paramslang.cpp" line="895"/>
         <source>cfm_turn_on_while_belt_off</source>
         <translation>Potvrdit zapnutie pocas vypnuteho pasa?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="858"/>
+        <location filename="../src/params/paramslang.cpp" line="896"/>
         <source>cfm_shut_down</source>
         <translation>Potvrdit vypnutie?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="859"/>
+        <location filename="../src/params/paramslang.cpp" line="897"/>
         <source>cfm_turn_on</source>
         <translation>Potvrdit zapnutie?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="860"/>
+        <location filename="../src/params/paramslang.cpp" line="898"/>
         <source>cfm_auto_calibrate</source>
         <translation>Potvrdit start automatickej kalibracie?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="861"/>
+        <location filename="../src/params/paramslang.cpp" line="899"/>
         <source>cfm_copy_to_all</source>
         <translation>Potvrdit kopirovanie hlavnych parametrov do vsetkych schem?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="862"/>
+        <location filename="../src/params/paramslang.cpp" line="900"/>
         <source>cfm_change_analog_gain</source>
         <translation>Potvrdit zmenu analog. zisku?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="863"/>
+        <location filename="../src/params/paramslang.cpp" line="901"/>
         <source>cfm_auto_set</source>
         <translation>Potvrdit kalibaciu auto signalu?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="864"/>
+        <location filename="../src/params/paramslang.cpp" line="902"/>
         <source>cfm_set_background_color</source>
         <translation>Je farba pozadia pripravena?</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="866"/>
+        <location filename="../src/params/paramslang.cpp" line="904"/>
         <source>init_autoSig</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="867"/>
+        <location filename="../src/params/paramslang.cpp" line="905"/>
         <source>cfm_init_autoSig</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="868"/>
+        <location filename="../src/params/paramslang.cpp" line="906"/>
         <source>msg_initing_autoSig</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="869"/>
+        <location filename="../src/params/paramslang.cpp" line="907"/>
         <source>msg_init_sutoSig_fail</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="870"/>
+        <location filename="../src/params/paramslang.cpp" line="908"/>
         <source>cfm_reboot</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="873"/>
+        <location filename="../src/params/paramslang.cpp" line="911"/>
         <source>config_major</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="874"/>
+        <location filename="../src/params/paramslang.cpp" line="912"/>
         <source>config_assist</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="875"/>
+        <location filename="../src/params/paramslang.cpp" line="913"/>
         <source>row</source>
         <translation>Rad</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="876"/>
+        <location filename="../src/params/paramslang.cpp" line="914"/>
         <source>col</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="877"/>
+        <location filename="../src/params/paramslang.cpp" line="915"/>
         <source>mode_dark</source>
         <translation>Tmavy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="878"/>
+        <location filename="../src/params/paramslang.cpp" line="916"/>
         <source>mode_discolor</source>
         <translation>Vyblednut</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="879"/>
+        <location filename="../src/params/paramslang.cpp" line="917"/>
         <source>mode_discolor_reverse</source>
         <translation>Spat vyblednut</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="880"/>
+        <location filename="../src/params/paramslang.cpp" line="918"/>
         <source>mode_milky</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="881"/>
+        <location filename="../src/params/paramslang.cpp" line="919"/>
         <source>mode_milky_reverse</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="882"/>
+        <location filename="../src/params/paramslang.cpp" line="920"/>
         <source>mode_yellow_milky</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="883"/>
+        <location filename="../src/params/paramslang.cpp" line="921"/>
         <source>mode_yellow_trans</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="884"/>
+        <location filename="../src/params/paramslang.cpp" line="922"/>
         <source>mode_yellow_yellow_reverse</source>
         <translation>Spat zlty &amp; zlty</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="885"/>
+        <location filename="../src/params/paramslang.cpp" line="923"/>
         <source>mode_yellow_white_reverse</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="886"/>
+        <location filename="../src/params/paramslang.cpp" line="924"/>
         <source>mode_user_defined</source>
         <translation>Rezim definovany uzivatelom</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="887"/>
+        <location filename="../src/params/paramslang.cpp" line="925"/>
         <source>detect_wait</source>
         <translation>Pockat detekovanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="890"/>
+        <location filename="../src/params/paramslang.cpp" line="928"/>
         <source>bad_discolor</source>
         <translation>Bodka sivá</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="891"/>
+        <location filename="../src/params/paramslang.cpp" line="929"/>
         <source>bad_area</source>
         <translation>Zla oblast</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="892"/>
+        <location filename="../src/params/paramslang.cpp" line="930"/>
         <source>auto_set</source>
         <translation>Auto signal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="893"/>
+        <location filename="../src/params/paramslang.cpp" line="931"/>
         <source>super_brain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="894"/>
+        <location filename="../src/params/paramslang.cpp" line="932"/>
         <source>eject_set</source>
         <translation>Vydat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="895"/>
+        <location filename="../src/params/paramslang.cpp" line="933"/>
         <source>set_by_times</source>
         <translation>Spolu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="896"/>
+        <location filename="../src/params/paramslang.cpp" line="934"/>
         <source>set_alone</source>
         <translation>Jednotlivo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="897"/>
+        <location filename="../src/params/paramslang.cpp" line="935"/>
         <source>arith_scale</source>
         <translation>Skala</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="898"/>
+        <location filename="../src/params/paramslang.cpp" line="936"/>
         <source>arith_shape</source>
         <translation>Tvar</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="902"/>
+        <location filename="../src/params/paramslang.cpp" line="940"/>
         <source>channel_biasing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="903"/>
+        <location filename="../src/params/paramslang.cpp" line="941"/>
         <source>odd_biasing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="904"/>
+        <location filename="../src/params/paramslang.cpp" line="942"/>
         <source>even_biasing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="905"/>
+        <location filename="../src/params/paramslang.cpp" line="943"/>
         <source>channel_range</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="906"/>
+        <location filename="../src/params/paramslang.cpp" line="944"/>
         <source>channel_cross</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="907"/>
+        <location filename="../src/params/paramslang.cpp" line="945"/>
         <source>gain_target</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="908"/>
+        <location filename="../src/params/paramslang.cpp" line="946"/>
         <source>eject_times</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="909"/>
+        <location filename="../src/params/paramslang.cpp" line="947"/>
         <source>image_capture</source>
         <translation>Zachytit obrazok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="912"/>
+        <location filename="../src/params/paramslang.cpp" line="950"/>
         <source>lamp_protect</source>
         <translation>Udrzba lampa</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="913"/>
+        <location filename="../src/params/paramslang.cpp" line="951"/>
         <source>feeder_biasing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="914"/>
+        <location filename="../src/params/paramslang.cpp" line="952"/>
         <source>system_test</source>
         <translation>Test system</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="915"/>
+        <location filename="../src/params/paramslang.cpp" line="953"/>
         <source>assist_camera_enable</source>
         <translation>Aktivovat pomocnu kameru</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="916"/>
+        <location filename="../src/params/paramslang.cpp" line="954"/>
         <source>advanced_parameters</source>
         <translation>Vyhodny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="917"/>
+        <location filename="../src/params/paramslang.cpp" line="955"/>
         <source>exit_list</source>
         <translation>Zoznam vystup</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="918"/>
+        <location filename="../src/params/paramslang.cpp" line="956"/>
         <source>exposure_time</source>
         <translation>Cas expozicie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="919"/>
+        <location filename="../src/params/paramslang.cpp" line="957"/>
         <source>lens_select</source>
         <translation>Sosovka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="920"/>
+        <location filename="../src/params/paramslang.cpp" line="958"/>
         <source>time_short</source>
         <translation>Kratky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="921"/>
+        <location filename="../src/params/paramslang.cpp" line="959"/>
         <source>time_middle</source>
         <translation>Stredny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="922"/>
+        <location filename="../src/params/paramslang.cpp" line="960"/>
         <source>time_long</source>
         <translation>Dlhy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="923"/>
+        <location filename="../src/params/paramslang.cpp" line="961"/>
         <source>delay_biasing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="924"/>
+        <location filename="../src/params/paramslang.cpp" line="962"/>
         <source>degauss_time</source>
         <translation>Cas odmagnetizovania</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="925"/>
+        <location filename="../src/params/paramslang.cpp" line="963"/>
         <source>truncation_time</source>
         <translation>Skratenie cas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="926"/>
+        <location filename="../src/params/paramslang.cpp" line="964"/>
         <source>clear_total</source>
         <translation>Cisty pult</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="927"/>
+        <location filename="../src/params/paramslang.cpp" line="965"/>
         <source>preheat_time</source>
         <translation>Prehriatie cas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="928"/>
+        <location filename="../src/params/paramslang.cpp" line="966"/>
         <source>machine_type_select</source>
         <translation>Produkt</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="929"/>
+        <location filename="../src/params/paramslang.cpp" line="967"/>
         <source>times_allocation</source>
         <translation>Poradie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="930"/>
+        <location filename="../src/params/paramslang.cpp" line="968"/>
         <source>pass_allocation</source>
         <translation>Kanal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="931"/>
+        <location filename="../src/params/paramslang.cpp" line="969"/>
         <source>feeder_control</source>
         <translation>Ovladanie urovne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="932"/>
+        <location filename="../src/params/paramslang.cpp" line="970"/>
         <source>feeder_control_enable</source>
         <translation>Aktivovat ovladanie urovne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="933"/>
+        <location filename="../src/params/paramslang.cpp" line="971"/>
         <source>feeder_remote_control</source>
         <translation>Dialkove ovladanie podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="934"/>
+        <location filename="../src/params/paramslang.cpp" line="972"/>
         <source>forward_direction</source>
         <translation>Smer vpred</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="935"/>
+        <location filename="../src/params/paramslang.cpp" line="973"/>
         <source>opposite_direction</source>
         <translation>Smer opacne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="936"/>
+        <location filename="../src/params/paramslang.cpp" line="974"/>
         <source>input_ai_params</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="937"/>
+        <location filename="../src/params/paramslang.cpp" line="975"/>
         <source>identify_analysis</source>
         <translation>Analyza</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="940"/>
+        <location filename="../src/params/paramslang.cpp" line="978"/>
         <source>test_pass_num</source>
         <translation>Test kanal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="941"/>
+        <location filename="../src/params/paramslang.cpp" line="979"/>
         <source>weight_test_before</source>
         <translation>Vaha pred</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="942"/>
+        <location filename="../src/params/paramslang.cpp" line="980"/>
         <source>weight_test_after</source>
         <translation>Vaha po</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="943"/>
+        <location filename="../src/params/paramslang.cpp" line="981"/>
         <source>single_pass_output</source>
         <translation>Vystup kazdeho kanala</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="944"/>
+        <location filename="../src/params/paramslang.cpp" line="982"/>
         <source>auto_running</source>
         <translation>Autom. spustit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="945"/>
+        <location filename="../src/params/paramslang.cpp" line="983"/>
         <source>output_test_set</source>
         <translation>Nastavenie vystup. test</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="946"/>
+        <location filename="../src/params/paramslang.cpp" line="984"/>
         <source>output_test_start</source>
         <translation>Test start</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="949"/>
+        <location filename="../src/params/paramslang.cpp" line="987"/>
         <source>grey</source>
         <translation>Sivy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="950"/>
+        <location filename="../src/params/paramslang.cpp" line="988"/>
         <source>matter_area</source>
         <translation>Materialova oblast</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="951"/>
+        <location filename="../src/params/paramslang.cpp" line="989"/>
         <source>image_derive</source>
         <translation>Export</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="952"/>
+        <location filename="../src/params/paramslang.cpp" line="990"/>
         <source>rice_sum</source>
         <translation>Celkom</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="953"/>
+        <location filename="../src/params/paramslang.cpp" line="991"/>
         <source>broken_rice_num</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="954"/>
+        <location filename="../src/params/paramslang.cpp" line="992"/>
         <source>broken_rice_ratio</source>
         <translation>Pomer</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="957"/>
+        <location filename="../src/params/paramslang.cpp" line="995"/>
         <source>video starting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="958"/>
+        <location filename="../src/params/paramslang.cpp" line="996"/>
         <source>video stoping</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="959"/>
+        <location filename="../src/params/paramslang.cpp" line="997"/>
         <source>output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="960"/>
+        <location filename="../src/params/paramslang.cpp" line="998"/>
         <source>dirt per</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="963"/>
+        <location filename="../src/params/paramslang.cpp" line="1001"/>
         <source>current_feeder</source>
         <translation>Aktualny podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="964"/>
+        <location filename="../src/params/paramslang.cpp" line="1002"/>
         <source>fixed_feeder</source>
         <translation>Pevny podavac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="965"/>
+        <location filename="../src/params/paramslang.cpp" line="1003"/>
         <source>reference_chute</source>
         <translation>Ref. sklz</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="966"/>
+        <location filename="../src/params/paramslang.cpp" line="1004"/>
         <source>special_for_deep</source>
         <translation>Iba tmave</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="969"/>
+        <location filename="../src/params/paramslang.cpp" line="1007"/>
         <source>pale_yellow_area</source>
         <translation>Oblast zltej bodky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="970"/>
+        <location filename="../src/params/paramslang.cpp" line="1008"/>
         <source>bad_width</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="973"/>
+        <location filename="../src/params/paramslang.cpp" line="1011"/>
         <source>infrared_set</source>
         <translation>Infra</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="974"/>
+        <location filename="../src/params/paramslang.cpp" line="1012"/>
         <source>special_for_glass</source>
         <translation>Iba sklo</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="975"/>
+        <location filename="../src/params/paramslang.cpp" line="1013"/>
         <source>follow_lower_limit</source>
         <translation>Nasleduj limit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="978"/>
+        <location filename="../src/params/paramslang.cpp" line="1016"/>
         <source>front_sort</source>
         <translation>Predne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="979"/>
+        <location filename="../src/params/paramslang.cpp" line="1017"/>
         <source>rear_sort</source>
         <translation>Zadne</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="982"/>
+        <location filename="../src/params/paramslang.cpp" line="1020"/>
         <source>sampling_time</source>
         <translation>Vzorkov cas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="983"/>
+        <location filename="../src/params/paramslang.cpp" line="1021"/>
         <source>eject_times_limit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="986"/>
+        <location filename="../src/params/paramslang.cpp" line="1024"/>
         <source>white_board_adjust</source>
         <translation>Nastavenie biely</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="987"/>
+        <location filename="../src/params/paramslang.cpp" line="1025"/>
         <source>adjust_start</source>
         <translation>Nastavenie start</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="988"/>
+        <location filename="../src/params/paramslang.cpp" line="1026"/>
         <source>adjust_finish</source>
         <translation>Nastavenie koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="989"/>
+        <location filename="../src/params/paramslang.cpp" line="1027"/>
         <source>auto_copy</source>
         <translation>Auto kopirovanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="990"/>
+        <location filename="../src/params/paramslang.cpp" line="1028"/>
         <source>co_capture</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="991"/>
+        <location filename="../src/params/paramslang.cpp" line="1029"/>
         <source>cuteoff_bg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="992"/>
+        <location filename="../src/params/paramslang.cpp" line="1030"/>
         <source>adjust_copy</source>
         <translation>Nastavenie kopirovanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="993"/>
+        <location filename="../src/params/paramslang.cpp" line="1031"/>
         <source>adjust_wave</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="994"/>
+        <location filename="../src/params/paramslang.cpp" line="1032"/>
         <source>channel</source>
         <translation>Kanal</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="997"/>
+        <location filename="../src/params/paramslang.cpp" line="1035"/>
         <source>msg_input_weight_before</source>
         <translation>Prosim zadajte vahu predtym</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="998"/>
+        <location filename="../src/params/paramslang.cpp" line="1036"/>
         <source>msg_input_weight_after</source>
         <translation>Prosim zadajte vahu potom</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="999"/>
+        <location filename="../src/params/paramslang.cpp" line="1037"/>
         <source>msg_system_testing</source>
         <translation>Testovanie, prosim cakajte</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1000"/>
+        <location filename="../src/params/paramslang.cpp" line="1038"/>
         <source>msg_insert_white_board</source>
         <translation>Prosim vlozte bielu tabulu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1001"/>
+        <location filename="../src/params/paramslang.cpp" line="1039"/>
         <source>msg_white_board_adjusting</source>
         <translation>Nastavenie, prosim cakajte....</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1002"/>
+        <location filename="../src/params/paramslang.cpp" line="1040"/>
         <source>msg_remove_white_board</source>
         <translation>Prosim vyberte bielu tabulu</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1005"/>
+        <location filename="../src/params/paramslang.cpp" line="1043"/>
         <source>scheme_cur</source>
         <translation>Aktualna schema</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1006"/>
+        <location filename="../src/params/paramslang.cpp" line="1044"/>
         <source>scheme_des</source>
         <translation>Skutocna schema</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1007"/>
+        <location filename="../src/params/paramslang.cpp" line="1045"/>
         <source>scheme_all</source>
         <translation>Vsetky schemy</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1010"/>
+        <location filename="../src/params/paramslang.cpp" line="1048"/>
         <source>pmt_run</source>
         <translation>Spustit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1011"/>
+        <location filename="../src/params/paramslang.cpp" line="1049"/>
         <source>pmt_front_frame</source>
         <translation>Predny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1012"/>
+        <location filename="../src/params/paramslang.cpp" line="1050"/>
         <source>pmt_rear_frame</source>
         <translation>Zadny zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1013"/>
+        <location filename="../src/params/paramslang.cpp" line="1051"/>
         <source>pmt_enable_red1</source>
         <translation>Aktivovat cerveny1</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1014"/>
+        <location filename="../src/params/paramslang.cpp" line="1052"/>
         <source>pmt_enable_red2</source>
         <translation>Aktivovat cerveny2</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1015"/>
+        <location filename="../src/params/paramslang.cpp" line="1053"/>
         <source>pmt_enable_green</source>
         <translation>Aktivovat zeleny</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1016"/>
+        <location filename="../src/params/paramslang.cpp" line="1054"/>
         <source>pmt_enable_blue</source>
         <translation>Aktivovat modry</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1017"/>
+        <location filename="../src/params/paramslang.cpp" line="1055"/>
         <source>pmt_ctrl_voltage</source>
         <translation>Napatie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1018"/>
+        <location filename="../src/params/paramslang.cpp" line="1056"/>
         <source>pmt_ctrl</source>
         <translation>PMT</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1021"/>
+        <location filename="../src/params/paramslang.cpp" line="1059"/>
         <source>feeder_AI</source>
         <translation>Autom. podavanie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1022"/>
+        <location filename="../src/params/paramslang.cpp" line="1060"/>
         <source>eject_stat_enable</source>
         <translation>Aktivovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1023"/>
+        <location filename="../src/params/paramslang.cpp" line="1061"/>
         <source>current_eject_freq</source>
         <translation>Frekvencia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1024"/>
+        <location filename="../src/params/paramslang.cpp" line="1062"/>
         <source>feeder_range</source>
         <translation>Podavac rozsah</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1025"/>
+        <location filename="../src/params/paramslang.cpp" line="1063"/>
         <source>ejector_range</source>
         <translation>Vydavanie rozsah</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1028"/>
+        <location filename="../src/params/paramslang.cpp" line="1066"/>
         <source>Log</source>
         <translation>Zaznam</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1029"/>
+        <location filename="../src/params/paramslang.cpp" line="1067"/>
         <source>From</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1030"/>
+        <location filename="../src/params/paramslang.cpp" line="1068"/>
         <source>To</source>
         <translation>Do</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1031"/>
+        <location filename="../src/params/paramslang.cpp" line="1069"/>
         <source>Load</source>
         <translation>Naklad</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1032"/>
+        <location filename="../src/params/paramslang.cpp" line="1070"/>
         <source>All</source>
         <translation>Vsetko</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1033"/>
+        <location filename="../src/params/paramslang.cpp" line="1071"/>
         <source>Power Switch</source>
         <translation>Vypinac</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1034"/>
+        <location filename="../src/params/paramslang.cpp" line="1072"/>
         <source>Feeder Switch</source>
         <translation>Prepinac podavaca</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1035"/>
+        <location filename="../src/params/paramslang.cpp" line="1073"/>
         <source>Machine</source>
         <translation>Stroj</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1036"/>
+        <location filename="../src/params/paramslang.cpp" line="1074"/>
         <source>Profile</source>
         <translation>Profil</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1037"/>
+        <location filename="../src/params/paramslang.cpp" line="1075"/>
         <source>Camera</source>
         <translation>Kamera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1038"/>
+        <location filename="../src/params/paramslang.cpp" line="1076"/>
         <source>Backgroud</source>
         <translation>Pozadie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1039"/>
+        <location filename="../src/params/paramslang.cpp" line="1077"/>
         <source>Arith</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1040"/>
+        <location filename="../src/params/paramslang.cpp" line="1078"/>
         <source>Reject</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1041"/>
+        <location filename="../src/params/paramslang.cpp" line="1079"/>
         <source>Wipe</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1043"/>
+        <location filename="../src/params/paramslang.cpp" line="1081"/>
         <source>Debug</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1046"/>
+        <location filename="../src/params/paramslang.cpp" line="1084"/>
         <source>upper_master</source>
         <translation>Horny M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1047"/>
+        <location filename="../src/params/paramslang.cpp" line="1085"/>
         <source>upper_slave</source>
         <translation>Horny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1048"/>
+        <location filename="../src/params/paramslang.cpp" line="1086"/>
         <source>lower_master</source>
         <translation>Dolny M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1049"/>
+        <location filename="../src/params/paramslang.cpp" line="1087"/>
         <source>lower_slave</source>
         <translation>Dolny A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1050"/>
+        <location filename="../src/params/paramslang.cpp" line="1088"/>
         <source>upper same as lower</source>
         <translation>Horny a dolny rovnaky</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1051"/>
+        <location filename="../src/params/paramslang.cpp" line="1089"/>
         <source>Master-Page</source>
         <translation>Strana M</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1052"/>
+        <location filename="../src/params/paramslang.cpp" line="1090"/>
         <source>Slave-Pge</source>
         <translation>Strana A</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1053"/>
+        <location filename="../src/params/paramslang.cpp" line="1091"/>
         <source>upper_L_begin</source>
         <translation>Horny L zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1054"/>
+        <location filename="../src/params/paramslang.cpp" line="1092"/>
         <source>upper_L_end</source>
         <translation>Horny L koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1055"/>
+        <location filename="../src/params/paramslang.cpp" line="1093"/>
         <source>upper_R_begin</source>
         <translation>Horny P zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1056"/>
+        <location filename="../src/params/paramslang.cpp" line="1094"/>
         <source>upper_R_end</source>
         <translation>Horny P koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1057"/>
+        <location filename="../src/params/paramslang.cpp" line="1095"/>
         <source>lower_L_begin</source>
         <translation>Dolny L zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1058"/>
+        <location filename="../src/params/paramslang.cpp" line="1096"/>
         <source>lower_L_end</source>
         <translation>Dolny L koniec</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1059"/>
+        <location filename="../src/params/paramslang.cpp" line="1097"/>
         <source>lower_R_begin</source>
         <translation>Dolny P zaciatok</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1060"/>
+        <location filename="../src/params/paramslang.cpp" line="1098"/>
         <source>lower_R_end</source>
         <translation>Dolny P konied</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1061"/>
+        <location filename="../src/params/paramslang.cpp" line="1099"/>
         <source>Unused</source>
         <translation>Nepouzity</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1064"/>
+        <location filename="../src/params/paramslang.cpp" line="1102"/>
         <source>color_select_mode</source>
         <translation>Rezim farba</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1065"/>
+        <location filename="../src/params/paramslang.cpp" line="1103"/>
         <source>set_color_select_mode</source>
         <translation>Rezim farba</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1066"/>
+        <location filename="../src/params/paramslang.cpp" line="1104"/>
         <source>black_tea</source>
         <translation>Cierny list</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1067"/>
+        <location filename="../src/params/paramslang.cpp" line="1105"/>
         <source>white_bar_tea</source>
         <translation>Biely list</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1068"/>
+        <location filename="../src/params/paramslang.cpp" line="1106"/>
         <source>yeloow_green_bar_piece</source>
         <translation>Zlty list</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1069"/>
+        <location filename="../src/params/paramslang.cpp" line="1107"/>
         <source>red_bar_red_piece</source>
         <translation>Cerveny list</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1072"/>
+        <location filename="../src/params/paramslang.cpp" line="1110"/>
         <source>bigData</source>
         <translation>Velke data</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1073"/>
+        <location filename="../src/params/paramslang.cpp" line="1111"/>
         <source>state</source>
         <translation>Stanovit</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1074"/>
+        <location filename="../src/params/paramslang.cpp" line="1112"/>
         <source>state_info</source>
         <translation>System info</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1075"/>
+        <location filename="../src/params/paramslang.cpp" line="1113"/>
         <source>backgroud</source>
         <translation>Pozadie</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1076"/>
+        <location filename="../src/params/paramslang.cpp" line="1114"/>
         <source>material</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1077"/>
+        <location filename="../src/params/paramslang.cpp" line="1115"/>
         <source>backgroud_statistic</source>
         <translation>Pozadie statistika</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1078"/>
+        <location filename="../src/params/paramslang.cpp" line="1116"/>
         <source>identify</source>
         <translation>Identifikovat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1079"/>
+        <location filename="../src/params/paramslang.cpp" line="1117"/>
         <source>identify_statistic</source>
         <translation>Identifikovat statistika</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1080"/>
+        <location filename="../src/params/paramslang.cpp" line="1118"/>
         <source>eject</source>
         <translation>Vydat</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1081"/>
+        <location filename="../src/params/paramslang.cpp" line="1119"/>
         <source>eject_statistic</source>
         <translation>Vydanie cas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1082"/>
+        <location filename="../src/params/paramslang.cpp" line="1120"/>
         <source>histogram</source>
         <translation>Histogram</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1083"/>
+        <location filename="../src/params/paramslang.cpp" line="1121"/>
         <source>histogram_statistic</source>
         <translation>Histogram statistika</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1084"/>
+        <location filename="../src/params/paramslang.cpp" line="1122"/>
         <source>configration</source>
         <translation>Konfiguracia</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1085"/>
+        <location filename="../src/params/paramslang.cpp" line="1123"/>
         <source>cameraReference</source>
         <translation>Ref kamera</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1086"/>
+        <location filename="../src/params/paramslang.cpp" line="1124"/>
         <source>cameraLine</source>
         <translation>Kamerova linka</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1087"/>
+        <location filename="../src/params/paramslang.cpp" line="1125"/>
         <source>cameraList</source>
         <translation>Kamera zoznam</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1088"/>
+        <location filename="../src/params/paramslang.cpp" line="1126"/>
         <source>time_statistic</source>
         <translation>Statistika cas</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1089"/>
+        <location filename="../src/params/paramslang.cpp" line="1127"/>
         <source>material_total</source>
         <translation>Material celkom</translation>
     </message>
     <message>
-        <location filename="../src/params/paramslang.cpp" line="1090"/>
+        <location filename="../src/params/paramslang.cpp" line="1128"/>
         <source>material_bad_total</source>
         <translation>Zle cislo</translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4791"/>
+        <location filename="../src/globalflow.cpp" line="4829"/>
+        <source>工程参数文件异常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4793"/>
+        <location filename="../src/globalflow.cpp" line="4833"/>
+        <source>全局参数文件异常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4795"/>
+        <location filename="../src/globalflow.cpp" line="4837"/>
+        <source>相机参数文件异常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4797"/>
+        <source>方案参数文件异常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4807"/>
+        <source>正在读取系统配置…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4814"/>
+        <source>系统配置文件缺失</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4865"/>
+        <source>系统配置正常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4870"/>
+        <source>异常：</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4870"/>
+        <location filename="../src/globalflow.cpp" line="4912"/>
+        <source>、</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4874"/>
+        <source>正在检测串口设备…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4881"/>
+        <source>串口设备正常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4885"/>
+        <source>串口设备打开失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4891"/>
+        <source>AI检测未启用</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4895"/>
+        <source>AI未启用</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4899"/>
+        <source>正在下发AI参数…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4907"/>
+        <source>AI功能模块正常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4912"/>
+        <source>AI设备异常：</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/globalflow.cpp" line="4917"/>
+        <source>正在初始化界面与数据表…</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainWidget</name>
     <message>
-        <location filename="../src/mainwidget.cpp" line="1467"/>
+        <location filename="../src/mainwidget.cpp" line="1489"/>
         <source>AI设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwidget.cpp" line="1471"/>
+        <location filename="../src/mainwidget.cpp" line="1493"/>
         <source>实时产量</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwidget.cpp" line="1473"/>
+        <location filename="../src/mainwidget.cpp" line="1495"/>
         <source>AI模型</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6964,128 +7162,128 @@
 <context>
     <name>MergeDialog</name>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="49"/>
+        <location filename="../src/merge_dialog.cpp" line="62"/>
         <source>合并标注目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="56"/>
+        <location filename="../src/merge_dialog.cpp" line="70"/>
         <source>源目录（最多 10 个）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="72"/>
+        <location filename="../src/merge_dialog.cpp" line="86"/>
         <source>+ 添加源目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="80"/>
+        <location filename="../src/merge_dialog.cpp" line="94"/>
         <source>合并输出目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="83"/>
+        <location filename="../src/merge_dialog.cpp" line="97"/>
         <source>输出路径：</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="85"/>
+        <location filename="../src/merge_dialog.cpp" line="99"/>
         <source>请选择或等待自动生成...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="105"/>
+        <location filename="../src/merge_dialog.cpp" line="119"/>
         <source>输出路径</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="108"/>
+        <location filename="../src/merge_dialog.cpp" line="122"/>
         <source>浏览...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="115"/>
+        <location filename="../src/merge_dialog.cpp" line="129"/>
         <source>拷贝模式</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="117"/>
+        <location filename="../src/merge_dialog.cpp" line="131"/>
         <source>拷贝全部图片（bg_ 无标注也拷）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="118"/>
+        <location filename="../src/merge_dialog.cpp" line="132"/>
         <source>仅拷贝有标注的图片（txt 配对成功的）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="140"/>
+        <location filename="../src/merge_dialog.cpp" line="154"/>
         <source>执行合并</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="144"/>
+        <location filename="../src/merge_dialog.cpp" line="158"/>
         <source>关闭</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="169"/>
+        <location filename="../src/merge_dialog.cpp" line="183"/>
         <source>请选择源目录...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="189"/>
+        <location filename="../src/merge_dialog.cpp" line="203"/>
         <source>源目录路径</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="193"/>
+        <location filename="../src/merge_dialog.cpp" line="207"/>
         <source>浏览</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="199"/>
+        <location filename="../src/merge_dialog.cpp" line="213"/>
         <source>移除</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="224"/>
+        <location filename="../src/merge_dialog.cpp" line="238"/>
         <source>选择源目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="259"/>
+        <location filename="../src/merge_dialog.cpp" line="273"/>
         <source>选择输出目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="304"/>
-        <location filename="../src/merge_dialog.cpp" line="310"/>
+        <location filename="../src/merge_dialog.cpp" line="318"/>
+        <location filename="../src/merge_dialog.cpp" line="324"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="304"/>
+        <location filename="../src/merge_dialog.cpp" line="318"/>
         <source>请先添加至少一个有效源目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="310"/>
+        <location filename="../src/merge_dialog.cpp" line="324"/>
         <source>请指定合并输出目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="319"/>
+        <location filename="../src/merge_dialog.cpp" line="333"/>
         <source>提示</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="319"/>
+        <location filename="../src/merge_dialog.cpp" line="333"/>
         <source>未收集到任何图片，请检查源目录</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="324"/>
+        <location filename="../src/merge_dialog.cpp" line="338"/>
         <source>源目录：%1 个
 收集图片：%2 张
 配对成功 txt：%3 个
@@ -7093,7 +7291,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="335"/>
+        <location filename="../src/merge_dialog.cpp" line="349"/>
         <source>
 
 ⚠️ 发现 %1 张图片尺寸与参考 %2x%3 不一致：
@@ -7101,87 +7299,87 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="339"/>
+        <location filename="../src/merge_dialog.cpp" line="353"/>
         <source>  · </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="341"/>
+        <location filename="../src/merge_dialog.cpp" line="355"/>
         <source>  ... 还有 %1 张未列出
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="342"/>
+        <location filename="../src/merge_dialog.cpp" line="356"/>
         <source>
 是否继续合并？</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="343"/>
+        <location filename="../src/merge_dialog.cpp" line="357"/>
         <source>尺寸不一致警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="347"/>
+        <location filename="../src/merge_dialog.cpp" line="361"/>
         <source>确认合并</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="347"/>
+        <location filename="../src/merge_dialog.cpp" line="361"/>
         <source>
 
 开始合并？</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="354"/>
+        <location filename="../src/merge_dialog.cpp" line="368"/>
         <source>开始合并：
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="356"/>
+        <location filename="../src/merge_dialog.cpp" line="370"/>
         <source>  目录%1(%2): 0 / %3
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="387"/>
+        <location filename="../src/merge_dialog.cpp" line="401"/>
         <source>正在拷贝：
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="391"/>
-        <location filename="../src/merge_dialog.cpp" line="421"/>
+        <location filename="../src/merge_dialog.cpp" line="405"/>
+        <location filename="../src/merge_dialog.cpp" line="435"/>
         <source>  目录%1(%2): %3 / %4
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="419"/>
+        <location filename="../src/merge_dialog.cpp" line="433"/>
         <source>完成！
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="428"/>
+        <location filename="../src/merge_dialog.cpp" line="442"/>
         <source>错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="428"/>
+        <location filename="../src/merge_dialog.cpp" line="442"/>
         <source>合并失败：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="430"/>
+        <location filename="../src/merge_dialog.cpp" line="444"/>
         <source>完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/merge_dialog.cpp" line="431"/>
+        <location filename="../src/merge_dialog.cpp" line="445"/>
         <source>合并完成！
 成功拷贝 %1 张图片。
 输出目录：%2</source>
@@ -7191,47 +7389,47 @@
 <context>
     <name>ModelApi</name>
     <message>
-        <location filename="../src/aimodelset.cpp" line="4945"/>
-        <location filename="../src/aimodelset.cpp" line="4980"/>
-        <location filename="../src/aimodelset.cpp" line="5011"/>
+        <location filename="../src/aimodelset.cpp" line="5256"/>
+        <location filename="../src/aimodelset.cpp" line="5291"/>
+        <location filename="../src/aimodelset.cpp" line="5322"/>
         <source>任务 ID 不能为空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5057"/>
+        <location filename="../src/aimodelset.cpp" line="5368"/>
         <source>模型名称不能为空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5061"/>
-        <location filename="../src/aimodelset.cpp" line="5084"/>
+        <location filename="../src/aimodelset.cpp" line="5372"/>
+        <location filename="../src/aimodelset.cpp" line="5395"/>
         <source>保存路径不能为空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5080"/>
+        <location filename="../src/aimodelset.cpp" line="5391"/>
         <source>模型Json不能为空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5115"/>
+        <location filename="../src/aimodelset.cpp" line="5426"/>
         <source>HTTP 状态码异常：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5166"/>
+        <location filename="../src/aimodelset.cpp" line="5477"/>
         <source>[HTTP 失败] 错误码=%1，错误信息=%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5191"/>
-        <location filename="../src/aimodelset.cpp" line="5213"/>
+        <location filename="../src/aimodelset.cpp" line="5502"/>
+        <location filename="../src/aimodelset.cpp" line="5524"/>
         <source>响应解析失败：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aimodelset.cpp" line="5198"/>
-        <location filename="../src/aimodelset.cpp" line="5223"/>
+        <location filename="../src/aimodelset.cpp" line="5509"/>
+        <location filename="../src/aimodelset.cpp" line="5534"/>
         <source>未知错误</source>
         <translation type="unfinished"></translation>
     </message>

@@ -2666,6 +2666,7 @@ void GlobalFlow::resetFeeder(int flag)
         */
         MySerial.com2Write(CMD_CTRL_FEEDER, CTRL_GENERAL, 0, 0, 0, 0, 0, feedOnoff, 3);
         MySerial.com2Write(CMD_CTRL_FEEDER, CTRL_GENERAL, 1, 0, 0, 0, 0, feedOnoff, 3);
+        operatorVFG((struGsh.bStatFeed == 1) ? true : false);
         return;
     }
 
@@ -4755,7 +4756,7 @@ void GlobalFlow::getSlaveList()
 }
 
 /* 开机检测状态上报（启动画面 5 组） */
-void GlobalFlow::bootStage(int stage, int status, const QString &detail)
+void GlobalFlow::bootStage(int stage, int status, const QString& detail)
 {
     emit initStageChanged(stage, status, detail);
 
@@ -4867,7 +4868,7 @@ void GlobalFlow::initAll()
     else
     {
         bootStage(BOOT_STAGE_CONFIG, BOOT_STATUS_ERROR,
-                  tr("异常：") + configErrors.join(tr("、")));
+            tr("异常：") + configErrors.join(tr("、")));
     }
 
     // ---------------- 组 1：串口设备 / 机型下发 ----------------
@@ -4900,6 +4901,8 @@ void GlobalFlow::initAll()
 
         QStringList aiFailed = initUdpImagPara();
         aiFailed += initPixelImagPara();
+        // 下发变频器频率
+        chgVFDFreq();
         aiFailed.removeDuplicates();
 
         if (aiFailed.isEmpty())
@@ -4909,7 +4912,7 @@ void GlobalFlow::initAll()
         else
         {
             bootStage(BOOT_STAGE_AI, BOOT_STATUS_ERROR,
-                      tr("AI设备异常：") + aiFailed.join(tr("、")));
+                tr("AI设备异常：") + aiFailed.join(tr("、")));
         }
     }
 
@@ -5184,7 +5187,7 @@ void GlobalFlow::startAiCollect()
             LOG_ERROR_STM("collect opr index:" << idx << " ip:" << ip.toStdString() << " send command failed! reqeust body:" << request.toHex(' ').toUpper().toStdString());
             continue;
         }
-        
+
         CmdPackage cmd_pkg;
         ok = cmdworker::ParseCmdPkg(response, cmd_pkg);
         if (!ok)
@@ -5299,6 +5302,36 @@ void GlobalFlow::startAiInfer()
     MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 1, 3);
 }
 
+void GlobalFlow::chgVFDFreq()
+{
+    VfdCfgInfo info = ConfigMgr::Instance().GetVfdInfo();
+    if (!info.enable_)
+    {
+        LOG_INFO_STM("vfd enable is false, so ignore it!");
+        return;
+    }
+
+    // 振动频率下发时需要*100
+    QByteArray value = cmdworker::VFDFrequencyRequest(info.frequency_ * 100);
+    LOG_INFO_STM("vfd frequencey:" << info.frequency_ << ", body:" << value.toHex(' ').toUpper().toStdString());
+    MySerial.com2Write(value, true);
+    // xktodo 读取变频器的响应
+}
+
+
+void GlobalFlow::operatorVFG(bool bIsStart)
+{
+    if (!ConfigMgr::Instance().GetVfdInfo().enable_)
+    {
+        LOG_INFO_STM("vfd enable is false, so ignore it!");
+        return;
+    }
+    QByteArray value = cmdworker::VFDOperatorRequest(bIsStart);
+    LOG_INFO_STM("IsStart:" << bIsStart << ", body:" << value.toHex(' ').toUpper().toStdString());
+    MySerial.com2Write(value, true);
+    // xktodo 读取变频器的响应
+}
+
 
 void GlobalFlow::stopAiInfer()
 {
@@ -5383,7 +5416,7 @@ void GlobalFlow::startAiWorker(bool onOff)
     }
 }
 
-int  GlobalFlow::initAiCommunication(QStringList *failedDevices)
+int  GlobalFlow::initAiCommunication(QStringList* failedDevices)
 {
     if (!struCnfp.enableAi)
     {

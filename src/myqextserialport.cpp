@@ -226,6 +226,7 @@ int MyQextSerialPort::getComBaud(int nPortno)     // 获取串口波特率
 
 void MyQextSerialPort::setComBaud(int nPortno, int baud)
 {
+    LOG_INFO_STM("set baud: " << baud << " for port: " << nPortno);
 #ifdef Q_OS_UNIX
     switch (nPortno)
     {
@@ -502,6 +503,18 @@ int MyQextSerialPort::com1Read(char* sBuf, int nLen, int timeoutMsec)
 #endif
 
     mutex.unlock();
+    return ret;
+}
+
+int MyQextSerialPort::com2Write(QByteArray& arr, bool bIsRead)
+{
+    int ret = 0;
+    if (bIsRead)
+    {
+        myPort2->readAll();
+    }
+    ret = myPort2->write(arr.data(), arr.size());
+    LOG_INFO_STM("com2 write:" << arr.toHex(' ').toUpper().toStdString() << " , ret: " << ret);
     return ret;
 }
 
