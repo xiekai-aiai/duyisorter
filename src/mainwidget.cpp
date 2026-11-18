@@ -395,10 +395,11 @@ MainWidget::MainWidget(QWidget* parent)
     titleLabel->setMaximumHeight(BTN_HEIGHT);
     titleLabel->setMaximumWidth(BTN_WIDTH);
     //    backToHomeBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
-    feedSwitchBtn->setFixedSize(BTN_WIDTH + 40, BTN_HEIGHT + 10);
-    systemHaltBtn->setFixedSize(BTN_WIDTH + 30, BTN_HEIGHT + 10);
-    saveParamBtn->setFixedSize(BTN_WIDTH + 30, BTN_HEIGHT + 10);
-    videoBtn->setFixedSize(BTN_WIDTH + 30, BTN_HEIGHT + 10);
+    /* 顶部工具按钮宽度按内容自适应，高度统一，便于等间距排布 */
+    feedSwitchBtn->setFixedHeight(BTN_HEIGHT + 10);
+    systemHaltBtn->setFixedHeight(BTN_HEIGHT + 10);
+    saveParamBtn->setFixedHeight(BTN_HEIGHT + 10);
+    videoBtn->setFixedHeight(BTN_HEIGHT + 10);
 
     //    setPurviewBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
     statInfoBtn->setFixedSize(BTN_WIDTH + 20, BTN_HEIGHT + 10);
@@ -443,17 +444,22 @@ MainWidget::MainWidget(QWidget* parent)
 
     mainGridLayout->addWidget(titleLabel, 0, 0, 1, 1);
 
-    mainGridLayout->addWidget(videoBtn, 0, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
-
-    //      mainGridLayout->addWidget(leftBackGbx, 0, 0, 2, 3, Qt::AlignLeft);
-    //      mainGridLayout->setSpacing(10);
-    mainGridLayout->addWidget(systemHaltBtn, 0, 2, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
-    //      mainGridLayout->setSpacing(2);
-    mainGridLayout->addWidget(saveParamBtn, 0, 3, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
-    //      mainGridLayout->setSpacing(2);
-    mainGridLayout->addWidget(feedSwitchBtn, 0, 4, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
-    //      mainGridLayout->setSpacing(2);
-    mainGridLayout->addWidget(statInfoBtn, 0, 6, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+    /* 顶部工具按钮等间距排列：起始位置保持不变，控件之间用等比例弹簧分隔，
+       使每个控件的间距（含“开始工作”与右侧时钟之间的间距）完全相同 */
+    QWidget* topToolBar = new QWidget(this);
+    QHBoxLayout* topToolLayout = new QHBoxLayout(topToolBar);
+    topToolLayout->setContentsMargins(45, 0, 0, 0);
+    topToolLayout->setSpacing(0);
+    topToolLayout->addWidget(videoBtn);
+    topToolLayout->addStretch(1);
+    topToolLayout->addWidget(systemHaltBtn);
+    topToolLayout->addStretch(1);
+    topToolLayout->addWidget(saveParamBtn);
+    topToolLayout->addStretch(1);
+    topToolLayout->addWidget(feedSwitchBtn);
+    topToolLayout->addStretch(1);
+    topToolLayout->addWidget(statInfoBtn);
+    mainGridLayout->addWidget(topToolBar, 0, 0, 1, 7);
 
     mainGridLayout->addWidget(lineTitle, 1, 0, 1, 7);
     //    mainGridLayout->addWidget(pageHome, 2, 0, 1, 2);

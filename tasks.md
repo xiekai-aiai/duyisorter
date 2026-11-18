@@ -23,6 +23,7 @@
 - [x] T15 `mainwidget.cpp`：`homePageStackedWidget` 高度由 `-60` 下调到 `-80`，预留底部「分隔线 + 功能键」50px，白框不再压到功能键区
 - [x] T16 复验：`topbarstatuswidget.cpp` / `mainwidget.cpp` clang `-fsyntax-only` 通过；`moc` + `rcc` 通过
 - [x] T17 顶部改为直角矩形外框（去掉弧形包围框与卡片素材）；中文界面内部只显示中文（隐藏英文副标题，状态显示“正常/异常”）；停止按钮文字改用 `myLan.working_start`（中文为“停止工作”）
+- [x] T18 顶部工具按钮（视频采集/关机/参数保存/开始工作/时钟）改为按内容自适应宽度 + 等比例弹簧分隔，起始位置不变，各控件之间以及与时钟的间距完全相同
 
 ## 阻塞中
 
