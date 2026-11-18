@@ -65,14 +65,16 @@ private:
     QPixmap loadAsset(const QString& name) const;
     void drawNineSlice(QPainter& painter, const QPixmap& pixmap, const QRect& target,
                        int src_slice, int dst_margin) const;
-    void drawCard(QPainter& painter, const QRect& card, const QString& title,
+    void drawPanel(QPainter& painter, const QRect& panel, bool alarm) const;
+    void drawCard(QPainter& painter, const QRect& area, const QString& title,
                   const QString& subtitle, quint32 value, const QString& unit,
                   const QString& status, bool alarm) const;
-    void drawSegments(QPainter& painter, const QRect& card, bool alarm) const;
+    void drawSegments(QPainter& painter, const QRect& panel, bool alarm) const;
     void drawStopButton(QPainter& painter, const QRect& button) const;
     void drawClock(QPainter& painter, const QRect& area) const;
 
-    QRect cardRect(int index) const;
+    QRect panelRect() const;
+    QRect metricRect(int index) const;
     QRect stopRect() const;
     QRect clockRect() const;
 

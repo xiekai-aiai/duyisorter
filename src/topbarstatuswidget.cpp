@@ -12,6 +12,7 @@
 #include <QLinearGradient>
 #include <QRadialGradient>
 #include <QString>
+#include <QImage>
 
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
@@ -23,16 +24,58 @@
 /* 素材目录（生成指令中约定的文件名） */
 #define TOPBAR_ASSET_DIR ":/res/png2/topbar_anim/"
 
-/* 状态卡与按钮布局参数（1024x768 基准） */
-#define CARD_LEFT        8
-#define CARD_TOP         8
-#define CARD_WIDTH       296
-#define CARD_HEIGHT      58
-#define CARD_GAP         8
-#define STOP_WIDTH       186
-#define STOP_HEIGHT      56
-#define SEGMENT_COUNT    18
-#define SEGMENT_LIT_LEN  5
+/* 状态面板与按钮布局参数（1024x768 基准）
+   运行态顶部为“一个面板 + 一条跑马灯”，面板内左右两个指标 */
+#define PANEL_LEFT       8
+#define PANEL_TOP        6
+#define PANEL_WIDTH      610
+#define PANEL_HEIGHT     62
+#define METRIC_WIDTH     (PANEL_WIDTH / 2)
+#define STOP_LEFT        630
+#define STOP_WIDTH       150
+#define STOP_HEIGHT      50
+#define SEGMENT_COUNT    30
+#define SEGMENT_WIDTH    14
+#define SEGMENT_LIT_LEN  8
+
+/* 去掉素材四周的透明留白：卡片素材画布带大边距，直接绘制会把边框缩到内侧。
+   alpha 阈值取 60，保留描边与 1px 柔边，同时裁掉低透明度的外发光留白 */
+static QPixmap trimTransparentMargins(const QPixmap& src)
+{
+    if (src.isNull())
+    {
+        return src;
+    }
+
+    const QImage image = src.toImage().convertToFormat(QImage::Format_ARGB32);
+    int left = image.width();
+    int top = image.height();
+    int right = -1;
+    int bottom = -1;
+
+    for (int y = 0; y < image.height(); ++y)
+    {
+        const QRgb* line = reinterpret_cast<const QRgb*>(image.constScanLine(y));
+        for (int x = 0; x < image.width(); ++x)
+        {
+            if (qAlpha(line[x]) <= 60)
+            {
+                continue;
+            }
+            if (x < left)   { left = x; }
+            if (x > right)  { right = x; }
+            if (y < top)    { top = y; }
+            if (y > bottom) { bottom = y; }
+        }
+    }
+
+    if (right < left || bottom < top)
+    {
+        return src;
+    }
+
+    return src.copy(QRect(left, top, right - left + 1, bottom - top + 1));
+}
 
 //////////////////////////////// AiStatusPollThread ////////////////////////////////
 
@@ -113,15 +156,15 @@ TopBarStatusWidget::TopBarStatusWidget(QWidget* parent)
     setFixedHeight(TOPBAR_STATUS_HEIGHT);
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
 
-    m_card_normal      = loadAsset("cardMetricNormal.png");
-    m_card_alarm       = loadAsset("cardMetricAlarm.png");
+    m_card_normal      = trimTransparentMargins(loadAsset("cardMetricNormal.png"));
+    m_card_alarm       = trimTransparentMargins(loadAsset("cardMetricAlarm.png"));
     m_dot_normal       = loadAsset("dotNormal.png");
     m_dot_alarm        = loadAsset("dotAlarm.png");
     m_seg_on           = loadAsset("segOn.png");
     m_seg_off          = loadAsset("segOff.png");
     m_seg_on_alarm     = loadAsset("segOnAlarm.png");
-    m_btn_stop         = loadAsset("btnStop.png");
-    m_btn_stop_pressed = loadAsset("btnStopPressed.png");
+    m_btn_stop         = trimTransparentMargins(loadAsset("btnStop.png"));
+    m_btn_stop_pressed = trimTransparentMargins(loadAsset("btnStopPressed.png"));
     m_icon_stop        = loadAsset("iconStop.png");
     m_topbar_bg        = loadAsset("topbarBg.png");
     m_icon_clock       = loadAsset("iconClock.png");
@@ -198,7 +241,7 @@ void TopBarStatusWidget::onStatusUpdated(quint32 discard_num, quint32 timeout_nu
 
     m_discard_num = discard_num;
     m_timeout_num = timeout_num;
-    update(cardRect(0).united(cardRect(1)));
+    update(panelRect());
 }
 
 void TopBarStatusWidget::onAnimTimeout()
@@ -233,8 +276,8 @@ void TopBarStatusWidget::onAnimTimeout()
     if (m_running && m_fade >= m_fade_target)
     {
         ++m_phase;
-        // 只刷新两张卡片的流光区域
-        update(cardRect(0).united(cardRect(1)));
+        // 只刷新面板内的跑马灯区域
+        update(panelRect());
     }
 }
 
@@ -257,19 +300,25 @@ QPixmap TopBarStatusWidget::loadAsset(const QString& name) const
     return QPixmap();
 }
 
-QRect TopBarStatusWidget::cardRect(int index) const
+QRect TopBarStatusWidget::panelRect() const
 {
-    return QRect(CARD_LEFT + index * (CARD_WIDTH + CARD_GAP), CARD_TOP, CARD_WIDTH, CARD_HEIGHT);
+    return QRect(PANEL_LEFT, PANEL_TOP, PANEL_WIDTH, PANEL_HEIGHT);
+}
+
+QRect TopBarStatusWidget::metricRect(int index) const
+{
+    return QRect(PANEL_LEFT + index * METRIC_WIDTH, PANEL_TOP, METRIC_WIDTH, PANEL_HEIGHT);
 }
 
 QRect TopBarStatusWidget::stopRect() const
 {
-    return QRect(cardRect(1).right() + 1 + CARD_GAP, 12, STOP_WIDTH, STOP_HEIGHT);
+    return QRect(STOP_LEFT, (TOPBAR_STATUS_HEIGHT - STOP_HEIGHT) / 2,
+                 STOP_WIDTH, STOP_HEIGHT);
 }
 
 QRect TopBarStatusWidget::clockRect() const
 {
-    return QRect(width() - 196, 0, 184, height());
+    return QRect(width() - 152, 0, 144, height());
 }
 
 void TopBarStatusWidget::paintEvent(QPaintEvent*)
@@ -297,50 +346,53 @@ void TopBarStatusWidget::paintEvent(QPaintEvent*)
         painter.fillRect(rect(), bg);
     }
 
-    // 相机丢包
     const bool discard_alarm = (m_discard_num > 0);
-    drawCard(painter, cardRect(0), myLan.ai_front_discard_num, "CAMERA PACKET LOSS",
+    const bool timeout_alarm = (m_timeout_num > 0);
+    const bool any_alarm = discard_alarm || timeout_alarm;
+
+    // 一个外框 + 一条跑马灯
+    drawPanel(painter, panelRect(), any_alarm);
+
+    // 面板内左右两个指标
+    drawCard(painter, metricRect(0), myLan.ai_front_discard_num, "PACKET LOSS",
              m_discard_num, QString::fromUtf8("帧"),
              discard_alarm ? "ABNORMAL" : "NORMAL", discard_alarm);
-
-    // 推理延迟超时
-    const bool timeout_alarm = (m_timeout_num > 0);
-    drawCard(painter, cardRect(1), myLan.ai_front_delay_num, "INFER TIMEOUT",
+    drawCard(painter, metricRect(1), myLan.ai_front_delay_num, "INFER TIMEOUT",
              m_timeout_num, myLan.times,
              timeout_alarm ? "ABNORMAL" : "NORMAL", timeout_alarm);
+
+    drawSegments(painter, panelRect(), any_alarm);
 
     drawStopButton(painter, stopRect());
     drawClock(painter, clockRect());
 }
 
-void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QString& title,
-                                  const QString& subtitle, quint32 value, const QString& unit,
-                                  const QString& status, bool alarm) const
+void TopBarStatusWidget::drawPanel(QPainter& painter, const QRect& panel, bool alarm) const
 {
     const QColor accent = alarm ? QColor(255, 79, 94) : QColor(53, 224, 138);
     const QPixmap& bg = alarm ? m_card_alarm : m_card_normal;
 
+    // 外发光
+    for (int i = 3; i >= 1; --i)
+    {
+        QColor glow = accent;
+        glow.setAlpha(18 - i * 4);
+        painter.setPen(QPen(glow, 2));
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRoundedRect(QRectF(panel).adjusted(-i, -i, i, i), 6, 6);
+    }
+
     if (!bg.isNull())
     {
-        drawNineSlice(painter, bg, card, 48, 16);
+        // 素材已裁掉透明留白，直接拉伸铺满面板矩形，保证边框完整罩住面板内容
+        painter.drawPixmap(panel, bg);
     }
     else
     {
-        // 外发光
-        for (int i = 3; i >= 1; --i)
-        {
-            QColor glow = accent;
-            glow.setAlpha(18 - i * 4);
-            painter.setPen(QPen(glow, 2));
-            painter.setBrush(Qt::NoBrush);
-            painter.drawRoundedRect(QRectF(card).adjusted(-i, -i, i, i), 6, 6);
-        }
-
-        // 卡片底
-        QLinearGradient fill(card.topLeft(), card.bottomLeft());
+        QLinearGradient fill(panel.topLeft(), panel.bottomLeft());
         fill.setColorAt(0.0, QColor(11, 27, 43, 245));
         fill.setColorAt(1.0, QColor(6, 18, 30, 245));
-        const QRectF body = QRectF(card).adjusted(0.5, 0.5, -0.5, -0.5);
+        const QRectF body = QRectF(panel).adjusted(0.5, 0.5, -0.5, -0.5);
         painter.setBrush(fill);
         painter.setPen(QPen(alarm ? QColor(180, 68, 78) : QColor(42, 127, 150), 1));
         painter.drawRoundedRect(body, 4, 4);
@@ -357,6 +409,18 @@ void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QS
         painter.drawLine(QPointF(body.right() - len, body.bottom()), QPointF(body.right(), body.bottom()));
         painter.drawLine(QPointF(body.right(), body.bottom()), QPointF(body.right(), body.bottom() - len));
     }
+
+    // 左右指标分隔线
+    const int divider_x = PANEL_LEFT + METRIC_WIDTH;
+    painter.setPen(QPen(QColor(38, 110, 130), 1));
+    painter.drawLine(divider_x, panel.top() + 14, divider_x, panel.bottom() - 22);
+}
+
+void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QString& title,
+                                  const QString& subtitle, quint32 value, const QString& unit,
+                                  const QString& status, bool alarm) const
+{
+    const QColor accent = alarm ? QColor(255, 79, 94) : QColor(53, 224, 138);
 
     // 状态指示灯
     const QRect dot_rect(card.left() + 12, card.top() + 12, 14, 14);
@@ -376,13 +440,13 @@ void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QS
         painter.drawEllipse(dot_rect.center(), 10, 10);
     }
 
-    // 中文标题
+    // 中文标题（右侧留出数值区域，过长时省略）
     QFont title_font = font();
     title_font.setPixelSize(15);
     title_font.setBold(true);
     painter.setFont(title_font);
     painter.setPen(QColor(234, 246, 255));
-    const QRect title_rect(card.left() + 34, card.top() + 6, card.width() - 180, 20);
+    const QRect title_rect(card.left() + 34, card.top() + 6, 86, 20);
     const QFontMetrics title_metrics(title_font);
     painter.drawText(title_rect, Qt::AlignLeft | Qt::AlignVCenter,
                      title_metrics.elidedText(title, Qt::ElideRight, title_rect.width()));
@@ -394,7 +458,7 @@ void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QS
     sub_font.setLetterSpacing(QFont::AbsoluteSpacing, 1.0);
     painter.setFont(sub_font);
     painter.setPen(QColor(78, 143, 166));
-    painter.drawText(QRect(card.left() + 34, card.top() + 27, card.width() - 180, 12),
+    painter.drawText(QRect(card.left() + 34, card.top() + 27, 86, 12),
                      Qt::AlignLeft | Qt::AlignVCenter, subtitle);
 
     // 实时数值
@@ -436,22 +500,19 @@ void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QS
     painter.setPen(accent);
     painter.drawText(QRect(card.left() + 236, card.top() + 8, 52, 16),
                      Qt::AlignRight | Qt::AlignVCenter, status);
-
-    drawSegments(painter, card, alarm);
 }
 
-void TopBarStatusWidget::drawSegments(QPainter& painter, const QRect& card, bool alarm) const
+void TopBarStatusWidget::drawSegments(QPainter& painter, const QRect& panel, bool alarm) const
 {
-    const int left = card.left() + 34;
-    const int right = card.right() - 10;
-    const int seg_width = 10;
-    const int gap = qMax(2, (right - left - SEGMENT_COUNT * seg_width) / (SEGMENT_COUNT - 1));
-    const int y = card.bottom() - 10;
+    const int left = panel.left() + 34;
+    const int right = panel.right() - 16;
+    const int gap = qMax(2, (right - left - SEGMENT_COUNT * SEGMENT_WIDTH) / (SEGMENT_COUNT - 1));
+    const int y = panel.bottom() - 13;
     const int lit_start = m_phase % SEGMENT_COUNT;
 
     for (int i = 0; i < SEGMENT_COUNT; ++i)
     {
-        const QRect rect(left + i * (seg_width + gap), y, seg_width, 5);
+        const QRect rect(left + i * (SEGMENT_WIDTH + gap), y, SEGMENT_WIDTH, 6);
         const bool lit = ((i - lit_start + SEGMENT_COUNT) % SEGMENT_COUNT) < SEGMENT_LIT_LEN;
         const QPixmap& pm = lit ? (alarm ? m_seg_on_alarm : m_seg_on) : m_seg_off;
 
@@ -483,7 +544,8 @@ void TopBarStatusWidget::drawStopButton(QPainter& painter, const QRect& button) 
 
     if (!bg.isNull())
     {
-        drawNineSlice(painter, bg, button, 88, 26);
+        // 素材已裁掉透明留白，按高度一半切九宫格，左右半圆帽等比例缩放
+        drawNineSlice(painter, bg, button, bg.height() / 2, button.height() / 2);
     }
     else
     {
@@ -537,7 +599,7 @@ void TopBarStatusWidget::drawStopButton(QPainter& painter, const QRect& button) 
 void TopBarStatusWidget::drawClock(QPainter& painter, const QRect& area) const
 {
     const QDateTime now = QDateTime::currentDateTime();
-    const QRect icon_rect(area.left() + 6, area.center().y() - 21, 42, 42);
+    const QRect icon_rect(area.left() + 4, area.center().y() - 19, 38, 38);
 
     if (!m_icon_clock.isNull())
     {
@@ -549,8 +611,8 @@ void TopBarStatusWidget::drawClock(QPainter& painter, const QRect& area) const
         painter.setPen(QPen(QColor(53, 214, 230), 2));
         painter.drawEllipse(icon_rect.adjusted(2, 2, -2, -2));
         const QPoint center = icon_rect.center();
-        painter.drawLine(center, QPoint(center.x(), center.y() - 12));
-        painter.drawLine(center, QPoint(center.x() + 9, center.y() + 5));
+        painter.drawLine(center, QPoint(center.x(), center.y() - 11));
+        painter.drawLine(center, QPoint(center.x() + 8, center.y() + 4));
     }
 
     QFont time_font = font();
@@ -558,14 +620,14 @@ void TopBarStatusWidget::drawClock(QPainter& painter, const QRect& area) const
     time_font.setBold(false);
     painter.setFont(time_font);
     painter.setPen(QColor(159, 195, 210));
-    painter.drawText(QRect(area.left() + 58, area.top() + 16, 120, 18),
+    painter.drawText(QRect(area.left() + 46, area.top() + 16, 96, 18),
                      Qt::AlignLeft | Qt::AlignVCenter, now.toString("yyyy-MM-dd"));
 
     time_font.setPixelSize(16);
     time_font.setBold(true);
     painter.setFont(time_font);
     painter.setPen(QColor(234, 246, 255));
-    painter.drawText(QRect(area.left() + 58, area.top() + 36, 120, 26),
+    painter.drawText(QRect(area.left() + 46, area.top() + 35, 96, 26),
                      Qt::AlignLeft | Qt::AlignVCenter, now.toString("HH:mm:ss"));
 }
 
@@ -583,7 +645,7 @@ void TopBarStatusWidget::drawNineSlice(QPainter& painter, const QPixmap& pixmap,
     const int margin = qMin(dst_margin, qMin(target.width(), target.height()) / 2);
 
     if (slice <= 0 || margin <= 0
-        || target.width() <= 2 * margin || target.height() <= 2 * margin)
+        || target.width() < 2 * margin || target.height() < 2 * margin)
     {
         painter.drawPixmap(target, pixmap);
         return;

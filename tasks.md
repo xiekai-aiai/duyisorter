@@ -12,6 +12,17 @@
 - [x] T8 资源验证：`rcc res.qrc` 退出码 0，12 个 topbar_anim 素材与 282 个 `res/png2` 资源全部可解析
 - [x] T9 本地 git 提交：`f1a477a`（顶部运行态状态栏 + 当前工作区快照）
 
+## 本轮修复（对齐 GIF：一个面板 + 一条跑马灯）
+
+- [x] T14 `topbarstatuswidget`：两张独立卡片改为「一个面板 + 左右两个指标 + 一条贯穿跑马灯」
+  - 卡片/按钮素材按 alpha>60 裁剪透明留白后拉伸/九宫格铺满，边框完整罩住全部文字
+  - 常量改为 `PANEL(8,6,610,62)`、`METRIC_WIDTH=305`、`STOP(630,15,150,50)`、30 段 × 14px 跑马灯
+  - 停止按钮九宫格按素材高度一半切分，左右半圆帽等比缩放
+  - 时钟区按 144px 宽重排（图标 38 + 日期 11px + 时间 16px）
+  - 清理 `cardRect()` 残留引用，移除 `drawCard()` 内的分段条绘制（避免每条指标各画一条）
+- [x] T15 `mainwidget.cpp`：`homePageStackedWidget` 高度由 `-60` 下调到 `-80`，预留底部「分隔线 + 功能键」50px，白框不再压到功能键区
+- [x] T16 复验：`topbarstatuswidget.cpp` / `mainwidget.cpp` clang `-fsyntax-only` 通过；`moc` + `rcc` 通过
+
 ## 阻塞中
 
 - [ ] T10 远程编译：`192.168.172.134` 与 `192.168.172.182` 均 ping 不通、22 端口无响应，`ssh_connect` 连续失败；需用户启动编译机或提供可用服务器后执行 `ssh_connect → upload_files → build_duyi`

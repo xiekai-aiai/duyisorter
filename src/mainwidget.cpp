@@ -1227,7 +1227,8 @@ void MainWidget::CreateHomeWidget()
 
     homePageStackedWidget = new QStackedWidget(pageHome);
     homePageStackedWidget->setMaximumWidth(LCD_WIDTH - 10);
-    homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 60);
+    /* 预留底部“分隔线 + 功能键”高度，避免页面白框压到下方按钮区 */
+    homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 80);
     homePageStackedWidget->setContentsMargins(leftMargin, 0, leftMargin, 0);
     // 样本选择页面
     pageManageScheme = new ManageSchemePage(pageHome);
@@ -1738,7 +1739,8 @@ void MainWidget::onHomePageStackedWidgetIndexChangedSlt(int index)
         lineStatus->setHidden(true);
         break;
     default:
-        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 60);
+        /* 预留底部“分隔线 + 功能键”高度，避免页面白框压到下方按钮区 */
+        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 80);
         for (int i = 0; i < 7; i++)
         {
             operateButton[i]->show();
