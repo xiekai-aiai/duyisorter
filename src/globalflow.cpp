@@ -5313,9 +5313,16 @@ void GlobalFlow::chgVFDFreq()
 
     // 振动频率下发时需要*100
     QByteArray value = cmdworker::VFDFrequencyRequest(info.frequency_ * 100);
-    LOG_INFO_STM("vfd frequencey:" << info.frequency_ << ", body:" << value.toHex(' ').toUpper().toStdString());
     MySerial.com2Write(value, true);
-    // xktodo 读取变频器的响应
+    msleep(50);
+    char buf[32];
+    memset(buf, 0, sizeof(buf));
+    int len = MySerial.com2Read(buf, value.size());
+    LOG_INFO_STM("vfd frequencey:" << info.frequency_ << ", body:" << value.toHex(' ').toUpper().toStdString() << ", read len:" << len);
+    if (len > 0)
+    {
+        LOG_INFO_STM("vfd frequency response body:" << QByteArray(buf, len).toHex(' ').toUpper().toStdString());
+    }
 }
 
 
@@ -5327,11 +5334,18 @@ void GlobalFlow::operatorVFG(bool bIsStart)
         return;
     }
     QByteArray value = cmdworker::VFDOperatorRequest(bIsStart);
-    LOG_INFO_STM("IsStart:" << bIsStart << ", body:" << value.toHex(' ').toUpper().toStdString());
-    MySerial.com2Write(value, true);
-    // xktodo 读取变频器的响应
-}
 
+    MySerial.com2Write(value, true);
+    msleep(50);
+    char buf[32];
+    memset(buf, 0, sizeof(buf));
+    int len = MySerial.com2Read(buf, value.size());
+    LOG_INFO_STM("IsStart:" << bIsStart << ", body:" << value.toHex(' ').toUpper().toStdString() << ", read len:" << len);
+    if (len > 0)
+    {
+        LOG_INFO_STM("vfd operator response body:" << QByteArray(buf, len).toHex(' ').toUpper().toStdString());
+    }
+}
 
 void GlobalFlow::stopAiInfer()
 {

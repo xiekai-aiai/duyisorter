@@ -1610,6 +1610,15 @@ void factorySet::onVfdSetBtnClickedSlt()
 
 void factorySet::onVfdSetBackBtnClickedSlt()
 {
+    if (m_bVFDStart)
+    {
+        // 停止变频器
+        myFlow.operatorVFG(false);
+        m_pVFDOprBtn->setText(myLan.start);
+        m_pVFDOprBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
+        m_bVFDStart = false;
+    }
+
     stackedWidget->setCurrentIndex(FACTORY_SET_PAGE);
 }
 
