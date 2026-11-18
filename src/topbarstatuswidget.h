@@ -91,8 +91,6 @@ private:
     QTimer m_clock_timer;       // 时钟刷新
     AiStatusPollThread* m_poller;
 
-    QPixmap m_card_normal;      // cardMetricNormal.png
-    QPixmap m_card_alarm;       // cardMetricAlarm.png
     QPixmap m_dot_normal;       // dotNormal.png
     QPixmap m_dot_alarm;        // dotAlarm.png
     QPixmap m_seg_on;           // segOn.png

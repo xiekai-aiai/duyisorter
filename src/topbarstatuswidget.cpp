@@ -156,8 +156,6 @@ TopBarStatusWidget::TopBarStatusWidget(QWidget* parent)
     setFixedHeight(TOPBAR_STATUS_HEIGHT);
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
 
-    m_card_normal      = trimTransparentMargins(loadAsset("cardMetricNormal.png"));
-    m_card_alarm       = trimTransparentMargins(loadAsset("cardMetricAlarm.png"));
     m_dot_normal       = loadAsset("dotNormal.png");
     m_dot_alarm        = loadAsset("dotAlarm.png");
     m_seg_on           = loadAsset("segOn.png");
@@ -349,17 +347,25 @@ void TopBarStatusWidget::paintEvent(QPaintEvent*)
     const bool discard_alarm = (m_discard_num > 0);
     const bool timeout_alarm = (m_timeout_num > 0);
     const bool any_alarm = discard_alarm || timeout_alarm;
+    // 中文界面下内部只显示中文，不显示英文副标题与英文状态
+    const bool chinese = (struCnfg.nLang == LANG_CHS || struCnfg.nLang == LANG_CHT);
 
-    // 一个外框 + 一条跑马灯
+    // 一个矩形外框 + 一条跑马灯
     drawPanel(painter, panelRect(), any_alarm);
 
     // 面板内左右两个指标
-    drawCard(painter, metricRect(0), myLan.ai_front_discard_num, "PACKET LOSS",
+    drawCard(painter, metricRect(0), myLan.ai_front_discard_num,
+             chinese ? QString() : QString("PACKET LOSS"),
              m_discard_num, QString::fromUtf8("帧"),
-             discard_alarm ? "ABNORMAL" : "NORMAL", discard_alarm);
-    drawCard(painter, metricRect(1), myLan.ai_front_delay_num, "INFER TIMEOUT",
+             chinese ? (discard_alarm ? myLan.abnormal : myLan.normal)
+                     : (discard_alarm ? QString("ABNORMAL") : QString("NORMAL")),
+             discard_alarm);
+    drawCard(painter, metricRect(1), myLan.ai_front_delay_num,
+             chinese ? QString() : QString("INFER TIMEOUT"),
              m_timeout_num, myLan.times,
-             timeout_alarm ? "ABNORMAL" : "NORMAL", timeout_alarm);
+             chinese ? (timeout_alarm ? myLan.abnormal : myLan.normal)
+                     : (timeout_alarm ? QString("ABNORMAL") : QString("NORMAL")),
+             timeout_alarm);
 
     drawSegments(painter, panelRect(), any_alarm);
 
@@ -370,45 +376,19 @@ void TopBarStatusWidget::paintEvent(QPaintEvent*)
 void TopBarStatusWidget::drawPanel(QPainter& painter, const QRect& panel, bool alarm) const
 {
     const QColor accent = alarm ? QColor(255, 79, 94) : QColor(53, 224, 138);
-    const QPixmap& bg = alarm ? m_card_alarm : m_card_normal;
 
-    // 外发光
-    for (int i = 3; i >= 1; --i)
-    {
-        QColor glow = accent;
-        glow.setAlpha(18 - i * 4);
-        painter.setPen(QPen(glow, 2));
-        painter.setBrush(Qt::NoBrush);
-        painter.drawRoundedRect(QRectF(panel).adjusted(-i, -i, i, i), 6, 6);
-    }
+    // 直角矩形外框（不使用弧形/圆角包围框）
+    QLinearGradient fill(panel.topLeft(), panel.bottomLeft());
+    fill.setColorAt(0.0, QColor(11, 27, 43, 245));
+    fill.setColorAt(1.0, QColor(6, 18, 30, 245));
+    const QRectF body = QRectF(panel).adjusted(0.5, 0.5, -0.5, -0.5);
+    painter.setBrush(fill);
+    painter.setPen(QPen(alarm ? QColor(180, 68, 78) : QColor(42, 127, 150), 1));
+    painter.drawRect(body);
 
-    if (!bg.isNull())
-    {
-        // 素材已裁掉透明留白，直接拉伸铺满面板矩形，保证边框完整罩住面板内容
-        painter.drawPixmap(panel, bg);
-    }
-    else
-    {
-        QLinearGradient fill(panel.topLeft(), panel.bottomLeft());
-        fill.setColorAt(0.0, QColor(11, 27, 43, 245));
-        fill.setColorAt(1.0, QColor(6, 18, 30, 245));
-        const QRectF body = QRectF(panel).adjusted(0.5, 0.5, -0.5, -0.5);
-        painter.setBrush(fill);
-        painter.setPen(QPen(alarm ? QColor(180, 68, 78) : QColor(42, 127, 150), 1));
-        painter.drawRoundedRect(body, 4, 4);
-
-        // 四角高亮
-        const int len = 8;
-        painter.setPen(QPen(accent, 1));
-        painter.drawLine(QPointF(body.left(), body.top() + len), QPointF(body.left(), body.top()));
-        painter.drawLine(QPointF(body.left(), body.top()), QPointF(body.left() + len, body.top()));
-        painter.drawLine(QPointF(body.right() - len, body.top()), QPointF(body.right(), body.top()));
-        painter.drawLine(QPointF(body.right(), body.top()), QPointF(body.right(), body.top() + len));
-        painter.drawLine(QPointF(body.left(), body.bottom() - len), QPointF(body.left(), body.bottom()));
-        painter.drawLine(QPointF(body.left(), body.bottom()), QPointF(body.left() + len, body.bottom()));
-        painter.drawLine(QPointF(body.right() - len, body.bottom()), QPointF(body.right(), body.bottom()));
-        painter.drawLine(QPointF(body.right(), body.bottom()), QPointF(body.right(), body.bottom() - len));
-    }
+    // 顶边高亮，矩形框内的强调线
+    painter.setPen(QPen(accent, 1));
+    painter.drawLine(QPointF(body.left(), body.top()), QPointF(body.right(), body.top()));
 
     // 左右指标分隔线
     const int divider_x = PANEL_LEFT + METRIC_WIDTH;
@@ -440,26 +420,31 @@ void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QS
         painter.drawEllipse(dot_rect.center(), 10, 10);
     }
 
-    // 中文标题（右侧留出数值区域，过长时省略）
+    // 标题（右侧留出数值区域，过长时省略）；无副标题时垂直居中
+    const bool has_subtitle = !subtitle.isEmpty();
     QFont title_font = font();
     title_font.setPixelSize(15);
     title_font.setBold(true);
     painter.setFont(title_font);
     painter.setPen(QColor(234, 246, 255));
-    const QRect title_rect(card.left() + 34, card.top() + 6, 86, 20);
+    const QRect title_rect(card.left() + 34, card.top() + (has_subtitle ? 6 : 8),
+                           112, has_subtitle ? 20 : 30);
     const QFontMetrics title_metrics(title_font);
     painter.drawText(title_rect, Qt::AlignLeft | Qt::AlignVCenter,
                      title_metrics.elidedText(title, Qt::ElideRight, title_rect.width()));
 
-    // 英文副标题
-    QFont sub_font = font();
-    sub_font.setPixelSize(8);
-    sub_font.setBold(false);
-    sub_font.setLetterSpacing(QFont::AbsoluteSpacing, 1.0);
-    painter.setFont(sub_font);
-    painter.setPen(QColor(78, 143, 166));
-    painter.drawText(QRect(card.left() + 34, card.top() + 27, 86, 12),
-                     Qt::AlignLeft | Qt::AlignVCenter, subtitle);
+    // 英文副标题（中文界面不显示）
+    if (has_subtitle)
+    {
+        QFont sub_font = font();
+        sub_font.setPixelSize(8);
+        sub_font.setBold(false);
+        sub_font.setLetterSpacing(QFont::AbsoluteSpacing, 1.0);
+        painter.setFont(sub_font);
+        painter.setPen(QColor(78, 143, 166));
+        painter.drawText(QRect(card.left() + 34, card.top() + 27, 112, 12),
+                         Qt::AlignLeft | Qt::AlignVCenter, subtitle);
+    }
 
     // 实时数值
     const QString value_text = QString::number(value);
@@ -479,7 +464,7 @@ void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QS
     }
     painter.setFont(value_font);
     painter.setPen(accent);
-    painter.drawText(QRect(card.left() + 120, card.top() + 4, 94, 40),
+    painter.drawText(QRect(card.left() + 146, card.top() + 4, 72, 40),
                      Qt::AlignRight | Qt::AlignVCenter, value_text);
 
     // 单位
@@ -488,10 +473,10 @@ void TopBarStatusWidget::drawCard(QPainter& painter, const QRect& card, const QS
     unit_font.setBold(false);
     painter.setFont(unit_font);
     painter.setPen(QColor(127, 166, 181));
-    painter.drawText(QRect(card.left() + 218, card.top() + 28, 34, 16),
+    painter.drawText(QRect(card.left() + 220, card.top() + 28, 30, 16),
                      Qt::AlignLeft | Qt::AlignVCenter, unit);
 
-    // NORMAL / ABNORMAL
+    // 正常 / 异常（中文界面）或 NORMAL / ABNORMAL
     QFont status_font = font();
     status_font.setPixelSize(10);
     status_font.setBold(true);
@@ -593,7 +578,7 @@ void TopBarStatusWidget::drawStopButton(QPainter& painter, const QRect& button) 
     painter.setFont(text_font);
     painter.setPen(QColor(255, 122, 138));
     painter.drawText(button.adjusted(58, 0, -10, 0),
-                     Qt::AlignLeft | Qt::AlignVCenter, myLan.working_stop);
+                     Qt::AlignLeft | Qt::AlignVCenter, myLan.working_start);
 }
 
 void TopBarStatusWidget::drawClock(QPainter& painter, const QRect& area) const

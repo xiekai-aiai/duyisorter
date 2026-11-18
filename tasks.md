@@ -22,6 +22,7 @@
   - 清理 `cardRect()` 残留引用，移除 `drawCard()` 内的分段条绘制（避免每条指标各画一条）
 - [x] T15 `mainwidget.cpp`：`homePageStackedWidget` 高度由 `-60` 下调到 `-80`，预留底部「分隔线 + 功能键」50px，白框不再压到功能键区
 - [x] T16 复验：`topbarstatuswidget.cpp` / `mainwidget.cpp` clang `-fsyntax-only` 通过；`moc` + `rcc` 通过
+- [x] T17 顶部改为直角矩形外框（去掉弧形包围框与卡片素材）；中文界面内部只显示中文（隐藏英文副标题，状态显示“正常/异常”）；停止按钮文字改用 `myLan.working_start`（中文为“停止工作”）
 
 ## 阻塞中
 
