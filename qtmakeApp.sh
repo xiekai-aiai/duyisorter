@@ -147,7 +147,7 @@ RANLIB="$CROSS-ranlib"
 export CC CXX AR LINK STRIP OBJCOPY RANLIB
 
 # 编译加速: ccache (如已安装)
-if command -v ccache &>/dev/null; then
+if command -v ccache >/dev/null 2>&1; then
     export CXX="ccache $CXX"
     export CC="ccache $CC"
     export CCACHE_MAXSIZE=5G

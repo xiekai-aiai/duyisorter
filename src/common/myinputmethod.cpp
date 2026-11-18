@@ -191,6 +191,10 @@ void myInputMethod::createButtons(void)
     listUp   = new myPushButton("",myIcon.Arrow_Left,this);
     listDown = new myPushButton("",myIcon.Arrow_Right,this);
     methodBtn = new myPushButton("",myIcon.Input_Language,this);
+    /* 顶部三个图标键固定为方形，尺寸与图标一致，避免挤占候选字显示格 */
+    listUp->setFixedSize(BTN_HEIGHT + 26, BTN_HEIGHT + 26);
+    listDown->setFixedSize(BTN_HEIGHT + 26, BTN_HEIGHT + 26);
+    methodBtn->setFixedSize(BTN_HEIGHT + 26, BTN_HEIGHT + 26);
     pinyin    = new myLineEdit(tr(""), this);
     pinyin->hide();
     methodBtn->setFocusPolicy(Qt::NoFocus);
@@ -313,6 +317,32 @@ void myInputMethod::createButtons(void)
     mainVerticalLayout->addLayout(horizontalLayout_7);
 
     displayAlphabet();
+
+    // ── 键盘配色（与数字键盘一致）：字母/数字键统一深色，功能键统一浅蓝 ──
+    const QString keyStyle = QStringLiteral(
+        "QPushButton { text-align: center; outline: none;"
+        " border-width: 8px 16px 8px 16px; border-style: solid; border-color: transparent;"
+        " border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
+        " color: #E8F6FF; font-size: 22px; padding: 0px; }"
+        "QPushButton:hover { border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        " color: #FFFFFF; }"
+        "QPushButton:pressed { border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        " color: #FFFFFF; }"
+        "QPushButton:disabled { border-image: url(:/res/png2/button/btn_disabled.png) 8 16 8 16 stretch stretch;"
+        " color: #5A7686; }");
+
+    const QString funcStyle = QStringLiteral(
+        "QPushButton { background-color: rgb(124, 186, 224); border: none; border-radius: 8px;"
+        " color: #0B2A3A; font-size: 20px; }"
+        "QPushButton:hover { background-color: rgb(146, 202, 236); }"
+        "QPushButton:pressed { background-color: rgb(96, 156, 194); }");
+
+    for (int i = 0; i < button.count(); i++) {
+        button[i]->setStyleSheet(keyStyle);
+    }
+    for (myPushButton *fb : {delBtn, listUp, listDown, methodBtn, buttonC3, buttonC4, buttonC5, buttonC6}) {
+        fb->setStyleSheet(funcStyle);
+    }
 
     //中文输入法不使能
     enableInputMethod();

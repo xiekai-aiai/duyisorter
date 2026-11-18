@@ -28,6 +28,7 @@
 #include "common/myinputpanel.h"
 #include "common/mycustomcheckbox.h"
 #include "common/myinputmethod.h"
+#include "common/mywid.h"
 #include "rgb/factoryset.h"
 #include "statusinfopage.h"
 #include "manageschemepage.h"
@@ -150,6 +151,8 @@ private slots:
 private:
     volatile bool stopped;
 };
+
+class TopBarStatusWidget;
 
 /*!
  * \brief 主界面类
@@ -383,6 +386,7 @@ private:
     //    myPushButton     *saveParamBtn;
     //    myPushButton     *setPurviewBtn;
     QToolButton* videoBtn;
+    TopBarStatusWidget* topBarStatus;       // 运行态顶部实时状态栏
     myPushButton* aiModelSetBtn;
     QFrame* lineStatus;
     //    myPushButton     *m_oneKeyFeedBtn;

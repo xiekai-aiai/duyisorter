@@ -1468,7 +1468,7 @@ Only %1 bg_ images in current directory</translation>
     <message>
         <location filename="../src/params/paramslang.cpp" line="535"/>
         <source>sorter_manager</source>
-        <translation>manager</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="28"/>
@@ -5342,12 +5342,12 @@ Before Calibration,Please Do Something As Follows:</translation>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1113"/>
         <source>working_stop</source>
-        <translation type="unfinished">Working Stop</translation>
+        <translation>Work</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1114"/>
         <source>working_start</source>
-        <translation type="unfinished">Working Start</translation>
+        <translation>Work</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1116"/>
@@ -7114,6 +7114,66 @@ Insufficient disk space!</translation>
         <translation>Initialize the system...</translation>
     </message>
     <message>
+        <source>init_link</source>
+        <translation>Initialization Steps</translation>
+    </message>
+    <message>
+        <source>init_step_trans</source>
+        <translation>Push image transfer mode</translation>
+    </message>
+    <message>
+        <source>init_step_camera</source>
+        <translation>Sync camera parameters</translation>
+    </message>
+    <message>
+        <source>init_step_sort</source>
+        <translation>Sync color sorting parameters</translation>
+    </message>
+    <message>
+        <source>init_step_control</source>
+        <translation>Sync control board parameters</translation>
+    </message>
+    <message>
+        <source>init_step_ai</source>
+        <translation>Sync AI model parameters</translation>
+    </message>
+    <message>
+        <source>init_running</source>
+        <translation>Running</translation>
+    </message>
+    <message>
+        <source>init_doing</source>
+        <translation>Initializing</translation>
+    </message>
+    <message>
+        <source>toast_scheme</source>
+        <translation>Scheme selection</translation>
+    </message>
+    <message>
+        <source>toast_sens</source>
+        <translation>Sensitivity adjustment</translation>
+    </message>
+    <message>
+        <source>toast_feeder</source>
+        <translation>Feeder speed settings</translation>
+    </message>
+    <message>
+        <source>toast_ejector</source>
+        <translation>Ejector test command sent</translation>
+    </message>
+    <message>
+        <source>toast_wiper</source>
+        <translation>Cleaning command sent</translation>
+    </message>
+    <message>
+        <source>toast_func</source>
+        <translation>Algorithm settings</translation>
+    </message>
+    <message>
+        <source>toast_oper</source>
+        <translation>System parameters</translation>
+    </message>
+    <message>
         <location filename="../src/params/paramslang.cpp" line="840"/>
         <source>msg_preheating</source>
         <translatorcomment>Preheating,please wait...</translatorcomment>
@@ -7532,6 +7592,132 @@ Insufficient disk space!</translation>
         <location filename="../src/params/paramslang.cpp" line="1090"/>
         <source>material_bad_total</source>
         <translation>Bad Num</translation>
+    </message>
+    <message>
+        <source>正在读取系统配置…</source>
+        <translation>Reading system configuration...</translation>
+    </message>
+    <message>
+        <source>系统配置正常</source>
+        <translation>System configuration OK</translation>
+    </message>
+    <message>
+        <source>系统配置文件缺失</source>
+        <translation>System configuration file is missing</translation>
+    </message>
+    <message>
+        <source>工程参数文件异常</source>
+        <translation>Engineering parameter file error</translation>
+    </message>
+    <message>
+        <source>全局参数文件异常</source>
+        <translation>Global parameter file error</translation>
+    </message>
+    <message>
+        <source>相机参数文件异常</source>
+        <translation>Camera parameter file error</translation>
+    </message>
+    <message>
+        <source>方案参数文件异常</source>
+        <translation>Scheme parameter file error</translation>
+    </message>
+    <message>
+        <source>异常：</source>
+        <translation>Error: </translation>
+    </message>
+    <message>
+        <source>、</source>
+        <translation>, </translation>
+    </message>
+    <message>
+        <source>正在检测串口设备…</source>
+        <translation>Detecting serial devices...</translation>
+    </message>
+    <message>
+        <source>串口设备正常</source>
+        <translation>Serial devices OK</translation>
+    </message>
+    <message>
+        <source>串口设备打开失败</source>
+        <translation>Failed to open serial devices</translation>
+    </message>
+    <message>
+        <source>AI检测未启用</source>
+        <translation>AI check disabled</translation>
+    </message>
+    <message>
+        <source>正在下发AI参数…</source>
+        <translation>Sending AI parameters...</translation>
+    </message>
+    <message>
+        <source>AI功能模块正常</source>
+        <translation>AI module OK</translation>
+    </message>
+    <message>
+        <source>AI设备异常：</source>
+        <translation>AI device error: </translation>
+    </message>
+    <message>
+        <source>正在初始化界面与数据表…</source>
+        <translation>Initializing UI and data tables...</translation>
+    </message>
+</context>
+<context>
+    <name>communication</name>
+    <message>
+        <source>正在校验加密授权…</source>
+        <translation>Verifying encryption license...</translation>
+    </message>
+    <message>
+        <source>UI加密正常</source>
+        <translation>License verification OK</translation>
+    </message>
+    <message>
+        <source>加密授权未通过</source>
+        <translation>License verification failed</translation>
+    </message>
+    <message>
+        <source>正在执行设备自检…</source>
+        <translation>Running device self-test...</translation>
+    </message>
+    <message>
+        <source>硬件工作正常</source>
+        <translation>Hardware OK</translation>
+    </message>
+    <message>
+        <source>硬件异常：</source>
+        <translation>Hardware error: </translation>
+    </message>
+    <message>
+        <source>设备通信异常（详见自检列表）</source>
+        <translation>Device communication error (see self-test list)</translation>
+    </message>
+    <message>
+        <source>接口板%1</source>
+        <translation>Interface board %1</translation>
+    </message>
+    <message>
+        <source>控制板%1</source>
+        <translation>Control board %1</translation>
+    </message>
+    <message>
+        <source>相机板%1</source>
+        <translation>Camera board %1</translation>
+    </message>
+    <message>
+        <source>、</source>
+        <translation>, </translation>
+    </message>
+</context>
+<context>
+    <name>LoadingWindow</name>
+    <message>
+        <source>AI色选机</source>
+        <translation>AI Color Sorter</translation>
+    </message>
+    <message>
+        <source>；</source>
+        <translation>; </translation>
     </message>
 </context>
 <context>

@@ -157,7 +157,18 @@ int MyQextSerialPort::comOpen(int nPortno)
     struct PortSettings myCom3Setting = { BAUD115200, DATA_8, PAR_NONE,STOP_1, FLOW_OFF, TIMEOUT };
 
     memset(sComName, 0, sizeof(sComName));
-    sprintf(sComName, "%s%d", "/dev/ttyS", nPortno + 3);
+    switch (nPortno)
+    {
+    case 1:
+        strcpy(sComName, "/dev/ttyS3");
+        break;
+    case 2:
+        strcpy(sComName, "/dev/ttyS4");
+        break;
+    case 3:
+        strcpy(sComName, "/dev/ttyS0");
+        break;
+    }
 #ifdef Q_OS_UNIX
     switch (nPortno)
     {
@@ -170,7 +181,7 @@ int MyQextSerialPort::comOpen(int nPortno)
         ret = myPort2->open(QIODevice::ReadWrite);
         break;
     case 3:
-        myPort3 = new QextSerialPort("/dev/ttyS3", myCom3Setting, QextSerialPort::Polling);
+        myPort3 = new QextSerialPort(sComName, myCom3Setting, QextSerialPort::Polling);
         ret = myPort3->open(QIODevice::ReadWrite);
         break;
     }
@@ -179,7 +190,7 @@ int MyQextSerialPort::comOpen(int nPortno)
     {
         qDebug("open port%d is err!", nPortno);
     }
-    return 1;
+    return (ret == 1) ? 1 : 0;
 }
 
 int MyQextSerialPort::comClose(int portno)

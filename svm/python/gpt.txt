@@ -1,0 +1,1073 @@
+这个信息很关键。你的目标基本可以确定是：
+
+Host:
+x86_64 Linux 虚拟机
+
+Toolchain:
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf
+
+Target:
+ARM 32-bit
+arm-linux-gnueabihf
+
+也就是说不是 AArch64，而是 32 位 ARM hard-float。
+
+我建议你现在不要直接上 PyInstaller，先把目标板 ABI 摸清楚，然后选择正确路线。
+
+1. 先检查工具链结构
+
+在虚拟机执行：
+
+TOOLCHAIN=/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf
+
+find $TOOLCHAIN -maxdepth 3 -type f -name '*gcc' | head -20
+
+通常应该能看到：
+
+bin/arm-linux-gnueabihf-gcc
+bin/arm-linux-gnueabihf-g++
+
+然后：
+
+export PATH=$TOOLCHAIN/bin:$PATH
+
+which arm-linux-gnueabihf-gcc
+arm-linux-gnueabihf-gcc -v
+
+再看 sysroot：
+
+arm-linux-gnueabihf-gcc --print-sysroot
+
+以及：
+
+find $TOOLCHAIN -name libc.so.6 | head
+2. 先确认 libc 类型
+
+这是后续能不能用 PyInstaller 的决定因素。
+
+SYSROOT=$(arm-linux-gnueabihf-gcc --print-sysroot)
+
+find "$SYSROOT" -name 'libc.so*'
+
+如果看到：
+
+libc.so.6
+ld-linux-armhf.so.3
+
+一般是 glibc。
+
+如果看到：
+
+ld-musl-armhf.so.1
+
+就是 musl。
+
+还可以：
+
+strings $(find "$SYSROOT" -name libc.so.6 | head -1) | grep GLIBC_
+
+记录最高版本，例如：
+
+GLIBC_2.17
+GLIBC_2.27
+
+这个版本非常重要。
+
+3. 我建议的部署路线
+
+你的情况：
+
+Buildroot
++
+ARM32
++
+高度裁剪
++
+numpy
++
+scikit-learn
+
+我建议优先：
+
+PC/虚拟机
+│
+├── ARM Toolchain
+│
+├── 编译 ARM Python
+│
+├── 编译 ARM numpy
+│
+├── 编译 ARM sklearn
+│
+└── 生成 ARM rootfs
+       │
+       ▼
+    Buildroot 板子
+
+然后再考虑 PyInstaller。
+
+4. 为什么不能直接 x86 PyInstaller
+
+比如你在虚拟机：
+
+pyinstaller main.py
+
+生成：
+
+dist/main/main
+
+这个一定是：
+
+ELF 64-bit
+x86-64
+
+你的板子需要：
+
+ELF 32-bit
+ARM
+EABI5
+hard-float
+
+所以必须让 PyInstaller 的 bootloader 最终也是 ARM。
+
+PyInstaller 不是真正意义上的“交叉编译器”。
+
+5. 一个可行的方案：交叉编译 + QEMU
+
+你的工具链已经有了，我们可以搭：
+
+Ubuntu x86
+   │
+   ├── cross compile
+   │
+   │    Python ARM
+   │    ↓
+   │    NumPy ARM
+   │    ↓
+   │    sklearn ARM
+   │
+   └── QEMU arm
+          │
+          ▼
+     ARM Python 环境
+          │
+          ▼
+       PyInstaller
+          │
+          ▼
+      ARM ELF程序
+
+不过我要提醒一下：
+
+在 ARM32 上编译 sklearn，尤其是用老工具链，会比较折腾。
+
+6. 其实你的依赖可以大幅裁剪
+
+你当前：
+
+import numpy as np
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, accuracy_score
+from sklearn.preprocessing import StandardScaler
+
+如果这是部署代码，我强烈建议拆成：
+
+训练端
+numpy
+sklearn
+train_test_split
+classification_report
+accuracy_score
+板端
+
+只保留：
+
+StandardScaler
+SVC.predict
+
+甚至：
+
+不需要 sklearn
+
+这是因为：
+
+train_test_split
+classification_report
+accuracy_score
+
+都是训练/验证阶段用的。
+
+7. 最现实的方案：导出 SVM
+
+训练：
+
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+
+训练完成后导出：
+
+import json
+
+data = {
+    "mean": scaler.mean_.tolist(),
+    "scale": scaler.scale_.tolist(),
+
+    "support_vectors": model.support_vectors_.tolist(),
+    "dual_coef": model.dual_coef_.tolist(),
+    "intercept": model.intercept_.tolist(),
+
+    "gamma": float(model._gamma),
+    "classes": model.classes_.tolist(),
+    "kernel": model.kernel,
+}
+
+保存：
+
+with open("model.json", "w") as f:
+    json.dump(data, f)
+
+板子：
+
+Python
++
+json
++
+math
+
+就可以运行。
+
+这样你的部署包可能从：
+
+300MB
+
+变成：
+
+几十 KB ~ 几 MB
+
+而且不依赖：
+
+glibc
+numpy
+libstdc++
+OpenMP
+BLAS
+PyInstaller
+8. 但如果你必须保持 sklearn 不改
+
+那我建议不要猜环境，我们下一步直接检查这个 SigmaStar 工具链。
+
+请在虚拟机执行下面这一组命令：
+
+TOOLCHAIN=/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf
+
+echo "===== GCC ====="
+find $TOOLCHAIN -type f -name 'arm-linux-gnueabihf-gcc' -o -name 'arm-buildroot-linux-gnueabihf-gcc'
+
+echo "===== SYSROOT ====="
+$TOOLCHAIN/bin/arm-linux-gnueabihf-gcc --print-sysroot
+
+echo "===== LIBC ====="
+find $TOOLCHAIN -name 'libc.so.6' -o -name 'ld-linux-armhf.so.3' -o -name 'ld-musl-armhf.so.1'
+
+echo "===== GCC VERSION ====="
+$TOOLCHAIN/bin/arm-linux-gnueabihf-gcc --version
+
+echo "===== C++ ====="
+$TOOLCHAIN/bin/arm-linux-gnueabihf-g++ --version
+
+如果提示路径不对，再执行：
+
+find /usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf \
+    -type f \
+    -name '*gcc' | head -30
+
+把输出贴给我。
+
+下一步我可以直接按你的实际工具链目录，给你搭完整方案：
+
+① 设置 ARM 交叉编译环境
+② 确定 sysroot
+③ ARM Python
+④ ARM NumPy
+⑤ ARM scikit-learn
+⑥ ARM PyInstaller bootloader
+⑦ 打包程序
+⑧ 检查所有 ELF 依赖
+⑨ 部署到 Buildroot
+
+这样会比在目标板上硬装 Python/NumPy/sklearn 稳定得多。
+
+head
+
+root@ubuntu:/home/a64# find / -name gcc
+/usr/share/bash-completion/completions/gcc
+/usr/share/doc/gcc-5-base/gcc
+/usr/share/doc/gcc
+/usr/src/linux-headers-4.15.0-142-generic/include/config/have/gcc
+/usr/src/linux-headers-4.15.0-128-generic/include/config/have/gcc
+/usr/bin/gcc
+/usr/lib/gcc
+/usr/local/arm-2014.05/share/doc/arm-arm-none-linux-gnueabi/html/gcc
+/usr/local/arm-2014.05/share/doc/arm-arm-none-linux-gnueabi/pdf/gcc
+/usr/local/arm-2014.05/libexec/gcc
+/usr/local/arm-2014.05/arm-none-linux-gnueabi/bin/gcc
+/usr/local/arm-2014.05/lib/gcc
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/share/doc/gcc
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/libexec/gcc
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/lib/gcc
+/opt/aarch64/usr/libexec/gcc
+/opt/aarch64/usr/lib/gcc
+find: ‘/run/user/1000/gvfs’: Permission denied
+root@ubuntu:/home/a64# TOOLCHAIN=/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf
+root@ubuntu:/home/a64# 
+root@ubuntu:/home/a64# find $TOOLCHAIN -maxdepth 3 -type f -name '*gcc' | head -20
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc
+root@ubuntu:/home/a64# export PATH=$TOOLCHAIN/bin:$PATH
+root@ubuntu:/home/a64# 
+root@ubuntu:/home/a64# which arm-linux-gnueabihf-gcc
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc
+root@ubuntu:/home/a64# arm-linux-gnueabihf-gcc -v
+Using built-in specs.
+COLLECT_GCC=arm-linux-gnueabihf-gcc
+COLLECT_LTO_WRAPPER=/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../libexec/gcc/arm-linux-gnueabihf/9.1.0/lto-wrapper
+Target: arm-linux-gnueabihf
+Configured with: '/home/meng/toolchain/build/snapshots/gcc.git~gcc-9_1_0-release/configure' SHELL=/bin/bash --with-mpc=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu --with-mpfr=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu --with-gmp=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu --with-gnu-as --with-gnu-ld --disable-libmudflap --enable-lto --enable-shared --without-included-gettext --enable-nls --with-system-zlib --disable-sjlj-exceptions --enable-gnu-unique-object --enable-linker-build-id --disable-libstdcxx-pch --enable-c99 --enable-clocale=gnu --enable-libstdcxx-debug --enable-long-long --with-cloog=no --with-ppl=no --with-isl=no --disable-multilib --with-float=hard --with-fpu=vfpv3-d16 --with-mode=thumb --with-arch=armv7-a --enable-threads=posix --enable-multiarch --enable-libstdcxx-time=yes --enable-gnu-indirect-function --with-build-sysroot=/home/meng/toolchain/build/sysroots/arm-linux-gnueabihf --with-sysroot=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu/arm-linux-gnueabihf/libc --enable-checking=yes --disable-bootstrap --enable-languages=c,c++,fortran,lto --build=x86_64-unknown-linux-gnu --host=x86_64-unknown-linux-gnu --target=arm-linux-gnueabihf --prefix=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu
+Thread model: posix
+gcc version 9.1.0 (GCC) 
+root@ubuntu:/home/a64# which arm-linux-gnueabihf-gcc
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc
+root@ubuntu:/home/a64# arm-linux-gnueabihf-gcc --print-sysroot
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../arm-linux-gnueabihf/libc
+root@ubuntu:/home/a64# arm-linux-gnueabihf-gcc -v
+Using built-in specs.
+COLLECT_GCC=arm-linux-gnueabihf-gcc
+COLLECT_LTO_WRAPPER=/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../libexec/gcc/arm-linux-gnueabihf/9.1.0/lto-wrapper
+Target: arm-linux-gnueabihf
+Configured with: '/home/meng/toolchain/build/snapshots/gcc.git~gcc-9_1_0-release/configure' SHELL=/bin/bash --with-mpc=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu --with-mpfr=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu --with-gmp=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu --with-gnu-as --with-gnu-ld --disable-libmudflap --enable-lto --enable-shared --without-included-gettext --enable-nls --with-system-zlib --disable-sjlj-exceptions --enable-gnu-unique-object --enable-linker-build-id --disable-libstdcxx-pch --enable-c99 --enable-clocale=gnu --enable-libstdcxx-debug --enable-long-long --with-cloog=no --with-ppl=no --with-isl=no --disable-multilib --with-float=hard --with-fpu=vfpv3-d16 --with-mode=thumb --with-arch=armv7-a --enable-threads=posix --enable-multiarch --enable-libstdcxx-time=yes --enable-gnu-indirect-function --with-build-sysroot=/home/meng/toolchain/build/sysroots/arm-linux-gnueabihf --with-sysroot=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu/arm-linux-gnueabihf/libc --enable-checking=yes --disable-bootstrap --enable-languages=c,c++,fortran,lto --build=x86_64-unknown-linux-gnu --host=x86_64-unknown-linux-gnu --target=arm-linux-gnueabihf --prefix=/home/meng/toolchain/build/builds/destdir/x86_64-unknown-linux-gnu
+Thread model: posix
+gcc version 9.1.0 (GCC) 
+root@ubuntu:/home/a64# find $TOOLCHAIN -name libc.so.6 | head
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/lib/libc.so.6
+root@ubuntu:/home/a64# SYSROOT=$(arm-linux-gnueabihf-gcc --print-sysroot)
+root@ubuntu:/home/a64# 
+root@ubuntu:/home/a64# find "$SYSROOT" -name 'libc.so*'
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../arm-linux-gnueabihf/libc/usr/lib/libc.so
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../arm-linux-gnueabihf/libc/lib/libc.so.6
+
+
+很好，现在环境已经基本确认了。你的工具链是一个完整的 ARM32 glibc hard-float 交叉工具链：
+
+Host:       x86_64 Ubuntu
+Target:     arm-linux-gnueabihf
+CPU:        ARMv7-A
+FPU:        VFPv3-D16
+Float ABI:  hard-float
+GCC:        9.1.0
+Sysroot:    /usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc
+libc:       glibc
+
+这比 musl 环境好处理很多。
+
+先确认 glibc 版本
+
+执行：
+
+SYSROOT=$(arm-linux-gnueabihf-gcc --print-sysroot)
+
+strings $SYSROOT/lib/libc.so.6 | grep -E '^GLIBC_[0-9]+\.[0-9]+' | tail
+
+再执行：
+
+$SYSROOT/lib/libc.so.6
+
+或者：
+
+readelf -V $SYSROOT/lib/libc.so.6 | grep GLIBC_ | tail
+
+你把结果贴出来。
+
+这个决定我们后面：
+
+Python版本
+numpy版本
+scikit-learn版本
+PyInstaller版本
+你的工具链能力确认
+
+从 GCC 参数看：
+
+--with-float=hard
+--with-fpu=vfpv3-d16
+--with-mode=thumb
+--with-arch=armv7-a
+--enable-threads=posix
+
+所以编译目标类似：
+
+ARMv7
+Thumb
+HardFP
+glibc
+
+最终 ELF 应该类似：
+
+file app
+
+输出：
+
+ELF 32-bit LSB executable, ARM, EABI5,
+version 1 (SYSV),
+dynamically linked,
+interpreter /lib/ld-linux-armhf.so.3
+我现在建议你走的方案
+
+你的需求其实是：
+
+Python程序
+     ↓
+PyInstaller
+     ↓
+ARM板子
+
+我建议：
+
+Ubuntu虚拟机
+│
+├── ARM Cross Toolchain
+│
+├── ARM Python 3.10
+│
+├── ARM NumPy
+│
+├── ARM scikit-learn
+│
+├── ARM PyInstaller Bootloader
+│
+│
+└── QEMU ARM
+      │
+      └── ARM PyInstaller Runtime
+             ↓
+         dist/app
+
+但是这里有一个现实问题：
+
+PyInstaller 本身不支持一个简单命令直接 cross-compile。
+
+所以最稳的方式是：
+
+推荐方案：构造 ARM RootFS + QEMU
+
+你已经有：
+
+$SYSROOT
+
+里面理论上：
+
+$SYSROOT/
+├── lib/
+├── usr/
+│   ├── lib/
+│   └── include/
+
+我们可以建立：
+
+/opt/arm-rootfs
+
+然后：
+
+ARM RootFS
+├── lib
+├── usr/lib
+├── usr/bin/python3
+└── Python site-packages
+      ├── numpy
+      ├── sklearn
+      └── PyInstaller
+
+然后：
+
+qemu-arm
+
+模拟运行：
+
+qemu-arm -L /opt/arm-rootfs \
+    /usr/bin/python3
+
+最终在 ARM 环境内部：
+
+python3 -m PyInstaller main.py
+
+这样生成的：
+
+dist/main/main
+
+就是：
+
+ARM 32-bit
+不过，第一步先别编 sklearn
+
+我们先验证你的工具链 + QEMU 能否工作。
+
+1. 创建测试程序
+cat > hello.c << 'EOF'
+#include <stdio.h>
+
+int main()
+{
+    printf("Hello ARM!\n");
+    return 0;
+}
+EOF
+
+编译：
+
+arm-linux-gnueabihf-gcc hello.c -o hello_arm
+
+检查：
+
+file hello_arm
+
+应该类似：
+
+ELF 32-bit LSB executable
+ARM
+EABI5
+dynamically linked
+2. 查看动态依赖
+readelf -d hello_arm
+
+重点看：
+
+NEEDED
+
+然后：
+
+readelf -l hello_arm | grep interpreter
+
+应该类似：
+
+/lib/ld-linux-armhf.so.3
+3. 安装 QEMU
+
+Ubuntu：
+
+apt update
+apt install -y qemu-user qemu-user-static
+
+运行：
+
+qemu-arm -L "$SYSROOT" ./hello_arm
+
+如果输出：
+
+Hello ARM!
+
+那么说明：
+
+交叉工具链
+       +
+sysroot
+       +
+ARM glibc
+       +
+QEMU
+
+这一整套链路已经通了。
+
+下一步 Python 怎么办？
+
+这里有两个路线。
+
+路线 A：自己交叉编译 CPython
+
+比如 Python 3.10。
+
+配置：
+
+./configure \
+    --host=arm-linux-gnueabihf \
+    --build=x86_64-linux-gnu \
+    --prefix=/usr \
+    CC=arm-linux-gnueabihf-gcc \
+    CXX=arm-linux-gnueabihf-g++ \
+    --enable-shared
+
+但 CPython cross compile 有一些坑：
+
+PYTHON_FOR_BUILD
+HOSTRUNNER
+CONFIG_SITE
+sysconfigdata
+
+所以不建议一上来手工编。
+
+路线 B：优先看看工具链里有没有 Python/Buildroot rootfs ⭐⭐⭐⭐⭐
+
+先执行：
+
+find /usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf \
+    -iname '*python*' | head -30
+
+以及：
+
+find / -type f -name 'python3*' 2>/dev/null | head -30
+
+因为 SigmaStar 的 SDK 通常可能还有：
+
+buildroot/
+output/
+project/
+rootfs/
+
+甚至已经有目标板的：
+
+rootfs
+
+如果能找到目标板实际 RootFS，那是最好的。
+
+例如：
+
+rootfs/
+├── lib/
+├── usr/
+│   ├── bin/
+│   │   └── python3
+│   └── lib/
+
+我们可以直接在这个 RootFS 上扩展 Python 环境。
+
+对你来说，我更推荐的实际方案
+
+我现在根据你的工具链信息，建议分成两个阶段：
+
+阶段 1：验证工具链
+hello.c
+   ↓
+ARM ELF
+   ↓
+QEMU
+   ↓
+运行成功
+阶段 2：建立 Python ARM Runtime
+CPython ARM
+   ↓
+qemu-arm运行
+   ↓
+pip安装 ARM wheel
+
+注意这里不能：
+
+pip install numpy
+
+因为在 x86 Ubuntu 上会下载：
+
+x86_64 wheel
+
+必须在：
+
+QEMU ARM Python
+
+里面执行 pip，或者我们手工交叉编译。
+
+还有一个重要发现
+
+你的工具链 sysroot：
+
+.../arm-linux-gnueabihf/libc
+
+其实已经很像：
+
+ARM RootFS
+
+所以我们下一步很可能直接：
+
+qemu-arm -L "$SYSROOT"
+
+运行 ARM 程序。
+
+你现在先执行这三个命令，把输出贴出来：
+
+strings $SYSROOT/lib/libc.so.6 | grep -E '^GLIBC_[0-9]+\.[0-9]+' | tail
+cat > hello.c << 'EOF'
+#include <stdio.h>
+int main() {
+    printf("Hello ARM\n");
+    return 0;
+}
+EOF
+
+arm-linux-gnueabihf-gcc hello.c -o hello_arm
+file hello_arm
+
+以及：
+
+readelf -l hello_arm | grep interpreter
+
+如果这些结果正常，
+我下一步可以直接给你一套可执行的完整脚本，先搭出：
+
+ARM Python Runtime
+
+然后继续解决：
+
+numpy
+scikit-learn
+PyInstaller
+
+最重要的是，最终生成的程序 ABI 会与你这个：
+
+gcc-sigmastar-9.1.0
+arm-linux-gnueabihf
+
+工具链保持一致。
+
+find "$SYSROOT" -name 'libc.so*'
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../arm-linux-gnueabihf/libc/usr/lib/libc.so
+/usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../arm-linux-gnueabihf/libc/lib/libc.so.6
+root@ubuntu:/home/a64# SYSROOT=$(arm-linux-gnueabihf-gcc --print-sysroot)
+root@ubuntu:/home/a64# 
+root@ubuntu:/home/a64# strings $SYSROOT/lib/libc.so.6 | grep -E '^GLIBC_[0-9]+\.[0-9]+' | tail
+GLIBC_2.5
+GLIBC_2.9
+GLIBC_2.7
+GLIBC_2.6
+GLIBC_2.18
+GLIBC_2.14
+GLIBC_2.11
+GLIBC_2.16
+GLIBC_2.17
+GLIBC_2.13
+root@ubuntu:/home/a64# $SYSROOT/lib/libc.so.6
+bash: /usr/local/gcc-sigmastar-9.1.0-2020.07-x86_64_arm-linux-gnueabihf/bin/../arm-linux-gnueabihf/libc/lib/libc.so.6: cannot execute binary file: Exec format error
+root@ubuntu:/home/a64# 
+
+很好，信息已经足够关键了。
+
+当前环境确认
+
+你的目标环境可以确定为：
+
+架构：        ARM 32-bit
+ABI：         arm-linux-gnueabihf
+CPU：         ARMv7-A
+浮点：        hard-float
+FPU：         VFPv3-D16
+C库：         glibc
+glibc版本：   2.18
+编译器：      GCC 9.1.0
+
+这里：
+
+GLIBC_2.18
+
+说明你的目标工具链 libc 至少提供到 glibc 2.18。
+
+你执行：
+
+$SYSROOT/lib/libc.so.6
+
+出现：
+
+cannot execute binary file: Exec format error
+
+完全正常。
+
+因为：
+
+libc.so.6
+
+是：
+
+ARM ELF
+
+而你的 Ubuntu 虚拟机是：
+
+x86_64
+
+所以不能直接执行。
+
+如果想运行它，需要：
+
+qemu-arm -L "$SYSROOT" "$SYSROOT/lib/libc.so.6"
+
+先确认安装：
+
+which qemu-arm
+
+如果没有：
+
+apt update
+apt install -y qemu-user qemu-user-static
+
+然后：
+
+qemu-arm -L "$SYSROOT" "$SYSROOT/lib/libc.so.6"
+
+理论上会显示类似：
+
+GNU C Library (GNU libc) version 2.18
+现在最重要的结论
+
+你的环境是：
+
+ARMv7
++
+glibc 2.18
++
+GCC 9.1
+
+这是一个相对老的 Linux ABI。
+
+因此：
+
+不能直接拿现代 Ubuntu 上的 ARM wheel 或 PyInstaller 包部署。
+
+例如现代 ARM Linux wheel 很可能要求：
+
+GLIBC_2.28
+GLIBC_2.27
+GLIBC_2.25
+
+而你的设备只有：
+
+GLIBC_2.18
+
+所以后面必须以你的：
+
+SigmaStar Toolchain Sysroot
+
+为基准构建。
+
+我建议的部署方案调整
+
+现在我不建议走：
+
+Python ARM
+ ↓
+pip install numpy
+ ↓
+pip install scikit-learn
+
+因为 pip 很可能拿到：
+
+manylinux2014_armv7l
+
+或者：
+
+manylinux_2_28
+
+存在 ABI 风险。
+
+更稳的路线：
+
+Ubuntu x86
+    │
+    │ SigmaStar GCC
+    │
+    ▼
+ARM Python
+    │
+    ├── NumPy
+    │
+    ├── scikit-learn
+    │
+    └── PyInstaller
+          │
+          ▼
+      ARM Board
+      glibc 2.18
+但是先做一个最小验证
+
+先编译：
+
+cd /home/a64
+
+cat > hello.c << 'EOF'
+#include <stdio.h>
+
+int main(void)
+{
+    printf("Hello ARM!\n");
+    return 0;
+}
+EOF
+
+arm-linux-gnueabihf-gcc hello.c -o hello_arm
+
+检查：
+
+file hello_arm
+
+应该类似：
+
+hello_arm: ELF 32-bit LSB executable,
+ARM,
+EABI5 version 1 (SYSV),
+dynamically linked,
+interpreter /lib/ld-linux-armhf.so.3
+
+然后：
+
+readelf -l hello_arm | grep interpreter
+
+应该：
+
+Requesting program interpreter: /lib/ld-linux-armhf.so.3
+
+检查依赖：
+
+readelf -d hello_arm | grep NEEDED
+
+应该：
+
+Shared library: [libc.so.6]
+QEMU 验证
+
+安装：
+
+apt update
+apt install -y qemu-user
+
+然后：
+
+qemu-arm -L "$SYSROOT" ./hello_arm
+
+预期：
+
+Hello ARM!
+
+如果这里成功，说明：
+
+交叉工具链      OK
+sysroot        OK
+ARM glibc      OK
+QEMU           OK
+动态链接器      OK
+
+这样后面所有工作都有基础了。
+
+接下来真正的难点：Python + sklearn
+
+你的 Python 依赖：
+
+numpy
+sklearn.svm.SVC
+sklearn.preprocessing.StandardScaler
+
+这里最大的麻烦不是 PyInstaller，而是：
+
+scikit-learn
+    ↓
+numpy
+    ↓
+C/C++
+    ↓
+BLAS
+    ↓
+libstdc++
+
+我建议我们先确认你的目标板是否真的需要：
+
+train_test_split
+classification_report
+accuracy_score
+
+如果只是部署推理，这三个可以删除。
+
+部署端应该类似：
+
+import numpy as np
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+
+甚至最终可以继续裁剪。
+
+我的建议：先验证 PyInstaller Bootloader 能否交叉编译
+
+实际上可以先不处理 sklearn。
+
+先完成：
+
+Hello Python
+    ↓
+ARM Python
+    ↓
+ARM PyInstaller
+    ↓
+ARM ELF
+
+再往里面加：
+
+numpy
+
+最后：
+
+sklearn
+
+否则一次性搞：
+
+Python
++
+numpy
++
+sklearn
++
+PyInstaller
++
+ARM
++
+glibc 2.18
+
+出了问题非常难定位。
+
+下一步请执行
+
+先运行：
+
+cd /home/a64
+
+cat > hello.c << 'EOF'
+#include <stdio.h>
+
+int main(void)
+{
+    printf("Hello ARM!\n");
+    return 0;
+}
+EOF
+
+arm-linux-gnueabihf-gcc hello.c -o hello_arm
+
+file hello_arm
+
+readelf -l hello_arm | grep interpreter
+
+然后如果还没有 QEMU：
+
+apt update
+apt install -y qemu-user
+
+最后：
+
+qemu-arm -L "$SYSROOT" ./hello_arm
+
+把这几条输出贴出来。
+
+如果 QEMU 运行成功，我下一步建议直接给你做一个：
+
+/build_arm_python.sh
+
+目标是：
+
+Python 3.10
+↓
+ARMv7 hard-float
+↓
+glibc 2.18
+↓
+安装到 /opt/arm-python
+
+然后再
+处理 NumPy 和 scikit-learn。这样路线最稳。

@@ -1,5 +1,13 @@
 #include "globalflow.h"
 
+/*!
+ * \brief 语言包中缺少该键时回退中文，避免界面直接显示键名
+ */
+static QString langFallback(const QString& text, const QString& key, const QString& fallback)
+{
+    return (text == key) ? fallback : text;
+}
+
 void GlobalFlow::initLan()
 {
     // general
@@ -838,6 +846,36 @@ void GlobalFlow::initLan()
     myLan.msg_require_version = tr("msg_require_version");
     myLan.msg_system_init = tr("msg_system_init");
     myLan.msg_preheating = tr("msg_preheating");
+    myLan.init_link = langFallback(tr("init_link"),
+                                   "init_link", QString::fromUtf8("执行链路"));
+    myLan.init_step_trans = langFallback(tr("init_step_trans"),
+                                         "init_step_trans", QString::fromUtf8("下发图像传输模式"));
+    myLan.init_step_camera = langFallback(tr("init_step_camera"),
+                                          "init_step_camera", QString::fromUtf8("同步相机参数"));
+    myLan.init_step_sort = langFallback(tr("init_step_sort"),
+                                        "init_step_sort", QString::fromUtf8("同步色选参数"));
+    myLan.init_step_control = langFallback(tr("init_step_control"),
+                                           "init_step_control", QString::fromUtf8("同步控制板参数"));
+    myLan.init_step_ai = langFallback(tr("init_step_ai"),
+                                      "init_step_ai", QString::fromUtf8("同步 AI 模型参数"));
+    myLan.init_running = langFallback(tr("init_running"),
+                                      "init_running", QString::fromUtf8("正在执行"));
+    myLan.init_doing = langFallback(tr("init_doing"),
+                                    "init_doing", QString::fromUtf8("初始化中"));
+    myLan.toast_scheme = langFallback(tr("toast_scheme"),
+                                      "toast_scheme", QString::fromUtf8("已进入方案选择"));
+    myLan.toast_sens = langFallback(tr("toast_sens"),
+                                    "toast_sens", QString::fromUtf8("已进入感度调节"));
+    myLan.toast_feeder = langFallback(tr("toast_feeder"),
+                                      "toast_feeder", QString::fromUtf8("已进入供料速度设置"));
+    myLan.toast_ejector = langFallback(tr("toast_ejector"),
+                                       "toast_ejector", QString::fromUtf8("喷阀检测指令已下发"));
+    myLan.toast_wiper = langFallback(tr("toast_wiper"),
+                                     "toast_wiper", QString::fromUtf8("清扫指令已下发"));
+    myLan.toast_func = langFallback(tr("toast_func"),
+                                    "toast_func", QString::fromUtf8("已进入算法设置"));
+    myLan.toast_oper = langFallback(tr("toast_oper"),
+                                    "toast_oper", QString::fromUtf8("已进入系统参数"));
     myLan.msg_input_name = tr("msg_input_name");
     myLan.msg_mode_changing = tr("msg_mode_changing");
     myLan.msg_testing = tr("msg_testing");
@@ -1329,17 +1367,23 @@ void GlobalFlow::setLang()
     initLan();
 }
 
-// 构造翻译文件路径列表：SD卡优先 → APP_PATH 硬编码路径 → exe 运行时目录（Debug/任意位置都能找到）
+// 构造翻译文件路径列表：SD卡优先；x86_64 下 exe 目录优先于 APP_PATH，其余平台 APP_PATH 优先
 // 返回一个 QStringList，每个元素是 "目录路径/" 格式
 static QStringList buildLangDirs()
 {
     QStringList dirs;
     // 1) SD卡路径（板卡上 /opt/app/userdata/i18n/，调试时忽略）
     dirs << QString(LANG_DIR_SD);
+#if defined(__x86_64__)
+    //! x86_64 调试：优先用 exe 同目录下的 i18n，避免被 LANG_DIR 里的旧 .qm 抢先加载
+    dirs << QCoreApplication::applicationDirPath() + "/i18n/";
+    dirs << QString(LANG_DIR);
+#else
     // 2) APP_PATH 硬编码路径（globalparams.h 里的宏）
     dirs << QString(LANG_DIR);
-    // 3) 运行时 exe 所在目录（x86_64 Debug 终极兜底）
+    // 3) 运行时 exe 所在目录（兜底）
     dirs << QCoreApplication::applicationDirPath() + "/i18n/";
+#endif
     return dirs;
 }
 

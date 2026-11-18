@@ -36,6 +36,10 @@ void FeedCtrl::createPage()
     strList << myLan.disable << myLan.single << myLan.complex << str1;
     m_mutex->setLabelText(strList);
     m_mutex->setFixedHeight(BTN_HEIGHT * 2);
+    /* 选中标记改用对号图标，与算法设置页勾选框一致 */
+    m_mutex->setCheckIndicator(true);
+    /* 深色背景文字统一白色 */
+    m_mutex->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; }"));
 
     // 一键放料
     m_oneKeyFeedBtn = new myPushButton(myLan.one_key_feed, QIcon(), true, true, this);
@@ -55,6 +59,8 @@ void FeedCtrl::createPage()
     {
         m_selCbx[i] = new myCustomCheckBox("", false);
         m_selCbx[i]->setFixedSize(BTN_WIDTH, BTN_HEIGHT + 10);
+        /* 深色背景文字统一白色 */
+        m_selCbx[i]->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; }"));
         btnLay[i] = new QHBoxLayout;
         btnLay[i]->addWidget(m_selCbx[i]);
         btnLay[i]->setContentsMargins(20, 5, 20, 5);
@@ -101,6 +107,8 @@ void FeedCtrl::createPage()
         m_colorLet[i]->setEnabled(false);
         m_colorLet[i]->setFixedSize(ICON_WIDTH, ICON_HEIGHT);
         m_colorLbl[i]->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+        /* 深色背景文字统一白色 */
+        m_colorLbl[i]->setStyleSheet(QStringLiteral("color: #FFFFFF; background: transparent;"));
         downLay->addWidget(m_colorLet[i], i * 2, Qt::AlignRight);
         downLay->addWidget(m_colorLbl[i], i * 2 + 1, Qt::AlignRight);
     }

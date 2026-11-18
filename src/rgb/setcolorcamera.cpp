@@ -63,7 +63,7 @@ void setColorCamera::createSetColorCameraPage()
     lensParametersBtn = new myPushButton(myLan.color_lens_params, QIcon(), true, true);
     sensorParametersBtn = new myPushButton(myLan.sensor, QIcon(), true, true);
     contrapositionBtn = new myPushButton(myLan.contra_test, QIcon(), true, true);
-
+    
     mainBackBtn = new myPushButton(myLan.back, QIcon());
     calibrationColorSignalBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     gainAdjustBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -153,6 +153,11 @@ void setColorCamera::createCalibrationSignalPage()
     analogGainLabel2->setFont(config->getFont(DEFAULT_FONT_SIZE));
     digitalGainLabel2->setFont(config->getFont(DEFAULT_FONT_SIZE));
     targetLabel2->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    /* 深色背景文字统一白色 */
+    digGainUpperLabel->setStyleSheet(QStringLiteral("color: #FFFFFF; background: transparent;"));
+    analogGainLabel2->setStyleSheet(QStringLiteral("color: #FFFFFF; background: transparent;"));
+    digitalGainLabel2->setStyleSheet(QStringLiteral("color: #FFFFFF; background: transparent;"));
+    targetLabel2->setStyleSheet(QStringLiteral("color: #FFFFFF; background: transparent;"));
 
     targetLabel2->setFixedWidth(BTN_WIDTH - 10);
     analogGainLabel2->setFixedWidth(BTN_WIDTH - 10);
@@ -234,6 +239,8 @@ void setColorCamera::createCalibrationSignalPage()
     digGainUpperLcdNum2->display(struCnfc.struLevelCamera[struGsh.nLevel].nDigiGainUpperRed[struGsh.nUnit]);
     digGainLowLabel2 = new QLabel(myLan.gain_tiny);
     digGainLowLabel2->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    /* 深色背景文字统一白色 */
+    digGainLowLabel2->setStyleSheet(QStringLiteral("color: #FFFFFF; background: transparent;"));
     int nVal = struCnfc.struLevelCamera[struGsh.nLevel].nDigiGainLowRed[struGsh.nUnit];
     digGainValueBar2 = new myValueBar(0, 63, 1, 10, nVal);
 
@@ -885,6 +892,8 @@ void setColorCamera::createDivChannelPage()
     QGroupBox* listGroup = new QGroupBox("");
     listGroup->setFont(config->getFont(FONT_SIZE_16));
     listGroup->setMinimumWidth(width() - 190);
+    /* 深色背景文字统一白色 */
+    listGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
     QGridLayout* listLayout = new QGridLayout(listGroup);
 
     for (int i = 0; i < 5; i++)
@@ -1091,10 +1100,16 @@ void setColorCamera::createSensorParametersPage()
     QStringList strList;
     strList << "K" << "T2" << "T3" << "D2" << "P5";
     sensorTypeGroup->setLabelText(strList);
+    /* 选中标记用对号图标，与算法设置页复选框一致 */
+    sensorTypeGroup->setCheckIndicator(true);
+    /* 深色背景文字统一白色 */
+    sensorTypeGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
 
     // 传感器帧频
     setHorizentalFreGroup = new QGroupBox(myLan.row_fre, sensorParametersWidget);
     setHorizentalFreGroup->setFont(config->getFont());
+    /* 深色背景文字统一白色 */
+    setHorizentalFreGroup->setStyleSheet(QStringLiteral("QGroupBox { color: #FFFFFF; }"));
     QHBoxLayout* groupLay = new QHBoxLayout(setHorizentalFreGroup);
     horizontalFreNum = new myLCDNumber(3, m_fRowFre, setHorizentalFreGroup);
     horizontalFreNum->setFixedHeight(45);
@@ -1112,10 +1127,16 @@ void setColorCamera::createSensorParametersPage()
     sensorModeGroup = new myMutex(Qt::Vertical, m_nSensorMode - 1, sensorParametersWidget);
     sensorModeGroup->setTitle(myLan.sensor_mode);
     sensorModeGroup->setLabelText(myLan.sensor_light, myLan.sensor_dark, myLan.sensor_black_white);
+    /* 选中标记用对号图标，与算法设置页复选框一致 */
+    sensorModeGroup->setCheckIndicator(true);
+    /* 深色背景文字统一白色 */
+    sensorModeGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
 
     // 传感器分辨率
     sensorPixelGroup = new QGroupBox(myLan.sensor_pixel, sensorParametersWidget);
     sensorPixelGroup->setFont(config->getFont());
+    /* 深色背景文字统一白色 */
+    sensorPixelGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
     QGridLayout* sensorPixelGridLay = new QGridLayout(sensorPixelGroup);
 
     sensorPixelLabel[0] = new myLabel(myLan.upper_layer);
@@ -1186,6 +1207,8 @@ void setColorCamera::createLensParametersPage()
 
     lensLabel = new QLabel("Phenix");
     lensLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    /* 深色背景文字统一白色 */
+    lensLabel->setStyleSheet(QStringLiteral("color: #FFFFFF; background: transparent;"));
     lensLabel->setFixedHeight(SMALL_BTN_WIDTH);
 
     lensSureBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);

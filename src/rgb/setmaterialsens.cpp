@@ -20,29 +20,98 @@ setMaterialSens::setMaterialSens(QWidget* parent) :
     algorithmType = 0;
     setFixedSize(LCD_WIDTH - 20, LCD_HEIGHT - LCD_TITLE_HEIGHT - LCD_TITLE_HEIGHT - 20);
 
+    /* 本页输入框统一深蓝线框风（lineedit 九宫格三态） */
+    setStyleSheet(
+        "QLineEdit {"
+        "  border-width: 4px 4px 4px 4px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/lineedit/lineedit_normal.png) 4 4 4 4 stretch stretch;"
+        "  background: transparent;"
+        "  color: #E8F6FF;"
+        "  font-size: 18px;"
+        "  padding: 0px 6px;"
+        "}"
+        "QLineEdit:hover {"
+        "  border-image: url(:/res/png2/lineedit/lineedit_hover.png) 4 4 4 4 stretch stretch;"
+        "}"
+        "QLineEdit:focus {"
+        "  border-image: url(:/res/png2/lineedit/lineedit_focus.png) 4 4 4 4 stretch stretch;"
+        "}"
+        "QLineEdit:disabled {"
+        "  border-image: url(:/res/png2/lineedit/lineedit_disabled.png) 4 4 4 4 stretch stretch;"
+        "  color: #5A7686;"
+        "}");
+
     // 状态列表
     listWidget = new myListWidget;
-    listWidget->setFixedWidth(BTN_WIDTH - 5);
-
-    listWidget->setViewMode(QListView::IconMode);
+    listWidget->setFixedWidth(LCD_WIDTH == 640 ? 200 : 216);
+    listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);  // 禁止左右滑条
+    listWidget->setViewMode(QListView::ListMode);
     listWidget->setMovement(QListView::Static);
-    listWidget->setIconSize(QSize(ICON_WID, ICON_HEI));
+    listWidget->setIconSize(QSize(32, 32));
+    listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    listWidget->setSpacing(0);
+    listWidget->setUniformItemSizes(true);  // 所有行高度一致
+    listWidget->setStyleSheet(
+        "QListWidget {"
+        "  background: transparent;"
+        "  border: none;"
+        "  border-image: url(:/res/png2/sidelist/list_panel.png) 12 12 12 12 stretch stretch;"
+        "  padding: 10px 10px;"
+        "  outline: none;"
+        "}"
+        "QListWidget::item {"
+        "  background-color: rgba(13, 34, 50, 0.55);"
+        "  border: 1px solid #2A5B6E;"
+        "  border-radius: 8px;"
+        "  color: #DCEEF5;"
+        "  font-size: 12px;"
+        "  padding: 0px 10px;"
+        "}"
+        "QListWidget::item:hover {"
+        "  background-color: rgba(24, 54, 74, 0.72);"
+        "  border: 1px solid #3FA9BF;"
+        "  color: #FFFFFF;"
+        "}"
+        "QListWidget::item:selected {"
+        "  background-color: rgba(20, 58, 76, 0.75);"
+        "  border: 1px solid #45D2E4;"
+        "  color: #FFFFFF;"
+        "}"
+        "QScrollBar:vertical {"
+        "  width: 6px; background: transparent; margin: 6px 0;"
+        "}"
+        "QScrollBar::handle:vertical {"
+        "  background: #2A6076; border-radius: 3px; min-height: 40px;"
+        "}"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }"
+    );
 
     // 0: 常规算法
-    statusListItem[0] = new myListWidgetItem(myLan.material_general, QIcon(":/res/png/Al_General.png"), QSize(BTN_WIDTH - 20, 80));
+    statusListItem[0] = new myListWidgetItem(myLan.material_general, QIcon(":/res/png/Al_General.png"), QSize(190, 56));
     listWidget->addItem(statusListItem[0]);
 
     // 1: 形选算法
-    statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(BTN_WIDTH - 20, 80));
+    statusListItem[1] = new myListWidgetItem(myLan.material_shape, QIcon(":/res/png/Al_Shape.png"), QSize(190, 56));
     listWidget->addItem(statusListItem[1]);
 
     // 2: 传统智能算法
-    statusListItem[2] = new myListWidgetItem(myLan.ai_analysis, QIcon(":/res/png/Al_Ai.png"), QSize(BTN_WIDTH - 20, 80));
+    statusListItem[2] = new myListWidgetItem(myLan.ai_analysis, QIcon(":/res/png/Al_Ai.png"), QSize(190, 56));
     listWidget->addItem(statusListItem[2]);
 
     // 4： AI智能算法
-    statusListItem[4] = new myListWidgetItem("AI" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
+    statusListItem[4] = new myListWidgetItem("AI" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(190, 56));
     listWidget->addItem(statusListItem[4]);
+
+    // 列表项字号统一压到 12px，保证「AI智能算法」等长名称完整显示（不省略）
+    {
+        QFont itemFont = font();
+        itemFont.setPixelSize(12);
+        for (myListWidgetItem *it : {statusListItem[0], statusListItem[1], statusListItem[2], statusListItem[4]}) {
+            if (it) it->setFont(itemFont);
+        }
+    }
 
     // 默认选中第一列
     listWidget->setCurrentRow(0);
@@ -67,7 +136,30 @@ setMaterialSens::setMaterialSens(QWidget* parent) :
             tabBar->insertTab(i * struCnfg.struLevelInfo[i].nIdentifyGroupTotal + j, myString.sIdentifyGroupName[i][j]);
         }
     }
-    tabBar->setStyleSheet("QTabBar::tab{""min-height:40;min-width:100;}::scroller{""width:30;}");
+    tabBar->setStyleSheet(
+        "QTabBar::tab {"
+        "  min-height: 40; min-width: 100;"
+        "  border-width: 8px 14px 8px 14px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #B8D8E4;"
+        "  padding: 0px;"
+        "}"
+        "QTabBar::tab:hover {"
+        "  border-width: 8px 16px 8px 16px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QTabBar::tab:selected {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QTabBar::scroller { width: 30; }");
+    /* 去掉未选中页签下方的基线白线 */
+    tabBar->setDrawBase(false);
     stackedWidget = new QStackedWidget(this);
 
     // 0: 常规算法
@@ -118,7 +210,29 @@ setMaterialSens::setMaterialSens(QWidget* parent) :
     // 灵敏度偏置
 //    m_sensBiasBtn  = new myPushButton("",myIcon.Action_Configure, true, true, this);
     m_sensBiasBtn = new myPushButton("", QIcon(":/res/png/setup.png"), true, true, this);
+    /* 固定尺寸，避免被布局拉伸成整屏线框 */
+    m_sensBiasBtn->setFixedSize(72, 72);
+    m_sensBiasBtn->setIconSize(QSize(40, 40));
     m_sensBiasBtn->hide();
+
+    /* 底部按钮统一线框风 */
+    const QString sensBtnStyle =
+        "QPushButton {"
+        "  text-align: center; outline: none;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #DCEEF5; font-size: 14px; padding: 0px;"
+        "}"
+        "QPushButton:hover, QPushButton:pressed {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}";
+    cancelBtn->setStyleSheet(sensBtnStyle);
+    /* 齿轮入口只保留图标本身，不要底框贴图 */
+    m_sensBiasBtn->setStyleSheet(
+        "QPushButton { background: transparent; border: none; }"
+        "QPushButton:hover { background: rgba(56,200,220,0.12); border-radius: 8px; }"
+        "QPushButton:pressed { background: rgba(56,200,220,0.22); border-radius: 8px; }");
 
     // 页面布局
     sensPageGridLayout = new QGridLayout(this);
@@ -135,7 +249,7 @@ setMaterialSens::setMaterialSens(QWidget* parent) :
     sensPageHBLayout3->addWidget(cancelBtn);
     horizontalSpacer = new QSpacerItem(10, BTN_HEIGHT, QSizePolicy::Expanding, QSizePolicy::Fixed);
     sensPageHBLayout3->addItem(horizontalSpacer);
-    sensPageHBLayout3->addWidget(m_sensBiasBtn);
+    sensPageHBLayout3->addWidget(m_sensBiasBtn, 0, Qt::AlignRight | Qt::AlignVCenter);
     sensPageGridLayout->addLayout(sensPageHBLayout3, 2, 0, 1, 1);
 
     if (LCD_WIDTH == 640)
@@ -570,7 +684,7 @@ void setMaterialSens::updateListWidget()
     // 实现AI智能
     if (myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO) == 1)
     {
-        statusListItem[4] = new myListWidgetItem("AI" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(BTN_WIDTH - 20, 80));
+        statusListItem[4] = new myListWidgetItem("AI" + myLan.ai_analysis, QIcon(":/res/png/aialgo.png"), QSize(190, 56));
         listWidget->addItem(statusListItem[4]);
         stackedWidget->addWidget(pageAi);
         LOG_TRACE_STM("myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO):" << myFlow.getArithEnable(struGsh.nLevel, currentChan, ARITH_PISTACHIO));

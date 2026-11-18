@@ -26,6 +26,11 @@ g_Config::g_Config()
 
     setFont(FONT_SIZE_12, 12);
     setFont(FONT_SIZE_16, 16);
+
+    /* 全局 UI 字体统一为 Noto Sans SC（main.cpp 已通过 addApplicationFont 注册） */
+    m_sizeNormalFont.setFamily("Noto Sans SC");
+    m_font12.setFamily("Noto Sans SC");
+    m_font16.setFamily("Noto Sans SC");
 }
 
 /*!

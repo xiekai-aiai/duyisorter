@@ -10,6 +10,9 @@
 #define SYSTEMINITIALIZATION_H
 
 #include <QProgressBar>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QTimer>
 #include "common/mypushbutton.h"
 #include "common/mylabel.h"
 #include "common/mylineedit.h"
@@ -49,8 +52,10 @@ private:
     QVBoxLayout* commVBLayout;
 };
 
+class StateMatrixWidget;
+
 /*!
- * \brief 通信自检界面类
+ * \brief 通信自检界面类（参考 state_page 重构：汇总卡 + 相机矩阵 + 板卡卡片）
  */
 class communicationList : public QWidget
 {
@@ -58,12 +63,8 @@ class communicationList : public QWidget
 public:
     explicit communicationList(QWidget* parent = 0);
 
-    void commuUpdateInterface();
     void commuUpdateCtrl();
     void commuUpdateCamera();
-    void commuUpdateLightSrc(void);     // 更新恒流源板版本信息
-    void hideColumn(int index);         // 隐藏某一列
-    void showColumn(int index);         // 显示某一列
 
 signals:
     void goToInitPageSig();
@@ -74,46 +75,26 @@ public slots:
     void onRecheckBtnClickedSlt();
     void onNextBtnClickedSlt();
 
+protected:
+    void paintEvent(QPaintEvent* event);
+
 private:
+    QWidget* createSummaryCard(int index, const QString& title, const QColor& color);
+
     g_Config* config;
     // 通信列表
-    myLabel* waitCommLabel;
     myPushButton* rechekBtn;
     myPushButton* nextBtn;
 
-    myGroupBox* interfaceBoardListGroup;
-    QGridLayout* interfaceListLayout;
+    //! 顶部汇总卡片: 0通道 1相机 2AI 3告警
+    QLabel* m_sumValue[4];
+    QLabel* m_sumTotal[4];
 
-    myGroupBox* newInterfaceBoardListGroup;
-    QGridLayout* newInterfaceListLayout;
-    QLabel* cameraStateLbl;
-    QLabel* testStateLbl;
+    //! 相机 / AI 板矩阵（自绘）
+    StateMatrixWidget* m_matrix;
 
-    /** 接口板版本中加入USB固件版本 */
-    QLabel* interfaceListLabel[MAX_INT + 1][2];
-
-    myGroupBox* ctrlBoardListGroup;
-    QGridLayout* controlListLayout;
-    QLabel* controlListLabel[MAX_CTRL][2];
-
-    QLabel* aiLabelName;
-    QLabel* aiLabelStatus;
-
-    QGroupBox* cameraBoardListGroup;
-    QGridLayout* cameraListLayout;
-    // 记录相机和AI板卡的版本信息等
-    QLabel* cameraListLabel[SUM_SHOW_ROW_NUM][SUM_SHOW_COLUMN_NUM];
-    /* 横流源板版本部分控件 */
-    QGroupBox* m_lightSrcListGroup;
-    QLabel* m_lightSrcLabel[MAX_LIGHT_SOURCE][2];
-    QGridLayout* m_lightSrcLay;
-
-    QVBoxLayout* backHBLayout;
-    QHBoxLayout* communicationLayout;
-
-    QGridLayout* commListGridLayout;
-    QHBoxLayout* commListHBLayout;
-    QSpacerItem* horizontalSpacer;
+    //! 控制板矩阵（自绘，与相机板同一控件）
+    StateMatrixWidget* m_ctrlMatrix;
 };
 
 /*!
@@ -130,12 +111,32 @@ signals:
 
 public slots:
     void startInitSlt();
+    void runNextStepSlt();
+
+protected:
+    void paintEvent(QPaintEvent* event);
+
+private slots:
+    void onAnimTickSlt();
 
 private:
-    // 通信列表
-    myLabel* waitCommLabel;
+    enum { INIT_STEP_COUNT = 5 };
 
-    QVBoxLayout* initVBLayout;
+    void drawTitle(QPainter& p);
+    void drawRing(QPainter& p);
+    void drawSteps(QPainter& p);
+    void drawFooter(QPainter& p);
+    void drawStateIcon(QPainter& p, int cx, int cy, int state);   //! 0待执行 1执行中 2已完成
+    QString stepText(int index);
+
+    int     m_currentStep;      //! 等待执行的步骤序号
+    int     m_doneCount;        //! 已完成步骤数
+    qreal   m_percent;          //! 平滑显示的百分比
+    qreal   m_targetPercent;    //! 目标百分比
+    int     m_pulseTick;        //! 脉动计时（33ms/格）
+    int     m_finishDelay;      //! 完成后的停留计时
+    bool    m_finished;         //! 是否已跳转预热页
+    QTimer* m_animTimer;
 };
 
 /*!

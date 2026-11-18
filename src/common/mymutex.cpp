@@ -21,6 +21,7 @@ myMutex::myMutex(Qt::Orientation flag, int selIndex, QWidget *parent)
     createPage(flag);
 
     curIndex = selIndex;
+    m_bHasSelection = true;
     btns[curIndex]->setIcon(myIcon.Action_Circle);
 
     connectSigAndSlt();
@@ -174,14 +175,42 @@ int myMutex::getCurrentIndex()
 void myMutex::setCurrentIndex(int index)
 {
     clearBtnsIcon();
-	curIndex = index;
-    btns[index]->setIcon(myIcon.Action_Circle);
+    curIndex = index;
+    m_bHasSelection = true;
+    updateSelectionIcon(curIndex);
 }
 
 /* 设置索引号是否可按 */
 void myMutex::setIndexEnabled(int index, bool enabled)
 {
     btns[index]->setEnabled(enabled);
+}
+
+/* 选中标记切换为对号图标（深色主题复选框效果） */
+void myMutex::setCheckIndicator(bool enable)
+{
+    m_bCheckIndicator = enable;
+    if (m_bHasSelection)
+    {
+        clearBtnsIcon();
+        updateSelectionIcon(curIndex);
+    }
+}
+
+/* 生成对号图标：与算法设置页 MyCheckBox 勾选框一致，使用 Action_Select 图标 */
+QIcon myMutex::makeCheckIcon(void) const
+{
+    return myIcon.Action_Select;
+}
+
+/* 按当前标记风格刷新某一项的选中图标 */
+void myMutex::updateSelectionIcon(int index)
+{
+    if (index < 0 || index >= MAX_NUM)
+    {
+        return;
+    }
+    btns[index]->setIcon(m_bCheckIndicator ? makeCheckIcon() : myIcon.Action_Circle);
 }
 
 /*!
@@ -191,7 +220,8 @@ void myMutex::setIndexEnabled(int index, bool enabled)
 void myMutex::onBtnsPressed(int nIndex)
 {
     clearBtnsIcon();
-    btns[nIndex]->setIcon(myIcon.Action_Circle);
+    m_bHasSelection = true;
+    updateSelectionIcon(nIndex);
     curIndex = nIndex;
     emit indexChanged(nIndex);
 }

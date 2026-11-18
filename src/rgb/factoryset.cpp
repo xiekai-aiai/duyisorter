@@ -578,10 +578,14 @@ void factorySet::createAgeingTestPage()
     runningModeGroup->setTitle(myLan.run_mode);
     runningModeGroup->setLabelText(myLan.normal, myLan.run_test);
     runningModeGroup->setMinimumSize(QSize(groupWidth, groupHeight));
-
+    /* 深色背景文字统一白色 */
+    runningModeGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
+    
     QGroupBox* ageingTestFre = new QGroupBox(myLan.run_fre, ageingTestWidget);
     ageingTestFre->setFont(config->getFont());
     ageingTestFre->setMinimumSize(QSize(groupWidth, groupHeight));
+    /* 深色背景文字统一白色 */
+    ageingTestFre->setStyleSheet(QStringLiteral("QGroupBox { color: #FFFFFF; }"));
     QHBoxLayout* groupLay = new QHBoxLayout(ageingTestFre);
     ageingTestValueBar = new myValueBar(0, 255, 1, 10, m_nDetectFre, ageingTestFre);
     groupLay->addWidget(ageingTestValueBar);
@@ -701,12 +705,20 @@ void factorySet::createSetFPGAModePage()
     intModeGroup->setLabelText(myLan.mode_1, myLan.mode_2, myLan.mode_3);
     intModeGroup->setTitle(myLan.interface_board);
     intModeGroup->setMinimumHeight(groupHei);
+    /* 选中标记改用对号图标，与算法设置页勾选框一致 */
+    intModeGroup->setCheckIndicator(true);
+    /* 深色背景文字统一白色 */
+    intModeGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
 
     colorModeGroup = new myMutex(Qt::Vertical, m_nColorMode, setFPGAUserModeWidget);
     colorModeGroup->setContentsMargins(1, 1, 1, 1);
     colorModeGroup->setLabelText(myLan.mode_1, myLan.mode_2, myLan.mode_3);
     colorModeGroup->setTitle(myLan.color_board);
     colorModeGroup->setMinimumHeight(groupHei);
+    /* 选中标记改用对号图标，与算法设置页勾选框一致 */
+    colorModeGroup->setCheckIndicator(true);
+    /* 深色背景文字统一白色 */
+    colorModeGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
 
     setModeSureBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);
     setModeSureBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -1295,6 +1307,8 @@ void factorySet::createSetFeederVoltage()
     feederVoltageGroup->setLabelText(myLan.feeder_voltage_low, myLan.feeder_voltage_high);
     feederVoltageGroup->setTitle(myLan.feeder_voltage);
     feederVoltageGroup->setFixedSize(groupWid, groupHei);
+    /* 深色背景文字统一白色 */
+    feederVoltageGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
 
     autoFeedEnable = new myPushButton("", QIcon(), setFeederVoltageWidget);
     autoFeedEnable->setFixedSize(config->getBtnSize(SMALL_BTN_SIZE));
@@ -1323,6 +1337,8 @@ void factorySet::createSetFeederVoltage()
     QGroupBox* otherGroup = new QGroupBox(myLan.other);
     otherGroup->setFont(config->getFont());
     otherGroup->setMinimumWidth(groupWid);
+    /* 深色背景文字统一白色 */
+    otherGroup->setStyleSheet(QStringLiteral("QLabel { color: #FFFFFF; background: transparent; } QGroupBox { color: #FFFFFF; }"));
     QGridLayout* otherLayout = new QGridLayout(otherGroup);
 
     if ((struCnfe.nMachine == MACHINE_CF) || (struCnfe.nEnableBeanMachine == 1))

@@ -152,7 +152,7 @@ public slots:
     void onSimulateBtnClicked();
     void onAutoAnalysisBtnClicked();
     void onViewRequest(int idx, bool is_start);
-    void onImageReady(const QImage& img);
+    void onImageReady(const QImage& img, quint16 addr);
     void onDisplayImage();
 
 private:

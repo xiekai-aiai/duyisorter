@@ -8,58 +8,70 @@ MOC_DIR     = build/moc
 OBJECTS_DIR = build/obj
 RCC_DIR     = build/rcc
 DEPENDPATH += . src/3rdparty src src/common
-INCLUDEPATH += . src src/common src/3rdparty src/qtftp_compat/QtFtp
+INCLUDEPATH += . src src/common src/3rdparty
 CONFIG += qt debug_and_release warn_on thread
-CONFIG += resources_big lrelease
+CONFIG += resources_big
 QT += network widgets sql
 DEFINES += ENABLE_CAPTURE_SCREEN=1
 
+# 2026-10-26: 临时让 release 也开 DEBUG_OUTPUT, 用来抓 com1/com2 完整串口帧对比 test_arm
 CONFIG(release,debug|release){ 
         DEFINES += QT_NO_DEBUG_OUTPUT \
-                   DEBUG_OUTPUT=0
+                   DEBUG_OUTPUT=1
 }
 else {
         DEFINES += DEBUG_OUTPUT=1
 }
 
 # ============ 目标架构自适应（VM 调试 x86_64 / 生产交叉编译 aarch64）============
-# qmake 依据 CROSS_COMPILE=1 强制 ARM 分支，或 QT_ARCH == aarch64 自动走 ARM
+# qmake 依据编译器目标架构自动选择 OpenCV / OpenSSL 的库路径
 unix {
-    FORCE_ARM = no
-    contains(CROSS_COMPILE, 1) { FORCE_ARM = yes }
-    contains(QT_ARCH, aarch64) { FORCE_ARM = yes }
+    # 工具链适配(VM 交叉编译): host qmake 的 QT_ARCH 仍是 x86_64,
+    # 由 qtmakeApp.sh 传入 CROSS_COMPILE=1 强制选择 aarch64 库路径
+    ARM_BUILD = 0
+    contains(CROSS_COMPILE, 1): ARM_BUILD = 1
+    contains(QT_ARCH, aarch64)|contains(QT_ARCH, arm64): ARM_BUILD = 1
 
-    contains(FORCE_ARM, yes) {
-        message("qmake: target arch = aarch64 (CROSS_COMPILE=1)")
-        INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4 \
-                       $$PWD/src/3rdparty/openssl/arm/include        \
-                       $$PWD/src/3rdparty/unilog/arm/include         \
-                       $$PWD/src/3rdparty/libssh2/arm/include        \
-                       $$PWD/src/3rdparty/spdlog/arm/include
-        LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib  \
-                -L$$PWD/src/3rdparty/openssl/arm/lib \
-                -L$$PWD/src/3rdparty/unilog/arm/lib  \
-                -L$$PWD/src/3rdparty/libssh2/arm/lib \
-                -L$$PWD/src/3rdparty/libts/arm/lib   \
-                -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
-                -lcrypto -lssl -lunilog -lssh2 -lts -lpthread
-    } else {
+    X86_BUILD = 0
+    equals(ARM_BUILD, 0):contains(QT_ARCH, x86_64): X86_BUILD = 1
+    equals(ARM_BUILD, 0):contains(QMAKE_TARGET.arch, x86_64): X86_BUILD = 1
+
+    equals(X86_BUILD, 1) {
         message("qmake: target arch = x86_64 (host/VM debug)")
+        # OpenCV + OpenSSL + 其他3rdparty：x86_64 版本（随项目分发）
         INCLUDEPATH += $$PWD/src/3rdparty/opencv/x86/include/opencv4 \
-                       $$PWD/src/3rdparty/openssl/x86/include        \
-                       $$PWD/src/3rdparty/unilog/x86/include         \
-                       $$PWD/src/3rdparty/libssh2/x86/include        \
+                       $$PWD/src/3rdparty/openssl/x86/include      \
+                       $$PWD/src/3rdparty/unilog/x86/include       \
+                       $$PWD/src/3rdparty/libssh2/x86/include      \
                        $$PWD/src/3rdparty/spdlog/x86/include
+
         LIBS += -L$$PWD/src/3rdparty/opencv/x86/lib  \
                 -L$$PWD/src/3rdparty/openssl/x86/lib \
                 -L$$PWD/src/3rdparty/unilog/x86/lib  \
                 -L$$PWD/src/3rdparty/libssh2/x86/lib \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
+
+        # 把 3rdparty 绝对路径烘焙进 RUNPATH，VM 调试时直接可运行
         QMAKE_LFLAGS += -Wl,-rpath,$$PWD/src/3rdparty/opencv/x86/lib \
                         -Wl,-rpath,$$PWD/src/3rdparty/openssl/x86/lib \
                         -Wl,-rpath,$$PWD/src/3rdparty/unilog/x86/lib  \
                         -Wl,-rpath,$$PWD/src/3rdparty/libssh2/x86/lib
+    } else {
+        message("qmake: target arch = aarch64 (rk3566 production)")
+        # OpenCV 4.5.5（随项目分发）：rk3566 aarch64 生产
+        INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4 \
+                       $$PWD/src/3rdparty/openssl/arm/include        \
+                       $$PWD/src/3rdparty/unilog/arm/include         \
+                       $$PWD/src/3rdparty/libssh2/arm/include        \
+                       $$PWD/src/3rdparty/spdlog/arm/include
+
+        LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib  \
+                -L$$PWD/src/3rdparty/openssl/arm/lib \
+                -L$$PWD/src/3rdparty/unilog/arm/lib  \
+                -L$$PWD/src/3rdparty/libssh2/arm/lib \
+                -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
+                -lcrypto -lssl -lunilog -lssh2
     }
 }
 
@@ -68,10 +80,6 @@ HEADERS += $$PWD/src/*.h \
 #第三方库
            $$PWD/src/3rdparty/qextserialport/*.h \
            $$PWD/src/3rdparty/libqrencode/*.h \
-           $$PWD/src/3rdparty/log4qt/*.h \
-           $$PWD/src/3rdparty/log4qt/helpers/*.h \
-           $$PWD/src/3rdparty/log4qt/spi/*.h \
-           $$PWD/src/3rdparty/log4qt/varia/*.h \
            $$PWD/src/3rdparty/qjson/*.h \
 #自定义控件库
            $$PWD/src/common/libdccrypt/dccrypt.h \
@@ -100,15 +108,15 @@ HEADERS += $$PWD/src/*.h \
            $$PWD/src/rgb/autoanalysiswidget.h
 
 # source file
+# log4qt 死代码: 项目统一用 unilog, mylogger.cpp 无任何引用
 SOURCES += $$PWD/src/*.cpp
+SOURCES -= $$PWD/src/mylogger.cpp
+# src/mypushbutton.cpp 是误拷到 src/ 根目录的副本, 正本在 src/common/mypushbutton.cpp
+SOURCES -= $$PWD/src/mypushbutton.cpp
 
 #第三方库
 SOURCES += $$PWD/src/3rdparty/qextserialport/qextserialport.cpp \
            $$PWD/src/3rdparty/libqrencode/*.c \
-           $$PWD/src/3rdparty/log4qt/*.cpp \
-           $$PWD/src/3rdparty/log4qt/helpers/*.cpp \
-           $$PWD/src/3rdparty/log4qt/spi/*.cpp \
-           $$PWD/src/3rdparty/log4qt/varia/*.cpp \
            $$PWD/src/3rdparty/qjson/*.cpp \
 #自定义控件库
            $$PWD/src/common/*.cpp \
@@ -145,10 +153,10 @@ win32{
                        AI_MODE=0
 }
 unix{
-            DESTDIR_TMP = $$MYAPP_DIR
-            isEmpty(DESTDIR_TMP) { DESTDIR_TMP = $$[MYAPP_DIR] }
-            isEmpty(DESTDIR_TMP) { DESTDIR_TMP = app }
-            DESTDIR = $$DESTDIR_TMP
+            # qtmakeApp.sh 以命令行变量传 MYAPP_DIR, 兼容 qmake -set 属性写法
+            DESTDIR = $$MYAPP_DIR
+            isEmpty(DESTDIR): DESTDIR = $$[MYAPP_DIR]
+            isEmpty(DESTDIR): DESTDIR = app
 
             HEADERS += $$PWD/src/3rdparty/libusb/*.h \
                        $$PWD/src/common/myusb/*.h \
@@ -166,6 +174,8 @@ unix{
 }
 
 RESOURCES += res.qrc
+
+CONFIG += lrelease
 
 TRANSLATIONS += i18n/zh-cn.ts \
                 i18n/en.ts \
@@ -195,4 +205,4 @@ INSTALLS += target
 target.path=/opt/app
 
 FORMS += \
-    aimodelset.ui
+    aimodelset.ui 

@@ -141,9 +141,13 @@ MyCurve::MyCurve(int width, int height, QWidget *parent) :
     unitViewAdditionBtn->setFixedWidth(SMALL_BTN_WIDTH+10);
     unitViewBtn->setFixedSize(btnSize);
     unitViewBtn->setFixedWidth(SMALL_BTN_WIDTH+10);
-    unitPlusBtn->setFixedSize(btnSize);
-    unitMinusBtn->setFixedSize(btnSize);
-    rowPauseBtn->setFixedSize(btnSize);
+    /* 图标按钮改为正方形，方图可撑满按钮内容区 */
+    unitPlusBtn->setFixedSize(btnSize.height(), btnSize.height());
+    unitMinusBtn->setFixedSize(btnSize.height(), btnSize.height());
+    rowPauseBtn->setFixedSize(btnSize.height(), btnSize.height());
+    unitPlusBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
+    unitMinusBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
+    rowPauseBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
 
     axisPageHBLayout = new QHBoxLayout;
     axisPageHBLayout->addWidget(axisWidget);
@@ -843,10 +847,10 @@ void MyAxis::paintAxis(QPainter &painter)
 void MyAxis::paintAxisX(QPainter &painter)
 {
     qreal majorTickX, minorTickX;
-    QPen pen_axis(Qt::black, 2);
-    QPen pen_gridline(Qt::black, 1, Qt::DotLine);
-    QPen pen_majortick(Qt::black, 2);
-    QPen pen_minortick(Qt::black, 1);
+    QPen pen_axis(QColor(255, 255, 255), 2);
+    QPen pen_gridline(QColor(255, 255, 255, 40), 1, Qt::DotLine);
+    QPen pen_majortick(QColor(255, 255, 255), 2);
+    QPen pen_minortick(QColor(220, 230, 235), 1);
     QPen pen_border(QColor(180, 0, 180));
     pen_border.setWidth(1);
 
@@ -855,13 +859,16 @@ void MyAxis::paintAxisX(QPainter &painter)
     QPointF rightDownPoint(width()-rightBorder, height()-downBorder);
     /* 记录下tick点的坐标 */
     QPointF tmp(leftDownPoint);
-    int pixelSize = painter.fontInfo().pixelSize();
     qreal halfTextLength = ((((qreal)width()-leftBorder-rightBorder))/(majorXNum-1))/3.0;
     QRect textRect;
+    /* X轴刻度字高度按字体实际行高计算，避免 Noto Sans SC 行高大于字号导致底部被截断；
+       仅加高文字绘制区，tick 坐标与绘图区不变，不影响波形 */
+    const int labelTop = height() - downBorder + 9;
+    const int labelHeight = qMax(1, qMin(painter.fontMetrics().height(), height() - labelTop));
 
     painter.setPen(pen_axis);
     painter.drawLine(leftDownPoint,rightDownPoint);
-
+    
     /* 1.绘制主标记及纵轴虚线 */
     for (int i = 1; i <= majorXNum; i++) {
         painter.setPen(pen_majortick);
@@ -869,8 +876,8 @@ void MyAxis::paintAxisX(QPainter &painter)
         tmp.setX(leftBorder+majorTickX);
         /* 绘制tick */
         painter.drawLine(tmp,tmp+QPointF(0,8));
-        textRect.setTopLeft(QPoint(tmp.x()-halfTextLength,tmp.y()+10));
-        textRect.setSize(QSize(2*halfTextLength,pixelSize));
+        textRect.setTopLeft(QPoint(tmp.x()-halfTextLength, labelTop));
+        textRect.setSize(QSize(2*halfTextLength, labelHeight));
         /* 绘制X轴tick上的值 */
         painter.drawText(textRect, QString("%1")
                          .arg(minValueX+i*majorTickValueX),QTextOption(Qt::AlignHCenter));
@@ -908,10 +915,10 @@ void MyAxis::paintAxisX(QPainter &painter)
 void MyAxis::paintAxisY(QPainter &painter)
 {
     qreal majorTickY, minorTickY;
-    QPen pen_axis(Qt::black, 2);
-    QPen pen_gridline(Qt::black, 1, Qt::DotLine);
-    QPen pen_majortick(Qt::black, 2);
-    QPen pen_minortick(Qt::black, 1);
+    QPen pen_axis(QColor(255, 255, 255), 2);
+    QPen pen_gridline(QColor(255, 255, 255, 40), 1, Qt::DotLine);
+    QPen pen_majortick(QColor(255, 255, 255), 2);
+    QPen pen_minortick(QColor(220, 230, 235), 1);
 
     valueYPerPixel = ((qreal)(maxValueY-minValueY)/(qreal)(height()-upBorder-downBorder));
     QPointF leftDownPoint(leftBorder,height()-downBorder);

@@ -11,6 +11,7 @@
 #include "aihelper.h"
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
+#include "topbarstatuswidget.h"
 
 myApplication::myApplication(int& argc, char** argv) :
     QApplication(argc, argv)
@@ -49,11 +50,25 @@ MainWidget::MainWidget(QWidget* parent)
     config = g_Config::getInstance();
     // 标题栏默认不显示
     setAutoFillBackground(true);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    // 无边框 + 置顶。标题栏装饰问题在 mystart.sh 里通过退出 xfwm4 解决。
+    // 不要用 X11BypassWindowManagerHint：窗口变成 override-redirect 后
+    // 输入焦点/事件分发异常，实测会导致按钮失效、无法触屏。
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint
+                   | Qt::WindowStaysOnTopHint);
+    // 隐藏鼠标指针：仅 ARM 板卡（现场只有触摸屏，不需要鼠标光标）。
+    // x86_64 调试版必须保留鼠标指针，否则开发时看不到光标、无法用鼠标调试。
+    // 注意：触摸事件是由 eGTouchD 模拟成鼠标事件送进 Qt 的，这里只隐藏光标，
+    //       绝不能屏蔽鼠标事件，否则触摸也会一起失效。
+#if defined(__aarch64__) || defined(__arm__)
+    setCursor(Qt::BlankCursor);
+#endif
     //    setAttribute(Qt::WA_TranslucentBackground,true);
 
         //! 初始化图标
     myIcon.init();
+    
+    //! 运行态顶部状态栏（构造尾部创建，先置空防止页面切换提前访问）
+    topBarStatus = 0;
 
     /* 更新系统时间线程 */
     updateStatus = new updateStatusThread;
@@ -118,23 +133,27 @@ MainWidget::MainWidget(QWidget* parent)
     QDateTime time = QDateTime::currentDateTime();
     statInfoBtn = new myPushButton(time.toString("hh:mm:ss"), QIcon(""),
         true, false, this);
-    statInfoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    /* 按钮内为“日期+时间”两行文本，Noto Sans SC 行高约为字号的 1.45 倍，
+       两行需 ≤ 按钮高度 50，故取 16px（两行约 46px），避免第二行底部被截 */
+    QFont statFont = config->getFont(DEFAULT_FONT_SIZE);
+    statFont.setPixelSize(16);
+    statInfoBtn->setFont(statFont);
     statInfoBtn->setIconSize(QSize(ICON_WID, ICON_WID));
     statInfoBtn->setIcon(QIcon(":/res/png/time.png"));
-    statInfoBtn->setStyleSheet("background-color:transparent; border:none;");
+    statInfoBtn->setStyleSheet("background-color:transparent; border:none; color:white;");
 
     lineTitle = new QFrame(this);
     lineTitle->setFrameShape(QFrame::HLine);
     lineTitle->setFrameShadow(QFrame::Plain);
     lineTitle->setLineWidth(2);
-    lineTitle->setStyleSheet("color: black");
+    lineTitle->setStyleSheet("color: rgb(209, 243, 249)");
 
     // 分割线
     lineStatus = new QFrame(this);
     lineStatus->setFrameShape(QFrame::HLine);
     lineStatus->setFrameShadow(QFrame::Plain);
     lineStatus->setLineWidth(2);
-    lineStatus->setStyleSheet("color: black");
+    lineStatus->setStyleSheet("color: rgb(209, 243, 249)");
 
     // 系统关闭 myLan.halt
 //    systemHaltBtn = new myPushButton("",QIcon(""),
@@ -146,58 +165,51 @@ MainWidget::MainWidget(QWidget* parent)
 //    QString strStyle3 = QString("QPushButton {border-image: url(:/res/png/shutDown.png);}");
 //    systemHaltBtn->setStyleSheet(strStyle3);
 
+    // 顶部 QToolButton 深色底板按钮: 默认白字, pressed/checked 黑字
+    const char* topToolBtnStyle =
+        "QToolButton {"
+        "  background-color:transparent; border:none; color:white;"
+        "}"
+        "QToolButton:pressed, QToolButton:checked {"
+        "  color:black;"
+        "}";
+
     videoBtn = new QToolButton(this);
     videoBtn->setText(myLan.sorter_manager);
     videoBtn->setIconSize(QSize(60, 60));
-    videoBtn->setIcon(QIcon(":/res/png/workStart.png"));
+    videoBtn->setIcon(QIcon(":/res/png2/topbar/videoCap.png"));
     videoBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    videoBtn->setStyleSheet("background-color:transparent; border:none;");
+    videoBtn->setStyleSheet(topToolBtnStyle);
     videoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     videoBtn->setAutoRaise(true);
 
     systemHaltBtn = new QToolButton(this);
     systemHaltBtn->setText(myLan.halt);
     systemHaltBtn->setIconSize(QSize(60, 60));
-    systemHaltBtn->setIcon(QIcon(":/res/png/shutDown.png"));
+    systemHaltBtn->setIcon(QIcon(":/res/png2/topbar/shutDown.png"));
     systemHaltBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    systemHaltBtn->setStyleSheet("background-color:transparent; border:none;");
+    systemHaltBtn->setStyleSheet(topToolBtnStyle);
     systemHaltBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     systemHaltBtn->setAutoRaise(true);
 
 
-    //    saveParamBtn = new myPushButton(myLan.save_parameterNew, QIcon(""),
-    //                                      true,false,this);
-    //    saveParamBtn->setFont(config->getFont(FONT_SIZE_16));
-    //    QString strStyle4 = QString("QPushButton {border-image: url(:/res/png/savePara.png);}");
-    //    saveParamBtn->setStyleSheet(strStyle4);
-
     saveParamBtn = new QToolButton(this);
     saveParamBtn->setText(myLan.save_parameterNew);
     saveParamBtn->setIconSize(QSize(60, 60));
-    saveParamBtn->setIcon(QIcon(":/res/png/savePara.png"));
+    saveParamBtn->setIcon(QIcon(":/res/png2/topbar/savePara.png"));
     saveParamBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    saveParamBtn->setStyleSheet("background-color:transparent; border:none;");
+    saveParamBtn->setStyleSheet(topToolBtnStyle);
     saveParamBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     saveParamBtn->setAutoRaise(true);
-
-    //    feedSwitchBtn = new myPushButton(myLan.working_stop, QIcon(""),
-    //                                      true,false,this);
-    //    feedSwitchBtn->setFont(config->getFont(FONT_SIZE_16));
-    //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);"
-    //                                "text-align:center}");
-    //    feedSwitchBtn->setStyleSheet(strStyle5);
 
     feedSwitchBtn = new QToolButton(this);
     feedSwitchBtn->setText(myLan.working_stop);
     feedSwitchBtn->setIconSize(QSize(80, 80));
-    feedSwitchBtn->setIcon(QIcon(":/res/png/workStart.png"));
+    feedSwitchBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
     feedSwitchBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    feedSwitchBtn->setStyleSheet("background-color:transparent; border:none;");
+    feedSwitchBtn->setStyleSheet(topToolBtnStyle);
     feedSwitchBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     feedSwitchBtn->setAutoRaise(true);
-    QPalette patlette;
-    patlette.setColor(QPalette::ButtonText, Qt::black);
-    feedSwitchBtn->setPalette(patlette);
 
     // 机器和工程师信息
 //    machineInfoBtn = new myPushButton(myLan.contact_us,myIcon.System_Contacts,
@@ -230,7 +242,7 @@ MainWidget::MainWidget(QWidget* parent)
     // 主堆栈页面
     stackedWidget = new QStackedWidget(this);
     stackedWidget->setFixedWidth(LCD_WIDTH - 10);
-    stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - 20);
+    stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 20);
 
     // 通信检测页面
     pageComm = new communication(this);
@@ -376,7 +388,7 @@ MainWidget::MainWidget(QWidget* parent)
     mainGridLayout = new QGridLayout(this);
     mainGridLayout->setContentsMargins(5, 10, 10, 10);
     mainGridLayout->setHorizontalSpacing(20);
-    mainGridLayout->setRowMinimumHeight(0, LCD_TITLE_HEIGHT - 10);
+    mainGridLayout->setRowMinimumHeight(0, TOPBAR_STATUS_HEIGHT);
     //    mainGridLayout->setRowMinimumHeight(4 ,LCD_TITLE_HEIGHT-10);
 
         /* 尺寸限制 */
@@ -431,23 +443,28 @@ MainWidget::MainWidget(QWidget* parent)
 
     mainGridLayout->addWidget(titleLabel, 0, 0, 1, 1);
 
-    mainGridLayout->addWidget(videoBtn, 0, 1, 1, 1);
+    mainGridLayout->addWidget(videoBtn, 0, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
 
     //      mainGridLayout->addWidget(leftBackGbx, 0, 0, 2, 3, Qt::AlignLeft);
     //      mainGridLayout->setSpacing(10);
-    mainGridLayout->addWidget(systemHaltBtn, 0, 2, 1, 1, Qt::AlignRight);
+    mainGridLayout->addWidget(systemHaltBtn, 0, 2, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
     //      mainGridLayout->setSpacing(2);
-    mainGridLayout->addWidget(saveParamBtn, 0, 3, 1, 1, Qt::AlignRight);
+    mainGridLayout->addWidget(saveParamBtn, 0, 3, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
     //      mainGridLayout->setSpacing(2);
-    mainGridLayout->addWidget(feedSwitchBtn, 0, 4, 1, 1, Qt::AlignRight);
+    mainGridLayout->addWidget(feedSwitchBtn, 0, 4, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
     //      mainGridLayout->setSpacing(2);
-    mainGridLayout->addWidget(statInfoBtn, 0, 6, 1, 1, Qt::AlignLeft);
+    mainGridLayout->addWidget(statInfoBtn, 0, 6, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
 
     mainGridLayout->addWidget(lineTitle, 1, 0, 1, 7);
     //    mainGridLayout->addWidget(pageHome, 2, 0, 1, 2);
     mainGridLayout->addWidget(stackedWidget, 2, 0, 7, 7, Qt::AlignTop);
     //    mainGridLayout->addWidget(lineStatus, 3, 0, 1, 2, Qt::AlignBottom);
     //    mainGridLayout->addLayout(downHboxLayout, 4, 0, 1, 2, Qt::AlignBottom);
+
+    // 运行态顶部实时状态栏：开始工作后覆盖顶部工具按钮，停止后还原
+    topBarStatus = new TopBarStatusWidget(this);
+    mainGridLayout->addWidget(topBarStatus, 0, 0, 1, 7);
+    connect(topBarStatus, SIGNAL(stopRequested()), this, SLOT(onFeedSwitchBtnClickedSlt()));
 
       // 警示框
     infoWidget = new myInfoWidget(this);
@@ -579,7 +596,7 @@ MainWidget::MainWidget(QWidget* parent)
     QTimer::singleShot(100, pageComm, SLOT(startComSlt()));
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back.png");
+    QPixmap pixmap(":/res/png/back_deep_clear.png");
     pixmap = pixmap.scaled(this->size());
 
     palette.setBrush(backgroundRole(), QBrush(pixmap));
@@ -704,7 +721,7 @@ void MainWidget::goToCommListPageSlt()
 void MainWidget::goToInitPageSlt()
 {
     this->stackedWidget->setCurrentIndex(SM_INIT_PAGE);
-    myFlow.sleep(2);
+    myFlow.msleep(150);
     emit goToInitPageSig();
 }
 
@@ -1133,14 +1150,37 @@ void MainWidget::CreateHomeWidget()
 //    operateListWidget->setMovement(QListView::Static);
 //    operateListWidget->setFixedWidth(BTN_WIDTH);
 
-    QString strStyle = QString("QPushButton {border-image: url(:/res/png/backSelect.png);text-align:center;}"
-        "QToolTip {border-image: url(:/res/png/backSelect.png);}"
-        //                               "QPushButton:hover {border-image: url(:/res/png/selectPress.png);}"
-        "QPushButton:pressed {border-image: url(:/res/png/selectPress.png);}");
+    // 方案D：底部 7 键采用点击动效贴图（9-slice：上下 8px、左右 16px 固定，中段拉伸）
+    QString strStyle = QString(
+        "QPushButton {"
+        "  text-align: center;"
+        "  outline: none;"
+        "  border-width: 8px 16px 8px 16px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
+        "  color: #E8F6FF;"
+        "  font-size: 16px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:pressed {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:checked {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:disabled {"
+        "  border-image: url(:/res/png2/button/btn_disabled.png) 8 16 8 16 stretch stretch;"
+        "  color: #5A7686;"
+        "}"
+    );
 
-
-    //    QString strStyle  = QString("QPushButton {border-image: url(:/res/png/backSelect.png);}"
-    //                                "QToolTip {border-image: url(:/res/png/backSelect.png);}");
     for (int i = 0; i < 7; i++)
     {
         operateButton[i] = new myPushButton(QString(""), QIcon(), pageHome);
@@ -1187,7 +1227,7 @@ void MainWidget::CreateHomeWidget()
 
     homePageStackedWidget = new QStackedWidget(pageHome);
     homePageStackedWidget->setMaximumWidth(LCD_WIDTH - 10);
-    homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 110);
+    homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 60);
     homePageStackedWidget->setContentsMargins(leftMargin, 0, leftMargin, 0);
     // 样本选择页面
     pageManageScheme = new ManageSchemePage(pageHome);
@@ -1362,15 +1402,15 @@ void MainWidget::CreateHomeWidget()
 
 
         /* 槽函数 */
-    connect(operateButton[0], SIGNAL(pressed()), this, SLOT(onManageSchemeBtnClickedSlt()));
-    connect(operateButton[1], SIGNAL(pressed()), this, SLOT(onSetSensBtnClickedSlt()));    // 感度调节按钮 
-    connect(operateButton[2], SIGNAL(pressed()), this, SLOT(onSetFeedBtnClickedSlt()));
+    connect(operateButton[0], SIGNAL(clicked()), this, SLOT(onManageSchemeBtnClickedSlt()));
+    connect(operateButton[1], SIGNAL(clicked()), this, SLOT(onSetSensBtnClickedSlt()));    // 感度调节按钮 
+    connect(operateButton[2], SIGNAL(clicked()), this, SLOT(onSetFeedBtnClickedSlt()));
 
-    connect(operateButton[3], SIGNAL(pressed()), this, SLOT(onTestEjectBtnClickedSlt()));
-    connect(operateButton[4], SIGNAL(pressed()), this, SLOT(onSetWipeBtnClickedSlt()));
-    connect(operateButton[5], SIGNAL(pressed()), this, SLOT(onSchemeParamBtnClickedSlt()));
+    connect(operateButton[3], SIGNAL(clicked()), this, SLOT(onTestEjectBtnClickedSlt()));
+    connect(operateButton[4], SIGNAL(clicked()), this, SLOT(onSetWipeBtnClickedSlt()));
+    connect(operateButton[5], SIGNAL(clicked()), this, SLOT(onSchemeParamBtnClickedSlt()));
 
-    connect(operateButton[6], SIGNAL(pressed()), this, SLOT(onOprTypeBtnClickedSlt()));
+    connect(operateButton[6], SIGNAL(clicked()), this, SLOT(onOprTypeBtnClickedSlt()));
 
     connect(homePageStackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onHomePageStackedWidgetIndexChangedSlt(int)));
 
@@ -1690,7 +1730,7 @@ void MainWidget::onHomePageStackedWidgetIndexChangedSlt(int index)
     {
     case HIGH_SET_OPR_PAGE_INDEX:
     case HIGH_SET_AI_PAGE_INDEX:
-        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 60);
+        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 10);
         for (int i = 0; i < 7; i++)
         {
             operateButton[i]->hide();
@@ -1698,7 +1738,7 @@ void MainWidget::onHomePageStackedWidgetIndexChangedSlt(int index)
         lineStatus->setHidden(true);
         break;
     default:
-        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 110);
+        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 60);
         for (int i = 0; i < 7; i++)
         {
             operateButton[i]->show();
@@ -1803,14 +1843,10 @@ void MainWidget::onSetFeedBtnClickedSlt()
 {
     LOG_INFO_STM("xk333333333333");
     this->homePageStackedWidget->setCurrentIndex(HOME_FEED_PAGE_INDEX);
-    if (struCnfe.nEnableCGMachine == 1)
-    {
-        pageSetFeedRS->updatePage();
-    }
-    else
-    {
-        updateFeederPage();
-    }
+    // 供料页面只有 setFeedPage（pageSetFeedRS）被创建并加入堆栈；
+    // 旧机型使用的 pageSetFeed/updateFeederPage() 已随 CreateSetFeedWidget() 一起停用，
+    // 若继续走 updateFeederPage() 会访问从未构造的 feedLbe[]/feedLabel[] 野指针导致崩溃。
+    pageSetFeedRS->updatePage();
 }
 /**
  * @brief MainWidget::onSetSensBtnClickedSlt
@@ -2090,6 +2126,12 @@ void MainWidget::TimeOutSlt()
 {
     QDateTime time = QDateTime::currentDateTime();
     statInfoBtn->setText(time.toString("yyyy-MM-dd\n hh:mm:ss"));
+
+    //! 供料状态可能由主屏同步或报警流程改变，这里兜底同步顶部状态栏
+    if (topBarStatus != 0 && topBarStatus->isRunning() != (struGsh.bStatFeed == MODE_OPEN))
+    {
+        topBarStatus->setRunning(struGsh.bStatFeed == MODE_OPEN);
+    }
     if ((struCnfg.nAlarmEnable[ALARM_ID_PRESSURE] == 1 && ((struGsh.bAlarmPressure & 0x03) != 0))
         || (struCnfg.nAlarmEnable[ALARM_ID_BLOWER] == 1 && struGsh.bAlarmBlower == 1)
         || (struCnfg.nAlarmEnable[ALARM_ID_BELT] == 1 && struGsh.bStatBelt[0] == 1)
@@ -2901,7 +2943,7 @@ void MainWidget::onCloseFeederSlt(int trigger)
     //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStart.png);}");
     //    feedSwitchBtn->setStyleSheet(strStyle5);
     feedSwitchBtn->setText(myLan.working_stop);
-    feedSwitchBtn->setIcon(QIcon(":/res/png/workStart.png"));
+    feedSwitchBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
 
     QPalette patlette;
     patlette.setColor(QPalette::ButtonText, Qt::black);
@@ -2924,6 +2966,12 @@ void MainWidget::onCloseFeederSlt(int trigger)
         QByteArray args;
         args.append(MODE_CLOSE);
         myDevMonitor->writeDatagram(CMD_SCREEN_FEED_CONTROL, args, strNetInfo.groupAddress, strNetInfo.selfNetControlPort);
+    }
+
+    //! 顶部状态栏退出运行态，恢复工具按钮
+    if (topBarStatus != 0)
+    {
+        topBarStatus->setRunning(false);
     }
 }
 
@@ -2996,7 +3044,7 @@ void MainWidget::onOpenFeederSlt(int trigger)
     feedSwitchBtn->setText(myLan.working_start);
     //    QString strStyle5 = QString("QPushButton {border-image: url(:/res/png/workStop.png);}");
     //    feedSwitchBtn->setStyleSheet(strStyle5);
-    feedSwitchBtn->setIcon(QIcon(":/res/png/workStop.png"));
+    feedSwitchBtn->setIcon(QIcon(":/res/png2/topbar/workStop.png"));
     QPalette patlette;
     patlette.setColor(QPalette::ButtonText, Qt::red);
     feedSwitchBtn->setPalette(patlette);
@@ -3009,6 +3057,12 @@ void MainWidget::onOpenFeederSlt(int trigger)
     if (struCnfe.nEnableBeanMachine == 1)
     {
         struGsh.enableJudgeBeanMachine = true;
+    }
+
+    //! 顶部状态栏进入运行态，显示实时状态与停止按钮
+    if (topBarStatus != 0)
+    {
+        topBarStatus->setRunning(true);
     }
 }
 
@@ -3662,16 +3716,16 @@ void MainWidget::onFunctionKeyChangedSlt(int index)
 void MainWidget::onStackedWidgetIndexChangedSlt(int index)
 {
     QString title;
-    stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - LCD_STATUS_HEIGHT - 10);
+    stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - LCD_STATUS_HEIGHT - 10);
     // 恢复标题栏行默认最小高度（AiModelSet 全屏页除外，见下方 case 置 0）
-    mainGridLayout->setRowMinimumHeight(0, LCD_TITLE_HEIGHT - 10);
+    mainGridLayout->setRowMinimumHeight(0, TOPBAR_STATUS_HEIGHT);
     switch (index)
     {
         //    case SM_AI_PAGE:
         ////    case SM_SCHEME_PARAM_PAGE:
     case SM_VIDEO_PAGE:
         //    case SM_AUTO_ANALYSIS_PAGE:
-        stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT);
+        stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT);
         break;
         //    case SM_SET_FACTORY:
         //        stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT);
@@ -3683,7 +3737,7 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
         stackedWidget->setFixedHeight(LCD_HEIGHT);
         break;
     default:
-        stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - 20);
+        stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 20);
         break;
     }
 
@@ -3768,6 +3822,16 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
 
         /* function key */
     onFunctionKeyChangedSlt(index);
+
+    // 运行态顶部状态栏：全屏页面隐藏，其余页面在运行期间保持显示
+    if (topBarStatus != 0 && topBarStatus->isRunning())
+    {
+        const bool full_screen = (index == SM_AI_PAGE
+                                  || index == SM_VIDEO_PAGE
+                                  || index == SM_AI_MODEL_SET_PAGE
+                                  || index == SM_AUTO_ANALYSIS_PAGE);
+        topBarStatus->setVisible(!full_screen);
+    }
 }
 
 /*!

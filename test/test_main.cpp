@@ -23,6 +23,8 @@
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
 #include "aihelper.h"
+#include "configmgr.h"
+#include "aicommunicate.h"
 
 /* ------------------------------------------------------------------ */
 /*  基础宏                                                             */
@@ -372,9 +374,6 @@ static int test_grey_a_front_rear()
     /* ---- 1. 开 GREY_A 算法使能 ---- */
     LOG_TAG("  [G6] GREY_A enable=1...");
     struCnfp.nArithmeticEnable[ARITH_GREY_A] = 1;
-    for (int lv = 0; lv < MAX_LEVEL; lv++)
-        for (int g = 0; g < MAX_GROUP_IDTNTIFY; g++)
-            struCnfp.nArithmeticEnableGroup[lv][g][ARITH_GREY_A] = 1;
 
     /* ---- 2. 设给料器速度 = 40% ---- */
     LOG_TAG("  [G6] Feeder=400 (40%) + enable=1 ...");
@@ -407,10 +406,9 @@ static int test_grey_a_front_rear()
     }
 
     /* 打印关键参数 */
-    LOG_TAG(QString("  [G6] nMatAssembleMode=%1 GREY_A=%2 enableAi=%3")
+    LOG_TAG(QString("  [G6] nMatAssembleMode=%1 GREY_A=%2")
         .arg(struCnfp.nMatAssembleMode)
-        .arg(struCnfp.nArithmeticEnable[ARITH_GREY_A])
-        .arg(struCnfp.enableAi));
+        .arg(struCnfp.nArithmeticEnable[ARITH_GREY_A]));
     {
         stu_grey_color& g0 = struCnfp.struGroupIdentify[0][0].struGreyColor[ARITH_GREY_A];
         stu_grey_color& g1 = struCnfp.struGroupIdentify[0][1].struGreyColor[ARITH_GREY_A];
@@ -428,16 +426,8 @@ static int test_grey_a_front_rear()
             .arg(g0.nMode).arg(g1.nMode));
     };
 
-    /* ---- 下发前: 验证 getArithEnable 能读到我们设的 GREY_A=1 ---- */
-    {
-        int ae_before = myFlow.getArithEnable(0, 0, ARITH_GREY_A);
-        int ae_group1 = myFlow.getArithEnable(0, 1, ARITH_GREY_A);
-        LOG_TAG(QString("  [G7-DBG] getArithEnable(0,0,GREY_A)=%1  getArithEnable(0,1,GREY_A)=%2 (期望两个都是1)")
-            .arg(ae_before).arg(ae_group1));
-        LOG_TAG(QString("  [G7-DBG] 内存 nArithmeticEnableGroup[0][0][GREY_A]=%1  [0][1][GREY_A]=%2")
-            .arg(struCnfp.nArithmeticEnableGroup[0][0][ARITH_GREY_A])
-            .arg(struCnfp.nArithmeticEnableGroup[0][1][ARITH_GREY_A]));
-    }
+    /* ---- 下发前: 直接读 nArithmeticEnable ---- */
+    LOG_TAG(QString("  [G7-DBG] nArithmeticEnable[GREY_A]=%1").arg(struCnfp.nArithmeticEnable[ARITH_GREY_A]));
 
     /* ---- 下发 + 开料 ---- */
     LOG_TAG("  initSendAllParams...");
@@ -489,6 +479,182 @@ static int test_grey_a_front_rear()
 /* ------------------------------------------------------------------ */
 /*  main                                                               */
 /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/*  Test 7 - AI 图像采集链路诊断                                       */
+/*    目的: 验证 "相机板 → AI 板" 图像数据通道是否打通                  */
+/*                                                                     */
+/*    完整命令序列 (完全模仿主程序 startAiCollect):                      */
+/*                                                                     */
+/*    Step 0. 强制 enableAi + ARITH_PISTACHIO 门控通过                  */
+/*    Step 1. initSendAllParams()  → initEjectorModePara / JetsParam   */
+/*    Step 2. [可选] 手动补发给 AI 板子 ValveModeParam / JetsParam       */
+/*    Step 3. UDP CmdUdpManager → ImgCollectRequest(start=1, num=N)    */
+/*           (通知 AI 板子准备接收 N 张图)                              */
+/*    Step 4. com1Write CMD_UNIT_AI_CAPTURE_ENABLE(0x110) arg8=1      */
+/*           (告诉每个相机板: 开始采集并通过UDP发给AI板子)              */
+/*    Step 5. sleep(N 秒, 等采集完成)                                   */
+/*    Step 6. com1Write CMD_UNIT_AI_CAPTURE_ENABLE(0x110) arg8=0      */
+/*           (告诉相机板停止采集)                                       */
+/*    Step 7. UDP CmdUdpManager → ImgCollectRequest(start=0)           */
+/*           (通知 AI 板子停止接收)                                     */
+/*                                                                     */
+/*    关键寄存器:                                                       */
+/*      struCnfp.enableAi = true                门控 startAiWorker      */
+/*      ConfigMgr::SetEnableAcquisition(true)   让 startAiWorker       */
+/*                                              走 Collect 分支        */
+/*      ConfigMgr::SetCollPicNum(1000)          采集张数                */
+/*                                                                     */
+/*    现象判断:                                                         */
+/*      [OK] sorter.log 看到 CMD_UNIT_AI_CAPTURE_ENABLE 帧             */
+/*           + UDP ImgCollectRequest 发送成功 (ok=true, code=0)       */
+/*           + AI 板指示有图像接收 → 链路通了                           */
+/*      [FAIL] AI 板没收到数据 → FPGA 固件问题 (0x110 没实现)          */
+/*                                                                     */
+/*    用法:  ./test_arm 7   [collect 模式, 采集 num=1000 张, 30秒]     */
+/*           ./test_arm 7 500 3  [collect 500张, 等3秒]                */
+/* ------------------------------------------------------------------ */
+static int test_ai_image_collect(int numPics = 1000, int waitSec = 30)
+{
+    LOG_TAG("========== Test 7: AI 图像采集链路 ==========");
+    LOG_TAG(QString("参数: numPics=%1, waitSec=%2").arg(numPics).arg(waitSec));
+
+    /* ── S0: 强制 AI 门控通过 + 覆盖板卡配置 ──
+     * 板卡上配置文件不一定对, test_arm 自己硬编码正确值:
+     *   1块接口板, 2块相机板(AI板), 第0组
+     */
+    struCnfg.nEnableAI = 1;
+    struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = 1;
+
+    struCnfg.nInterfaceBoardTotal = 1;
+    struCnfg.nCtrlBoardTotal      = 1;
+    struCnfg.nLevelTotal          = 1;
+    struGsh.nLevel                = 0;
+
+    // 关键: 2 块相机板
+    struCnfg.struLevelInfo[0].nUnitLevelTotal  = 2;
+    struCnfg.struLevelInfo[0].nIdentifyGroupTotal = 1;
+    struCnfg.struLevelInfo[0].struIdentifyGroupInfo[0].nUnitCount = 2;
+    struCnfg.struLevelInfo[0].struIdentifyGroupInfo[0].nUnitId[0] = 0;
+    struCnfg.struLevelInfo[0].struIdentifyGroupInfo[0].nUnitId[1] = 1;
+
+    // AI 板 IP (由 GetAiIpByIndex 宏生成, 不用改): 192.168.4.126 + idx
+    LOG_TAG("[S0] aiEnable=1 PISTACHIO=1 接口板=1 相机板=2 AI板=2 IP=192.168.4.126/127");
+
+    /* ── S1: initSendAllParams() ──
+     * 主程序完整启动序列, 初始化所有串口参数 + 相机板参数
+     * sendAllParamsRgb() 已回滚 initInterfaceTransMode(0), 不会把 FPGA 切串口模式
+     */
+    myFlow.initSendAllParams();
+    LOG_TAG("[S1] initSendAllParams OK");
+
+    /* ── S2: initUdpImagPara() ──
+     * 给所有 AI 板发图像高度 (collect_height/infer_height/video_height/sliding_step)
+     * AI 板必须知道 FPGA 推多少行才好收图!
+     */
+    myFlow.initUdpImagPara();
+    LOG_TAG("[S2] initUdpImagPara OK (ImgHeightRequest → 所有 AI 板)");
+
+    /* ── S3: ONOFF arg8=1 → 接口板 + 所有相机板启动 ── */
+    for (int i = 0; i < struCnfg.nInterfaceBoardTotal; i++) {
+        MySerial.com1Write(CMD_INT_ONOFF, INT, i, 0, 0, 0, 0, 0, 1, 3);
+    }
+    for (int i = 0; i < struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal; i++) {
+        MySerial.com1Write(CMD_UNIT_ONOFF, UNIT, struGsh.nLevel, i, 0, 0, 0, 0, 1, 3);
+    }
+    LOG_TAG("[S3] ONOFF arg8=1 → 接口板 + 所有相机板");
+    myFlow.msleep(500);
+
+    /* ── S4: AI 状态查询 BEFORE ── */
+    {
+        int aiBoards = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal;
+        for (int idx = 0; idx < aiBoards; idx++) {
+            QString ip = ai_helper::GetAiIpByIndex(idx);
+            QHostAddress addr(ip);
+            QByteArray req = cmdworker::AiStatusRequest();
+            QByteArray rep;
+            bool ok = CmdUdpManager::instance().onSendCommand(addr, AI_UPD_CMD_PORT, req, rep, AI_RESPONSE_TIMEOUT);
+            CmdPackage pkg;
+            bool parse_ok = cmdworker::ParseCmdPkg(rep, pkg);
+            AiStatusInfo info = cmdworker::AiStatusResponse(pkg);
+            LOG_TAG(QString("[S4 BEFORE] AI[%1]=%2 ok=%3 discard=%4 cost=%5 timeout=%6")
+                .arg(idx).arg(ip).arg(ok).arg(info.discard_num_).arg(info.ai_cost_).arg(info.timeout_num_));
+        }
+    }
+
+    /* ── S5: UDP ImgCollectRequest(start=1, num=N) → 通知 AI 板准备收图 ── */
+    {
+        ImgCollectParam imgp;
+        imgp.start_ = 1;
+        imgp.num_ = numPics;
+        QByteArray req = cmdworker::ImgCollectRequest(imgp);
+        int aiBoards = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal;
+        for (int idx = 0; idx < aiBoards; idx++) {
+            QString ip = ai_helper::GetAiIpByIndex(idx);
+            QHostAddress addr(ip);
+            QByteArray rep;
+            bool ok = CmdUdpManager::instance().onSendCommand(addr, AI_UPD_CMD_PORT, req, rep, AI_RESPONSE_TIMEOUT);
+            LOG_TAG(QString("[S5] ImgCollectRequest(start=1, num=%1) → AI[%2]=%3 ok=%4")
+                .arg(numPics).arg(idx).arg(ip).arg(ok));
+        }
+        myFlow.msleep(200);
+    }
+
+    /* ── S6: com1 0x110 arg8=1 → 组内广播 (Byte3=0x20) ──
+     * cmd_1104 抓包里主程序就是用 Byte3=0x20 组内广播所有相机板
+     * 触发 FPGA→AI 板 eth0 推图
+     */
+    MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 1, 3);
+    LOG_TAG(QString("[S6] 0x110 arg8=1 → 组%1 广播所有相机板 (Byte3=0x20)").arg(struGsh.nLevel));
+
+    /* ── S7: 等待 FPGA 推图 → AI 板收图 ── */
+    LOG_TAG(QString("[S7] 等待 %1 秒, FPGA→AI 板 eth0 推图...").arg(waitSec));
+    for (int s = 1; s <= waitSec; s++) {
+        myFlow.msleep(1000);
+        if (s % 5 == 0) LOG_TAG(QString("  tick %1/%2").arg(s).arg(waitSec));
+    }
+
+    /* ── S8: com1 0x110 arg8=0 → 组内广播关采集 ── */
+    MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 0, 3);
+    LOG_TAG(QString("[S8] 0x110 arg8=0 → 组%1 广播关采集").arg(struGsh.nLevel));
+
+    /* ── S9: UDP ImgCollectRequest(start=0) → AI 板停收 ── */
+    {
+        ImgCollectParam imgp;
+        imgp.start_ = 0;
+        imgp.num_ = numPics;
+        QByteArray req = cmdworker::ImgCollectRequest(imgp);
+        int aiBoards = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal;
+        for (int idx = 0; idx < aiBoards; idx++) {
+            QString ip = ai_helper::GetAiIpByIndex(idx);
+            QHostAddress addr(ip);
+            QByteArray rep;
+            bool ok = CmdUdpManager::instance().onSendCommand(addr, AI_UPD_CMD_PORT, req, rep, AI_RESPONSE_TIMEOUT);
+            LOG_TAG(QString("[S9] ImgCollectRequest(start=0) → AI[%1]=%2 ok=%3").arg(idx).arg(ip).arg(ok));
+        }
+    }
+
+    /* ── S10: AI 状态查询 AFTER ── */
+    {
+        int aiBoards = struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal;
+        for (int idx = 0; idx < aiBoards; idx++) {
+            QString ip = ai_helper::GetAiIpByIndex(idx);
+            QHostAddress addr(ip);
+            QByteArray req = cmdworker::AiStatusRequest();
+            QByteArray rep;
+            bool ok = CmdUdpManager::instance().onSendCommand(addr, AI_UPD_CMD_PORT, req, rep, AI_RESPONSE_TIMEOUT);
+            CmdPackage pkg;
+            bool parse_ok = cmdworker::ParseCmdPkg(rep, pkg);
+            AiStatusInfo info = cmdworker::AiStatusResponse(pkg);
+            LOG_TAG(QString("[S10 AFTER] AI[%1]=%2 ok=%3 discard=%4 cost=%5 timeout=%6")
+                .arg(idx).arg(ip).arg(ok).arg(info.discard_num_).arg(info.ai_cost_).arg(info.timeout_num_));
+        }
+    }
+
+    LOG_TAG("========== Test 7 结束 ==========");
+    LOG_TAG("判定: BEFORE discard=0, AFTER discard 有涨 → FPGA→AI 板 eth0 推图通了!");
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     /* QCoreApplication 依赖 Qt 事件循环 (串口通信需要) */
@@ -511,6 +677,21 @@ int main(int argc, char *argv[])
     {
         int ret = myFlow.initCommunication();
         LOG_TAG(QString("initCommunication ret=%1 (0=ok, 1=有通信错误)").arg(ret));
+        // [新增] 打印自动探测到的串口波特率
+        for (int i = 0; i < struCnfg.nInterfaceBoardTotal; i++) {
+            LOG_TAG(QString("  ⚡ intBaud[%1] = %2 %3")
+                .arg(i)
+                .arg(struGsh.nIntBaud[i])
+                .arg(struGsh.nIntBaud[i] == MY_UARTBAUD_921600 ? "(matched 921600)"
+                    : (struGsh.nIntBaud[i] == MY_UARTBAUD_115200 ? "(matched 115200)" : "(未知)")));
+        }
+        for (int i = 0; i < struCnfg.nCtrlBoardTotal; i++) {
+            LOG_TAG(QString("  ⚡ ctrlBaud[%1] = %2 %3")
+                .arg(i)
+                .arg(struGsh.nCtrlBaud[i])
+                .arg(struGsh.nCtrlBaud[i] == MY_UARTBAUD_921600 ? "(matched 921600)"
+                    : (struGsh.nCtrlBaud[i] == MY_UARTBAUD_115200 ? "(matched 115200)" : "(未知)")));
+        }
     }
     LOG_TAG("调用 myFlow.initAiCommunication() AI 板版本查询 (即使 enableAi=false 也无害)...");
     {
@@ -526,16 +707,19 @@ int main(int argc, char *argv[])
     {
         bool ok;
         mode = QString(argv[1]).toInt(&ok);
-        if (!ok || mode < 1 || mode > 6)
+        if (!ok || mode < 1 || mode > 7)
         {
-            LOG_TAG(QString("Usage: %1 [1|2|3|4|5|6]\n"
-                            "  1 = AI 板子测阀 (UDP FixCheck → 192.168.4.126)\n"
+            LOG_TAG(QString("Usage: %1 [1-7] [extra...]\n"
+                            "  1 = AI 板子测阀 (UDP FixCheck)\n"
                             "  2 = 强制单色1开料10秒\n"
                             "  3 = 先 AI 测阀再单色1\n"
                             "  4 = 只读诊断, 不碰硬件 (默认)\n"
                             "  5 = Direct 串口测阀 (com1 CMD_INT_EJTEST)\n"
-                            "  6 = 前后视独立 GREY_A (前视蓝低100% / 后视蓝低0%)\n"
-                            "      + 供料40% + 开料10秒 (无测阀, 直接功能测试)").arg(argv[0]));
+                            "  6 = 前后视独立 GREY_A + 供料40% + 开料10秒\n"
+                            "  7 = AI 图像采集链路诊断 (collect模式, 默认1000张/30秒)\n"
+                            "      用法: ./test_arm 7 [numPics] [waitSec]\n"
+                            "      例: ./test_arm 7        (1000张, 等30秒)\n"
+                            "          ./test_arm 7 500 10 (500张, 等10秒)").arg(argv[0]));
             return 1;
         }
     }
@@ -553,147 +737,46 @@ int main(int argc, char *argv[])
      * ValveModeParam.mode 语义: 1=AI接管喷阀  2=传统(FPGA接口板)  3=混合
      * mode=5 Direct 串口测阀时, AI 板子必须保持默认"传统模式"(不发 ValveModeParam)
      *   否则 AI 板子会优先接管喷阀硬件, Direct 串口帧被无视 -> 不响!
-     *   这是主程序 mainwidget.cpp:3415 的分叉逻辑:
-     *     if (!struCnfp.enableAi)  → Direct 串口 (此时 initEjectorModePara 门控不发 ValveModeParam)
-     *     else                     → AI 板子 UDP FixCheck
+     * mode=6 同上, 也走 Direct 串口
+     * mode=7 AI 采集测试 → 必须发 0x03 (AI+传统都开), 不能强制切传统!
      * ------------------------------------------------------------------ */
-    /* mode=5 或 mode=6: Direct 串口路径 (不走 AI 板子 UDP 喷阀) */
-    if (mode != 5 && mode != 6)
-    {
-    /* ---- 关键: 启动 AI 采集 + 让 FPGA/接口板进入工作态 ----
-     * 远程 merge 后 startAiInfer / initEjectorModePara / initEjectorDelayPara
-     * 的门控条件都从 ConfigMgr::GetAiCfgInfo().enable_ai_ 改成了
-     * struCnfp.enableAi (方案文件读取). 板卡上残缺方案 enableAi 默认 0,
-     * 加上 ARITH_PISTACHIO=0, 新版门控直接 return 了,
-     * AI 采集帧 / ValveModeParam / JetsParam 全部没发!
-     * 这里手动强制打开.
-     */
-    struCnfp.enableAi = true;
-    struCnfp.nArithmeticEnable[ARITH_PISTACHIO] = 1;
-    struCnfp.nArithmeticEnable[ARITH_GREY_A]   = 1;   // 让 initEjectorModePara 的 model 含 TRADITIONAL 位
-    LOG_TAG(QString("强制门控通过: enableAi=%1 PISTACHIO=%2 GREY_A=%3")
-        .arg(struCnfp.enableAi).arg(struCnfp.nArithmeticEnable[ARITH_PISTACHIO])
-        .arg(struCnfp.nArithmeticEnable[ARITH_GREY_A]));
-
-    LOG_TAG("下发完整方案参数 (initSendAllParams) ...");
-    LOG_TAG("  -> 内部会调 initEjectorModePara (UDP ValveModeParam 给 AI 板子)");
-    LOG_TAG("  -> 内部会调 initEjectorDelayPara  (UDP JetsParam 给 AI 板子)");
-    myFlow.initSendAllParams();
-    LOG_TAG("方案参数下发完成 (AI 板子喷阀模式已就绪)");
-
-    /* ---- 关键补丁: 残缺方案导致 initSendAllParams 内部
-     *   initEjectorModePara / initEjectorDelayPara 的 for 循环
-     *   (依赖 nTickGroupTotal / nIdentifyGroupTotal) 根本没迭代!
-     *   = ValveModeParam 和 JetsParam 一条都没发给 AI 板子.
-     *   这里手动补发给所有 AI 板子 (126/127, 按 dev_no*2 共 2 块前视).
-     *
-     *   单位注意: blow_time_ / fixed_delay_ / dynamics_delay_ 都是 0.1 ms 单位!
-     */
-    {
-        ValveModeParam vmp;
-        vmp.mode_ = MODEL_VAVLE_AI | MODEL_VALVE_TRADITIONAL;   // 0x03: AI + 传统都开
-
-        JetsParam jp;
-        jp.jets_num_       = (quint8)qMax((int)struCnfg.nEjectorsPerChute, 12);
-        jp.blow_time_      = 50;    // 5.0 ms 吹气时间
-        jp.fixed_delay_    = 10;    // 1.0 ms 固定延时
-        jp.dynamics_delay_ = 0;     // 0 ms 动态延时
-
-        int aiBoards = 2;           // dev_no 0 和 1, 前视板子 index = dev_no*2
-        for (int d = 0; d < aiBoards; d++)
-        {
-            QString ip = ai_helper::GetAiIpByIndex(d * 2);
-            QHostAddress addr(ip);
-
-            /* ValveModeParam */
-            QByteArray vmp_req = cmdworker::ValveModeParamRequest(vmp);
-            QByteArray vmp_rep;
-            bool vmp_ok = CmdUdpManager::instance().onSendCommand(
-                addr, AI_UPD_CMD_PORT, vmp_req, vmp_rep, AI_RESPONSE_TIMEOUT);
-            LOG_TAG(QString("  [补] ValveModeParam → %1 ok=%2 mode=0x%3 req=%4 rep=%5")
-                .arg(ip).arg(vmp_ok).arg(vmp.mode_, 2, 16, QChar('0'))
-                .arg(QString(vmp_req.toHex(' ').toUpper()))
-                .arg(QString(vmp_rep.toHex(' ').toUpper())));
-
-            /* JetsParam */
-            QByteArray jp_req = cmdworker::JetsParamRequest(jp);
-            QByteArray jp_rep;
-            bool jp_ok = CmdUdpManager::instance().onSendCommand(
-                addr, AI_UPD_CMD_PORT, jp_req, jp_rep, AI_RESPONSE_TIMEOUT);
-            LOG_TAG(QString("  [补] JetsParam → %1 ok=%2 jets=%3 blow=5.0ms delay=1.0ms req=%4 rep=%5")
-                .arg(ip).arg(jp_ok).arg(jp.jets_num_)
-                .arg(QString(jp_req.toHex(' ').toUpper()))
-                .arg(QString(jp_rep.toHex(' ').toUpper())));
-        }
-    }
-
-    /* 诊断: 强制打印 initEjectorModePara / initEjectorDelayPara 依赖的循环计数 */
-    {
-        const int tgTotal = struCnfg.struLevelInfo[0].nTickGroupTotal;
-        const int idTotal = struCnfg.struLevelInfo[0].nIdentifyGroupTotal;
-        LOG_TAG(QString("[DIAG] nLevelTotal=%1 nTickGroupTotal=%2 nIdentifyGroupTotal=%3")
-            .arg(struCnfg.nLevelTotal).arg(tgTotal).arg(idTotal));
-        for (int j = 0; j < qMax(tgTotal, idTotal); j++) {
-            int tgUnitCnt = (j < tgTotal) ? struCnfg.struLevelInfo[0].struTickGroupInfo[j].nUnitCount : -1;
-            int idUnitCnt = (j < idTotal) ? struCnfg.struLevelInfo[0].struIdentifyGroupInfo[j].nUnitCount : -1;
-            LOG_TAG(QString("[DIAG] group[%1]: tgUnitCnt=%2 idUnitCnt=%3")
-                .arg(j).arg(tgUnitCnt).arg(idUnitCnt));
-        }
-    }
-
-    LOG_TAG("启动 AI 采集 (startAiInfer)...");
-    myFlow.startAiInfer();
-    myFlow.msleep(300);
-    LOG_TAG("AI 采集已启动");
-
-    LOG_TAG("下发 CMD_INT_ONOFF/CMD_UNIT_ONOFF 让接口板进入工作态...");
-    for (int i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
-    {
-        MySerial.com1Write(CMD_INT_ONOFF, INT, i, 0, 0, 0, 0, 0, 1, 3);
-    }
-    for (int i = 0; i < struCnfg.nLevelTotal; i++)
-    {
-        for (int j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
-        {
-            int nAddr = struCnfg.struLevelInfo[i].nUnitId[j];
-            MySerial.com1Write(CMD_UNIT_ONOFF, UNIT, i, nAddr, 0, 0, 0, 0, 1, 3);
-        }
-    }
-    myFlow.msleep(300);
-    LOG_TAG("工作态已下发, 板子现在能响应喷阀/检测");
-    }
-    else
+    /* mode=5/6 Direct 串口才强制切传统; mode=7 走上面 initSendAllParams 发 0x03 的分支 */
+    if (mode == 5 || mode == 6)
     {
         /* mode=5 Direct 串口: 让 AI 板子强制切换到"传统模式"(mode=2),
-         * 防止上一次 mode=1 跑过 AI+传统混合(mode=0x03)后残留,
-         * 导致 AI 板子优先接管喷阀硬件, Direct 串口被无视!
-         *
-         * ValveModeParam.mode 语义: 1=AI接管喷阀  2=传统(FPGA接口板)  3=混合
+         * 防止 AI 板子优先接管喷阀硬件, Direct 串口帧被无视!
          */
         {
             ValveModeParam vmp;
-            vmp.mode_ = MODEL_VALVE_TRADITIONAL;   // 0x02: 切回传统模式, 让 FPGA 接管
+            vmp.mode_ = MODEL_VALVE_TRADITIONAL;   // 0x02
 
             for (int d = 0; d < 2; d++)
             {
                 QString ip = ai_helper::GetAiIpByIndex(d * 2);
                 QHostAddress addr(ip);
-
                 QByteArray vmp_req = cmdworker::ValveModeParamRequest(vmp);
                 QByteArray vmp_rep;
                 bool vmp_ok = CmdUdpManager::instance().onSendCommand(
                     addr, AI_UPD_CMD_PORT, vmp_req, vmp_rep, AI_RESPONSE_TIMEOUT);
-                LOG_TAG(QString("[Direct 模式] 强制 ValveModeParam→传统(0x02) → %1 ok=%2 rep_len=%3")
-                    .arg(ip).arg(vmp_ok).arg(vmp_rep.size()));
+                LOG_TAG(QString("[Direct 模式] ValveModeParam→传统(0x02) → %1 ok=%2").arg(ip).arg(vmp_ok));
             }
         }
-        myFlow.msleep(100);
-
-        LOG_TAG("[Direct 模式] 发送 CMD_INT_ONOFF 让接口板进入工作态...");
+        /* mode=5/6 ONOFF + 启动 */
         for (int i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
             MySerial.com1Write(CMD_INT_ONOFF, INT, i, 0, 0, 0, 0, 0, 1, 3);
-        myFlow.msleep(200);
-        LOG_TAG("[Direct 模式] 接口板已就绪, AI 板子已切回传统模式");
+        for (int i = 0; i < struCnfg.nLevelTotal; i++)
+            for (int j = 0; j < struCnfg.struLevelInfo[i].nUnitLevelTotal; j++)
+                MySerial.com1Write(CMD_UNIT_ONOFF, UNIT, i, struCnfg.struLevelInfo[i].nUnitId[j], 0, 0, 0, 0, 1, 3);
+        myFlow.msleep(300);
+        LOG_TAG("mode=5/6 Direct 模式 ONOFF 已下发");
+    }
+    else
+    {
+        /* mode=7 等 AI 板稳定: ValveMode/Jets → Collect 之间必须留 gap!
+         * 主程序成功案例日志: ValveMode 02:03:43.657 → Collect 02:03:44.173, 差 504ms!
+         */
+        myFlow.msleep(800);
+        LOG_TAG("mode=7: initSendAllParams 后等 800ms 让 AI 板稳定");
     }
 
     /* 任何非 mode=4 模式都先打印一次方案加载后的真实使能态 */
@@ -723,10 +806,23 @@ int main(int argc, char *argv[])
             return 1;
     }
 
-    /* mode 1/2/3/5/6: 都是短时测试, 测完自动退出, 不进入常驻循环 */
-    if (mode == 1 || mode == 2 || mode == 3 || mode == 5 || mode == 6)
+    if (mode == 7)
+    {
+        int numPics = 1000;
+        int waitSec = 30;
+        if (argc > 2) numPics = QString(argv[2]).toInt();
+        if (argc > 3) waitSec = QString(argv[3]).toInt();
+        if (test_ai_image_collect(numPics, waitSec) != 0)
+            return 1;
+    }
+
+    /* mode 1/2/3/5/6/7: 都是短时测试, 测完自动退出, 不进入常驻循环 */
+    if (mode == 1 || mode == 2 || mode == 3 || mode == 5 || mode == 6 || mode == 7)
     {
         LOG_TAG(QString("mode=%1 测试结束, 退出。").arg(mode));
+        // 优雅关闭: 先停 CmdUdpManager, 再关 MyUpd socket, 避免析构时 Segfault
+        CmdUdpManager::instance().stop();
+        AiCommunicate::Instance().close();
         return 0;
     }
 

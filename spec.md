@@ -1,178 +1,107 @@
-# 多机型非深度学习算法下发异常 — 排查结论与修复规格
+# Spec：点击「开始工作」后的顶部运行态实时状态栏
 
-- 日期：2026-10-24
-- 状态：**待评审，未修改任何代码**（按用户要求“先不改代码”）
-- 当前基线：`/Users/thinklic/Desktop/duyisorter`
-- 参考基线：`/Users/thinklic/Desktop/DuySorter_rk3566`（用户给出的 `/home/a64/Documents/arm/sigmastar/DuySorter_rk3566` 在本机不存在，编译机 192.168.172.134 / 192.168.172.174 均不可达，暂用本地副本；**需确认是否为同一份代码**）
+## 1. 目标
 
-## 1. 现象
+DuySorter（RK3566 / Qt5 Widgets / 1024×768）主界面在点击「开始工作」后，顶部 80px 区域从空闲态（原工具按钮 + 时钟）切换为运行态：
 
-算法参数多次、按不同配置下发后，非深度学习算法工作不正常。
+- 左：相机丢包指标卡（296×58）
+- 右：推理超时指标卡（296×58）
+- 中：停止工作按钮（186×56，红胶囊）
+- 右端：时间图标 + 日期 + 时钟
+- 指标卡含：中文标题、英文副标题、实时数值、单位、NORMAL/ABNORMAL 状态、18 段流光条
+- 停止工作后 0.4s 内淡出，还原原工具按钮
+- 实时数据来自各 AI 单元 UDP 状态查询，后台线程轮询，不阻塞 UI
 
-## 2. 排查结论（按优先级）
+## 2. 素材约定（已确认本地全部存在）
 
-### P0（直接对应“多机型非深度学习算法下发协议调整”）：协议路由分支缺失
+目录：`res/png2/topbar_anim/`，并已登记到 `res.qrc`（alias 前缀一致）：
 
-对比函数：`materialParamsSet`
-
-- 参考：`src/rgb/material.cpp#L2382-L2423`
-- 当前：`src/rgb/material.cpp#L2057-L2078`
-
-参考实现的路由：
-
-| 条件 | 使用协议 |
+| 文件 | 用途 |
 | --- | --- |
-| `MACHINE_CI` 且偶数组 | 新协议（T3） |
-| `SENSOR_T_2564 / D2 / P5` + `MACHINE_TD / T1 / T2` | **老协议（T2）** |
-| 同上 + `ANCOO_RDC / RC / RSC` | 默认老协议，仅选芽 `CMD_UNIT_EARTHPEA_PARAMS1_MISC / 2_MISC` 走新协议 |
-| 其它机型 | 新协议（T3） |
-| `SENSOR_T_2566` / 其它传感器 | 老协议（T2） |
+| cardMetricNormal.png | 正常态卡片九宫格底图 |
+| cardMetricAlarm.png | 报警态卡片九宫格底图 |
+| dotNormal.png | 正常态状态点 |
+| dotAlarm.png | 报警态状态点 |
+| segOn.png | 正常态点亮分段 |
+| segOff.png | 熄灭分段 |
+| segOnAlarm.png | 报警态点亮分段 |
+| btnStop.png | 停止按钮九宫格底图 |
+| btnStopPressed.png | 停止按钮按下态 |
+| iconStop.png | 停止图标 |
+| topbarBg.png | 顶栏背景（1024×80） |
+| iconClock.png | 时钟图标 |
 
-当前实现：`SENSOR_T_2564 / D2 / P5` 下**所有机型一律走新协议**，`TD / T1 / T2` 与彩色米机特例全部丢失。
+说明：`preview_all.png`、`fxSweep.png`、`fxCardGlow.png`、`dotWarn.png` 为设计预览/未使用素材，**不登记 qrc**，避免强制文件依赖。代码在素材缺失时全部走 QPainter 兜底绘制。
 
-后果：对 TD/T1/T2（多次/茶叶）和 ANCOO 米机，非深度学习算法仍以 `CMD_UNIT_NEW_*` 下发，而 FPGA 只把 `CMD_UNIT_*` 解释为对应算法参数块。参数没有进入正确的寄存器区，重复下发只会不断覆盖/残留错误状态，表现为“多次不同配置下发后工作不正常”。
+## 3. 已实现改动（代码已落盘）
 
-对 CF/CG 的影响：参考代码中 CF/CG 同样走 `default → 新协议`，所以 **CF/CG 不受 P0 影响**。
+### 3.1 新增 [src/topbarstatuswidget.h](file:///Users/thinklic/Desktop/duyisorter_xinxin3568/src/topbarstatuswidget.h)
 
-### P1：分层算法使能来源错误（TD/T1/T2）
+- `#define TOPBAR_STATUS_HEIGHT 80`
+- `class AiStatusPollThread : public QThread`：`startPolling()/stopPolling()`、`signal statusUpdated(quint32 discard_num, quint32 timeout_num)`、`volatile bool m_stopped`
+- `class TopBarStatusWidget : public QWidget`：`isRunning()`、`slot setRunning(bool)`、`slot onStatusUpdated(quint32,quint32)`、`signal stopRequested()`、`paintEvent/mousePressEvent/mouseReleaseEvent`、`drawCard/drawSegments/drawStopButton/drawClock/drawNineSlice/loadAsset`、12 个 QPixmap 成员
 
-- 参考 `resetMaterial`：`src/rgb/material.cpp#L2434-L2674`，使能取值在 `#L2458-L2464`
-  - 红外：`struCnfp.nArithmeticEnableInfra[j]`
-  - TD/T1/T2：`struCnfp.nArithmeticEnableLevel[i][j]`（**按层**）
-  - 其它：`struCnfp.nArithmeticEnable[j]`
-- 参考 `materialParamsCopy` 同样按上述规则取使能（`#L3026-L3029`）
-- 当前 `resetMaterial` / `materialParamsCopy` 统一调用 `myFlow.getArithEnable(i, nGroupId, j)`，而该函数固定读 `nArithmeticEnableLevel[level][0]`
+### 3.2 新增 [src/topbarstatuswidget.cpp](file:///Users/thinklic/Desktop/duyisorter_xinxin3568/src/topbarstatuswidget.cpp)
 
-后果：多层机型所有层继承第 0 层的使能状态，某一层的非深度学习算法可能根本不下发，或被错误下发；多次下发后各层状态互相覆盖。
+- **素材加载** `loadAsset()`：优先 `:/res/png2/topbar_anim/<name>`，其次 `applicationDirPath()/res/png2/topbar_anim/<name>`，均无返回空 QPixmap
+- **后台轮询** `AiStatusPollThread::run()`：
+  - 单元数 `struCnfg.struLevelInfo[struGsh.nLevel].nUnitLevelTotal`
+  - 请求 `cmdworker::AiStatusRequest()`，逐单元 `ai_helper::GetAiIpByIndex(idx)`
+  - `CmdUdpManager::instance().onSendCommand(QHostAddress(ip), AI_UPD_CMD_PORT, request, response, 500)`
+  - `cmdworker::ParseCmdPkg()` + `cmdworker::AiStatusResponse()` 累加 `discard_num_` / `timeout_num_`
+  - 2s 间隔（100ms×20 分段休眠，停止可及时退出）
+- **状态切换** `setRunning()`：进入清计数、淡入（`m_fade` 0→255，80ms/帧 +48）、启动 `m_anim_timer`/`m_clock_timer`/轮询线程、`show()+raise()`；退出停轮询、`m_fade_target=0` 淡出后 `hide()`
+- **布局**：卡片 `cardRect(0/1)` = x 8 / 312，y 8，296×58，间距 8；`stopRect()` = x 616，y 12，186×56；`clockRect()` = x width-196，184×80
+- **绘制**：卡片九宫格（slice 48 / margin 16）、状态点 14×14、标题 15px Bold `#EAF6FF`、副标题 8px `#4E8FA6`、数值 22/26/30px 随位数、单位 11px、NORMAL/ABNORMAL 10px、18 段 10×5 流光（5 段亮）；停止按钮九宫格（slice 88 / margin 26）+ 图标 + `myLan.working_stop`；时钟 `yyyy-MM-dd` / `HH:mm:ss`
+- **交互**：停止按钮按下/释放判定，区域内释放 `emit stopRequested()`
+- **析构**：`stopPolling()` + `wait()`
+- **i18n**：复用 `myLan.ai_front_discard_num`、`ai_front_delay_num`、`times`、`working_stop`，不新增 .ts key
 
-对 CF/CG 的影响：当前设计要求“算法使能全局统一、只由 `setArithmeticEnable()` 写”，P1 属预期行为，不影响 CF/CG。
+### 3.3 修改 [src/mainwidget.h](file:///Users/thinklic/Desktop/duyisorter_xinxin3568/src/mainwidget.h)
 
-### P2：识别组范围不一致（0~7 vs 实际组数）
+- 前置声明 `class TopBarStatusWidget;`
+- 新成员 `TopBarStatusWidget* topBarStatus;`
 
-- 当前 `materialResetGroupAssemble`：`src/rgb/material.cpp#L2367-L2481`
-  - `switch (nGroupId)` 只枚举 `case 0..7`，`default: break`
-  - 因此 `nGroupId >= 8` 时**一条参数都不下发**
-- 当前 `materialCopyAssemble`：`src/rgb/material.cpp#L2854-L2914`（已改为按 `nIdentifyGroupTotal` 循环，最多 16 组）
-- 参考：CF 分支同样只处理 0..7，但参考为多组机型单独写了分支；当前仓库没有这些分支
+### 3.4 修改 [src/mainwidget.cpp](file:///Users/thinklic/Desktop/duyisorter_xinxin3568/src/mainwidget.cpp)
 
-后果：组数 > 8 时，拷贝发生了但 reset/下发被 `default` 吞掉，FPGA 永远收不到这些组的新参数；多次改参数后表现为“有时生效、有时不生效”。
+- 构造首段 `topBarStatus = 0;`（防页面切换信号提前访问）
+- `stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 20)`
+- `mainGridLayout->setRowMinimumHeight(0, TOPBAR_STATUS_HEIGHT)`（构造 + `onStackedWidgetIndexChangedSlt`）
+- 顶部按钮 addWidget 补 `Qt::AlignVCenter`
+- 尾部创建并加入 `(0,0,1,7)`，`stopRequested → onFeedSwitchBtnClickedSlt()`
+- `onCloseFeederSlt()` 末：`setRunning(false)`；`onOpenFeederSlt()` 末：`setRunning(true)`
+- `TimeOutSlt()`：按 `struGsh.bStatFeed == MODE_OPEN` 每秒兜底同步
+- `onStackedWidgetIndexChangedSlt()`：高度按 `TOPBAR_STATUS_HEIGHT` 换算；全屏页（`SM_AI_PAGE`/`SM_VIDEO_PAGE`/`SM_AI_MODEL_SET_PAGE`/`SM_AUTO_ANALYSIS_PAGE`）运行时隐藏状态栏
+- `homePageStackedWidget` 高度两处按新顶栏高度下调
 
-现状约束：`setmachinemode.cpp` 只会生成 2/4/6/8 组，所以该问题在 CF/CG 正常配置下是**潜伏**的；手工改配置或导入其它机型方案才会触发。
+### 3.5 修改 [res.qrc](file:///Users/thinklic/Desktop/duyisorter_xinxin3568/res.qrc)
 
-### P3：`sensorPixelsQuo` 的 2048 条件不同
+- 新增 12 条 `res/png2/topbar_anim/*.png`（第 213–224 行）
 
-- 当前：`src/rgb/material.cpp#L37-L52`
-  - `T_2564 + 1024` → 2
-  - `T_2564 + 2048` → **无条件也置 2**
-- 参考：`src/rgb/material.cpp#L37-L46`
-  - `T_2564 + 1024` → 2
-  - `T_2564 + 2048` 仅 `ANCOO_GENERAL / ANCOO_GARLIC` → 2，其余为 1
+### 3.6 不改动项
 
-后果：2048 分辨率下，形状/长度类非深度学习算法的长度、面积上限被整体放大 2 倍，选长/选短、面积限制行为异常。该问题与机型无关，**CF/CG 使用 2048 传感器时同样会触发**，是“非深度学习算法不正常”的强候选。
+- `DuySorter.pro`：`src/*.h`、`src/*.cpp` 通配符已自动包含新文件
+- `src/3rdparty/`、`.pro` 配置、`LCD_TITLE_HEIGHT` 宏（避免影响其他页面）
 
-### P4：单元地址映射简化
+## 4. 风险与已知限制
 
-- 当前 `com1Write`：`src/myqextserialport.cpp#L276-L300`
-  - `< MAX_UNIT_PER_INT` 原样；否则接口板地址 +1 并减 `MAX_UNIT_PER_INT`
-- 参考：`src/myqextserialport.cpp#L257` 起
-  - 额外包含 `ASSIST_BASE_ADDR(32)` 之后的辅配相机分支
-  - 还包含 `OPT_PRODUCT_ANCOO_RS` 下特定查询命令 `nCount=1` 的处理
+1. `res.qrc` 显式列出 12 个素材：任一文件缺失会导致 `rcc` 编译失败（本地已确认 12 个文件均存在）
+2. `CmdUdpManager` 在后台线程使用，需确认其内部有互斥保护（`QMutex` 成员已见）；无则需改为串行复用
+3. 顶栏由 50px 增至 80px，内容区缩小 30px，已同步下调 `stackedWidget`/`homePageStackedWidget`，但底部是否裁切需真机验证
+4. 远程编译机 `192.168.172.134` 当前不可达（`ping: Host is down`，`ssh_connect` 两次失败），编译验证被阻塞；`.vscode/sftp.json` 现有配置为 `192.168.172.182/root123`，与任务约定服务器不一致
 
-后果：辅配相机/多视机型的单元地址会算错，参数写到错误单元。
+## 5. 验收标准
 
-### P5：CI/红外分支缺失
+- `./qtmakeApp.sh release 6SXZ-600G_335X` 退出码 0，`app/DuySorter` 生成
+- 编译日志中 `qrc_res.cpp` 包含 12 个 topbar_anim 资源且无缺失告警
+- 运行：开始工作 → 顶栏 80px 淡入两张卡 + 停止按钮 + 时钟；数值随 AI 单元回传刷新；`discard_num>0` 或缺包时卡片转红并显示 ABNORMAL
+- 停止工作 → 0.4s 内淡出并还原原工具按钮；进入视频/AI 等全屏页状态栏自动隐藏
+- 多语言切换后标题与按钮文字随 `myLan` 变化，无 raw key 显示
 
-参考存在 `CMD_INF_PARAMS1/2`、`struGreyColorInfra`、`ARITH_INFRA` 相关分支；当前仓库完全没有。若现场包含 CI/红外机型，红外算法参数不会下发。
+## 6. 验证步骤
 
-## 3. 结论指向
-
-- 若故障机是 TD/T1/T2/CI/LD/LDS 系列：**P0 + P1（+P4/P5）是根因**，必须补齐参考代码的机型路由与分层下发。
-- 若故障机是 CF/CG（2/4/6/8 组、T_2564 1024）：P0/P1 不适用，重点查 **P3（2048 传感器）** 与 **P2（组数是否真的 > 8）**；建议现场打印 `nMachine / nSensorType / nSensorPixelLevel / nIdentifyGroupTotal / nMatAssembleMode` 五个运行时值确认。
-
-## 4. 修复规格（待批准后执行）
-
-### F1 机型枚举补齐
-
-文件：`src/globalparams.h`（当前仅 `MACHINE_CF=1`、`MACHINE_CG=15`）
-
-按参考仓库数值补齐，保证与 `cnf.global`/工程文件中的 `nMachine` 一致：
-
-| 名称 | 数值 |
-| --- | --- |
-| CF | 1 |
-| LD2 | 2 |
-| LDS | 3 |
-| TD | 4 |
-| SD | 5 |
-| T1 | 6 |
-| T2 | 7 |
-| CI | 11 |
-| LD4 | 12 |
-| CI2 | 13 |
-| LDS2 | 14 |
-| CG | 15 |
-
-风险：枚举值必须与现场配置一致，否则会把机型识别错；执行前先读取现场 `cnf.global` 确认。
-
-### F2 `materialParamsSet` 路由
-
-文件：`src/rgb/material.cpp` `materialParamsSet`（当前 `#L2057-L2078`）
-
-按参考 `#L2382-L2423` 落地：
-- `MACHINE_CI && nGroupId % 2 == 0` → 新协议并 return
-- `SENSOR_T_2564 / D2 / P5`：
-  - `MACHINE_TD / T1 / T2` → `materialParamsPacketOrganize`（老协议）
-  - `ANCOO_RDC / RC / RSC` → 默认老协议，仅两条选芽 `*_MISC` 走新协议
-  - 其它 → `materialParamsNewPacketOrganize`（新协议）
-- `SENSOR_T_2566` / 其它 → 老协议
-
-若暂不支持 CI/ANCOO 彩色米机，可先只补 TD/T1/T2 分支，但需在代码注释中标注剩余分支未实现。
-
-### F3 `resetMaterial` 使能与分层分支
-
-文件：`src/rgb/material.cpp` `resetMaterial`（当前 `#L2089` 起）
-
-- 使能来源改为参考规则（TD/T1/T2 用 `nArithmeticEnableLevel[i][j]`，其它用统一数组）
-- 补 TD/T1 的按层 reset：
-  - level 0 编辑、`PARAMS_ALL_SAME` 时同时 reset level 1/2 的组 0/1
-  - level 1 / level 2 编辑时只 reset 本层
-- 保留现有 `[RM-*]` 日志
-
-### F4 `materialResetGroupAssemble` 组范围
-
-文件：`src/rgb/material.cpp` `materialResetGroupAssemble`（当前 `#L2367-L2481`）
-
-- `default` 改为：`nGroupId < nIdentifyGroupTotal` 时执行 `resetMaterial(0, nGroupId, ...)`，不再直接 break
-- 或按实际 `nIdentifyGroupTotal` 生成 0..N-1 的显式分支
-- 补 TD/T1/层分支（参考 `#L2953-L2982`）
-
-### F5 `sensorPixelsQuo`
-
-文件：`src/rgb/material.cpp` `#L37-L52`
-
-- 2048 仅在 `ANCOO_GENERAL / ANCOO_GARLIC` 时置 2，其余保持 1
-- 若当前仓库无 `nProduct` 枚举，需要同步补 `OPT_PRODUCT_ANCOO_GENERAL / GARLIC`（或按现场产品号等价判断）
-
-### F6 `com1Write` 单元地址
-
-文件：`src/myqextserialport.cpp` `#L276-L300`
-
-按参考 `#L257` 起补齐 `ASSIST_BASE_ADDR` 辅配相机分支；`ANCOO_RS` 查询命令特例按需补。
-
-## 5. 验证方案
-
-1. 远程编译：`build_duyi`，要求 `EXIT_CODE=0`。
-2. 板卡验证（每组配置至少连续下发 3 次不同参数）：
-   - `全部独立 / 全部相同 / 前后视相同 / 一二相同` 四种模式
-   - 编辑 G0、G1、G7（若支持 >8 组再测 G8/G15）
-   - 日志核对：`[CopyAssemble]`、`[RGA-ENTER]`、`[NewPkt-*]`
-   - 串口帧核对：非深度学习算法在 TD/T1/T2 上必须是 `CMD_UNIT_*` 老协议；CF/CG 必须是 `CMD_UNIT_NEW_*`
-3. 2048 传感器：确认形状/长度参数不再整体翻倍。
-4. TD/T1/T2：三层分别改参数，确认每层都收到 reset，且层间使能互不覆盖。
-
-## 6. 执行前待确认
-
-1. `/Users/thinklic/Desktop/DuySorter_rk3566` 是否与用户指定的 `/home/a64/...` 为同一份代码。
-2. 现场故障机型与 `nMachine` 实际值（TD/T1/T2 还是 CF/CG）。
-3. 是否使用 2048 分辨率传感器。
-4. 是否存在 >8 个识别组的配置。
+1. `ssh_connect(192.168.172.134, mcgs, 7012917, /home/mcgs/Desktop/DuySorter_rk3566_simple)`
+2. `upload_files(session_id)`
+3. `build_duyi(session_id, mode=release, product=6SXZ-600G_335X)`
+4. 失败则取 STDERR 首个 error → `read_remote_file` → 最小改动修复 → `remote_edit_file` → 重编译（最多 5 轮）
+5. 成功后按第 5 节做真机交互核对

@@ -7304,4 +7304,59 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>communicationList</name>
+    <message>
+        <source>CHUTES</source>
+        <translation>通道</translation>
+    </message>
+    <message>
+        <source>CAMERAS</source>
+        <translation>相機</translation>
+    </message>
+    <message>
+        <source>AI LINK</source>
+        <translation>AI 板卡</translation>
+    </message>
+    <message>
+        <source>ALARMS</source>
+        <translation>告警</translation>
+    </message>
+    <message>
+        <source>CAMERA / AI MATRIX</source>
+        <translation>相機 / AI 板狀態</translation>
+    </message>
+    <message>
+        <source>Chute matrix · live</source>
+        <translation>通道狀態矩陣 · 實時</translation>
+    </message>
+    <message>
+        <source>CONTROL BOARD</source>
+        <translation>控制板</translation>
+    </message>
+    <message>
+        <source>Communication status</source>
+        <translation>控制板通訊狀態</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>狀態</translation>
+    </message>
+    <message>
+        <source>Normal</source>
+        <translation>正常</translation>
+    </message>
+    <message>
+        <source>Abnormal</source>
+        <translation>異常</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>離線</translation>
+    </message>
+</context>
 </TS>

@@ -20,7 +20,7 @@ class MyGlobalString;
 
 /* x86_64 调试：用编译器自带的 __x86_64__（不依赖 Qt 头文件已定义）；aarch64 板卡用 /opt/app */
 #if defined(__x86_64__)
-#define APP_PATH "/mnt/hgfs/duyisorter/build-DuySorter-x86_64_Qt5_Ubuntu_Qt5_15_2-Debug/app"
+#define APP_PATH "/mnt/hgfs/duyisorter_xinxin3568/build-DuySorter-x86_64_Qt5_Ubuntu_Qt5_15_2-Debug/app"
 #else
 #define APP_PATH "/opt/app"
 #endif
@@ -542,6 +542,7 @@ enum
 
 #define CNF_MY                  APP_PATH "/DuySorter.conf"                    // 全局配置文件
 #define CNF_LOG_CFG             APP_PATH "/log.properties"                    // 日志配置文件
+#define CNF_INIT_CHECK          APP_PATH "/init_check.cnf"                    // 开机检查项配置
 
 #if defined(Q_OS_WIN32)
 #define LANG_DIR                "../../DuySorter_rk3566/app/i18n/"   // 语言文件目录 *.qm

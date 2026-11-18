@@ -6919,6 +6919,66 @@
         <translation>系统初始化中，请稍候...</translation>
     </message>
     <message>
+        <source>init_link</source>
+        <translation>执行链路</translation>
+    </message>
+    <message>
+        <source>init_step_trans</source>
+        <translation>下发图像传输模式</translation>
+    </message>
+    <message>
+        <source>init_step_camera</source>
+        <translation>同步相机参数</translation>
+    </message>
+    <message>
+        <source>init_step_sort</source>
+        <translation>同步色选参数</translation>
+    </message>
+    <message>
+        <source>init_step_control</source>
+        <translation>同步控制板参数</translation>
+    </message>
+    <message>
+        <source>init_step_ai</source>
+        <translation>同步 AI 模型参数</translation>
+    </message>
+    <message>
+        <source>init_running</source>
+        <translation>正在执行</translation>
+    </message>
+    <message>
+        <source>init_doing</source>
+        <translation>初始化中</translation>
+    </message>
+    <message>
+        <source>toast_scheme</source>
+        <translation>已进入方案选择</translation>
+    </message>
+    <message>
+        <source>toast_sens</source>
+        <translation>已进入感度调节</translation>
+    </message>
+    <message>
+        <source>toast_feeder</source>
+        <translation>已进入供料速度设置</translation>
+    </message>
+    <message>
+        <source>toast_ejector</source>
+        <translation>喷阀检测指令已下发</translation>
+    </message>
+    <message>
+        <source>toast_wiper</source>
+        <translation>清扫指令已下发</translation>
+    </message>
+    <message>
+        <source>toast_func</source>
+        <translation>已进入算法设置</translation>
+    </message>
+    <message>
+        <source>toast_oper</source>
+        <translation>已进入系统参数</translation>
+    </message>
+    <message>
         <location filename="../src/params/paramslang.cpp" line="840"/>
         <source>msg_preheating</source>
         <translation>预热中，请稍候...</translation>
@@ -7301,6 +7361,61 @@
         <location filename="../src/rgb/setsorterconsistencewidget.cpp" line="198"/>
         <source>重置</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>communicationList</name>
+    <message>
+        <source>CHUTES</source>
+        <translation>通道</translation>
+    </message>
+    <message>
+        <source>CAMERAS</source>
+        <translation>相机</translation>
+    </message>
+    <message>
+        <source>AI LINK</source>
+        <translation>AI 板卡</translation>
+    </message>
+    <message>
+        <source>ALARMS</source>
+        <translation>告警</translation>
+    </message>
+    <message>
+        <source>CAMERA / AI MATRIX</source>
+        <translation>相机 / AI 板状态</translation>
+    </message>
+    <message>
+        <source>Chute matrix · live</source>
+        <translation>通道状态矩阵 · 实时</translation>
+    </message>
+    <message>
+        <source>CONTROL BOARD</source>
+        <translation>控制板</translation>
+    </message>
+    <message>
+        <source>Communication status</source>
+        <translation>控制板通信状态</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>状态</translation>
+    </message>
+    <message>
+        <source>Normal</source>
+        <translation>正常</translation>
+    </message>
+    <message>
+        <source>Abnormal</source>
+        <translation>异常</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>离线</translation>
     </message>
 </context>
 </TS>

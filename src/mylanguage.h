@@ -854,6 +854,24 @@ public:
   QString msg_require_version;
   QString msg_system_init;
   QString msg_preheating;
+
+  // 系统初始化页（执行链路）
+  QString init_link;                  // 执行链路
+  QString init_step_trans;            // 下发图像传输模式
+  QString init_step_camera;           // 重置/下发全部相机参数
+  QString init_step_sort;             // 重置色选参数
+  QString init_step_control;          // 重置控制板参数
+  QString init_step_ai;               // 重置AI模型参数
+  QString init_running;               // 正在执行
+  QString init_doing;                 // 初始化中
+  // 底部操作按钮点击提示
+  QString toast_scheme;               // 已进入方案选择
+  QString toast_sens;                 // 已进入感度调节
+  QString toast_feeder;               // 已进入供料速度设置
+  QString toast_ejector;              // 喷阀检测指令已下发
+  QString toast_wiper;                // 清扫指令已下发
+  QString toast_func;                 // 已进入算法设置
+  QString toast_oper;                 // 已进入系统参数
   QString msg_input_name;
   QString msg_mode_changing;
   QString msg_testing;

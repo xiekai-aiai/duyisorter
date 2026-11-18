@@ -162,6 +162,34 @@ void setMachineMode::createMachineModeList()
         modeItem[i]->setSizeHint(QSize(50, 50));
         machineModeList->addItem(modeItem[i]);
     }
+    /* 与算法设置页左侧列表统一：透明底 + 半透明深蓝卡片条目 + 白色文字（纯文字，无图标） */
+    machineModeList->setSpacing(10);
+    machineModeList->setStyleSheet(
+        "QListWidget {"
+        "  background: transparent;"
+        "  border: none;"
+        "  outline: none;"
+        "}"
+        "QListWidget::item {"
+        "  background-color: rgba(13, 34, 50, 0.55);"
+        "  border: 1px solid #2A5B6E;"
+        "  border-radius: 8px;"
+        "  color: #DCEEF5;"
+        "  padding: 0px 10px;"
+        "}"
+        "QListWidget::item:hover {"
+        "  background-color: rgba(24, 54, 74, 0.72);"
+        "  border: 1px solid #3FA9BF;"
+        "  color: #FFFFFF;"
+        "}"
+        "QListWidget::item:selected {"
+        "  background-color: rgba(20, 58, 76, 0.75);"
+        "  border: 1px solid #45D2E4;"
+        "  color: #FFFFFF;"
+        "}"
+        "QScrollBar:vertical { width: 6px; background: transparent; margin: 6px 0; }"
+        "QScrollBar::handle:vertical { background: #2A6076; border-radius: 3px; min-height: 40px; }"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }");
 }
 
 /*!
@@ -182,6 +210,7 @@ void setMachineMode::createChuteEjectList()
     for(int i = 0; i < tickGroupPerLevel; i++){
         chuteLabel[i] = new QLabel;
         chuteLabel[i]->setFont(config->getFont(DEFAULT_FONT_SIZE));
+        chuteLabel[i]->setStyleSheet("color: #FFFFFF;");
         chuteMinusBtns[i] = new myPushButton(myIcon.Action_Minus, btnSize);
         chuteEjectNum[i] = new myLCDNumber();
         chuteEjectNum[i]->setDigitCount(3);
@@ -204,6 +233,7 @@ void setMachineMode::createChuteEjectList()
     // 通道喷阀数量
     ejectNumLabel = new QLabel(myLan.eject_num);
     ejectNumLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    ejectNumLabel->setStyleSheet("color: #FFFFFF;");
     ejectNumMinusBtn = new myPushButton(myIcon.Action_Minus, btnSize);
     ejectNum = new myLCDNumber(3,m_nEjectNumPerBoard,this);
     ejectNum->setFixedSize(QSize(80, 45));
@@ -255,8 +285,29 @@ void setMachineMode::createChuteEjectList()
     // Run mode
     runModeLabel = new QLabel(myLan.run_mode);
     runModeLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    runModeLabel->setStyleSheet("color: #FFFFFF;");
     runModeBox = new MyComboBox();
     runModeBox->setFixedHeight(BTN_HEIGHT);
+    /* 覆盖 MyComboBox 默认浅灰样式：深色底 + 白字，与其他页面下拉框统一 */
+    runModeBox->setStyleSheet(
+        "QComboBox {"
+        "  background-color: #0E2233; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; border-radius: 4px;"
+        "  padding-left: 10px; padding-right: 30px;"
+        "}"
+        "QComboBox:hover, QComboBox:focus { border-color: #45D2E4; }"
+        "QComboBox::drop-down {"
+        "  subcontrol-origin: padding; subcontrol-position: center right;"
+        "  width: 28px; border: none;"
+        "}"
+        "QComboBox::down-arrow { image: url(:/res/png2/algo/algo_arrow.png); width: 14px; height: 14px; }"
+        "QComboBox QAbstractItemView {"
+        "  background-color: #0E2233; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; outline: none;"
+        "  selection-background-color: rgba(69, 210, 228, 0.30);"
+        "  selection-color: #FFFFFF;"
+        "}"
+        "QComboBox QAbstractItemView::item { min-height: 40px; }");
     QList<int> list = myFlow.getRunModeList();
     for (int i = 0; i < list.count(); i++) {
         runModeBox->addItem(myFlow.getRunModeName(list.at(i)), list.at(i));

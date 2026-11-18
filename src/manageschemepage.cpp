@@ -40,8 +40,33 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
 
     //    palette1.setBrush(backgroundRole(),QBrush(pixmap1));
 
-    QString strStyle = QString("QPushButton {border-image: url(:/res/png/materialButton.png);}"
-        "QToolTip {border-image: url(:/res/png/materialButton.png);}");
+    /* 与底部导航键统一的点击动效样式（9-slice 三态） */
+    QString strStyle = QString(
+        "QPushButton {"
+        "  text-align: center;"
+        "  outline: none;"
+        "  border-width: 8px 16px 8px 16px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
+        "  color: #E8F6FF;"
+        "  font-size: 14px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:pressed {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:disabled {"
+        "  border-image: url(:/res/png2/button/btn_disabled.png) 8 16 8 16 stretch stretch;"
+        "  color: #5A7686;"
+        "}"
+        "QToolTip { border-image: url(:/res/png/materialButton.png);}"
+    );
 
     m_newSchemeBtn->setStyleSheet(strStyle);
     m_copySchemeBtn->setStyleSheet(strStyle);
@@ -52,6 +77,9 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
     m_changeModeBtn->setStyleSheet(strStyle);
     m_copyMajorBtn->setStyleSheet(strStyle);
     m_okBtn->setStyleSheet(strStyle);
+    m_cancelBtn->setStyleSheet(strStyle);
+
+    
     /* update scheme list widget and button status */
     updateListWidget();
 
@@ -111,7 +139,23 @@ ManageSchemePage::ManageSchemePage(QWidget* parent) :
     palette.setBrush(backgroundRole(), QBrush(pixmap));
     this->setPalette(palette);
     this->setAutoFillBackground(true);
-    m_listWidget->setStyleSheet("background-color:transparent");
+    m_listWidget->setStyleSheet(
+        "QListWidget { background-color: transparent; border: 2px solid rgb(209, 243, 249); }"
+        /* 列表项配色参考底部导航按钮(深蓝渐变)，替换原 material.png 浅色底图 */
+        "QListWidget::item {"
+        "  color: white;"
+        "  padding: 6px;"
+        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #3a7ab5, stop:1 #0d2440);"
+        "  border: 1px solid #2a5080;"
+        "  border-radius: 8px;"
+        "}"
+        "QListWidget::item:selected {"
+        "  color: white;"
+        "  background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #2a5d8a, stop:1 #132f4f);"
+        "  border: 1px solid #3a70a0;"
+        "  border-radius: 8px;"
+        "}"
+    );
     m_listWidget->setFrameStyle(QFrame::Panel);
 
 }
@@ -188,10 +232,6 @@ void ManageSchemePage::updateListWidget()
 
         myListWidgetItem* schemeListItem = new myListWidgetItem(strScheme, QIcon(), QSize(760, 80));
         schemeListItem->setTextAlignment(Qt::AlignCenter);
-        QPixmap pixmap(":/res/png/material.png");
-        pixmap = pixmap.scaled(QSize(797, 80), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        schemeListItem->setBackground(QBrush(pixmap));
-
         m_listWidget->addItem(schemeListItem);
         m_listWidget->setSpacing(1);
     }

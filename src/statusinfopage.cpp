@@ -105,7 +105,11 @@ StatusInfoPage::StatusInfoPage(QWidget* parent) :
     listWidget->setMaximumWidth(LCD_WIDTH / 5);
     listWidget->setMinimumWidth(LCD_WIDTH / 5);
     listWidget->setViewMode(QListView::IconMode);
-    listWidget->setStyleSheet("background-color:transparent");
+    listWidget->setStyleSheet(
+        "QListWidget { background-color: transparent; }"
+        "QListWidget::item { color: white; }"
+        "QListWidget::item:selected { color: white; }"
+    );
 
     leftBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     cancelBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
@@ -707,14 +711,25 @@ void StatusInfoPage::CreateGeneralPage()
     serverLayout->addWidget(serverLineEdit);
 
     statusTabBar = new MyTabBar();
-    if (LCD_HEIGHT == 768)
-    {
-        statusTabBar->setStyleSheet("QTabBar::tab{""min-height:50;min-width:100;}");
-    }
-    else
-    {
-        statusTabBar->setStyleSheet("QTabBar::tab{""min-height:35;min-width:100;}");
-    }
+    /* 科技风线框页签：常态暗色线框 / 悬停实心高亮 / 选中亮青描边（同“一次前视”按钮） */
+    statusTabBar->setStyleSheet(QStringLiteral(
+        "QTabBar { background: transparent; }"
+        "QTabBar::tab {"
+        "  min-height: %1; min-width: 100;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #9FD0E0; margin-right: 8px;"
+        "}"
+        "QTabBar::tab:hover {"
+        "  border-width: 8px 16px 8px 16px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QTabBar::tab:selected {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}").arg(LCD_HEIGHT == 768 ? 50 : 35));
+    statusTabBar->setDrawBase(false);
     statusTabBar->addTab(myLan.state);
     statusTabBar->addTab(myLan.ai_det_status);
 
@@ -781,7 +796,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.feed_stat).arg(myLan.off);
-        feedLabel->setStyleSheet("color:black");
+        feedLabel->setStyleSheet("color:white");
     }
     feedLabel->setText(str);
 
@@ -789,10 +804,12 @@ void StatusInfoPage::updateGeneralPage()
     if (struGsh.bStatEjectFpga)
     {
         str = QString("%1: %2").arg(myLan.eject_stat).arg(myLan.on);
+        ejectLabel->setStyleSheet("color:red");
     }
     else
     {
         str = QString("%1: %2").arg(myLan.eject_stat).arg(myLan.off);
+        ejectLabel->setStyleSheet("color:white");
     }
     ejectLabel->setText(str);
 
@@ -810,7 +827,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.pressure_alarm).arg(myLan.normal);
-        pressLabel->setStyleSheet("color:black");
+        pressLabel->setStyleSheet("color:white");
     }
     pressLabel->setText(str);
 
@@ -823,7 +840,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.blower_alarm).arg(myLan.normal);
-        blowerLabel->setStyleSheet("color:black");
+        blowerLabel->setStyleSheet("color:white");
     }
     blowerLabel->setText(str);
 
@@ -836,7 +853,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.lamp_alarm).arg(myLan.normal);
-        lampLabel->setStyleSheet("color:black");
+        lampLabel->setStyleSheet("color:white");
     }
     lampLabel->setText(str);
 
@@ -849,7 +866,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.belt_1_status).arg(myLan.off);
-        beltStatus[0]->setStyleSheet("color:black");
+        beltStatus[0]->setStyleSheet("color:white");
     }
     beltStatus[0]->setText(str);
 
@@ -862,7 +879,7 @@ void StatusInfoPage::updateGeneralPage()
     else
     {
         str = QString("%1: %2").arg(myLan.belt_2_status).arg(myLan.off);
-        beltStatus[1]->setStyleSheet("color:black");
+        beltStatus[1]->setStyleSheet("color:white");
     }
     beltStatus[1]->setText(str);
 
@@ -913,7 +930,7 @@ void StatusInfoPage::updateGeneralPage()
     }
     else
     {
-        m_temperatureLabel->setStyleSheet("color:black");
+        m_temperatureLabel->setStyleSheet("color:white");
     }
 
     /* 显示或屏蔽报警状态 */
@@ -967,7 +984,7 @@ void StatusInfoPage::updateGeneralPage()
         else
         {
             m_slaveCommAlarmLabel->setText(QString("%1: %2").arg(myLan.communication_alarm).arg(myLan.normal));
-            m_slaveCommAlarmLabel->setStyleSheet("color:black");
+            m_slaveCommAlarmLabel->setStyleSheet("color:white");
         }
     }
     else
@@ -1331,6 +1348,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
     screenListGroup = new myGroupBox(myLan.screen);
     screenListLayout = new QGridLayout(screenListGroup);
     screenListLabel = new QLabel;
+    screenListLabel->setStyleSheet("color:white");
     screenListLabel->setAlignment(Qt::AlignCenter);
     screenListLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
     screenListLayout->addWidget(screenListLabel);
@@ -1409,6 +1427,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
         for (j = 0; j < 2; j++)
         {
             interfaceListLabel[i][j] = new QLabel;
+            interfaceListLabel[i][j]->setStyleSheet("color:white");
             interfaceListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             interfaceListLabel[i][j]->setAlignment(Qt::AlignCenter);
             interfaceListLayout->addWidget(interfaceListLabel[i][j], i, j);
@@ -1420,6 +1439,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
         for (j = 0; j < 2; j++)
         {
             controlListLabel[i][j] = new QLabel;
+            controlListLabel[i][j]->setStyleSheet("color:white");
             controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
             controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             controlListLayout->addWidget(controlListLabel[i][j], i, j);
@@ -1428,6 +1448,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
 
     /* 2.09及之后版本使用文本编辑框显示版本（针对2014.11.24之后的FPGA定版程序）*/
     m_textEdit = new QTextEdit();
+    m_textEdit->setStyleSheet("color:white; background:transparent; border:none;");
     m_textEdit->setFont(config->getFont());
     m_textEdit->setReadOnly(true);
     m_textEdit->setWordWrapMode(QTextOption::NoWrap);
@@ -1439,6 +1460,7 @@ void StatusInfoPage::CreateSoftwareVersionPage()
         for (j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
         {
             cameraListLabel[i][j] = new QLabel;
+            cameraListLabel[i][j]->setStyleSheet("color:white");
             cameraListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
             cameraListLabel[i][j]->setAlignment(Qt::AlignHCenter);
         }
@@ -1509,7 +1531,7 @@ void StatusInfoPage::versionUpdateCtrl()
             //              controlListLabel[i][1]->setText(QString("V%1.0%2").arg(struGsh.struVer.sControl[i][1])
             //                      .arg(struGsh.struVer.sControl[i][0]));
             controlListLabel[i][1]->setText(QString("V1.00"));
-            controlListLabel[i][1]->setStyleSheet("color:black");
+            controlListLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -1559,7 +1581,7 @@ void StatusInfoPage::versionUpdateInterface()
             //                        materialType);
             //                interfaceListLabel[i][1]->setText(str);
             interfaceListLabel[i][1]->setText(QString("V1.00"));
-            interfaceListLabel[i][1]->setStyleSheet("color:black");
+            interfaceListLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -1586,12 +1608,12 @@ void StatusInfoPage::versionUpdateUSBFirmware()
     if (struGsh.struVer.nUsbFirmware == 1)
     {
         interfaceListLabel[MAX_INT][1]->setText("V1.00");
-        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:black");
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:white");
     }
     else if (struGsh.struVer.nUsbFirmware == 2)
     {
         interfaceListLabel[MAX_INT][1]->setText("V2.00");
-        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:black");
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:white");
     }
     else
     {
@@ -3142,13 +3164,13 @@ void StatusInfoPage::versionUpdateLightSrc()
         if (struCnfg.nCurSrcBoradLampNum[i] == 0)
         {
             m_lightSrcLabel[i][1]->setText("--");
-            m_lightSrcLabel[i][1]->setStyleSheet("color:black");
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
         }
         else if ((struGsh.struVer.sLightSrc[i][0] != 255) && (struGsh.struVer.sLightSrc[i][1] != 255))
         {
             m_lightSrcLabel[i][1]->setText(QString("V%1.0%2").arg(struGsh.struVer.sLightSrc[i][1])
                 .arg(struGsh.struVer.sLightSrc[i][0]));
-            m_lightSrcLabel[i][1]->setStyleSheet("color:black");
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
         }
         else
         {
@@ -3316,14 +3338,25 @@ void StatusInfoPage::CreateSetNetworkPage()
         /* tab widget */
     remoteTabBar = new QTabBar();
     remoteTabBar->setFont(config->getFont());
-    if (LCD_HEIGHT == 768)
-    {
-        setStyleSheet("QTabBar::tab {min-height:45; min-width:180;}");
-    }
-    else
-    {
-        setStyleSheet("QTabBar::tab {min-height:32;}");
-    }
+    /* 科技风线框页签：与系统状态页页签保持一致 */
+    remoteTabBar->setStyleSheet(QStringLiteral(
+        "QTabBar { background: transparent; }"
+        "QTabBar::tab {"
+        "  min-height: %1; min-width: 180;"
+        "  border-width: 8px 14px 8px 14px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/sidelist/btn_line_normal.png) 8 14 8 14 stretch stretch;"
+        "  color: #9FD0E0; margin-right: 8px;"
+        "}"
+        "QTabBar::tab:hover {"
+        "  border-width: 8px 16px 8px 16px; border-style: solid; border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QTabBar::tab:selected {"
+        "  border-image: url(:/res/png2/sidelist/btn_line_active.png) 8 14 8 14 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}").arg(LCD_HEIGHT == 768 ? 45 : 32));
+    remoteTabBar->setDrawBase(false);
     remoteTabBar->addTab(myLan.local_host);
     remoteTabBar->addTab(myLan.remote_control);
     if (struGsh.bIsMC)
@@ -3403,6 +3436,26 @@ void StatusInfoPage::createPageWifiWidget()
     ssidComboBox->setFixedHeight(BTN_HEIGHT);
     ssidComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
     ssidComboBox->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    /* 深色底 + 白字，与页面其余控件统一（覆盖 MyComboBox 默认浅灰样式） */
+    ssidComboBox->setStyleSheet(
+        "QComboBox {"
+        "  background-color: #0E2233; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; border-radius: 4px;"
+        "  padding-left: 10px; padding-right: 30px;"
+        "}"
+        "QComboBox:hover, QComboBox:focus { border-color: #45D2E4; }"
+        "QComboBox::drop-down {"
+        "  subcontrol-origin: padding; subcontrol-position: center right;"
+        "  width: 28px; border: none;"
+        "}"
+        "QComboBox::down-arrow { image: url(:/res/png2/algo/algo_arrow.png); width: 14px; height: 14px; }"
+        "QComboBox QAbstractItemView {"
+        "  background-color: #0E2233; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; outline: none;"
+        "  selection-background-color: rgba(69, 210, 228, 0.30);"
+        "  selection-color: #FFFFFF;"
+        "}"
+        "QComboBox QAbstractItemView::item { min-height: 40px; }");
 
     passWordLabel = new myLabel(myLan.password);
     passWordLineEdit = new myLineEdit();
@@ -3422,6 +3475,14 @@ void StatusInfoPage::createPageWifiWidget()
     connectResultEdit->setFont(config->getFont());
     connectResultEdit->setReadOnly(true);
     connectResultEdit->setWordWrapMode(QTextOption::NoWrap);
+    /* 深色底 + 白字日志区（覆盖默认白底黑字） */
+    connectResultEdit->setStyleSheet(
+        "QTextEdit {"
+        "  background-color: #0A1A26; color: #FFFFFF;"
+        "  border: 1px solid #2A5B6E; border-radius: 4px;"
+        "  selection-background-color: rgba(69, 210, 228, 0.30);"
+        "  selection-color: #FFFFFF;"
+        "}");
 
     wifiAddrLabel = new myLabel("WIFI " + myLan.ip_address);
     wifiAddrLineEdit = new myLineEdit("0.0.0.0");
@@ -3486,8 +3547,10 @@ void StatusInfoPage::onWifiScanBtnPressed()
         return;
     }
     connectResultEdit->append("[SCAN] scanning WiFi...");
+    // ip link set / iwlist scan 都需要 CAP_NET_ADMIN, 普通用户会报
+    // "Operation not permitted", 所以两段命令都走 sudo
     m_wifiScanProcess->start("sh", QStringList() << "-c"
-        << "ip link set wlan0 up; iwlist wlan0 scan | grep 'ESSID:' | cut -d'\"' -f2");
+        << "sudo -n ip link set wlan0 up 2>/dev/null; sudo -n iwlist wlan0 scan | grep 'ESSID:' | cut -d'\"' -f2");
 }
 
 // 扫描异步完成：把新 SSID 追加到下拉框（不清空、不打乱当前选中）
@@ -3620,7 +3683,10 @@ void StatusInfoPage::onWifiDisonnectBtnPressed()
     m_pendingSsid.clear();
     m_pendingPassword.clear();
     m_wifiAutoRetryCount = 0;     // 手动断开 → 自动连接重试也清零
-    system("killall -15 wpa_supplicant");
+    // 桌面 NetworkManager 管理着 wlan0, 断开要走 nmcli;
+    // 直接 kill wpa_supplicant 是 NM 的 root 进程, 普通用户无权且会打乱 NM 状态
+    system("sudo -n nmcli device disconnect wlan0 >/dev/null 2>&1"
+           " || sudo -n killall -15 wpa_supplicant 2>/dev/null");
     wifiAddrLineEdit->setText("0.0.0.0");
     m_lastWifiIp.clear();
     wifiDisconnectBtn->setEnabled(false);

@@ -691,11 +691,14 @@ void PageBackground::createPage()
     myCurve = new MyCurve(CURVE_WIDGET_WIDTH,CURVE_WIDGET_HEIGHT-20);
 
     /* function area */
-    colorMinus = new myPushButton(QIcon(), QSize(SMALL_BTN_WIDTH, BTN_HEIGHT-10));
+    /* 方图按钮做成正方形，图标才能撑满 */
+    colorMinus = new myPushButton(QIcon(), QSize(BTN_HEIGHT - 10, BTN_HEIGHT - 10));
     colorMinus->setIcon(myIcon.Arrow_Left);
+    colorMinus->setIconSize(QSize(BTN_HEIGHT - 14, BTN_HEIGHT - 14));
 
-    colorPlus  = new myPushButton(QIcon(), QSize(SMALL_BTN_WIDTH, BTN_HEIGHT-10));
+    colorPlus  = new myPushButton(QIcon(), QSize(BTN_HEIGHT - 10, BTN_HEIGHT - 10));
     colorPlus->setIcon(myIcon.Arrow_Right);
+    colorPlus->setIconSize(QSize(BTN_HEIGHT - 14, BTN_HEIGHT - 14));
 
     colorLabel     = new myLabel(myLan.red);
     colorLabel->setFixedSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT-15);
