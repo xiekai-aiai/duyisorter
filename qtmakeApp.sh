@@ -158,7 +158,7 @@ fi
 
 # VM 内存有限（3G），并行过高会 OOM 导致虚拟机崩溃
 MYJOBS=${MYJOBS:-$(nproc)}
-[ "$MYJOBS" -gt 4 ] && MYJOBS=4
+[ "$MYJOBS" -gt 12 ] && MYJOBS=12
 echo "========================================"
 echo "  VM 交叉编译: Ubuntu gcc-$GCC_VER aarch64$CCACHE_STR"
 echo "  Sysroot=$SYSROOT"

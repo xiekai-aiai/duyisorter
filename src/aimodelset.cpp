@@ -782,11 +782,29 @@ AiModelSet::AiModelSet(QWidget *parent) :
         }
         LOG_DEBUG_STM("[下载流程] md5 校验：expected=" << m_expectedModelMd5 << "actual=" << actualMd5);
 
-        if (!m_expectedModelMd5.isEmpty() && !actualMd5.isEmpty()
-            && m_expectedModelMd5.compare(actualMd5, Qt::CaseInsensitive)) {
-            // MD5 不一致 → 红字报错 + 终止（不要回写 JSON）
+        // 模型文件读不到（不存在/无权限）→ 无法校验，弹窗告警并终止
+        if (actualMd5.isEmpty()) {
+            showTip(tr("✗ 模型文件读取失败，无法校验 MD5：%1").arg(modelPath), true);
+            QMessageBox::warning(this, tr("模型校验失败"),
+                tr("模型文件无法读取，MD5 校验失败！\n\n文件：%1\n"
+                   "请检查文件权限或存储空间后重新训练/下载。").arg(modelPath));
+            resetTrainingState();
+            return;
+        }
+        
+        if (m_expectedModelMd5.isEmpty()) {
+            LOG_WARN_STM("[下载流程] JSON 中未找到 md5 字段，跳过 MD5 校验");
+        } else if (m_expectedModelMd5.compare(actualMd5, Qt::CaseInsensitive) != 0) {
+            // MD5 不一致 → 弹窗告警 + 红字 + 终止（不要回写 JSON / 不入库）
             showTip(tr("✗ 模型 MD5 校验失败！expected=%1 actual=%2")
                     .arg(m_expectedModelMd5).arg(actualMd5), true);
+            QMessageBox::warning(this, tr("模型校验失败"),
+                tr("模型文件的 MD5 与 JSON 中记录的不一致，文件可能已损坏！\n\n"
+                   "模型文件：%1\n"
+                   "JSON 中的 md5：%2\n"
+                   "实际计算的 md5：%3\n\n"
+                   "本次下载的模型不可用，请重新训练/下载。")
+                .arg(modelPath).arg(m_expectedModelMd5).arg(actualMd5));
             resetTrainingState();
             return;
         }

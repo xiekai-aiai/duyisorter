@@ -222,6 +222,10 @@
         <file alias="res/png2/topbar_anim/iconStop.png">res/png2/topbar_anim/iconStop.png</file>
         <file alias="res/png2/topbar_anim/topbarBg.png">res/png2/topbar_anim/topbarBg.png</file>
         <file alias="res/png2/topbar_anim/iconClock.png">res/png2/topbar_anim/iconClock.png</file>
+        <file alias="res/png2/topbar_anim2/iconWorking.png">res/png2/topbar_anim2/iconWorking.png</file>
+        <file alias="res/png2/topbar_anim2/stateNormal.png">res/png2/topbar_anim2/stateNormal.png</file>
+        <file alias="res/png2/topbar_anim2/stateAlarm.png">res/png2/topbar_anim2/stateAlarm.png</file>
+        <file alias="res/png2/topbar_anim2/statusPanelBg.png">res/png2/topbar_anim2/statusPanelBg.png</file>
         <file alias="res/png/material.png">res/png2/material.png</file>
         <file alias="res/png/materialButton.png">res/png2/materialButton.png</file>
         <file alias="res/png/materialSelect.png">res/png2/materialSelect.png</file>

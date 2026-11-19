@@ -24,6 +24,44 @@ bool SQLiteMgr::Init()
     }
 
     LOG_INFO_STM("open sqlite db[" << db_path_.toStdString() << "] successful!");
+
+    // 老库自动补表：表名/字段与各 SQL 语句保持一致
+    // 使用 IF NOT EXISTS，老库升级时只补缺失的表，不破坏已有表和旧数据
+    const char* create_sqls[] = {
+        "CREATE TABLE IF NOT EXISTS model_info ("
+        "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "  modelId TEXT NOT NULL UNIQUE,"
+        "  modelName TEXT,"
+        "  isApply INTEGER DEFAULT 0,"
+        "  isUpload INTEGER DEFAULT 0)",
+        "CREATE TABLE IF NOT EXISTS model_params ("
+        "  modelId TEXT,"
+        "  clsId INTEGER,"
+        "  clsName TEXT,"
+        "  level INTEGER DEFAULT 0,"
+        "  identifyGroup INTEGER DEFAULT 0,"
+        "  threshold REAL DEFAULT 0,"
+        "  isApply INTEGER DEFAULT 0,"
+        "  areaModel INTEGER DEFAULT 0,"
+        "  areaThreshold REAL DEFAULT 0)",
+        "CREATE TABLE IF NOT EXISTS config ("
+        "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "  group_name TEXT,"
+        "  param_name TEXT,"
+        "  param_value TEXT,"
+        "  UNIQUE(group_name, param_name))"
+    };
+
+    for (const char* sql : create_sqls)
+    {
+        QSqlQuery query(db_);
+        if (!query.exec(sql))
+        {
+            LOG_ERROR_STM("create table failed: " << query.lastError().text().toStdString()
+                << ", sql:" << sql);
+        }
+    }
+
     return true;
 }
 

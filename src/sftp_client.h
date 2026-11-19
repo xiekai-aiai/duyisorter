@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <functional>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -52,6 +53,14 @@ public:
     * @return {*}
     */
     bool upload(const std::string& local_file, const std::string& remote_file);
+
+    /**
+    * @brief: 带进度回调的上传（sent/total 为字节数，每 32KB 回调一次）
+    *        回调返回 false 表示请求取消，upload 会中断并返回 false
+    */
+    using UploadProgressFn = std::function<bool(long long sent, long long total)>;
+    bool upload(const std::string& local_file, const std::string& remote_file,
+                const UploadProgressFn& progress);
 
     /**
      * @brief: 下载文件到本地

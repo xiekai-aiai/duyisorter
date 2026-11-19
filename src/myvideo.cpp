@@ -621,7 +621,13 @@ void MyVideo::startCapture(bool bIsCapturing)
         infoWidget->setLabelText(myLan.video_starting_info);
         infoWidget->delayShow();
         img_display_timer->start(40);
-        udp_img_receiver->SetImageHegiht(ConfigMgr::Instance().GetAiCfgInfo().video_view_height_);
+        quint16 view_height = ConfigMgr::Instance().GetAiCfgInfo().video_view_height_;
+        if (view_height == 0)
+        {
+            view_height = 256;      // 与 AI 板 param_config.json 默认值一致
+            LOG_ERROR_STM("video view height is 0, fallback to " << view_height);
+        }
+        udp_img_receiver->SetImageHegiht(view_height);
         udp_img_receiver->start();
         LOG_INFO_STM("start view, nunit:" << struGsh.nUnit << ", level:" << struGsh.nLevel);
         onViewRequest(struGsh.nUnit, true);

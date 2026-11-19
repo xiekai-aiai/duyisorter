@@ -176,16 +176,16 @@ MainWidget::MainWidget(QWidget* parent)
 
     videoBtn = new QToolButton(this);
     videoBtn->setText(myLan.sorter_manager);
-    videoBtn->setIconSize(QSize(60, 60));
+    videoBtn->setIconSize(QSize(48, 48));
     videoBtn->setIcon(QIcon(":/res/png2/topbar/videoCap.png"));
     videoBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     videoBtn->setStyleSheet(topToolBtnStyle);
     videoBtn->setFont(config->getFont(DEFAULT_FONT_SIZE));
     videoBtn->setAutoRaise(true);
-
+    
     systemHaltBtn = new QToolButton(this);
     systemHaltBtn->setText(myLan.halt);
-    systemHaltBtn->setIconSize(QSize(60, 60));
+    systemHaltBtn->setIconSize(QSize(48, 48));
     systemHaltBtn->setIcon(QIcon(":/res/png2/topbar/shutDown.png"));
     systemHaltBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     systemHaltBtn->setStyleSheet(topToolBtnStyle);
@@ -195,7 +195,7 @@ MainWidget::MainWidget(QWidget* parent)
 
     saveParamBtn = new QToolButton(this);
     saveParamBtn->setText(myLan.save_parameterNew);
-    saveParamBtn->setIconSize(QSize(60, 60));
+    saveParamBtn->setIconSize(QSize(48, 48));
     saveParamBtn->setIcon(QIcon(":/res/png2/topbar/savePara.png"));
     saveParamBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     saveParamBtn->setStyleSheet(topToolBtnStyle);
@@ -204,7 +204,7 @@ MainWidget::MainWidget(QWidget* parent)
 
     feedSwitchBtn = new QToolButton(this);
     feedSwitchBtn->setText(myLan.working_stop);
-    feedSwitchBtn->setIconSize(QSize(80, 80));
+    feedSwitchBtn->setIconSize(QSize(48, 48));
     feedSwitchBtn->setIcon(QIcon(":/res/png2/topbar/workStart.png"));
     feedSwitchBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     feedSwitchBtn->setStyleSheet(topToolBtnStyle);
@@ -242,7 +242,8 @@ MainWidget::MainWidget(QWidget* parent)
     // 主堆栈页面
     stackedWidget = new QStackedWidget(this);
     stackedWidget->setFixedWidth(LCD_WIDTH - 10);
-    stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 20);
+    /* 页面高度保持原版，顶栏 60px 由第 0 行占位（上边距相应改为 0） */
+    stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - 20);
 
     // 通信检测页面
     pageComm = new communication(this);
@@ -386,7 +387,8 @@ MainWidget::MainWidget(QWidget* parent)
 
     // 页面布局
     mainGridLayout = new QGridLayout(this);
-    mainGridLayout->setContentsMargins(5, 10, 10, 10);
+    /* 顶栏行高 60 从屏幕顶端开始，页面起点（lineTitle/stackedWidget）与原版保持 y=62 不变 */
+    mainGridLayout->setContentsMargins(5, 0, 10, 10);
     mainGridLayout->setHorizontalSpacing(20);
     mainGridLayout->setRowMinimumHeight(0, TOPBAR_STATUS_HEIGHT);
     //    mainGridLayout->setRowMinimumHeight(4 ,LCD_TITLE_HEIGHT-10);
@@ -450,15 +452,15 @@ MainWidget::MainWidget(QWidget* parent)
     QHBoxLayout* topToolLayout = new QHBoxLayout(topToolBar);
     topToolLayout->setContentsMargins(45, 0, 0, 0);
     topToolLayout->setSpacing(0);
-    topToolLayout->addWidget(videoBtn);
+    topToolLayout->addWidget(videoBtn, 0, Qt::AlignVCenter);
     topToolLayout->addStretch(1);
-    topToolLayout->addWidget(systemHaltBtn);
+    topToolLayout->addWidget(systemHaltBtn, 0, Qt::AlignVCenter);
     topToolLayout->addStretch(1);
-    topToolLayout->addWidget(saveParamBtn);
+    topToolLayout->addWidget(saveParamBtn, 0, Qt::AlignVCenter);
     topToolLayout->addStretch(1);
-    topToolLayout->addWidget(feedSwitchBtn);
+    topToolLayout->addWidget(feedSwitchBtn, 0, Qt::AlignVCenter);
     topToolLayout->addStretch(1);
-    topToolLayout->addWidget(statInfoBtn);
+    topToolLayout->addWidget(statInfoBtn, 0, Qt::AlignVCenter);
     mainGridLayout->addWidget(topToolBar, 0, 0, 1, 7);
 
     mainGridLayout->addWidget(lineTitle, 1, 0, 1, 7);
@@ -467,10 +469,10 @@ MainWidget::MainWidget(QWidget* parent)
     //    mainGridLayout->addWidget(lineStatus, 3, 0, 1, 2, Qt::AlignBottom);
     //    mainGridLayout->addLayout(downHboxLayout, 4, 0, 1, 2, Qt::AlignBottom);
 
-    // 运行态顶部实时状态栏：开始工作后覆盖顶部工具按钮，停止后还原
+    // 运行态顶部实时状态栏：只覆盖“开始工作”按钮左侧区域，
+    // 按钮与时钟继续使用主界面真实控件，位置与空闲态完全一致
     topBarStatus = new TopBarStatusWidget(this);
-    mainGridLayout->addWidget(topBarStatus, 0, 0, 1, 7);
-    connect(topBarStatus, SIGNAL(stopRequested()), this, SLOT(onFeedSwitchBtnClickedSlt()));
+    topBarStatus->setWorkButton(feedSwitchBtn);
 
       // 警示框
     infoWidget = new myInfoWidget(this);
@@ -1234,7 +1236,7 @@ void MainWidget::CreateHomeWidget()
     homePageStackedWidget = new QStackedWidget(pageHome);
     homePageStackedWidget->setMaximumWidth(LCD_WIDTH - 10);
     /* 预留底部“分隔线 + 功能键”高度，避免页面白框压到下方按钮区 */
-    homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 80);
+    homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 110);
     homePageStackedWidget->setContentsMargins(leftMargin, 0, leftMargin, 0);
     // 样本选择页面
     pageManageScheme = new ManageSchemePage(pageHome);
@@ -1737,7 +1739,7 @@ void MainWidget::onHomePageStackedWidgetIndexChangedSlt(int index)
     {
     case HIGH_SET_OPR_PAGE_INDEX:
     case HIGH_SET_AI_PAGE_INDEX:
-        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 10);
+        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 60);
         for (int i = 0; i < 7; i++)
         {
             operateButton[i]->hide();
@@ -1746,7 +1748,7 @@ void MainWidget::onHomePageStackedWidgetIndexChangedSlt(int index)
         break;
     default:
         /* 预留底部“分隔线 + 功能键”高度，避免页面白框压到下方按钮区 */
-        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 80);
+        homePageStackedWidget->setFixedHeight(LCD_HEIGHT - 110);
         for (int i = 0; i < 7; i++)
         {
             operateButton[i]->show();
@@ -2138,7 +2140,11 @@ void MainWidget::TimeOutSlt()
     //! 供料状态可能由主屏同步或报警流程改变，这里兜底同步顶部状态栏
     if (topBarStatus != 0 && topBarStatus->isRunning() != (struGsh.bStatFeed == MODE_OPEN))
     {
-        topBarStatus->setRunning(struGsh.bStatFeed == MODE_OPEN);
+        const bool running = (struGsh.bStatFeed == MODE_OPEN);
+        topBarStatus->setRunning(running);
+        //! 按钮图标随运行态同步：开始工作后为 workStop，停止后还原 workStart
+        feedSwitchBtn->setIcon(QIcon(running ? ":/res/png2/topbar/workStop.png"
+                                             : ":/res/png2/topbar/workStart.png"));
     }
     if ((struCnfg.nAlarmEnable[ALARM_ID_PRESSURE] == 1 && ((struGsh.bAlarmPressure & 0x03) != 0))
         || (struCnfg.nAlarmEnable[ALARM_ID_BLOWER] == 1 && struGsh.bAlarmBlower == 1)
@@ -3724,7 +3730,7 @@ void MainWidget::onFunctionKeyChangedSlt(int index)
 void MainWidget::onStackedWidgetIndexChangedSlt(int index)
 {
     QString title;
-    stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - LCD_STATUS_HEIGHT - 10);
+    stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - LCD_STATUS_HEIGHT - 10);
     // 恢复标题栏行默认最小高度（AiModelSet 全屏页除外，见下方 case 置 0）
     mainGridLayout->setRowMinimumHeight(0, TOPBAR_STATUS_HEIGHT);
     switch (index)
@@ -3733,7 +3739,7 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
         ////    case SM_SCHEME_PARAM_PAGE:
     case SM_VIDEO_PAGE:
         //    case SM_AUTO_ANALYSIS_PAGE:
-        stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT);
+        stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT);
         break;
         //    case SM_SET_FACTORY:
         //        stackedWidget->setFixedHeight(LCD_HEIGHT-LCD_TITLE_HEIGHT);
@@ -3745,7 +3751,7 @@ void MainWidget::onStackedWidgetIndexChangedSlt(int index)
         stackedWidget->setFixedHeight(LCD_HEIGHT);
         break;
     default:
-        stackedWidget->setFixedHeight(LCD_HEIGHT - TOPBAR_STATUS_HEIGHT - 20);
+        stackedWidget->setFixedHeight(LCD_HEIGHT - LCD_TITLE_HEIGHT - 20);
         break;
     }
 

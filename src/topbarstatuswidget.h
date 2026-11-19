@@ -6,13 +6,19 @@
 #include <QPixmap>
 #include <QTimer>
 #include <QRect>
+#include <QString>
+#include <QVector>
 
 /* 运行态顶部状态栏高度（主界面布局按此高度让位） */
-#define TOPBAR_STATUS_HEIGHT 80
+#define TOPBAR_STATUS_HEIGHT 60
+
+/* 单次查询相比上次查询，丢包数/延迟超时数增长超过该值即判为异常 */
+#define AI_STATUS_DELTA_ALARM 10
 
 /*!
  * \brief AI实时状态轮询线程
- * 运行期间周期性读取各AI单元的丢包数/超时数，避免阻塞UI线程
+ * 运行期间周期性读取各AI单元状态，并缓存每块板卡上一次查询值；
+ * 单次查询丢包数或延迟超时数增量超过阈值时生成异常描述，交由顶部状态栏显示
  */
 class AiStatusPollThread : public QThread
 {
@@ -23,19 +29,23 @@ public:
     void stopPolling();
 
 signals:
-    void statusUpdated(quint32 discard_num, quint32 timeout_num);
+    /*! alarm_text 为空表示正常，否则为“通道x前视出现丢包，通道x后视推理异常”形式的描述 */
+    void statusUpdated(const QString& alarm_text);
 
 protected:
     void run();
 
 private:
     volatile bool m_stopped;
+    QVector<quint32> m_prev_discard;    // 各板卡上次查询的丢包数
+    QVector<quint32> m_prev_timeout;    // 各板卡上次查询的延迟超时数
+    QVector<bool> m_has_prev;           // 各板卡是否已有基准值
 };
 
 /*!
- * \brief 开始工作后的顶部实时状态栏
- * 空闲态由主界面的工具按钮显示，本控件只在运行态覆盖整个顶部区域：
- * 相机丢包卡片 + 推理延迟超时卡片 + 停止工作按钮 + 时钟
+ * \brief 开始工作后的顶部实时状态显示
+ * 只覆盖“开始工作”按钮左侧区域，直接显示状态图标、状态文字和绿色跑马灯；
+ * “开始工作”按钮与右侧时钟继续复用主界面的真实控件，位置保持不变
  */
 class TopBarStatusWidget : public QWidget
 {
@@ -46,61 +56,40 @@ public:
 
     bool isRunning() const { return m_running; }
 
+    /*! 指定主界面“开始工作”按钮，状态区右边界按其位置对齐 */
+    void setWorkButton(QWidget* button);
+
 public slots:
     void setRunning(bool running);
-    void onStatusUpdated(quint32 discard_num, quint32 timeout_num);
-
-signals:
-    void stopRequested();
+    void onStatusUpdated(const QString& alarm_text);
 
 protected:
     void paintEvent(QPaintEvent* event);
-    void mousePressEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
 
 private slots:
     void onAnimTimeout();
 
 private:
-    QPixmap loadAsset(const QString& name) const;
-    void drawNineSlice(QPainter& painter, const QPixmap& pixmap, const QRect& target,
-                       int src_slice, int dst_margin) const;
-    void drawPanel(QPainter& painter, const QRect& panel, bool alarm) const;
-    void drawCard(QPainter& painter, const QRect& area, const QString& title,
-                  const QString& subtitle, quint32 value, const QString& unit,
-                  const QString& status, bool alarm) const;
-    void drawSegments(QPainter& painter, const QRect& panel, bool alarm) const;
-    void drawStopButton(QPainter& painter, const QRect& button) const;
-    void drawClock(QPainter& painter, const QRect& area) const;
-
-    QRect panelRect() const;
-    QRect metricRect(int index) const;
-    QRect stopRect() const;
-    QRect clockRect() const;
+    QPixmap loadAsset(const QString& dir, const QString& name) const;
+    void drawStatus(QPainter& painter) const;
+    void drawSegments(QPainter& painter) const;
 
 private:
     bool m_running;             // 是否处于运行态
-    bool m_pressed_stop;        // 停止按钮按下标志
     int m_fade;                 // 入场/退场透明度 0~255
     int m_fade_target;          // 目标透明度
     int m_phase;                // 分段条流光相位
-    quint32 m_discard_num;      // 相机丢包数
-    quint32 m_timeout_num;      // 推理延迟超时数
+    QString m_alarm_text;       // 异常描述，空表示正常
 
     QTimer m_anim_timer;        // 流光/淡入淡出动画
-    QTimer m_clock_timer;       // 时钟刷新
     AiStatusPollThread* m_poller;
+    QWidget* m_work_button;     // 主界面“开始工作”按钮，用于确定状态区右边界
 
-    QPixmap m_dot_normal;       // dotNormal.png
-    QPixmap m_dot_alarm;        // dotAlarm.png
-    QPixmap m_seg_on;           // segOn.png
-    QPixmap m_seg_off;          // segOff.png
-    QPixmap m_seg_on_alarm;     // segOnAlarm.png
-    QPixmap m_btn_stop;         // btnStop.png
-    QPixmap m_btn_stop_pressed; // btnStopPressed.png
-    QPixmap m_icon_stop;        // iconStop.png
-    QPixmap m_topbar_bg;        // topbarBg.png
-    QPixmap m_icon_clock;       // iconClock.png
+    QPixmap m_state_normal;     // stateNormal.png    正常状态图标
+    QPixmap m_state_alarm;      // stateAlarm.png     异常状态图标
+    QPixmap m_seg_on;           // segOn.png          跑马灯亮段
+    QPixmap m_seg_off;          // segOff.png         跑马灯暗段
+    QPixmap m_topbar_bg;        // topbarBg.png       顶栏底色
 };
 
 #endif // TOPBARSTATUSWIDGET_H

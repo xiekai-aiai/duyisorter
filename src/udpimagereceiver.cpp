@@ -23,6 +23,12 @@ UdpImageReceiver::~UdpImageReceiver()
 
 void UdpImageReceiver::SetImageWidth(int width)
 {
+    if (width <= 0)
+    {
+        LOG_ERROR_STM("invalid image width:" << width << ", keep width:" << width_);
+        return;
+    }
+
     LOG_INFO_STM("is runnning:" << is_running_ << ", set width:" << width);
     width_ = width;
     bytesPerLine_ = 3 * width_;
@@ -30,12 +36,27 @@ void UdpImageReceiver::SetImageWidth(int width)
 
 void UdpImageReceiver::SetImageHegiht(int height)
 {
+    if (height <= 0)
+    {
+        LOG_ERROR_STM("invalid image height:" << height << ", keep height:" << height_);
+        return;
+    }
+
     LOG_INFO_STM("is runnning:" << is_running_ << ", set height:" << height);
     height_ = height;
 }
 
 void UdpImageReceiver::resetStreamImage(CameraStreamState& state)
 {
+    if (width_ <= 0 || height_ <= 0)
+    {
+        LOG_ERROR_STM("invalid image size, width:" << width_ << ", height:" << height_);
+        state.cur_image = QImage();
+        state.cur_row = 0;
+        state.line_buffer.clear();
+        return;
+    }
+
     state.cur_image = QImage(width_, height_,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
         QImage::Format_BGR888);
@@ -67,6 +88,13 @@ void UdpImageReceiver::start()
 {
     if (is_running_)
     {
+        return;
+    }
+
+    if (width_ <= 0 || height_ <= 0)
+    {
+        LOG_ERROR_STM("invalid image size, width:" << width_ << ", height:" << height_);
+        emit statusChanged(QString("invalid image size %1x%2").arg(width_).arg(height_));
         return;
     }
 
@@ -228,6 +256,13 @@ void UdpImageReceiver::processDatagram(const QByteArray& datagram,
     {
         LOG_TRACE_STM("line buffer size:" << state.line_buffer.size() << ", line image len:" << len
             << ", bytesPerLine_:" << bytesPerLine_);
+        return;
+    }
+
+    if (state.cur_row >= height_)
+    {
+        LOG_WARN_STM("row index out of range, cur_row:" << state.cur_row << ", height:" << height_);
+        resetStreamImage(state);
         return;
     }
 

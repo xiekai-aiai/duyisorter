@@ -638,17 +638,21 @@ void StatusInfoPage::CreateGeneralPage()
 
     aiInfoGroup = new myGroupBox(myLan.ai_status_info);
     aiGridLayout = new QGridLayout(aiInfoGroup);
-    aiGridLayout->setContentsMargins(12, 8, 12, 8);
-    aiGridLayout->setHorizontalSpacing(24);
-    aiGridLayout->setVerticalSpacing(6);
+    aiGridLayout->setContentsMargins(10, 6, 10, 6);
+    aiGridLayout->setHorizontalSpacing(8);
+    aiGridLayout->setVerticalSpacing(4);
+
+    //! 8个通道要在页面宽度内完整显示，字体与间距统一减小
+    const QFont ai_font = g_Config::getInstance()->getFont(FONT_SIZE_16);
 
     aiStatusLabels.resize(ROW_LABELS.size());
     for (int r = 0; r < ROW_LABELS.size(); ++r)
     {
         // 第一列是标签列
         myLabel* lbl = new myLabel(ROW_LABELS[r]);
+        lbl->setFont(ai_font);
         lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        lbl->setMinimumWidth(160); // 保证标签列不被挤压
+        lbl->setMinimumWidth(150); // 保证标签列不被挤压
         aiGridLayout->addWidget(lbl, r, 0);
         aiStatusLabels[r].append(lbl);
     }
@@ -662,8 +666,9 @@ void StatusInfoPage::CreateGeneralPage()
         for (int r = 0; r < col_info.size(); r++)
         {
             myLabel* lbl = new myLabel(col_info[r]);
+            lbl->setFont(ai_font);
             lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-            lbl->setMinimumWidth(160); // 保证标签列不被挤压
+            lbl->setMinimumWidth(36);
             aiGridLayout->addWidget(lbl, r, c + 1);
             aiStatusLabels[r].append(lbl);
         }
@@ -672,6 +677,11 @@ void StatusInfoPage::CreateGeneralPage()
     LOG_INFO_STM("ai status label row:" << aiStatusLabels.size() << ", col:" << aiStatusLabels[0].size());
 
     aiGridLayout->setColumnStretch(0, 0);
+    //! 数值列等分剩余宽度，8个通道都能落在可见区域内
+    for (int c = 1; c <= col_num; c++)
+    {
+        aiGridLayout->setColumnStretch(c, 1);
+    }
 
 
     /* 构建参考相机的布局 */

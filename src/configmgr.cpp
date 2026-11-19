@@ -2,6 +2,16 @@
 #include "sqlitemgr.h"
 #include "unilog.h"
 
+namespace
+{
+    // AI 板 conf/param_config.json 默认值：config 表缺项时使用
+    const quint16 kDefaultCollectHeight = 64;
+    const quint16 kDefaultInferHeight = 64;
+    const quint16 kDefaultImgViewHeight = 500;
+    const quint16 kDefaultVideoViewHeight = 256;
+    const quint16 kDefaultSlidingStep = 0;
+}
+
 ConfigMgr::ConfigMgr() {}
 
 ConfigMgr::~ConfigMgr() {}
@@ -11,7 +21,8 @@ bool ConfigMgr::Init()
     QMap<QString, ConfigItem> cfg_map;
     if (!SQLiteMgr::Instance().LoadAllCfg(cfg_map))
     {
-        return false;
+        // 读取失败时继续用缺省值初始化，避免所有高度为 0
+        LOG_ERROR_STM("load config failed, use default values");
     }
 
     InitAiCfgInfo(cfg_map);
@@ -24,12 +35,18 @@ bool ConfigMgr::Init()
 void ConfigMgr::InitAiCfgInfo(const QMap<QString, ConfigItem>& cfg_map)
 {
     AiCfgInfo info;
+    bool need_persist = false;
 
     // 采集高度
     QString key = QString(GROUP_NAME_AI) + ".collect_height";
     if (cfg_map.contains(key))
     {
         info.collect_height_ = cfg_map[key].param_value_.toUShort();
+    }
+    else
+    {
+        info.collect_height_ = kDefaultCollectHeight;
+        need_persist = true;
     }
 
     // 推理高度
@@ -38,12 +55,22 @@ void ConfigMgr::InitAiCfgInfo(const QMap<QString, ConfigItem>& cfg_map)
     {
         info.infer_height_ = cfg_map[key].param_value_.toUShort();
     }
+    else
+    {
+        info.infer_height_ = kDefaultInferHeight;
+        need_persist = true;
+    }
 
     // 图片预览高度
     key = QString(GROUP_NAME_AI) + ".img_view_height";
     if (cfg_map.contains(key))
     {
         info.img_view_height_ = cfg_map[key].param_value_.toUShort();
+    }
+    else
+    {
+        info.img_view_height_ = kDefaultImgViewHeight;
+        need_persist = true;
     }
 
     // 视频预览高度
@@ -52,6 +79,11 @@ void ConfigMgr::InitAiCfgInfo(const QMap<QString, ConfigItem>& cfg_map)
     {
         info.video_view_height_ = cfg_map[key].param_value_.toUShort();
     }
+    else
+    {
+        info.video_view_height_ = kDefaultVideoViewHeight;
+        need_persist = true;
+    }
 
     // 复选高度
     key = QString(GROUP_NAME_AI) + ".sliding_step";
@@ -59,8 +91,23 @@ void ConfigMgr::InitAiCfgInfo(const QMap<QString, ConfigItem>& cfg_map)
     {
         info.sliding_step_ = cfg_map[key].param_value_.toUShort();
     }
+    else
+    {
+        info.sliding_step_ = kDefaultSlidingStep;
+        need_persist = true;
+    }
 
     ai_cfg_info_ = info;
+
+    if (need_persist)
+    {
+        LOG_WARN_STM("AI config missing in db, defaults applied: collect:" << info.collect_height_
+            << ", infer:" << info.infer_height_ << ", img view:" << info.img_view_height_
+            << ", video view:" << info.video_view_height_ << ", sliding:" << info.sliding_step_);
+
+        // 缺省值写回 config 表，供后续启动与工厂设置页使用（写失败不影响内存值）
+        SetAiCfgInfo(info);
+    }
 }
 
 AiCfgInfo ConfigMgr::GetAiCfgInfo()

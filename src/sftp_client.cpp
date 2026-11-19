@@ -212,6 +212,12 @@ bool SftpClient::mkdir_p(const std::string& remote_dir, int mode)
 
 bool SftpClient::upload(const std::string& local_file, const std::string& remote_file)
 {
+    return upload(local_file, remote_file, UploadProgressFn());
+}
+
+bool SftpClient::upload(const std::string& local_file, const std::string& remote_file,
+    const UploadProgressFn& progress)
+{
     if (!connect())
     {
         LOG_ERROR_STM("upload: not connected, call connect() first");
@@ -224,6 +230,15 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
         LOG_ERROR_STM("failed to open local file: " << local_file);
         return false;
     }
+
+    // 文件总大小（用于进度百分比计算）
+    in.seekg(0, std::ios::end);
+    long long total_size = static_cast<long long>(in.tellg());
+    if (total_size < 0)
+    {
+        total_size = 0;
+    }
+    in.seekg(0, std::ios::beg);
 
     bool ret{ true };
     LIBSSH2_SFTP_HANDLE* handle{ nullptr };
@@ -238,6 +253,14 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
             break;
         }
 
+        if (progress && !progress(0, total_size))
+        {
+            ret = false;
+            LOG_ERROR_STM("upload cancelled before start: " << local_file);
+            break;
+        }
+
+        long long sent = 0;
         char buffer[32768];
         while (ret && (in.read(buffer, sizeof(buffer)) || (in.gcount() > 0)))
         {
@@ -253,6 +276,19 @@ bool SftpClient::upload(const std::string& local_file, const std::string& remote
                 }
                 snd_cnt += written;
             } while (snd_cnt < in.gcount());
+
+            if (!ret)
+            {
+                break;
+            }
+
+            sent += in.gcount();
+            if (progress && !progress(sent, total_size))
+            {
+                ret = false;
+                LOG_ERROR_STM("upload cancelled by user: " << local_file);
+                break;
+            }
         }
     } while (false);
 
