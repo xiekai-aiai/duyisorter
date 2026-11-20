@@ -388,6 +388,11 @@ void factorySet::onImgSliderHeightEditPressedSlt()
     if (ret == QDialog::Accepted)
     {
         quint16 value = inputDlg.getValue();
+        int fetch_h = imgFetchHeightEdit->text().toShort();
+        int inf_h = imgInferHeightEdit->text().toShort();
+        // 高精度复选高度必须小于等于采集高度或推理高度最小值的一般
+        int sld_h = qMin(fetch_h, inf_h) / 2;
+        value = (value > sld_h) ? sld_h : value;
         QString str = QString("%1").arg(value);
         imgSliderHeightEdit->setText(str);
     }
