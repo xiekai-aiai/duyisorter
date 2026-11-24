@@ -1,0 +1,25 @@
+###########################################################################
+# libssh2 installation details
+#
+# Copyright (C) The libssh2 project and its contributors.
+# SPDX-License-Identifier: BSD-3-Clause
+###########################################################################
+
+prefix=/home/root123/Desktop/tools/3方依赖库/libssh2/output/x86
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libssh2
+URL: https://libssh2.org/
+Description: Library for SSH-based communication
+License: BSD-3-Clause
+Copyright: Copyright (C) The libssh2 project and its contributors.
+Version: 1.11.2_DEV
+Source: https://libssh2.org/download/libssh2-1.11.2_DEV.tar.gz
+Requires: 
+Requires.private: libcrypto
+Libs: -L${libdir} -lssh2 
+Libs.private: -L/home/root123/Desktop/duyisorter/src/3rdparty/openssl/x86/lib -lcrypto
+Cflags: -I${includedir}
+Link.ABI: c
