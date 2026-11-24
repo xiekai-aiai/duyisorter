@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mypushbutton.h
  * \brief       按钮控件头文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef MYPUSHBUTTON_H
 #define MYPUSHBUTTON_H
@@ -35,6 +35,11 @@ public:
 
     void setRedColor(int color);
     void setBasicStyle(void);
+    void setModeToggleStyle(void);   //! 模式切换按钮套用单选高亮贴图外观（不改逻辑）
+    void setTechCheckBoxStyle(bool checked); //! 科技风复选框外观（常态/悬停/按下/选中/禁用）
+    void setTechAdjustStyle(bool plus);      //! 科技风加/减按钮外观（常态/按下）
+    void setTechFineAdjustStyle(int direction);
+    void setTechPausePlayStyle(bool playing); //! 科技风细调箭头外观（0=左双 1=左单 2=右单 3=右双）
     void setButtonFont(QFont font);
 
 signals:

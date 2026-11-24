@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        autoanalysiswidget.cpp
  * \brief       彩色机型自动分析(碎米率仿真)源文件
- * \date        2017.02.14
+ * \date        2026.11.21
  */
 #include "autoanalysiswidget.h"
 //extern int nSmallMatArea;
@@ -71,6 +71,8 @@ void AutoAnalysisWidget::createPage()
     m_chanNum->setFixedSize(SMALL_BTN_WIDTH+20, BTN_HEIGHT);
     m_plusChanNumBtn = new myPushButton("", myIcon.Action_Plus);
     m_minusChanNumBtn = new myPushButton("", myIcon.Action_Minus);
+    m_plusChanNumBtn->setTechAdjustStyle(true);
+    m_minusChanNumBtn->setTechAdjustStyle(false);
     m_pCaptureBtn = new myPushButton(myLan.image_capture,myIcon.Sorter_CameraRGB);
     m_pSimulateBtn = new myPushButton(myLan.ai_simulate,myIcon.Sorter_AI);
 

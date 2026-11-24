@@ -1,82 +1,109 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mymessagebox.cpp
  * \brief       消息框控件源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "mymessagebox.h"
+#include <QFrame>
+#include <QLabel>
 
 myMessageBox::myMessageBox(int style, QString text,QWidget *parent) :
     QDialog(parent)
 {
-    int margin = 25;
-    int nLabelHei;
-
-    switch(LCD_WIDTH) {
-    case 1024:
-        margin = 10;
-        nLabelHei = 120;
-        break;
-    case 640:
-        margin = 5;
-        nLabelHei = 80;
-        break;
-    }
+    const int dlgW = 600;
+    const int dlgH = 340;
+    const int btnW = 108;
+    const int btnH = 32;
 
     this->setWindowModality(Qt::ApplicationModal);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    setGeometry(LCD_WIDTH/4,LCD_HEIGHT/4,LCD_WIDTH/2,LCD_HEIGHT/2);
-//    setStyleSheet(g_style2);
+    setFixedSize(dlgW, dlgH);
+    setGeometry((LCD_WIDTH - dlgW)/2, (LCD_HEIGHT - dlgH)/2, dlgW, dlgH);
+
+    /* 科技风深色背景 */
     QPalette palette;
-    QPixmap pixmap1(":/res/png/messageBack.png");
-    pixmap1 = pixmap1.scaled(LCD_WIDTH/2+5,LCD_HEIGHT/2+5);
+    QPixmap pixmap1(":/res/png2/dialog/dlgBg.png");
+    pixmap1 = pixmap1.scaled(dlgW, dlgH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     palette.setBrush(backgroundRole(),QBrush(pixmap1));
     setPalette(palette);
     setAutoFillBackground(true);
 
-    textLabel   = new myLabel(text, this);
-    textLabel->setGeometry(QRect(margin,this->height()/2-30,this->width()-2*margin,nLabelHei));
-    textLabel->setAlignment(Qt::AlignHCenter);
-    iconLabel   = new myLabel("", this);
-    iconLabel->setGeometry(QRect(margin,margin,50,50));
-    iconLabel->setScaledContents(true);
-    okBtn      =  new myPushButton(myLan.ok, QIcon(), this);
-    okBtn->setGeometry(QRect(width()-BTN_WIDTH-margin,height()-60,BTN_WIDTH,BTN_HEIGHT));
-    QString g_style1 = "background-color: rgb(124, 186, 224);""outline: none;""border-radius: 8;";
+    QFont titleFont = g_Config::getInstance()->getFont();
+    titleFont.setPixelSize(15);
+    QFont textFont = g_Config::getInstance()->getFont();
+    textFont.setPixelSize(20);
 
-    okBtn->setStyleSheet(g_style1);
+    /* 标题栏 */
+    QLabel *titleLabel = new QLabel(tr("系统提示"), this);
+    titleLabel->setGeometry(QRect(24, 9, 260, 28));
+    titleLabel->setFont(titleFont);
+    titleLabel->setStyleSheet("color: #CFEFF5; background: transparent;");
+
+    QFrame *titleLine = new QFrame(this);
+    titleLine->setGeometry(QRect(0, 46, dlgW, 1));
+    titleLine->setStyleSheet("background-color: #143C4C; border: none;");
+
+    iconLabel   = new myLabel("", this);
+    iconLabel->setGeometry(QRect((dlgW - 48)/2, 78, 48, 48));
+    iconLabel->setScaledContents(true);
+
+    textLabel   = new myLabel(text, this);
+    textLabel->setGeometry(QRect(40, 156, dlgW - 80, 100));
+    textLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    textLabel->setWordWrap(true);
+    textLabel->setFont(textFont);
+
+    /* 深色科技风按钮（保留文字，随语言切换） */
+    QString btnStyle = QString(
+        "QPushButton {"
+        "  background-color: #0B2230;"
+        "  border: 1px solid #35D6E6;"
+        "  border-radius: 2px;"
+        "  color: #CFEFF5;"
+        "  font-size: 14px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover {"
+        "  background-color: #10384C;"
+        "}"
+        "QPushButton:pressed {"
+        "  background-color: #071B26;"
+        "  border-color: #2AB5C4;"
+        "}");
+
+    okBtn      =  new myPushButton(myLan.ok, QIcon(), this);
+    okBtn->setGeometry(QRect(dlgW - btnW - 24, dlgH - btnH - 16, btnW, btnH));
+    okBtn->setStyleSheet(btnStyle);
 
     cancelBtn  =  new myPushButton(myLan.cancel, QIcon(), this);
-    cancelBtn->setGeometry(QRect(margin,this->height()-60,BTN_WIDTH,BTN_HEIGHT));
-    QString g_style2 = "background-color: rgb(96, 156, 194);""outline: none;""border-radius: 8;";
-    cancelBtn->setStyleSheet(g_style2);
-
+    cancelBtn->setGeometry(QRect(24, dlgH - btnH - 16, btnW, btnH));
+    cancelBtn->setStyleSheet(btnStyle);
 
     QPixmap pixmap;
 
     switch(style) {
     case MSG_QUES:
-        pixmap = QPixmap(":/res/png/Message_Help.png");
-        iconLabel->setPixmap(pixmap);
+        pixmap = QPixmap(":/res/png2/dialog/ico_info.png");
         break;
     case MSG_TIPS:
-        pixmap = QPixmap(":/res/png/Message_Info.png");
+        pixmap = QPixmap(":/res/png2/dialog/ico_info.png");
         cancelBtn->setHidden(true);
         break;
     case MSG_INFO:
-        pixmap = QPixmap(":/res/png/Message_Info.png");
+        pixmap = QPixmap(":/res/png2/dialog/ico_info.png");
         okBtn->setHidden(true);
         cancelBtn->setHidden(true);
         break;
     case MSG_WARN:
-        pixmap = QPixmap(":/res/png/Message_Warning.png");
+        pixmap = QPixmap(":/res/png2/dialog/ico_warn.png");
         okBtn->setHidden(true);
         cancelBtn->setText(myLan.back);
         break;
     case MSG_ABOUT:
-        pixmap = QPixmap(":/res/png/Message_Info.png");
+        pixmap = QPixmap(":/res/png2/dialog/ico_info.png");
         okBtn->setHidden(true);
         cancelBtn->setText(myLan.back);
         break;
@@ -115,30 +142,63 @@ myInfoWidget::myInfoWidget(QWidget *parent) :
 {
     setGeometry(0, 0, LCD_WIDTH, LCD_HEIGHT);
     config = g_Config::getInstance();
-    int margin = 25;
+
+    const int dlgW = 600;
+    const int dlgH = 340;
+    const int dlgX = (LCD_WIDTH - dlgW)/2;
+    const int dlgY = (LCD_HEIGHT - dlgH)/2;
 
     widget = new QWidget(this);
-    widget->setGeometry(width()/4, height()/4, width()/2, height()/2);
-//    widget->setStyleSheet(g_style2);
+    widget->setGeometry(dlgX, dlgY, dlgW, dlgH);
 
+    /* 科技风深色背景 */
     QPalette palette;
-    QPixmap pixmap1(":/res/png/messageBack.png");
-    pixmap1 = pixmap1.scaled(LCD_WIDTH/2+10,LCD_HEIGHT/2+10);
+    QPixmap pixmap1(":/res/png2/dialog/dlgBg.png");
+    pixmap1 = pixmap1.scaled(dlgW, dlgH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     palette.setBrush(backgroundRole(),QBrush(pixmap1));
     widget->setPalette(palette);
     widget->setAutoFillBackground(true);
 
-    warnningLabel = new QLabel(widget);
-    warnningLabel->setFont(config->getFont());
-    warnningLabel->setGeometry(margin, widget->height()/2, widget->width()-2*margin, 60);
-    warnningLabel->setAlignment(Qt::AlignHCenter);
+    QFont titleFont = config->getFont();
+    titleFont.setPixelSize(15);
+    QFont msgFont = config->getFont();
+    msgFont.setPixelSize(20);
+
+    QLabel *titleLabel = new QLabel(tr("系统提示"), widget);
+    titleLabel->setGeometry(QRect(24, 9, 260, 28));
+    titleLabel->setFont(titleFont);
+    titleLabel->setStyleSheet("color: #CFEFF5; background: transparent;");
+
+    QFrame *titleLine = new QFrame(widget);
+    titleLine->setGeometry(QRect(0, 46, dlgW, 1));
+    titleLine->setStyleSheet("background-color: #143C4C; border: none;");
+
     iconLabel = new QLabel(widget);
-    iconLabel->setGeometry(margin,margin,50,50);
+    iconLabel->setGeometry(QRect((dlgW - 48)/2, 78, 48, 48));
     iconLabel->setScaledContents(true);
-    iconLabel->setPixmap(QPixmap(":/res/png/Message_Info.png"));
-    cancelBtn = new myPushButton(myLan.cancel,myIcon.Action_Cancel,this);
-    cancelBtn->setGeometry(QRect(width() / 2 + 15, height() / 2 + 60, BTN_WIDTH, BTN_HEIGHT));
+    iconLabel->setPixmap(QPixmap(":/res/png2/dialog/ico_info.png"));
+
+    warnningLabel = new QLabel(widget);
+    warnningLabel->setFont(msgFont);
+    warnningLabel->setGeometry(40, 156, dlgW - 80, 100);
+    warnningLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    warnningLabel->setWordWrap(true);
+    warnningLabel->setStyleSheet("color: #EAF6FA; background: transparent;");
+
+    cancelBtn = new myPushButton(myLan.cancel, QIcon(), this);
+    cancelBtn->setGeometry(QRect(dlgX + dlgW - 108 - 24, dlgY + dlgH - 32 - 16, 108, 32));
+    cancelBtn->setStyleSheet(
+        "QPushButton {"
+        "  background-color: #0B2230;"
+        "  border: 1px solid #35D6E6;"
+        "  border-radius: 2px;"
+        "  color: #CFEFF5;"
+        "  font-size: 14px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover { background-color: #10384C; }"
+        "QPushButton:pressed { background-color: #071B26; border-color: #2AB5C4; }");
     cancelBtn->hide();
 
     connect(cancelBtn,SIGNAL(pressed()),this,SLOT(onCancelBtnClicked()));
@@ -216,34 +276,67 @@ myAIInfoWidget::myAIInfoWidget(QWidget *parent) :
 {
     setGeometry(0, 0, LCD_WIDTH, LCD_HEIGHT);
     config = g_Config::getInstance();
-    int margin = 25;
+
+    const int dlgW = 600;
+    const int dlgH = 340;
+    const int dlgX = (LCD_WIDTH - dlgW)/2;
+    const int dlgY = (LCD_HEIGHT - dlgH)/2;
 
     widget = new QWidget(this);
-    widget->setGeometry(width()/4, height()/4, width()/2, height()/2);
-//    widget->setStyleSheet(g_style2);
+    widget->setGeometry(dlgX, dlgY, dlgW, dlgH);
 
+    /* 科技风深色背景 */
     QPalette palette;
-    QPixmap pixmap1(":/res/png/messageBack.png");
-    pixmap1 = pixmap1.scaled(LCD_WIDTH/2+10,LCD_HEIGHT/2+10);
+    QPixmap pixmap1(":/res/png2/dialog/dlgBg.png");
+    pixmap1 = pixmap1.scaled(dlgW, dlgH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     palette.setBrush(backgroundRole(),QBrush(pixmap1));
     widget->setPalette(palette);
     widget->setAutoFillBackground(true);
 
-    warnningLabel = new QLabel(widget);
-    warnningLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
-    warnningLabel->setGeometry(margin, widget->height()/2, widget->width()-2*margin, 320);
-    warnningLabel->setAlignment(Qt::AlignHCenter);
+    QFont titleFont = config->getFont();
+    titleFont.setPixelSize(15);
+    QFont msgFont = config->getFont();
+    msgFont.setPixelSize(20);
+
+    QLabel *titleLabel = new QLabel(tr("系统提示"), widget);
+    titleLabel->setGeometry(QRect(24, 9, 260, 28));
+    titleLabel->setFont(titleFont);
+    titleLabel->setStyleSheet("color: #CFEFF5; background: transparent;");
+
+    QFrame *titleLine = new QFrame(widget);
+    titleLine->setGeometry(QRect(0, 46, dlgW, 1));
+    titleLine->setStyleSheet("background-color: #143C4C; border: none;");
+
     iconLabel = new QLabel(widget);
-    iconLabel->setGeometry(margin,margin,50,50);
+    iconLabel->setGeometry(QRect((dlgW - 48)/2, 78, 48, 48));
     iconLabel->setScaledContents(true);
-    iconLabel->setPixmap(QPixmap(":/res/png/Message_Info.png"));
-    cancelBtn = new myPushButton(myLan.cancel,myIcon.Action_Cancel,this);
-    cancelBtn->setGeometry(QRect(width() / 2 + 15, height() / 2 + 60, BTN_WIDTH, BTN_HEIGHT));
+    iconLabel->setPixmap(QPixmap(":/res/png2/dialog/ico_info.png"));
+
+    warnningLabel = new QLabel(widget);
+    warnningLabel->setFont(msgFont);
+    warnningLabel->setGeometry(40, 156, dlgW - 80, 100);
+    warnningLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    warnningLabel->setWordWrap(true);
+    warnningLabel->setStyleSheet("color: #EAF6FA; background: transparent;");
+
+    cancelBtn = new myPushButton(myLan.cancel, QIcon(), this);
+    cancelBtn->setGeometry(QRect(dlgX + dlgW - 108 - 24, dlgY + dlgH - 32 - 16, 108, 32));
+    cancelBtn->setStyleSheet(
+        "QPushButton {"
+        "  background-color: #0B2230;"
+        "  border: 1px solid #35D6E6;"
+        "  border-radius: 2px;"
+        "  color: #CFEFF5;"
+        "  font-size: 14px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover { background-color: #10384C; }"
+        "QPushButton:pressed { background-color: #071B26; border-color: #2AB5C4; }");
     cancelBtn->hide();
 
     connect(cancelBtn,SIGNAL(pressed()),this,SLOT(onCancelBtnClicked()));
-}
+} 
 
 /* 析构函数*/
 myAIInfoWidget::~myAIInfoWidget()
@@ -251,18 +344,9 @@ myAIInfoWidget::~myAIInfoWidget()
 }
 
 void myAIInfoWidget::setMsgHeightRatio(int ratio){
-    int margin = 25;
-    if(ratio <= 2){
-        ratio = 2;
-    }
-    if(ratio <= 3 && ratio > 2){
-        ratio = 3;
-    }
-    if(ratio <= 4 && ratio > 3){
-        ratio = 4;
-    }
-    warnningLabel->setGeometry(margin, widget->height()/ratio, widget->width()-2*margin, 320);
-
+    /* 新版弹窗固定文本区域，ratio 仅保留接口兼容 */
+    Q_UNUSED(ratio);
+    warnningLabel->setGeometry(40, 146, widget->width() - 80, 130);
 }
 
 void myAIInfoWidget::setVisableCancelBtn(bool isShow)

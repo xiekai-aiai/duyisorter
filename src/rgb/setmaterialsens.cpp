@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        setmaterialsens.cpp
  * \brief       彩色机型设置灵敏度界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "setmaterialsens.h"
 #include "unilog.h"
@@ -2232,6 +2232,8 @@ void setMaterialSens::createAIPage()
         AIBalanceLbe[i] = new myLineEdit(strAIBalance, pageAI);
 
         AIModeBtn[i] = new myPushButton(myLan.sort, QIcon(), pageAI);
+        /* 正反选按钮：套用前视/后视模式切换按钮的高亮风格，逻辑不变 */
+        AIModeBtn[i]->setModeToggleStyle();
         AIModeTypeBtn[i] = new myPushButton(myLan.general, QIcon(), pageAI);
         AIMelonWhiteLbe[i] = new myLineEdit(strAIWaterWhite, pageAI);
         AIMelonWhiteLabel[i] = new myLabel(myLan.material_watermelon_white_small, pageAI);
@@ -2241,6 +2243,9 @@ void setMaterialSens::createAIPage()
         AIModeRatioTypeBtnLabel[i] = new myLabel(myLan.proportion);
         AIModeGeneralTypeBtn[i] = new myPushButton("", QIcon());
         AIModeRatioTypeBtn[i] = new myPushButton("", QIcon());
+        /* 通用/比例勾选指示：统一科技风方形复选框 */
+        AIModeGeneralTypeBtn[i]->setTechCheckBoxStyle(false);
+        AIModeRatioTypeBtn[i]->setTechCheckBoxStyle(false);
         m_AIRsvBtn[i] = new myPushButton(myLan.reserved, QIcon());
         m_AIRsvBtn[i]->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
 
@@ -2423,8 +2428,8 @@ void setMaterialSens::updateAIList()
             type = struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[i].nIntelType;
             if (type == 0)
             {
-                AIModeGeneralTypeBtn[i]->setIcon(myIcon.Action_Apply_Icon);
-                AIModeRatioTypeBtn[i]->setIcon(QIcon());
+                AIModeGeneralTypeBtn[i]->setTechCheckBoxStyle(true);
+                AIModeRatioTypeBtn[i]->setTechCheckBoxStyle(false);
                 AIRowLabel[i]->setEnabled(true);
                 AIRowLbe[i]->setEnabled(true);
                 AIPercentLabel[i]->setEnabled(true);
@@ -2434,8 +2439,8 @@ void setMaterialSens::updateAIList()
             }
             else if (type == 1)
             {
-                AIModeGeneralTypeBtn[i]->setIcon(QIcon());
-                AIModeRatioTypeBtn[i]->setIcon(myIcon.Action_Apply_Icon);
+                AIModeGeneralTypeBtn[i]->setTechCheckBoxStyle(false);
+                AIModeRatioTypeBtn[i]->setTechCheckBoxStyle(true);
                 AIRowLabel[i]->setEnabled(false);
                 AIRowLbe[i]->setEnabled(false);
                 AIPercentLabel[i]->setEnabled(false);
@@ -2731,8 +2736,8 @@ void setMaterialSens::getAIIndex(int index)
         if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType != 0)
         {
             struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType = 0;
-            AIModeGeneralTypeBtn[index / aiSensNum]->setIcon(myIcon.Action_Apply_Icon);
-            AIModeRatioTypeBtn[index / aiSensNum]->setIcon(QIcon());
+            AIModeGeneralTypeBtn[index / aiSensNum]->setTechCheckBoxStyle(true);
+            AIModeRatioTypeBtn[index / aiSensNum]->setTechCheckBoxStyle(false);
 
 
             AIRowLabel[index / aiSensNum]->setEnabled(true);
@@ -2754,8 +2759,8 @@ void setMaterialSens::getAIIndex(int index)
         if (struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType != 1)
         {
             struCnfp.struGroupIdentify[struGsh.nLevel][currentChan].struIntel[index / aiSensNum].nIntelType = 1;
-            AIModeGeneralTypeBtn[index / aiSensNum]->setIcon(QIcon());
-            AIModeRatioTypeBtn[index / aiSensNum]->setIcon(myIcon.Action_Apply_Icon);
+            AIModeGeneralTypeBtn[index / aiSensNum]->setTechCheckBoxStyle(false);
+            AIModeRatioTypeBtn[index / aiSensNum]->setTechCheckBoxStyle(true);
 
             AIRowLabel[index / aiSensNum]->setEnabled(false);
             AIRowLbe[index / aiSensNum]->setEnabled(false);

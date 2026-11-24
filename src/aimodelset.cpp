@@ -6,9 +6,12 @@
 #include "cmdworker.h"
 #include "unilog.h"
 #include "sqlitemgr.h"
+#include "globalparams.h"
+#include "common/darktitlebar.h"
 #include <queue>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 // ── unilog LOG_*_STM 依赖：允许 Qt 类型直接通过 << 输出 ──
 #ifndef AIMODELSET_QT_STREAM_FIX
@@ -31,6 +34,7 @@ inline std::ostream& operator<<(std::ostream& os, const QStringList& l) {
 #include <QImageReader>
 #include <QTimer>
 #include <QMouseEvent>
+#include <QPaintEvent>
 #include <QMessageBox>
 #include <QDir>
 #include <QStandardPaths>
@@ -99,6 +103,9 @@ static const int CLS_PAD_X   = 2;    // QSS 内边距
 static const int CLS_ICON_W  = 14;   // 标签颜色块宽度
 // 按钮额外占宽 = 左右切片 + 左右内边距 + 颜色块 + 图标文字间距(4) + 余量(8)
 static const int CLS_CHROME  = CLS_SLICE_X * 2 + CLS_PAD_X * 2 + CLS_ICON_W + 4 + 8;
+
+// ── 顶部新增“新建模型:xxx, 类别数:x”提示行 + 分割线后，页面内容整体下移量 ──
+static const int PAGE_CONTENT_OFFSET = 60;
 
 // 计算类别按钮容纳指定文字所需宽度（fontSize 与 QSS 中 font-size 一致）
 static int classBtnWidth(const QFont& baseFont, const QString& text, int fontSize)
@@ -263,6 +270,196 @@ static QString formatFileSize(qint64 bytes)
     if (v >= KB) return QString("%1 KB").arg(v / KB, 0, 'f', 2);
     return QString("%1 B").arg(bytes);
 }
+
+
+// ── 训练阶段细线进度条：数据准备中(1/8) / 训练中(6/8) / 模型转换中(1/8) ──
+class TrainStageBar : public QWidget
+{
+public:
+    TrainStageBar(const QStringList& runningNames, const QStringList& doneNames,
+                  QWidget* parent = nullptr)
+        : QWidget(parent), m_runningNames(runningNames), m_doneNames(doneNames)
+    {
+        setAttribute(Qt::WA_TransparentForMouseEvents);
+        // 数据准备 / 模型转换阶段的蓝色心跳
+        m_breathTimer = new QTimer(this);
+        m_breathTimer->setInterval(40);
+        connect(m_breathTimer, &QTimer::timeout, this, [this]() {
+            m_breathPhase += 0.16;
+            if (m_breathPhase > 6.283185307)
+                m_breathPhase -= 6.283185307;
+            update();
+        });
+    }
+
+    // progress < 0：未开始训练，整条进度条隐藏；0：数据准备；1~89：训练中；
+    // 90~99：模型转换；>=100：全部完成
+    void setProgress(int progress)
+    {
+        m_progress = progress;
+        setVisible(progress >= 0);
+        updateBreathTimer();
+        update();
+    }
+
+    void reset()
+    {
+        m_progress = -1;
+        setVisible(false);
+        updateBreathTimer();
+        update();
+    }
+
+protected:
+    void paintEvent(QPaintEvent*) override
+    {
+        QPainter p(this);
+        p.setRenderHint(QPainter::Antialiasing, true);
+
+        const int gap = 8;
+        const double weights[3] = { 1.0, 6.0, 1.0 };
+        const double unit = (width() - gap * 2) / 8.0;
+
+        const int barH = 3;
+        const int labelTop = barH + 1;
+        const int active = activeStage();
+
+        // 心跳亮度 0.38 ~ 1.0
+        const double breath = 0.5 + 0.5 * std::sin(m_breathPhase);
+
+        QFont f = font();
+        f.setPixelSize(9);
+        p.setFont(f);
+
+        double x = 0;
+        for (int i = 0; i < 3; ++i) {
+            const double w = unit * weights[i];
+            const QRectF track(x, 0, w, barH);
+
+            p.setPen(Qt::NoPen);
+            p.setBrush(QColor(0x23, 0x37, 0x44));
+            p.drawRoundedRect(track, 1.5, 1.5);
+
+            const bool done = (active >= 3) || (active > i);
+            const bool cur  = (active == i);
+
+            QColor labelColor(0x7f, 0x97, 0xa6);
+            QString labelText = m_runningNames.value(i);
+
+            if (done) {
+                p.setBrush(QColor(0x2e, 0xcc, 0x71));
+                p.drawRoundedRect(track, 1.5, 1.5);
+                labelColor = QColor(0x2e, 0xcc, 0x71);
+                labelText = m_doneNames.value(i);
+            } else if (cur) {
+                if (i == 0 || i == 2) {
+                    // 数据准备 / 模型转换：整段拉满，蓝色心跳
+                    const QColor blue(0x2f, 0x9b, 0xff);
+                    QColor glow = blue;
+                    glow.setAlpha(24 + static_cast<int>(56 * breath));
+                    p.setBrush(glow);
+                    p.drawRoundedRect(track.adjusted(-1, -1, 1, 1), 2.5, 2.5);
+
+                    QColor fill = blue;
+                    fill.setAlpha(97 + static_cast<int>(158 * breath));
+                    p.setBrush(fill);
+                    p.drawRoundedRect(track, 1.5, 1.5);
+
+                    labelColor = blue;
+                    labelColor.setAlpha(150 + static_cast<int>(105 * breath));
+                } else {
+                    // 训练中：正常进度，青色常亮
+                    const int pct = qBound(5, m_progress * 100 / 90, 98);
+                    QRectF fillRect(track.left(), track.top(),
+                                    track.width() * pct / 100.0, barH);
+                    p.setBrush(QColor(0x2f, 0xa8, 0xd8));
+                    p.drawRoundedRect(fillRect, 1.5, 1.5);
+                    labelColor = QColor(0x2f, 0xa8, 0xd8);
+                }
+            }
+
+            p.setPen(labelColor);
+            p.drawText(QRectF(x, labelTop, w, height() - labelTop),
+                       Qt::AlignLeft | Qt::AlignVCenter, labelText);
+
+            x += w + gap;
+        }
+    }
+
+private:
+    int activeStage() const
+    {
+        if (m_progress < 0)   return -1;
+        if (m_progress >= 100) return 3;
+        if (m_progress >= 90)  return 2;
+        if (m_progress > 0)    return 1;
+        return 0;
+    }
+
+    void updateBreathTimer()
+    {
+        const int a = activeStage();
+        const bool need = (a == 0 || a == 2);
+        if (need && !m_breathTimer->isActive()) {
+            m_breathPhase = 0.0;
+            m_breathTimer->start();
+        } else if (!need && m_breathTimer->isActive()) {
+            m_breathTimer->stop();
+            m_breathPhase = 0.0;
+        }
+    }
+
+    QStringList m_runningNames;
+    QStringList m_doneNames;
+    int m_progress = -1;
+    QTimer* m_breathTimer = nullptr;
+    double m_breathPhase = 0.0;
+};
+
+// ── 训练状态心跳灯：未训练不绘制 / 训练中绿闪 / 异常红闪 ──
+class HeartbeatLamp : public QWidget
+{
+public:
+    enum Mode { Off, Running, Error };
+
+    explicit HeartbeatLamp(QWidget* parent = nullptr) : QWidget(parent)
+    {
+        setAttribute(Qt::WA_TransparentForMouseEvents);
+        setFixedSize(18, 18);
+    }
+
+    void setMode(Mode m) { m_mode = m; update(); }
+    void setBlinkOn(bool on) { m_on = on; update(); }
+
+protected:
+    void paintEvent(QPaintEvent*) override
+    {
+        // 未开始训练：不显示任何圆圈
+        if (m_mode == Off)
+            return;
+
+        QPainter p(this);
+        p.setRenderHint(QPainter::Antialiasing, true);
+
+        const QRectF r = rect().adjusted(2, 2, -2, -2);
+
+        QColor c = (m_mode == Error) ? QColor(0xff, 0x4d, 0x4f)
+                                     : QColor(0x2e, 0xcc, 0x71);
+        if (!m_on) c = c.darker(260);
+
+        QColor glow = c;
+        glow.setAlpha(m_on ? 90 : 20);
+        p.setPen(Qt::NoPen);
+        p.setBrush(glow);
+        p.drawEllipse(r.adjusted(-2, -2, 2, 2));
+        p.setBrush(c);
+        p.drawEllipse(r);
+    }
+
+private:
+    Mode m_mode = Off;
+    bool m_on = true;
+};
 
 
 AiModelSet::AiModelSet(QWidget *parent) :
@@ -544,6 +741,27 @@ AiModelSet::AiModelSet(QWidget *parent) :
         }
     }
 
+    // ── 训练三段细线进度条：替换原白线（仅占 96~110 区域）──
+    m_trainStageBar = new TrainStageBar(
+        { tr("数据准备中"), tr("训练中"), tr("模型转换中") },
+        { tr("数据准备完成"), tr("训练完成"), tr("模型转换完成") },
+        this);
+    m_trainStageBar->setGeometry(5, 96, LCD_WIDTH - 10, 14);
+    m_trainStageBar->hide();   // 未启动训练时不显示进度条
+    m_trainStageBar->raise();
+
+    // ── 心跳灯：位于“开始训练”左侧，未训练时熄灭 ──
+    m_heartbeatLamp = new HeartbeatLamp(this);
+    m_heartbeatLamp->setGeometry(0, 21, 18, 18);
+    m_heartbeatLamp->raise();
+    m_heartbeatTimer = new QTimer(this);
+    m_heartbeatTimer->setInterval(500);
+    connect(m_heartbeatTimer, &QTimer::timeout, this, [this]() {
+        m_heartbeatOn = !m_heartbeatOn;
+        if (m_heartbeatLamp) m_heartbeatLamp->setBlinkOn(m_heartbeatOn);
+    });
+    setTrainLamp(0);
+
     /* ── 按文字实测宽度重排按钮：宽度 = 文字宽 + 左右描边，固定间隔，杜绝截断 ── */
     {
         QFont f12 = font();
@@ -572,7 +790,7 @@ AiModelSet::AiModelSet(QWidget *parent) :
             int w = qMax(64, fm12.width(b->text()) + PAD_H);
             b->setMinimumWidth(0);
             b->setMaximumWidth(QWIDGETSIZE_MAX);
-            b->setGeometry(x, 400, w, BTN_H);
+            b->setGeometry(x, 400 + PAGE_CONTENT_OFFSET, w, BTN_H);
             x += w + 6;
         }
 
@@ -589,12 +807,18 @@ AiModelSet::AiModelSet(QWidget *parent) :
             total += w;
         }
         total += 10 * (topRow.size() - 1);
-        int tx = LCD_WIDTH - 24 - total;
+        const int txStart = LCD_WIDTH - 24 - total;
+        int tx = txStart;
         for (int i = 0; i < topRow.size(); ++i) {
             topRow[i]->setMinimumWidth(0);
             topRow[i]->setMaximumWidth(QWIDGETSIZE_MAX);
             topRow[i]->setGeometry(tx, 10, widths[i], BTN_H);
             tx += widths[i] + 10;
+        }
+        // 心跳灯紧跟“开始训练”左侧
+        if (m_heartbeatLamp) {
+            m_heartbeatLamp->move(txStart - 24, 21);
+            m_heartbeatLamp->raise();
         }
 
         // 底栏：左侧 4 个（间隔 10、起点 5），返回右对齐到 x=1000，高度保持 51
@@ -608,14 +832,14 @@ AiModelSet::AiModelSet(QWidget *parent) :
             int w = qMax(72, fm13.width(b->text()) + PAD_H);
             b->setMinimumWidth(0);
             b->setMaximumWidth(QWIDGETSIZE_MAX);
-            b->setGeometry(bx, 620, w, 51);
+            b->setGeometry(bx, 620 + PAGE_CONTENT_OFFSET, w, 51);
             bx += w + 10;
         }
         if (ui->backPushButton) {
             int w = qMax(80, fm13.width(ui->backPushButton->text()) + PAD_H);
             ui->backPushButton->setMinimumWidth(0);
             ui->backPushButton->setMaximumWidth(QWIDGETSIZE_MAX);
-            ui->backPushButton->setGeometry(LCD_WIDTH - 24 - w, 620, w, 51);
+            ui->backPushButton->setGeometry(LCD_WIDTH - 24 - w, 620 + PAGE_CONTENT_OFFSET, w, 51);
         }
     }
 
@@ -876,6 +1100,8 @@ AiModelSet::AiModelSet(QWidget *parent) :
             }
         }
 
+        // 下载成功 → 训练流程结束，心跳灯熄灭
+        setTrainLamp(0);
         resetTrainingState();
     });
 
@@ -1096,12 +1322,40 @@ void AiModelSet::onSftpRemoteListCompleted(const QStringList& remoteFiles)
     resetTrainingState();
 }
 
+// 心跳灯：0=未训练(熄灭) 1=训练中(绿闪) 2=异常(红闪)
+void AiModelSet::setTrainLamp(int mode)
+{
+    if (!m_heartbeatLamp || !m_heartbeatTimer) return;
+
+    if (mode == 0) {
+        m_heartbeatTimer->stop();
+        m_heartbeatOn = true;
+        m_heartbeatLamp->setBlinkOn(true);
+        m_heartbeatLamp->setMode(HeartbeatLamp::Off);
+        return;
+    }
+
+    m_heartbeatLamp->setMode(mode == 2 ? HeartbeatLamp::Error : HeartbeatLamp::Running);
+    if (!m_heartbeatTimer->isActive()) {
+        m_heartbeatOn = true;
+        m_heartbeatLamp->setBlinkOn(true);
+        m_heartbeatTimer->start();
+    }
+}
+
+// 三段进度条：progress<0 全部未开始；0~89 训练中；90~99 模型转换；>=100 全部完成
+void AiModelSet::updateTrainStage(int progress)
+{
+    if (m_trainStageBar) m_trainStageBar->setProgress(progress);
+}
+
 // ⭐ 统一的训练状态重置：所有错误/成功结束都调用
 void AiModelSet::resetTrainingState()
 {
     LOG_DEBUG_STM("[训练流程] resetTrainingState() 被调用");
     // 1. 标志位
     m_trainingBusy = false;
+    setTrainLamp(0);   // 训练结束/失败恢复空闲：熄灭心跳灯
     if (ui) {
         ui->modelTrainPushButton->setEnabled(true);   // 训练按钮恢复
 #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
@@ -1200,10 +1454,18 @@ void AiModelSet::onQueryTrainResult(const TrainQueryResponse& response)
 
     // ⭐ 训练过程中如果服务端返回了 message（可能是错误/警告/状态），一并显示到 tipLabel
     QString tipMsg = tr("训练进度：%1% | %2").arg(response.progress).arg(stateText);
-    if (!response.message.isEmpty() && response.progress < 100) {
-        tipMsg += QString(" | %1").arg(response.message);
+    const QString detail = response.message.trimmed();
+    const bool chinese = (struCnfg.nLang == LANG_CHS || struCnfg.nLang == LANG_CHT);
+    if (!detail.isEmpty() && response.progress < 100) {
+        // 中文设置下服务端返回的 "normal" 不显示
+        if (!(chinese && detail.compare("normal", Qt::CaseInsensitive) == 0)) {
+            tipMsg += QString(" | %1").arg(detail);
+        }
     }
     showTip(tipMsg);
+
+    // 排队中三段都未开始；否则按 progress 推进阶段
+    updateTrainStage(response.number > 0 ? -1 : response.progress);
 
     // 进度 100% → 停止轮询 + 开始下载
     if (response.progress >= 100 && !response.model_name.isEmpty()) {
@@ -1250,10 +1512,10 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
         }
     }
 
-    const int AREA_X = 5, AREA_Y = 63, AREA_W = CLS_AREA_W, AREA_H = 40;
+    const int AREA_X = 5, AREA_Y = 63 + PAGE_CONTENT_OFFSET, AREA_W = CLS_AREA_W, AREA_H = 40;
     const int BTN_H = 40;
     const int SPACING = CLS_SPACING;  // 按钮间水平间距
-
+    
     // ── 统一字号：按全部按钮总宽不越界选最大字号（12→10）──
     // 文字预留两位数量（"：00"），避免计数增长到两位后再次截断
     int fontSize = 12;
@@ -1421,6 +1683,8 @@ void AiModelSet::showTip(const QString &msg, bool red) {
     // ⭐ 显式清除/设置颜色，避免上一条红色残留
     ui->tipLabel->setStyleSheet(red ? "color: #FF6B6B;" : "color: #FFFFFF;");
     ui->tipLabel->setText(msg);
+    // 仅训练进行中才用红灯提示异常；开始训练按钮可点击（空闲）时不显示心跳灯
+    if (red && m_trainingBusy) setTrainLamp(2);
 }
 
 void AiModelSet::onOneKeyAnnoBtnClicked()
@@ -1987,7 +2251,7 @@ void AiModelSet::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event); // 必须调用父类方法，确保图片正常显示
 
-    // ⭐ 辅助 lambda：在 painter 上只涂 ROI 区域内的前景像素（半透红）
+    // ⭐ 辅助 lambda：在 painter 上只涂 ROI 区域内的前景像素（半透红 mask）
     auto tintFgPixels = [&](QPainter& painter, const QRect& roiRect) {
         if (m_fgMaskQImageCached.isNull()) return;
 
@@ -2012,7 +2276,7 @@ void AiModelSet::paintEvent(QPaintEvent *event)
             const uchar* src = roiMask.scanLine(y);
             QRgb* dst = (QRgb*)tintImg.scanLine(y);
             for (int x = 0; x < roi.width(); x++) {
-                int alpha = src[x] * 80 / 255;  // 0→0, 255→80
+                int alpha = src[x] * 150 / 255;  // 0→0, 255→150（红色更明显）
                 dst[x] = qRgba(255, 0, 0, alpha);
             }
         }
@@ -2569,6 +2833,20 @@ void AiModelSet::onModelSelPushButtonClicked()
     dlg.resize(700, 400);
     dlg.setMinimumWidth(600);
 
+    // 深色配色，与整机界面风格保持一致，并放大字体
+    dlg.setStyleSheet(
+        "QDialog { background:#0c161c; }"
+        "QLabel { color:#cfe3ea; font-size:18px; }"
+        "QListWidget { background:#0a141a; border:1px solid #16303b; border-radius:4px;"
+        "  color:#cfe3ea; font-size:20px; outline:none; }"
+        "QListWidget::item { padding:10px 12px; }"
+        "QListWidget::item:hover { background:#0f2a34; }"
+        "QListWidget::item:selected { background:#123a47; color:#22d3ee; }"
+        "QPushButton { background:#0d1a21; border:1px solid #1e3a4a; color:#cfe3ea;"
+        "  padding:8px 22px; border-radius:4px; font-size:18px; }"
+        "QPushButton:hover { border-color:#155e6b; color:#22d3ee; }"
+        "QPushButton:pressed { background:#0a141a; }");
+
     QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
 
     // 不显示模型目录路径（用户不需要看见）
@@ -2781,6 +3059,8 @@ void AiModelSet::onModelSelPushButtonClicked()
         connect(caI, &QPushButton::clicked, &impDlg, &QDialog::reject);
         connect(okI, &QPushButton::clicked, &impDlg, &QDialog::accept);
 
+        DarkTitleBar::apply(&impDlg);
+
         if (impDlg.exec() == QDialog::Accepted) {
             QListWidgetItem *sel = ilist->currentItem();
             if (!sel) return;
@@ -2878,6 +3158,8 @@ void AiModelSet::onModelSelPushButtonClicked()
 
     connect(cancelBtn, &QPushButton::clicked, &dlg, &QDialog::reject);
     connect(okBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
+
+    DarkTitleBar::apply(&dlg);
 
     // 执行
     if (dlg.exec() == QDialog::Accepted) {
@@ -3067,6 +3349,7 @@ bool AiModelSet::exportDirToUsb(const QString &srcDir, QWidget *parent)
         }
     });
     poller.start(50);
+    DarkTitleBar::apply(&dlg);
     dlg.exec();
     if (copyThread->isRunning()) { copyThread->stop(); copyThread->wait(); copyThread->deleteLater(); }
     return true;
@@ -3091,6 +3374,32 @@ void AiModelSet::onImportImgPushButtonClicked(){
     dlg.setOption(QFileDialog::DontUseNativeDialog, true);
     // 默认打开 GetAcqImgRootPath()（部分平台会忽略构造参数，这里再显式设置一次）
     dlg.setDirectory(initDir);
+
+    // 深色配色 + 放大字体，与整机界面风格一致
+    dlg.setStyleSheet(
+        "QFileDialog { background:#0c161c; color:#cfe3ea; font-size:18px; }"
+        "QFileDialog QLabel { color:#cfe3ea; font-size:18px; }"
+        "QFileDialog QTreeView, QFileDialog QListView { background:#0a141a; color:#cfe3ea;"
+        "  border:1px solid #16303b; font-size:18px; outline:none;"
+        "  selection-background-color:#123a47; selection-color:#22d3ee; }"
+        "QFileDialog QTreeView::item, QFileDialog QListView::item { padding:6px; }"
+        "QFileDialog QHeaderView::section { background:#0d1a21; color:#8fb0bf; border:none;"
+        "  border-right:1px solid #16303b; border-bottom:1px solid #16303b;"
+        "  padding:6px; font-size:16px; }"
+        "QFileDialog QPushButton { background:#0d1a21; border:1px solid #1e3a4a; color:#cfe3ea;"
+        "  padding:6px 18px; border-radius:4px; font-size:18px; }"
+        "QFileDialog QPushButton:hover { border-color:#155e6b; color:#22d3ee; }"
+        "QFileDialog QToolButton { background:transparent; border:1px solid transparent;"
+        "  border-radius:4px; padding:4px; }"
+        "QFileDialog QToolButton:hover { background:#0d1a21; border-color:#1e3a4a; }"
+        "QFileDialog QToolBar { background:#0c161c; border:none; spacing:2px; }"
+        "QFileDialog QSplitter::handle { background:#16303b; }"
+        "QFileDialog QComboBox, QFileDialog QLineEdit { background:#0a141a; color:#e6f6fa;"
+        "  border:1px solid #1e3a4a; border-radius:4px; padding:2px 8px; font-size:16px; }"
+        "QFileDialog QScrollBar:vertical { background:#0a141a; width:12px; }"
+        "QFileDialog QScrollBar::handle:vertical { background:#1e3a4a; border-radius:6px; min-height:24px; }"
+        "QFileDialog QScrollBar:horizontal { background:#0a141a; height:12px; }"
+        "QFileDialog QScrollBar::handle:horizontal { background:#1e3a4a; border-radius:6px; min-width:24px; }");
 
     // ═══ 隐藏所有非必要控件 ═══
     for (QComboBox *cb : dlg.findChildren<QComboBox*>()) cb->hide();
@@ -3134,6 +3443,8 @@ void AiModelSet::onImportImgPushButtonClicked(){
             exportDirToUsb(dir, &dlg);
         });
     }
+
+    DarkTitleBar::apply(&dlg);
 
     if (dlg.exec() != QDialog::Accepted) return;
     const QString dirPath = dlg.selectedFiles().value(0);
@@ -4697,6 +5008,8 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     ++m_tryTimes;   // 内部计数，不影响 task_id
     m_currentTaskId = modelName;
     m_trainingBusy = true;
+    setTrainLamp(1);              // 训练开始 → 绿灯跳动
+    updateTrainStage(0);          // 第一段“数据准备中”开始
     ui->modelTrainPushButton->setEnabled(false);   // 训练按钮置灰
     // 仿真相关按钮全部禁用，直到训练结束/异常退出 → resetTrainingState 统一恢复
 #if !AIMODELSET_VALID_IMG_BUTTON_REMOVED
@@ -4709,19 +5022,27 @@ void AiModelSet::onModelTrainPushButtonClicked(){
     m_modelApi->createDirTrain(m_currentTaskId);
 }
 
-// ═══ 对话框专属输入框样式：白底黑字（仅用于“新建模型/训练服务器配置”等弹窗，
-//     覆盖全局深色 QLineEdit 九宫格贴图，不影响其他页面） ═══
+// ═══ 对话框专属样式：深色配色（与整机界面一致），字体放大一号
+//     用于“新建模型/训练服务器配置”等弹窗，不影响其他页面 ═══
 static const char* kDialogLineEditQss =
+    "QDialog { background:#0c161c; }"
+    "QLabel { color:#cfe3ea; font-size:18px; }"
     "QLineEdit {"
-    "  border-width: 1px; border-style: solid; border-color: #9FB4BF; border-image: none;"
-    "  background-color: #FFFFFF; color: #000000; border-radius: 3px;"
-    "  padding: 0px 6px;"
+    "  border-width: 1px; border-style: solid; border-color: #1e3a4a; border-image: none;"
+    "  background-color: #0a141a; color: #e6f6fa; border-radius: 3px;"
+    "  padding: 0px 8px; font-size: 18px; min-height: 34px;"
     "  selection-background-color: #22D3EE; selection-color: #000000;"
     "}"
     "QLineEdit:hover { border-color: #22D3EE; border-image: none; }"
     "QLineEdit:focus { border-color: #22D3EE; border-image: none; }"
-    "QLineEdit:disabled { background-color: #E8EEF1; color: #7A8A94;"
-    " border-color: #C7D3D9; border-image: none; }";
+    "QLineEdit:disabled { background-color: #0f2029; color: #6b8794;"
+    " border-color: #16303b; border-image: none; }"
+    "QScrollArea { background:#0c161c; border:none; }"
+    "QScrollArea > QWidget > QWidget { background:transparent; }"
+    "QPushButton { background:#0d1a21; border:1px solid #1e3a4a; color:#cfe3ea;"
+    "  padding:8px 22px; border-radius:4px; font-size:18px; }"
+    "QPushButton:hover { border-color:#155e6b; color:#22d3ee; }"
+    "QPushButton:pressed { background:#0a141a; }";
 
 void AiModelSet::onModelNewPushButtonClicked()
 {
@@ -4730,7 +5051,7 @@ void AiModelSet::onModelNewPushButtonClicked()
     dlg.setWindowTitle(tr("新建模型"));
     dlg.setWindowModality(Qt::ApplicationModal);
     dlg.setMinimumWidth(480);
-    dlg.setStyleSheet(kDialogLineEditQss);   // 本弹窗内输入框：白底黑字
+    dlg.setStyleSheet(kDialogLineEditQss);   // 本弹窗深色样式，字体放大
 
     QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
 
@@ -4810,7 +5131,7 @@ void AiModelSet::onModelNewPushButtonClicked()
         r.idLbl = new QLabel(QString("%1").arg(clsRows.size()), r.row);
         r.idLbl->setFixedWidth(24);
         r.idLbl->setAlignment(Qt::AlignCenter);
-        r.idLbl->setStyleSheet("QLabel { color: #666; font-weight: bold; }");
+        r.idLbl->setStyleSheet("QLabel { color: #8fb0bf; font-weight: bold; }");
         rowLay->addWidget(r.idLbl);
 
         r.nameEdit = new QLineEdit(initialName, r.row);
@@ -4881,6 +5202,7 @@ void AiModelSet::onModelNewPushButtonClicked()
     });
 
     // 执行对话框
+    DarkTitleBar::apply(&dlg);
     if (dlg.exec() == QDialog::Accepted) {
         // 收集类别名（从 QLineEdit 读）
         QStringList newNames;
@@ -5021,7 +5343,7 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
     dlg.setWindowTitle(tr("训练服务器配置"));
     dlg.setWindowModality(Qt::ApplicationModal);
     dlg.setMinimumWidth(480);
-    dlg.setStyleSheet(kDialogLineEditQss);   // 本弹窗内输入框：白底黑字
+    dlg.setStyleSheet(kDialogLineEditQss);   // 本弹窗深色样式，字体放大
 
     QVBoxLayout *mainLayout = new QVBoxLayout(&dlg);
 
@@ -5085,7 +5407,7 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
     QPushButton *testHttpBtn  = new QPushButton(tr("测试 HTTP 连接"), &dlg);
     QPushButton *testSftpBtn  = new QPushButton(tr("测试 SFTP 连接"), &dlg);
     QLabel *testResultLabel = new QLabel("", &dlg);
-    testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
+    testResultLabel->setStyleSheet("color: #8fb0bf; font-size: 16px;");
     testResultLabel->setWordWrap(true);
 
     testRow->addWidget(testHttpBtn);
@@ -5100,11 +5422,11 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         int port = httpPortEdit->text().toInt();
         if (ip.isEmpty() || port <= 0) {
             testResultLabel->setText(tr("请先填写有效的 IP 和 HTTP 端口"));
-            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setStyleSheet("color: #f87171; font-size: 16px;");
             return;
         }
         testHttpBtn->setEnabled(false);
-        testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
+        testResultLabel->setStyleSheet("color: #8fb0bf; font-size: 16px;");
         testResultLabel->setText(tr("正在测试 HTTP 连接 %1:%2 ...").arg(ip).arg(port));
         QApplication::processEvents();
 
@@ -5127,14 +5449,14 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         if (!timer.isActive()) {
             // 超时
             reply->abort();
-            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setStyleSheet("color: #f87171; font-size: 16px;");
             testResultLabel->setText(tr("HTTP 连接失败：5 秒超时（%1:%2）").arg(ip).arg(port));
         } else if (reply->error() != QNetworkReply::NoError) {
-            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setStyleSheet("color: #f87171; font-size: 16px;");
             testResultLabel->setText(tr("HTTP 连接失败：%1").arg(reply->errorString()));
         } else {
             int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            testResultLabel->setStyleSheet("color: green; font-size: 8pt;");
+            testResultLabel->setStyleSheet("color: #34d399; font-size: 16px;");
             testResultLabel->setText(tr("HTTP 连接成功（HTTP %1）").arg(code));
         }
         reply->deleteLater();
@@ -5149,21 +5471,21 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         QString pass = passEdit->text();
         if (ip.isEmpty() || port <= 0) {
             testResultLabel->setText(tr("请先填写有效的 IP 和 SFTP 端口"));
-            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setStyleSheet("color: #f87171; font-size: 16px;");
             return;
         }
         testSftpBtn->setEnabled(false);
-        testResultLabel->setStyleSheet("color: gray; font-size: 8pt;");
+        testResultLabel->setStyleSheet("color: #8fb0bf; font-size: 16px;");
         testResultLabel->setText(tr("正在测试 SFTP 连接 %1:%2 ...").arg(ip).arg(port));
         QApplication::processEvents();
 
         SftpWorker w(ip, user, pass, port);
         if (w.connect()) {
             w.disconnect();
-            testResultLabel->setStyleSheet("color: green; font-size: 8pt;");
+            testResultLabel->setStyleSheet("color: #34d399; font-size: 16px;");
             testResultLabel->setText(tr("SFTP 连接成功（%1@%2:%3）").arg(user).arg(ip).arg(port));
         } else {
-            testResultLabel->setStyleSheet("color: red; font-size: 8pt;");
+            testResultLabel->setStyleSheet("color: #f87171; font-size: 16px;");
             testResultLabel->setText(tr("SFTP 连接失败：%1:%2").arg(ip).arg(port));
         }
         testSftpBtn->setEnabled(true);
@@ -5190,6 +5512,7 @@ void AiModelSet::onTrainServerCfgPushButtonClicked()
         dlg.accept();
     });
 
+    DarkTitleBar::apply(&dlg);
     if (dlg.exec() == QDialog::Accepted) {
         m_trainServerIp = ipEdit->text().trimmed();
         m_trainHttpPort = httpPortEdit->text().toInt();

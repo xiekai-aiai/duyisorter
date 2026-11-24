@@ -1,10 +1,10 @@
 /*!
-  * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+  * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
   *              All rights reserved.
   * \file        myschemeparams.h
   * \brief       彩色机型方案参数界面头文件
   *              子页面包括识别参数、剔除参数、吹气时间、背景设置、灯光控制及智能供料。
-  * \date        2015.01.14
+  * \date        2026.11.21
   */
 #ifndef MY_SCHEME_PARAMETERS_H
 #define MY_SCHEME_PARAMETERS_H

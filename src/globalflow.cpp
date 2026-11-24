@@ -1,8 +1,8 @@
-/*!  \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+/*!  \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        globalflow.cpp
  * \brief       全局流程源文件
- * \date        2015.01.15
+ * \date        2026.11.21
  */
 #include "globalflow.h"
 #include "unilog.h"

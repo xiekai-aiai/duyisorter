@@ -1,10 +1,10 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        setwipe.h
  * \brief       设置清灰界面头文件
  *              子页面包括设置清灰、清灰气帘及清灰喷水。
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef SETWIPE_H
 #define SETWIPE_H

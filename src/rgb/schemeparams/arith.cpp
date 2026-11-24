@@ -1496,6 +1496,34 @@ void PageArith::createPage()
 {
     /* tab widget */
     tabBar = new MyTabBar();
+    // 分段按钮风格：独立圆角块，选中项青色描边；去掉底部横线
+    tabBar->setDrawBase(false);
+    tabBar->setExpanding(false);
+    tabBar->setStyleSheet(
+        "QTabBar { background: transparent; }"
+        "QTabBar::tab {"
+        " min-width: 120px;"
+        " min-height: 50px;"
+        " margin: 0 2px;"
+        " padding: 0 6px;"
+        " color: #c6d2db;"
+        " background: #16222c;"
+        " border: 1px solid #3c4c58;"
+        " border-radius: 6px;"
+        "}"
+        "QTabBar::tab:selected {"
+        " color: #ffffff;"
+        " background: #1e3240;"
+        " border: 1px solid #6fcddf;"
+        "}"
+        "QTabBar::tab:!selected:hover {"
+        " border-color: #6fcddf;"
+        "}"
+        "QTabBar::tab:disabled {"
+        " color: #5d6a75;"
+        " background: #121c24;"
+        " border-color: #2c3944;"
+        "}");
 
     /* name group */
     nameGroup  = new myGroupBox(myLan.defect_name);
@@ -2029,8 +2057,14 @@ void PageArith::layoutPage()
     reservedLayout->addWidget(m_rsvPerLe);
 
     /* grid layout */
+    QHBoxLayout *tabLayout = new QHBoxLayout;
+    tabLayout->setContentsMargins(0, 0, 0, 0);
+    tabLayout->addStretch(1);
+    tabLayout->addWidget(tabBar);
+    tabLayout->addStretch(1);
+
     QGridLayout *gridLayout = new QGridLayout;
-    gridLayout->addWidget(tabBar,	 0, 0);
+    gridLayout->addLayout(tabLayout, 0, 0);
     gridLayout->addWidget(nameGroup,     1, 0);
     gridLayout->addWidget(modeGroup,     2, 0);
     gridLayout->addWidget(sensGroup,     3, 0);

@@ -39,6 +39,7 @@ autoSigListWidget::autoSigListWidget(QWidget *parent) :
     m_autoSigListBackBtn   = new myPushButton(myLan.back,myIcon.Action_Back);
 
     m_viewChaneBtn->setMaximumSize(BTN_WIDTH,BTN_HEIGHT);
+    m_viewChaneBtn->setModeToggleStyle();   // 模式切换按钮：单选高亮外观，逻辑不变
     m_autoSigInitEnableCbx->setMaximumHeight(BTN_HEIGHT);
     m_autoSigListBackBtn->setMaximumSize(BTN_WIDTH,BTN_HEIGHT);
 

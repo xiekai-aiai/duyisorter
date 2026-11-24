@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        myinputmethod.h.cpp
  * \brief       中英文输入框控件源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "myinputmethod.h"
 #include "mylanguage.h"

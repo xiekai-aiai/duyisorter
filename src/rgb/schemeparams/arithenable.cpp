@@ -15,7 +15,7 @@ static void setArithButtonHighlight(myPushButton *btn, bool checked)
                            "border-color: transparent;"
                            "border-image: url(:/res/png2/algo/algo_card_active.png) 8 12 8 12 stretch stretch;"
                            "color: white;"
-                           "font-size: 15px;"
+                           "font-size: 17px;"
                            "padding: 0px;"
                            "}");
     }
@@ -518,7 +518,7 @@ void PageIdentify::createArithmeticList()
             "  text-align: center; outline: none;"
             "  border-width: 8px 12px 8px 12px; border-style: solid; border-color: transparent;"
             "  border-image: url(:/res/png2/algo/algo_card_normal.png) 8 12 8 12 stretch stretch;"
-            "  color: #DCEEF5; font-size: 15px; padding: 0px;"
+            "  color: #DCEEF5; font-size: 17px; padding: 0px;"
             "}"
             "QPushButton:hover {"
             "  border-image: url(:/res/png2/algo/algo_card_hover.png) 8 12 8 12 stretch stretch;"

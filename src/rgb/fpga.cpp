@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        fpga.cpp
  * \brief       彩色机型下位机远程升级界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "fpga.h"
 
@@ -228,10 +228,12 @@ void fpga::createBoardUpdatePage()
     QVBoxLayout *layout = new QVBoxLayout(boardNumGroup);
 
     boardNumPlusBtn = new myPushButton(myIcon.Action_Plus, btnSize);
+    boardNumPlusBtn->setTechAdjustStyle(true);
     boardUpdateLcdNum = new QLCDNumber(2);
     boardUpdateLcdNum->display(1);
     boardUpdateLcdNum->setFixedSize(btnSize);
     boardNumMinusBtn = new myPushButton(myIcon.Action_Minus, btnSize);
+    boardNumMinusBtn->setTechAdjustStyle(false);
 
     layout->addWidget(boardNumPlusBtn,0,Qt::AlignHCenter);
     layout->addWidget(boardUpdateLcdNum,0,Qt::AlignHCenter);

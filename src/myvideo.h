@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        myvideo.h
  * \brief       图像视频显示界面头文件
- * \date        2015.08.17
+ * \date        2026.11.21
  */
 #ifndef MYVIDEO_H
 #define MYVIDEO_H
@@ -95,7 +95,7 @@ public slots:
 
 protected:
     void run(void);
-
+    
 private:
     bool  bIsRunning;
     g_Config* m_config;
@@ -121,6 +121,8 @@ public:
 /*!
  g_bIsSim 视频图像显示控制类
  */
+class QHideEvent;
+
 class MyVideo : public QWidget
 {
     Q_OBJECT
@@ -154,6 +156,9 @@ public slots:
     void onViewRequest(int idx, bool is_start);
     void onImageReady(const QImage& img, quint16 addr);
     void onDisplayImage();
+
+protected:
+    void hideEvent(QHideEvent* event) override;
 
 private:
     bool m_bIsCapturing;		                           // 视频图像采集标志

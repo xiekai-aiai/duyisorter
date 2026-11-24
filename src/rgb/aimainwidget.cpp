@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        aimainwidget.cpp
  * \brief       彩色机型智能分析主界面头文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "aimainwidget.h"
 #include <iostream>
@@ -19,6 +19,9 @@
 #include "aihelper.h"
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
+
+// 抓拍多帧择优：每次抓拍采集的帧数，保存前景（物料）最多的一帧
+static const int CAPTURE_PICK_FRAMES = 3;
 
  // ═══════════════════════════════════════════════════════════════════════════════════
  // [VM/x86_64 Mock 独立辅助函数]
@@ -168,6 +171,8 @@ AIMainWidget::AIMainWidget(QWidget* parent) :
     m_nLevelToTal = 0;
     m_nRGBNum = 0;
     m_nIndexOfArithIntel = 0;
+    m_capturePickCount = 0;
+    m_captureBestScore = -1;
     for (int j = 0; j < MAX_IMG_NUM;j++)
     {
         m_nViewNo[j] = -1;
@@ -233,13 +238,35 @@ void AIMainWidget::onImageRead(const QImage& img, quint16 addr)
 {
     QImage scaledImg = img.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    QString  imageName = QString("%1.png").arg(m_nNumOfImg);
-    scaledImg.save(QString("/tmp/%1").arg(imageName), "PNG", 50);
+    // 多帧择优：统计前景（物料）像素，保留物料最多的一帧
+    int score = 0;
+    const int sampleWidth = (scaledImg.width() > 1020) ? 1020 : scaledImg.width();
+    for (int i = 0; i < scaledImg.height(); i += 2)
+    {
+        for (int j = 0; j < sampleWidth; j += 2)
+        {
+            QRgb rgb = scaledImg.pixel(j, i);
+            if (!myAIShare.pixelIsBackgroundcomm((uchar)qRed(rgb), (uchar)qGreen(rgb), (uchar)qBlue(rgb), j))
+            {
+                ++score;
+            }
+        }
+    }
 
-    // 每张图片自动生成前景二值化掩码：/tmp/<index>_mask.png
-    saveForegroundMask(scaledImg, m_nNumOfImg);
+    if (score > m_captureBestScore)
+    {
+        m_captureBestScore = score;
+        m_captureBestImg = scaledImg;
+    }
+    m_capturePickCount++;
 
-    emit imgReceivedSig();
+    LOG_TRACE_STM("capture frame:" << m_capturePickCount << ", score:" << score
+        << ", best:" << m_captureBestScore << ", addr:" << addr);
+
+    if (m_capturePickCount >= CAPTURE_PICK_FRAMES)
+    {
+        emit imgReceivedSig();
+    }
 }
 
 /*!
@@ -339,6 +366,8 @@ void AIMainWidget::createAIMainWidget()
     m_chanNum->display(1);
     m_plusChanNumBtn = new myPushButton("", myIcon.Action_Plus, m_AIMainWidget);
     m_minusChanNUmBtn = new myPushButton("", myIcon.Action_Minus, m_AIMainWidget);
+    m_plusChanNumBtn->setTechAdjustStyle(true);
+    m_minusChanNUmBtn->setTechAdjustStyle(false);
     m_impurityNameLe = new myLineEdit;
 
     m_layerBtn->setMaximumSize(QSize(ICON_WID + 35, ICON_HEI + 16));
@@ -1598,6 +1627,9 @@ void AIMainWidget::triggerAICaptureUnit(const CaptureConfig& captureConfig)
         << ", depth:" << captureConfig.dataDepth << ", trans:" << captureConfig.nTransType);
 
     // 启动抓包, 只接收当前这台相机的数据
+    m_capturePickCount = 0;
+    m_captureBestScore = -1;
+    m_captureBestImg = QImage();
     udp_img_receiver->SetImageHegiht(ConfigMgr::Instance().GetAiCfgInfo().img_view_height_);
     udp_img_receiver->start();
     onViewRequest(captureConfig.nUnitAddr, true);
@@ -2188,9 +2220,17 @@ void AIMainWidget::processImageDataFromCameraByAIEN(CaptureConfig& captureConfig
     QObject::disconnect(dataConn);
     timer.stop();
 
-    if (received)
+    const bool hasPickedFrame = (m_capturePickCount > 0) && !m_captureBestImg.isNull();
+    if (received || hasPickedFrame)
     {
-        LOG_INFO_STM("image receive!");
+        LOG_INFO_STM("image receive! frames:" << m_capturePickCount << ", best score:" << m_captureBestScore);
+
+        // 保存前景最多的一帧及对应掩码
+        QString  imageName = QString("%1.png").arg(m_nNumOfImg);
+        m_captureBestImg.save(QString("/tmp/%1").arg(imageName), "PNG", 50);
+        QImage maskSrc = m_captureBestImg;
+        saveForegroundMask(maskSrc, m_nNumOfImg);
+
         if (m_nNumOfImg / MAX_PER_LIST == m_nIndexOfPage)
         {    //本页有显示格则显示
             displayCurImg(m_nNumOfImg % MAX_PER_LIST);

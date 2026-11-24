@@ -1,9 +1,9 @@
 ﻿/*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mywid.cpp
  * \brief       定制控件源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include <QtGui>
 #include "mywid.h"
@@ -68,7 +68,12 @@ MyValueBar::MyValueBar(Qt::Orientation orientation, QWidget *parent)
 {
     minusBtn = new myPushButton(myIcon.Action_Minus, QSize(BTN_HEIGHT, BTN_HEIGHT));
     plusBtn  = new myPushButton(myIcon.Action_Plus, QSize(BTN_HEIGHT, BTN_HEIGHT));
-
+    /* 加/减按钮切换为科技风贴图外观 */
+    minusBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
+    plusBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
+    minusBtn->setTechAdjustStyle(false);
+    plusBtn->setTechAdjustStyle(true);
+    
     scrollBar = new QSlider(orientation);
     scrollBar->setFocusPolicy(Qt::StrongFocus);
     if (orientation == Qt::Horizontal) {
@@ -166,15 +171,17 @@ void MyValueBar::onPlusBtnClicked()
 MyCheckBox::MyCheckBox(const QString text, bool isChecked, QBoxLayout::Direction direction, QWidget *parent)
     : QWidget(parent)
 {
+    checked = false;
+
     /* buttons init */
     checkLabel = new myLabel(text);
     checkBtn = new myPushButton(QIcon(), QSize(BTN_HEIGHT, BTN_HEIGHT));
-    /* 勾选图标撑满按钮：去掉边框与内边距，图标与按钮同尺寸 */
-    checkBtn->setStyleSheet(checkBtn->styleSheet() + "QPushButton { padding: 0px; border-width: 0px; }");
     checkBtn->setIconSize(QSize(BTN_HEIGHT, BTN_HEIGHT));
 
     /* buttons update */
     setChecked(isChecked);
+    /* 未选中时 setChecked 不会走变化分支，这里保证初始外观一定套用 */
+    checkBtn->setTechCheckBoxStyle(checked);
 
     /* signals to slots */
     connect(checkBtn, SIGNAL(pressed()), this, SLOT(click()));
@@ -200,11 +207,7 @@ void MyCheckBox::setChecked(bool isChecked)
         checked = isChecked;
 
         /* update display */
-        if (checked) {
-            checkBtn->setIcon(myIcon.Action_Select);
-        } else {
-            checkBtn->setIcon(QIcon());
-        }
+        checkBtn->setTechCheckBoxStyle(checked);
 
         /* trigger */
         emit toggled(checked);
@@ -344,8 +347,8 @@ MyRadioGroup::MyRadioGroup(const QStringList &list, Qt::Orientation orientation,
 
     for (int i = 0; i < list.size(); i++) {
         btns.append(new myPushButton(QIcon(), QSize(BTN_HEIGHT, BTN_HEIGHT)));
-        /* 选中图标撑满按钮：去掉边框与内边距，图标与按钮同尺寸 */
-        btns.last()->setStyleSheet(btns.last()->styleSheet() + "QPushButton { padding: 0px; border-width: 0px; }");
+        /* 互斥单选框统一使用科技风方形复选框外观（与 MyCheckBox 一致） */
+        btns.last()->setTechCheckBoxStyle(false);
         btns.last()->setIconSize(QSize(BTN_HEIGHT, BTN_HEIGHT));
         labels.append(new myLabel(list[i]));
     }
@@ -410,10 +413,7 @@ void MyRadioGroup::setCurrentIndex(int index)
 void MyRadioGroup::setChecked(int index)
 {
     for (int i = 0; i < btns.size(); i++) {
-        if (i == index) {
-            btns[i]->setIcon(myIcon.Action_Select);
-        } else {
-            btns[i]->setIcon(QIcon());
-        }
+        /* 选中项显示对号，其余项恢复空框 */
+        btns[i]->setTechCheckBoxStyle(i == index);
     }
 }

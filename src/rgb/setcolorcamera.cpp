@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        setcolorcamera.cpp
  * \brief       彩色机型设置相机界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "setcolorcamera.h"
 #include "configmgr.h"
@@ -132,6 +132,9 @@ void setColorCamera::createCalibrationSignalPage()
 
     calibrationMinusBtn = new myPushButton(myIcon.Action_Minus, btnSize, calibrationColorSignalWiget);
     calibrationPlusBtn = new myPushButton(myIcon.Action_Plus, btnSize, calibrationColorSignalWiget);
+    /* 加/减按钮切换为科技风贴图外观 */
+    calibrationMinusBtn->setTechAdjustStyle(false);
+    calibrationPlusBtn->setTechAdjustStyle(true);
 
     calibrationGetBtn = new myPushButton(myLan.update_capture, QIcon());
     //    calibrationGetBtn = new myPushButton("单次校正", QIcon());
@@ -167,6 +170,8 @@ void setColorCamera::createCalibrationSignalPage()
     QHBoxLayout* lay = new QHBoxLayout;
     anaGainPlusBtn2 = new myPushButton(myIcon.Action_Plus, btnSize);
     anaGainMinusBtn2 = new myPushButton(myIcon.Action_Minus, btnSize);
+    anaGainPlusBtn2->setTechAdjustStyle(true);
+    anaGainMinusBtn2->setTechAdjustStyle(false);
 
     anaGainLcdNum2 = new QLCDNumber(1);
     anaGainLcdNum2->setFixedSize(120, btnSize.height());
@@ -234,6 +239,8 @@ void setColorCamera::createCalibrationSignalPage()
     digGainUpperLabel2->setFont(config->getFont(DEFAULT_FONT_SIZE));
     digGainUpperPlusBtn2 = new myPushButton(myIcon.Action_Plus, btnSize);
     digGainUpperMinusBtn2 = new myPushButton(myIcon.Action_Minus, btnSize);
+    digGainUpperPlusBtn2->setTechAdjustStyle(true);
+    digGainUpperMinusBtn2->setTechAdjustStyle(false);
     digGainUpperLcdNum2 = new QLCDNumber(2);
     digGainUpperLcdNum2->setFixedSize(120, btnSize.height());
     digGainUpperLcdNum2->display(struCnfc.struLevelCamera[struGsh.nLevel].nDigiGainUpperRed[struGsh.nUnit]);
@@ -703,6 +710,8 @@ void setColorCamera::createGainAdjustPage()
     QHBoxLayout* lay = new QHBoxLayout;
     anaGainPlusBtn = new myPushButton(myIcon.Action_Plus, btnSize);
     anaGainMinusBtn = new myPushButton(myIcon.Action_Minus, btnSize);
+    anaGainPlusBtn->setTechAdjustStyle(true);
+    anaGainMinusBtn->setTechAdjustStyle(false);
 
     anaGainLcdNum = new QLCDNumber(1);
     anaGainLcdNum->setFixedSize(btnSize.width() * 2, btnSize.height());
@@ -736,6 +745,8 @@ void setColorCamera::createGainAdjustPage()
     digGainUpperLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
     digGainUpperPlusBtn = new myPushButton(myIcon.Action_Plus, btnSize);
     digGainUpperMinusBtn = new myPushButton(myIcon.Action_Minus, btnSize);
+    digGainUpperPlusBtn->setTechAdjustStyle(true);
+    digGainUpperMinusBtn->setTechAdjustStyle(false);
     digGainUpperLcdNum = new QLCDNumber(2);
     digGainUpperLcdNum->setFixedSize(60, btnSize.height());
     digGainUpperLcdNum->display(struCnfc.struLevelCamera[struGsh.nLevel].nDigiGainUpperRed[struGsh.nUnit]);
@@ -1119,6 +1130,8 @@ void setColorCamera::createSensorParametersPage()
     sensorMinusBtn->setFixedSize(btnSize);
     sensorPlusBtn = new myPushButton("", myIcon.Action_Plus, setHorizentalFreGroup);
     sensorPlusBtn->setFixedSize(btnSize);
+    sensorMinusBtn->setTechAdjustStyle(false);
+    sensorPlusBtn->setTechAdjustStyle(true);
     groupLay->addWidget(sensorMinusBtn);
     groupLay->addWidget(horizontalFreNum);
     groupLay->addWidget(sensorPlusBtn);
@@ -1204,6 +1217,8 @@ void setColorCamera::createLensParametersPage()
 
     lensSelectBtn = new myPushButton("", QIcon());
     lensSelectBtn->setFixedSize(QSize(SMALL_BTN_WIDTH, BTN_HEIGHT));
+    /* 选中标记改用科技风复选框外观 */
+    lensSelectBtn->setTechCheckBoxStyle(false);
 
     lensLabel = new QLabel("Phenix");
     lensLabel->setFont(config->getFont(DEFAULT_FONT_SIZE));
@@ -1277,6 +1292,8 @@ void setColorCamera::createContrapositionPage()
     m_chanNum->setFixedSize(SMALL_BTN_WIDTH + 20, BTN_HEIGHT);
     m_plusChanNumBtn = new myPushButton("", myIcon.Action_Plus, contrapositionWidget);
     m_minusChanNUmBtn = new myPushButton("", myIcon.Action_Minus, contrapositionWidget);
+    m_plusChanNumBtn->setTechAdjustStyle(true);
+    m_minusChanNUmBtn->setTechAdjustStyle(false);
 
     m_plusChanNumBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
     m_minusChanNUmBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
@@ -4279,14 +4296,7 @@ void setColorCamera::onLensParametersBtnClicked()
 void setColorCamera::onLensBtnClicked()
 {
     m_bIsSelected = !m_bIsSelected;
-    if (m_bIsSelected)
-    {
-        lensSelectBtn->setIcon(myIcon.Action_Select);
-    }
-    else
-    {
-        lensSelectBtn->setIcon(QIcon());
-    }
+    lensSelectBtn->setTechCheckBoxStyle(m_bIsSelected);
 }
 
 /* 响应镜头参数界面的确认按钮 */
@@ -4309,14 +4319,7 @@ void setColorCamera::onLensSureBtnClicked()
 void setColorCamera::onLensBackBtnClicked()
 {
     stackedWidget->setCurrentIndex(SET_COLOR_CAMERA_MAIN_PAGE);
-    if (struCnfc.nLensType == 1)
-    {
-        lensSelectBtn->setIcon(myIcon.Action_Select);
-    }
-    else
-    {
-        lensSelectBtn->setIcon(QIcon());
-    }
+    lensSelectBtn->setTechCheckBoxStyle(struCnfc.nLensType == 1);
 }
 
 /* 响应对位测试界面按钮 */
@@ -4638,6 +4641,8 @@ WholeCalConfirm::WholeCalConfirm(QString text, QWidget* parent) :
 
     m_textLabel = new myLabel(myLan.default_params, this);
     m_checkBtn = new myPushButton("", QIcon());
+    /* 勾选标记改用科技风复选框外观 */
+    m_checkBtn->setTechCheckBoxStyle(false);
     m_checkBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
     myLabel* noteLabel = new myLabel(myLan.auto_cal_note);
     QPalette pe;
@@ -4687,27 +4692,13 @@ void WholeCalConfirm::onCancelBtnClicked()
 void WholeCalConfirm::onAutoCalEnableBtnClicked()
 {
     m_bIsChecked = !m_bIsChecked;
-    if (m_bIsChecked)
-    {
-        m_checkBtn->setIcon(myIcon.Action_Select);
-    }
-    else
-    {
-        m_checkBtn->setIcon(QIcon());
-    }
+    m_checkBtn->setTechCheckBoxStyle(m_bIsChecked);
 }
 
 void WholeCalConfirm::setchecked(bool ischecked)
 {
     m_bIsChecked = ischecked;
-    if (m_bIsChecked)
-    {
-        m_checkBtn->setIcon(myIcon.Action_Select);
-    }
-    else
-    {
-        m_checkBtn->setIcon(QIcon());
-    }
+    m_checkBtn->setTechCheckBoxStyle(m_bIsChecked);
 }
 
 bool WholeCalConfirm::isChecked()

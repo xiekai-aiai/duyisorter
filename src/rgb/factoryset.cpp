@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        factoryset.cpp
  * \brief       彩色机型厂家设置界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "factoryset.h"
 #include <QProcess>
@@ -111,7 +111,7 @@ void factorySet::setAiParams()
 
     AiCfgInfo ai_cfg_info = ConfigMgr::Instance().GetAiCfgInfo();
 
-    aiEnbaleChx = new myCustomCheckBox(myLan.enable + "AI", struCnfp.enableAi);
+    aiEnbaleChx = new myCustomCheckBox(tr("启用深度学习"), struCnfp.enableAi);
     setAiSureBtn = new myPushButton(myLan.apply, myIcon.Action_Apply);
     setAiSureBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
     setAiBackbtn = new myPushButton(myLan.back, myIcon.Action_Back);
@@ -220,6 +220,7 @@ void factorySet::onSetAiSureBtnClicked()
     cfg_info.sliding_step_ = imgSliderHeightEdit->text().toShort();
     ConfigMgr::Instance().SetAiCfgInfo(cfg_info);
 
+    emit aiEnableChangedSig(struCnfp.enableAi);
     myFlow.initUdpImagPara();
 }
 
@@ -232,6 +233,9 @@ void factorySet::onAiEnbaleChxBtnClicked()
 {
     LOG_INFO_STM("ai enable:" << aiEnbaleChx->getChecked());
     struCnfp.enableAi = aiEnbaleChx->getChecked();
+
+    // 及时通知操作级别页面显隐AI入口按钮
+    emit aiEnableChangedSig(struCnfp.enableAi);
 }
 
 void factorySet::onImgFetchHeightEditPressedSlt()
@@ -312,7 +316,7 @@ void factorySet::createFactorySetPage()
     setLanguageBtn = new myPushButton(myLan.language, QIcon(), true, true);
     //    setLanguageBtn = new myPushButton("语言设定", QIcon(), true, true);
 
-    setAiBtn = new myPushButton("AI " + myLan.set, QIcon(), true, true);
+    setAiBtn = new myPushButton(tr("深度学习设置"), QIcon(), true, true);
 
     clearRunningTimeBtn = new myPushButton(myLan.clear_running_time, QIcon(), true, true);
     ageingTestBtn = new myPushButton(QString(myLan.old_test), QIcon(), true, true);
@@ -387,6 +391,13 @@ void factorySet::createFactorySetPage()
     mainLay->addStretch();
     mainLay->addLayout(downLay);
     stackedWidget->addWidget(factorySetWidget);
+
+    /* 本页所有按钮字体统一调小一号（需在按钮加入布局、挂到本页后再设置） */
+    QFont pageBtnFont = config->getFont(DEFAULT_FONT_SIZE);
+    pageBtnFont.setPixelSize(pageBtnFont.pixelSize() - 2);
+    foreach (myPushButton *btn, factorySetWidget->findChildren<myPushButton *>()) {
+        btn->setFont(pageBtnFont);
+    }
 
     /* 设置不同按键的响应函数 */
     connect(factorySetBackBtn, SIGNAL(pressed()), this, SLOT(onFactoryBackBtnClicked()));
@@ -644,6 +655,8 @@ void factorySet::createOutputTestPage()
     QSize btnSize = config->getBtnSize(SMALL_BTN_SIZE);
     outputTestMinusBtn = new myPushButton(myIcon.Action_Minus, btnSize);
     outputTestPlusBtn = new myPushButton(myIcon.Action_Plus, btnSize);
+    outputTestMinusBtn->setTechAdjustStyle(false);
+    outputTestPlusBtn->setTechAdjustStyle(true);
 
     outputTestSlider = new QSlider(Qt::Horizontal);
     outputTestSlider->setFixedSize(QSize(300, 40));

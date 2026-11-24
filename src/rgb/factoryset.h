@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        factoryset.h
  * \brief       彩色机型厂家设置界面头文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef FACTORYSET_H
 #define FACTORYSET_H
@@ -169,6 +169,7 @@ signals:
     void refreshMachineModeDisplaySig();// 刷新机型设置界面的显示
     void refreshMachineModeDisplaySigMaize();// 刷新机型设置界面的显示
     void hideTitleBtns();               // 隐藏标题栏上的按钮
+    void aiEnableChangedSig(bool enable);// 使能AI状态变化，通知操作级别页面刷新AI入口按钮
 
 private:
     /* 标志厂家设置界面不同页面的索引号 */

@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2015 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        myuploader.cpp
  * \brief       网络上传源文件
- * \date        2015.04.25
+ * \date        2026.11.21
  */
 #include "myuploader.h"
 #include "globalparams.h"

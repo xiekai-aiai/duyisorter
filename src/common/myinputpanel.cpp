@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        myinputpanel.h.cpp
  * \brief       数字输入框控件源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "myinputpanel.h"
 
@@ -124,9 +124,11 @@ void myInputPanel::createButtons(void)
 
     buttonC1->setMaximumWidth(BTN_WIDTH);
     minusBtn = new myPushButton("", myIcon.Action_Minus, this);
+    minusBtn->setTechAdjustStyle(false);
     minusBtn->setMaximumWidth(ICON_WID + 8);
     minusBtn->setMaximumHeight(ICON_WID + 8);
     addBtn = new myPushButton("", myIcon.Action_Plus, this);
+    addBtn->setTechAdjustStyle(true);
     addBtn->setMaximumWidth(ICON_WID + 8);
     addBtn->setMaximumHeight(ICON_WID + 8);
 

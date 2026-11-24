@@ -42,8 +42,12 @@ void Throughput::createPage()
     QSize btnSize = g_Config::getInstance()->getBtnSize(SMALL_BTN_SIZE);
     unitViewBtn->setFixedSize(btnSize);
     unitViewBtn->setFixedWidth(SMALL_BTN_WIDTH+20);
+    unitViewBtn->setModeToggleStyle();      // 模式切换按钮：单选高亮外观，逻辑不变
     unitPlusBtn->setFixedSize(btnSize);
     unitMinusBtn->setFixedSize(btnSize);
+    /* 加减按钮切换为科技风贴图外观 */
+    unitPlusBtn->setTechAdjustStyle(true);
+    unitMinusBtn->setTechAdjustStyle(false);
     unitLcdNum->setFixedSize(SMALL_BTN_WIDTH+20, BTN_HEIGHT);
 
     unitGroup = new myGroupBox(myLan.chute);
@@ -280,8 +284,10 @@ void Throughput::createShowMainPage(){
         chuteListAllLdt[i]->hide();
     }
 
-    testMainButton = new myPushButton(myLan.throughput_test, myIcon.Action_Configure);
-    testMainButton->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    testMainButton = new myPushButton(tr("产量测试设置"), myIcon.Action_Configure);
+    /* 加宽按钮保证“产量测试设置”完整显示，图标缩小并随左对齐保持在左侧 */
+    testMainButton->setFixedSize(BTN_WIDTH + 80, BTN_HEIGHT);
+    testMainButton->setIconSize(QSize(24, 24));
 //    QHBoxLayout *downLay = new QHBoxLayout;
 //    downLay->addWidget(testMainButton);
 //    downLay->addStretch();

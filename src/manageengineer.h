@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        manageengineer.h
  * \brief       工程模式管理界面头文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef MANAGEENGINEER_H
 #define MANAGEENGINEER_H

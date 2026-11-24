@@ -5,6 +5,13 @@
 #include <QMutexLocker>
 #include <QStorageInfo>
 #include <QTimer>
+#include <QDialog>
+#include <QLabel>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFrame>
 #include "unilog.h"
 #include "aihelper.h"
 #include "sortertypes.h"
@@ -14,6 +21,237 @@
 #include "mylistwidgetitem.h"
 #include "aidiskinfowidget.h"
 #include "aiimageacquisitionwidget.h"
+
+/**
+ * 图像下载进度对话框：总进度 + 逐块 AI 板卡进度
+ * 下载仍是多板并行，这里只做展示；逐板进度来自 SftpWorker 的文件数进度。
+ */
+class ImageDownloadDialog : public QDialog
+{
+public:
+    explicit ImageDownloadDialog(QWidget* parent = nullptr) : QDialog(parent)
+    {
+        setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+        setWindowModality(Qt::WindowModal);
+        setFixedSize(720, 348);
+
+        setStyleSheet(
+            "QDialog { background:#0c161c; }"
+            "QLabel { color:#cfe3ea; font-family:'Microsoft YaHei'; }"
+            "QProgressBar { background:#0a141a; border:1px solid #16303b; border-radius:5px; }"
+            "QProgressBar::chunk { background:#22d3ee; border-radius:4px; }"
+            "QPushButton { background:#0d1a21; border:1px solid #1e3a4a; border-radius:4px;"
+            "              color:#cfe3ea; font-size:13px; font-family:'Microsoft YaHei'; }"
+            "QPushButton:hover { border-color:#155e6b; color:#22d3ee; }");
+
+        QVBoxLayout* root = new QVBoxLayout(this);
+        root->setContentsMargins(0, 0, 0, 0);
+        root->setSpacing(0);
+
+        // ── 标题栏 ──
+        QWidget* head = new QWidget(this);
+        head->setAttribute(Qt::WA_StyledBackground, true);
+        head->setFixedHeight(44);
+        head->setStyleSheet("background:#0d1a21;");
+        QHBoxLayout* headLay = new QHBoxLayout(head);
+        headLay->setContentsMargins(20, 0, 12, 0);
+        QLabel* title = new QLabel(tr("图像下载"), head);
+        title->setStyleSheet("font-size:15px; font-weight:600; color:#e6f6fa;");
+        QPushButton* closeBtn = new QPushButton(QStringLiteral("×"), head);
+        closeBtn->setFixedSize(24, 24);
+        closeBtn->setStyleSheet(
+            "QPushButton { border:none; background:transparent; color:#6b8794; font-size:16px; }"
+            "QPushButton:hover { background:#16222c; color:#cfe3ea; }");
+        connect(closeBtn, &QPushButton::clicked, this, &QDialog::hide);
+        headLay->addWidget(title);
+        headLay->addStretch();
+        headLay->addWidget(closeBtn);
+        root->addWidget(head);
+
+        QFrame* headLine = new QFrame(this);
+        headLine->setFrameShape(QFrame::HLine);
+        headLine->setFixedHeight(1);
+        headLine->setStyleSheet("background:#16303b; border:none;");
+        root->addWidget(headLine);
+
+        // ── 主体 ──
+        QWidget* body = new QWidget(this);
+        QVBoxLayout* bl = new QVBoxLayout(body);
+        bl->setContentsMargins(24, 18, 24, 14);
+        bl->setSpacing(0);
+
+        QHBoxLayout* totalRow = new QHBoxLayout;
+        QLabel* totalTitle = new QLabel(tr("总进度"), body);
+        totalTitle->setStyleSheet("font-size:12px; color:#6b8794;");
+        m_totalPct = new QLabel(QStringLiteral("0%"), body);
+        m_totalPct->setStyleSheet("font-size:16px; font-weight:600; color:#22d3ee; font-family:Consolas;");
+        totalRow->addWidget(totalTitle);
+        totalRow->addStretch();
+        totalRow->addWidget(m_totalPct);
+        bl->addLayout(totalRow);
+
+        m_totalBar = new QProgressBar(body);
+        m_totalBar->setRange(0, 100);
+        m_totalBar->setValue(0);
+        m_totalBar->setTextVisible(false);
+        m_totalBar->setFixedHeight(10);
+        bl->addSpacing(8);
+        bl->addWidget(m_totalBar);
+        bl->addSpacing(16);
+
+        for (int idx = 0; idx < AI_SFTP_DEV_NUM; ++idx)
+        {
+            BoardRow br;
+            QWidget* row = new QWidget(body);
+            QHBoxLayout* rl = new QHBoxLayout(row);
+            rl->setContentsMargins(0, 0, 0, 0);
+            rl->setSpacing(10);
+
+            br.dot = new QLabel(row);
+            br.dot->setFixedSize(10, 10);
+            br.dot->setStyleSheet("background:#2c424e; border-radius:5px;");
+
+            br.name = new QLabel(QString("AI 板卡 %1 · %2")
+                                 .arg(idx + 1)
+                                 .arg(ai_helper::GetAiIpByIndex(idx)), row);
+            br.name->setFixedWidth(190);
+            br.name->setStyleSheet("font-size:12px; color:#cfe3ea;");
+
+            br.bar = new QProgressBar(row);
+            br.bar->setRange(0, 100);
+            br.bar->setValue(0);
+            br.bar->setTextVisible(false);
+            br.bar->setFixedHeight(6);
+
+            br.right = new QLabel(tr("等待中"), row);
+            br.right->setFixedWidth(90);
+            br.right->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            br.right->setStyleSheet("font-size:11px; color:#6b8794;");
+
+            rl->addWidget(br.dot);
+            rl->addWidget(br.name);
+            rl->addWidget(br.bar, 1);
+            rl->addWidget(br.right);
+            bl->addWidget(row);
+            bl->addSpacing(10);
+            m_rows.append(br);
+        }
+
+        m_result = new QLabel(body);
+        m_result->setVisible(false);
+        m_result->setStyleSheet("font-size:12px; font-weight:600;");
+        bl->addWidget(m_result);
+        root->addWidget(body);
+
+        QFrame* footLine = new QFrame(this);
+        footLine->setFrameShape(QFrame::HLine);
+        footLine->setFixedHeight(1);
+        footLine->setStyleSheet("background:#16303b; border:none;");
+        root->addWidget(footLine);
+
+        // ── 底部 ──
+        QWidget* foot = new QWidget(this);
+        foot->setAttribute(Qt::WA_StyledBackground, true);
+        QHBoxLayout* fl = new QHBoxLayout(foot);
+        fl->setContentsMargins(24, 12, 24, 14);
+        m_hint = new QLabel(tr("正在从 AI 板卡下载图像…"), foot);
+        m_hint->setStyleSheet("font-size:11px; color:#3f5a66;");
+        QPushButton* okBtn = new QPushButton(tr("关闭"), foot);
+        okBtn->setFixedSize(100, 34);
+        connect(okBtn, &QPushButton::clicked, this, &QDialog::hide);
+        fl->addWidget(m_hint);
+        fl->addStretch();
+        fl->addWidget(okBtn);
+        root->addWidget(foot);
+    }
+
+    void reset()
+    {
+        m_totalBar->setValue(0);
+        m_totalPct->setText(QStringLiteral("0%"));
+        for (int i = 0; i < m_rows.size(); ++i)
+        {
+            BoardRow& br = m_rows[i];
+            br.bar->setValue(0);
+            br.bar->setStyleSheet(QString());
+            br.dot->setStyleSheet("background:#2c424e; border-radius:5px;");
+            br.right->setText(tr("等待中"));
+            br.right->setStyleSheet("font-size:11px; color:#6b8794;");
+        }
+        m_result->hide();
+        m_hint->setText(tr("正在从 AI 板卡下载图像…"));
+    }
+
+    void setOverall(int value)
+    {
+        value = qBound(0, value, 100);
+        m_totalBar->setValue(value);
+        m_totalPct->setText(QString::number(value) + "%");
+    }
+
+    void setBoardProgress(int idx, int current, int total)
+    {
+        if (idx < 0 || idx >= m_rows.size())
+        {
+            return;
+        }
+        BoardRow& br = m_rows[idx];
+        const int pct = (total > 0) ? (current * 100 / total) : 0;
+        br.bar->setValue(pct);
+        br.dot->setStyleSheet("background:#22d3ee; border-radius:5px;");
+        br.right->setText((total > 0)
+            ? tr("%1/%2 张").arg(current).arg(total)
+            : tr("等待中"));
+        br.right->setStyleSheet("font-size:11px; color:#6b8794;");
+    }
+
+    void setBoardFinished(int idx, bool success)
+    {
+        if (idx < 0 || idx >= m_rows.size())
+        {
+            return;
+        }
+        BoardRow& br = m_rows[idx];
+        br.bar->setValue(100);
+        br.bar->setStyleSheet(success
+            ? "QProgressBar::chunk { background:#34d399; border-radius:4px; }"
+            : "QProgressBar::chunk { background:#f87171; border-radius:4px; }");
+        br.dot->setStyleSheet(success
+            ? "background:#34d399; border-radius:5px;"
+            : "background:#f87171; border-radius:5px;");
+        br.right->setText(success ? tr("完成") : tr("失败"));
+        br.right->setStyleSheet(success
+            ? "font-size:11px; color:#34d399;"
+            : "font-size:11px; color:#f87171;");
+    }
+
+    void showResult(bool allSuccess)
+    {
+        setOverall(100);
+        m_result->setText(allSuccess ? tr("Download Finished!") : tr("Download Failed!"));
+        m_result->setStyleSheet(allSuccess
+            ? "font-size:12px; font-weight:600; color:#34d399;"
+            : "font-size:12px; font-weight:600; color:#f87171;");
+        m_result->setVisible(true);
+        m_hint->setText(tr("对话框将在 3 秒后自动关闭"));
+    }
+
+private:
+    struct BoardRow
+    {
+        QLabel* dot{ nullptr };
+        QLabel* name{ nullptr };
+        QProgressBar* bar{ nullptr };
+        QLabel* right{ nullptr };
+    };
+
+    QProgressBar* m_totalBar{ nullptr };
+    QLabel* m_totalPct{ nullptr };
+    QLabel* m_result{ nullptr };
+    QLabel* m_hint{ nullptr };
+    QVector<BoardRow> m_rows;
+};
+
 
 AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
 {
@@ -25,7 +263,7 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     this->setAutoFillBackground(true);
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back_deep_clear.png");
+    QPixmap pixmap(":/res/png/back_pure_clear.png");
     pixmap = pixmap.scaled(this->size());
     palette.setBrush(backgroundRole(), QBrush(pixmap));
     this->setPalette(palette);
@@ -165,17 +403,7 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
         sftpWorkers.append(worker);
     }
 
-    progressDlg = new QProgressDialog(this);
-    progressDlg->setWindowTitle(myLan.download_image);
-    progressDlg->setWindowModality(Qt::WindowModal);
-    progressDlg->setAutoClose(false);
-    progressDlg->setAutoReset(false);
-    progressDlg->setRange(0, 100);
-    progressDlg->setMinimumDuration(INT_MAX);
-    progressDlg->setValue(0);
-    progressDlg->setFixedSize(600, 200);
-    // 不允许取消，直接隐藏取消按钮
-    progressDlg->setCancelButton(nullptr);
+    progressDlg = new ImageDownloadDialog(this);
     progressDlg->hide();
 
     LOG_INFO_STM("list size:" << listWidget->count() << ",statcked:" << stackedWidget->count());
@@ -312,8 +540,10 @@ void AiDeviceWidget::onDownloadFinished(int idx, bool success)
     downProgressArr[idx].finished_ = true;
     downProgressArr[idx].success_ = success;
 
+    progressDlg->setBoardFinished(idx, success);
+
     bool all_finished = true;
-    bool all_success = false;
+    bool all_success = true;
     for (int idx = 0; idx < AI_SFTP_DEV_NUM; idx++)
     {
         if (!downProgressArr[idx].finished_)
@@ -322,16 +552,14 @@ void AiDeviceWidget::onDownloadFinished(int idx, bool success)
             break;
         }
 
-        all_success |= downProgressArr[idx].success_;
+        all_success = all_success && downProgressArr[idx].success_;
     }
 
     LOG_INFO_STM("idx :" << idx << ", success:" << success << ", all finished:" << all_finished << ", all success:" << all_success);
 
     if (all_finished)
     {
-        progressDlg->setValue(100);
-        QString msg = all_success ? "Download Finished!" : "Download Failed!";
-        progressDlg->setLabelText(msg);
+        progressDlg->showResult(all_success);
 
         QTimer::singleShot(3000, progressDlg, [this]() {
             progressDlg->hide();
@@ -366,8 +594,8 @@ void AiDeviceWidget::onProgressChanged(int idx, int current, int total)
     }
 
     int value = (all_total == 0) ? (100) : (all_current * 100 / all_total);
-    progressDlg->setValue(value);
-    progressDlg->setLabelText(tr("Image Downing... %1%").arg(value));
+    progressDlg->setBoardProgress(idx, current, total);
+    progressDlg->setOverall(value);
 }
 
 void AiDeviceWidget::onDownBtnPressed()
@@ -400,8 +628,10 @@ void AiDeviceWidget::onDownBtnPressed()
 
     LOG_INFO_STM("onDownBtnPressed start download image...");
 
-    progressDlg->setValue(0);
+    progressDlg->reset();
+    progressDlg->setOverall(0);
     progressDlg->show();   // 调试时屏蔽下载进度弹窗，后台下载仍进行
+    progressDlg->raise();
     QString downDir = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
     QString downPath = img_dir + "/" + downDir;
     if (!QDir().mkpath(downPath))

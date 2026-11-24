@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        feederremotectrl.cpp
  * \brief       黑白机型振动器外接控制界面源文件。
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "feederremotectrl.h"
 

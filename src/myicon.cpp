@@ -33,11 +33,11 @@ void MyIcon::init()
     //! Arrow
     Arrow_Down = QIcon(":/res/png/Arrow_Down.png");
     Arrow_DownFast = QIcon(":/res/png/Arrow_DownFast.png");
-    Arrow_Left = QIcon(":/res/png/Arrow_Left.png");
+    Arrow_Left = QIcon(":/res/png2/adjust_btn_tech/fineLeftSingle_normal.png");
     Arrow_LeftFirst = QIcon(":/res/png/Arrow_LeftFirst.png");
-    Arrow_LeftFast = QIcon(":/res/png/Arrow_LeftFast.png");
-    Arrow_Right = QIcon(":/res/png/Arrow_Right.png");
-    Arrow_RightFast = QIcon(":/res/png/Arrow_RightFast.png");
+    Arrow_LeftFast = QIcon(":/res/png2/adjust_btn_tech/fineLeftDouble_normal.png");
+    Arrow_Right = QIcon(":/res/png2/adjust_btn_tech/fineRightSingle_normal.png");
+    Arrow_RightFast = QIcon(":/res/png2/adjust_btn_tech/fineRightDouble_normal.png");
     Arrow_Up = QIcon(":/res/png/Arrow_Up.png");
     Arrow_UpFast = QIcon(":/res/png/Arrow_UpFast.png");
 
@@ -93,8 +93,8 @@ void MyIcon::init()
     Mark_Red = QIcon(":/res/png/Mark_Red.png");
 
     //! Media
-    Media_Pause = QIcon(":/res/png/Media_Pause.png");
-    Media_Start = QIcon(":/res/png/Media_Start.png");
+    Media_Pause = QIcon(":/res/png2/pause_play_btn_tech/btnPause_normal.png");
+    Media_Start = QIcon(":/res/png2/pause_play_btn_tech/btnPlay_normal.png");
     Media_Stop = QIcon(":/res/png/Media_Stop.png");
     Media_Video = QIcon(":/res/png/Media_Video.png");
 

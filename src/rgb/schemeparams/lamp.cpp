@@ -194,7 +194,7 @@ void PageLamp::createLampExtra()
     lampExtraBtn = new myPushButton("", myIcon.Arrow_Right);
     /* 方图按钮做成正方形，图标才能撑满 */
     lampExtraBtn->setFixedSize(BTN_HEIGHT, BTN_HEIGHT);
-    lampExtraBtn->setIconSize(QSize(BTN_HEIGHT - 4, BTN_HEIGHT - 4));
+    lampExtraBtn->setTechFineAdjustStyle(2);    // 默认右单箭头，科技风贴图
 
     connect(lampExtraBtn, SIGNAL(pressed()), this, SLOT(setLampExtra()));
 }
@@ -276,10 +276,10 @@ void PageLamp::updateLampLight()
         lampLightGroup[i]->hide();
     }
     if (!flagExtra) {   // 控制板界面
-        lampExtraBtn->setIcon(myIcon.Arrow_Right);
+        lampExtraBtn->setTechFineAdjustStyle(2);    // 右单箭头
         lampSwitchGroup->show();
     } else {            // 智能恒流源界面
-        lampExtraBtn->setIcon(myIcon.Arrow_Left);
+        lampExtraBtn->setTechFineAdjustStyle(1);    // 左单箭头
         lampSwitchGroup->hide();
 
         for (int i = 0; i < lampLightValue.size(); i++) {

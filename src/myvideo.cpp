@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        myvideo.cpp
  * \brief       视频图像显示界面源文件
- * \date        2015.08.17
+ * \date        2026.11.21
  */
 #include "myvideo.h"
 #include "unilog.h"
@@ -13,6 +13,7 @@
 #include "cmdudpmanager.h"
 #include "configmgr.h"
 #include "udpimagereceiver.h"
+#include <QHideEvent>
 
 int nSmallMatArea = 35;
 /*!
@@ -453,15 +454,23 @@ MyVideo::MyVideo(QWidget* parent) :
     m_RowPlusBtn = new myPushButton("", myIcon.Action_Plus);
     m_RowMinusBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
     m_RowPlusBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
+    /* 加减按钮切换为科技风贴图外观 */
+    m_RowMinusBtn->setTechAdjustStyle(false);
+    m_RowPlusBtn->setTechAdjustStyle(true);
 
     m_pUnitViewBtn = new myPushButton(myLan.front_view, QIcon(), true, true);
+    m_pUnitViewBtn->setModeToggleStyle();   // 模式切换按钮：单选高亮外观，逻辑不变
     m_pUnitPlusBtn = new myPushButton("", myIcon.Action_Plus);
     m_pUnitLcdNum = new QLCDNumber;
     m_pUnitLcdNum->setDigitCount(2);
     m_pUnitLcdNum->setFixedSize(SMALL_BTN_WIDTH + 20, BTN_HEIGHT);
     m_pUnitLcdNum->display(struGsh.nUnit / 2 + 1);
     m_pUnitMinusBtn = new myPushButton("", myIcon.Action_Minus);
+    /* 加减按钮切换为科技风贴图外观 */
+    m_pUnitPlusBtn->setTechAdjustStyle(true);
+    m_pUnitMinusBtn->setTechAdjustStyle(false);
     m_pCaptureBtn = new myPushButton("", myIcon.Media_Pause);
+    m_pCaptureBtn->setTechPausePlayStyle(false); // 科技风暂停/播放贴图
     m_pSimulateBtn = new myPushButton("", myIcon.Sorter_AI);
     m_pSimulateBtn->hide();
 
@@ -611,6 +620,17 @@ void MyVideo::startCalSmallMatPerRSC(bool bIsCapturing)
     }
 }
 
+void MyVideo::hideEvent(QHideEvent* event)
+{
+    // 离开视频预览页时自动停止预览，避免持续占用 19196 端口与 AI 数据流
+    if (m_bIsCapturing)
+    {
+        LOG_INFO_STM("video page hidden, auto stop preview");
+        startCapture(false);
+    }
+    QWidget::hideEvent(event);
+}
+
 void MyVideo::startCapture(bool bIsCapturing)
 {
     // 视频预览操作
@@ -624,7 +644,7 @@ void MyVideo::startCapture(bool bIsCapturing)
         quint16 view_height = ConfigMgr::Instance().GetAiCfgInfo().video_view_height_;
         if (view_height == 0)
         {
-            view_height = 256;      // 与 AI 板 param_config.json 默认值一致
+            view_height = 64;      // 与 AI 板 param_config.json 默认值一致
             LOG_ERROR_STM("video view height is 0, fallback to " << view_height);
         }
         udp_img_receiver->SetImageHegiht(view_height);
@@ -705,11 +725,11 @@ void MyVideo::resetCaptureState(bool bState)
 {
     if (bState)
     {
-        m_pCaptureBtn->setIcon(myIcon.Media_Pause);
+        m_pCaptureBtn->setTechPausePlayStyle(false);
     }
     else
     {
-        m_pCaptureBtn->setIcon(myIcon.Media_Start);
+        m_pCaptureBtn->setTechPausePlayStyle(true);
     }
 
 }
@@ -814,11 +834,11 @@ void MyVideo::updateVideo()
     }
     if (m_bIsCapturing)
     {
-        m_pCaptureBtn->setIcon(myIcon.Media_Pause);
+        m_pCaptureBtn->setTechPausePlayStyle(false);
     }
     else
     {
-        m_pCaptureBtn->setIcon(myIcon.Media_Start);
+        m_pCaptureBtn->setTechPausePlayStyle(true);
     }
 
     m_pUnitGroup->show();

@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        fpga.h
  * \brief       彩色机型下位机远程升级界面头文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef FPGA_H
 #define FPGA_H

@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        myvaluebar.cpp
  * \brief       数字显示控制控件源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "myvaluebar.h"
 
@@ -35,6 +35,12 @@ myValueBar::myValueBar(int min, int max, double slowChgValue, double fastChgValu
     lcdNum->display(initValue);
     plusBtn = new myPushButton(myIcon.Arrow_Right,btnSize,this);
     plusFastBtn = new myPushButton(myIcon.Arrow_RightFast,btnSize,this);
+
+    /* 细调箭头切换为科技风贴图外观 */
+    minusFastBtn->setTechFineAdjustStyle(0);
+    minusBtn->setTechFineAdjustStyle(1);
+    plusBtn->setTechFineAdjustStyle(2);
+    plusFastBtn->setTechFineAdjustStyle(3);
 
     QHBoxLayout *lay = new QHBoxLayout(this);
     lay->setContentsMargins(0,0,0,0);
@@ -89,6 +95,12 @@ myValueBar::myValueBar(double *arr, int arrElementTotal, double initValue, QWidg
     lcdNum->display(initValue);
     plusBtn = new myPushButton(myIcon.Arrow_Right,btnSize,this);
     plusFastBtn = new myPushButton(myIcon.Arrow_RightFast,btnSize,this);
+
+    /* 细调箭头切换为科技风贴图外观 */
+    minusFastBtn->setTechFineAdjustStyle(0);
+    minusBtn->setTechFineAdjustStyle(1);
+    plusBtn->setTechFineAdjustStyle(2);
+    plusFastBtn->setTechFineAdjustStyle(3);
 
     QHBoxLayout *lay = new QHBoxLayout(this);
     lay->setContentsMargins(0,0,0,0);

@@ -1,10 +1,10 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mythread.h
  * \brief       全局线程头文件
  *              包含更新系统状态及读取系统报警线程。
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef MYTHREAD_H
 #define MYTHREAD_H

@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        copymajorparams.h
  * \brief       黑白机型复制重要参数界面头文件。
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef COPYMAJORPARAMS_H
 #define COPYMAJORPARAMS_H

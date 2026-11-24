@@ -43,6 +43,9 @@ namespace Ui {
 class AiModelSet;
 }
 
+class TrainStageBar;
+class HeartbeatLamp;
+
 // 接口路径（保留为常量，仅 URL 前缀和 SFTP host/port/user/pass 改为成员变量）
 const QString API_TRAIN_CREATE = "/api/cloud/train/create";   // 创建目录
 const QString API_TRAIN_START = "/api/cloud/train/start";    // 训练启动
@@ -302,7 +305,14 @@ public:
    //void saveClass(const QString& imgPath);
     
 private:
+    void setTrainLamp(int mode);          // 心跳灯：0=未训练(熄灭) 1=训练中(绿闪) 2=异常(红闪)
+    void updateTrainStage(int progress);  // 刷新三段式训练进度条
+
     Ui::AiModelSet *ui;
+    TrainStageBar* m_trainStageBar = nullptr;   // 数据准备中(1/8)/训练中(6/8)/模型转换中(1/8)
+    HeartbeatLamp* m_heartbeatLamp = nullptr;   // 开始训练按钮左侧心跳灯
+    QTimer* m_heartbeatTimer = nullptr;         // 心跳灯闪烁定时器
+    bool m_heartbeatOn = true;                  // 心跳灯当前亮/暗状态
     QPushButton *m_validImgBtn = nullptr;   // .ui 已移除仿真按钮，用隐藏占位按钮承接原引用
     QWidget* m_imgEmptyOverlay = nullptr;   // 训练图片列表空态占位（“请先选择图片！”）
     int modelCategoryNum;

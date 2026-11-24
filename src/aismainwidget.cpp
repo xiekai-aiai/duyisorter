@@ -23,7 +23,7 @@ AisMainWidget::AisMainWidget(QWidget *parent)
     this->setAutoFillBackground(true);
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back_deep_clear.png");
+    QPixmap pixmap(":/res/png/back_pure_clear.png");
     pixmap = pixmap.scaled(this->size());
 
     palette.setBrush(backgroundRole(),QBrush(pixmap));
@@ -59,7 +59,7 @@ AisMainWidget::AisMainWidget(QWidget *parent)
         "  border: 1px solid #2A5B6E;"
         "  border-radius: 8px;"
         "  color: #DCEEF5;"
-        "  font-size: 12px;"
+        "  font-size: 16px;"
         "  padding: 0px 10px;"
         "}"
         "QListWidget::item:hover {"
@@ -82,7 +82,7 @@ AisMainWidget::AisMainWidget(QWidget *parent)
         statusListItem[i] = new myListWidgetItem(QString(""),QIcon(),QSize());
         statusListItem[i]->setSizeHint(QSize(170, 56));
         QFont itemFont = font();
-        itemFont.setPixelSize(12);
+        itemFont.setPixelSize(16);
         statusListItem[i]->setFont(itemFont);
         listWidget->addItem(statusListItem[i]);
     }
@@ -1585,8 +1585,12 @@ void AisMainWidget::CreatePagePixel(){
 
     unitViewBtn->setFixedSize(btnSize);
     unitViewBtn->setFixedWidth(SMALL_BTN_WIDTH+10);
+    unitViewBtn->setModeToggleStyle();      // 模式切换按钮：单选高亮外观，逻辑不变
     unitPlusBtn->setFixedSize(btnSize);
     unitMinusBtn->setFixedSize(btnSize);
+    /* 加减按钮切换为科技风贴图外观 */
+    unitPlusBtn->setTechAdjustStyle(true);
+    unitMinusBtn->setTechAdjustStyle(false);
     unitGridLayout = new QGridLayout(unitGroup);
     unitGridLayout->setHorizontalSpacing(50);
     unitGridLayout->addWidget(unitViewBtn, 0, 1, Qt::AlignHCenter );

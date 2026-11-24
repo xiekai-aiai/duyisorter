@@ -12,7 +12,6 @@
 #include <QWidget>
 #include <QThread>
 #include <QVector>
-#include <QProgressDialog>
 #include <QListWidget>
 #include <QMutex>
 #include <QStackedWidget>
@@ -22,6 +21,8 @@
 #include "sortertypes.h"
 #include "aidiskinfowidget.h"
 #include "aiimageacquisitionwidget.h"
+
+class ImageDownloadDialog;
 
 class AiDeviceWidget : public QWidget
 {
@@ -82,7 +83,7 @@ private:
 private:
     QVector<QThread*> sftpThreads;              // sftp下载线程
     QVector<SftpWorker*> sftpWorkers;           // sftp下载工作者
-    QProgressDialog* progressDlg;               // 下载进度条
+    ImageDownloadDialog* progressDlg;           // 下载进度对话框（总进度 + 逐板进度）
     myPushButton* downBtn;                      // 下载按钮
     myPushButton* backBtn;                      // 返回按钮
     myPushButton* applyBtn;                     // 应用按钮

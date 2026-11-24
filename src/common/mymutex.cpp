@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mymutex.cpp
  * \brief       互斥选择框控件源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "mymutex.h"
 
@@ -22,7 +22,8 @@ myMutex::myMutex(Qt::Orientation flag, int selIndex, QWidget *parent)
 
     curIndex = selIndex;
     m_bHasSelection = true;
-    btns[curIndex]->setIcon(myIcon.Action_Circle);
+    clearBtnsIcon();
+    updateSelectionIcon(curIndex);
 
     connectSigAndSlt();
 }
@@ -44,6 +45,8 @@ void myMutex::createPage(Qt::Orientation flag)
     group->setGeometry(0,0,width(),height());
     for (int i = 0; i < MAX_NUM; i++) {
         btns[i] = new myPushButton(QIcon(), btnSize);
+        /* 互斥单选框统一使用科技风方形复选框外观（与算法设置页勾选框一致） */
+        btns[i]->setTechCheckBoxStyle(false);
         labels[i] = new QLabel;
         labels[i]->setFont(config->getFont());
     }
@@ -162,6 +165,7 @@ void myMutex::clearBtnsIcon()
 {
     for (int i = 0; i < MAX_NUM; i++) {
         btns[i]->setIcon(QIcon());
+        btns[i]->setTechCheckBoxStyle(false);
     }
 }
 
@@ -210,7 +214,11 @@ void myMutex::updateSelectionIcon(int index)
     {
         return;
     }
-    btns[index]->setIcon(m_bCheckIndicator ? makeCheckIcon() : myIcon.Action_Circle);
+    /* 选中项显示对号，其余项恢复空框 */
+    for (int i = 0; i < MAX_NUM; i++)
+    {
+        btns[i]->setTechCheckBoxStyle(i == index);
+    }
 }
 
 /*!

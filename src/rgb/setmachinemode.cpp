@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        setmachinemode.cpp
  * \brief       彩色机型设置机型界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "setmachinemode.h"
 
@@ -217,6 +217,9 @@ void setMachineMode::createChuteEjectList()
         chuteEjectNum[i]->setFixedSize(QSize(80, 45));
         chuteEjectNum[i]->display(m_nChutePerTickGroup[0][i]*m_nEjectNumPerBoard);
         chutePlusBtns[i] = new myPushButton(myIcon.Action_Plus, btnSize);
+        /* 加/减按钮切换为科技风贴图外观 */
+        chuteMinusBtns[i]->setTechAdjustStyle(false);
+        chutePlusBtns[i]->setTechAdjustStyle(true);
 
         chuteMinusBtnMapper->setMapping(chuteMinusBtns[i], i);
         connect(chuteMinusBtns[i], SIGNAL(pressed()), chuteMinusBtnMapper, SLOT(map()));
@@ -239,6 +242,8 @@ void setMachineMode::createChuteEjectList()
     ejectNum->setFixedSize(QSize(80, 45));
     ejectNum->display(m_nEjectNumPerBoard);
     ejectNumPlusBtn = new myPushButton(myIcon.Action_Plus, btnSize);
+    ejectNumMinusBtn->setTechAdjustStyle(false);
+    ejectNumPlusBtn->setTechAdjustStyle(true);
 
     groupLayout->addWidget(ejectNumLabel, tickGroupPerLevel, 0, 1, 2);
     groupLayout->addWidget(ejectNumMinusBtn, tickGroupPerLevel, 2);

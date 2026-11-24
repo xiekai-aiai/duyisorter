@@ -33,6 +33,8 @@ void DegaussTime::createDegaussTimePage()
     {
         m_MinusBtn[i] = new myPushButton(myIcon.Action_Minus, QSize(BTN_HEIGHT, BTN_HEIGHT));
         m_PlusBtn[i]  = new myPushButton(myIcon.Action_Plus, QSize(BTN_HEIGHT, BTN_HEIGHT));
+        m_MinusBtn[i]->setTechAdjustStyle(false);
+        m_PlusBtn[i]->setTechAdjustStyle(true);
 
         m_lcdNums[i] = new myLCDNumber();
         m_lcdNums[i]->setDigitCount(4);

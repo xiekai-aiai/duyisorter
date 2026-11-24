@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mycurve.cpp
  * \brief       波形显示界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "mycurve.h"
 
@@ -117,6 +117,11 @@ MyCurve::MyCurve(int width, int height, QWidget *parent) :
     unitViewBtn = new myPushButton(myLan.front_view, QIcon(), true, true);
     unitViewAdditionBtn = new myPushButton(myLan.lower, QIcon(), true, true);
     unitViewAdditionBtn->hide();
+
+    /* 模式切换按钮：套用单选高亮外观（与右图“或/与”一致），逻辑仍为点击循环切换 */
+    m_modeBtn->setModeToggleStyle();
+    unitViewBtn->setModeToggleStyle();
+    unitViewAdditionBtn->setModeToggleStyle();
     unitPlusBtn = new myPushButton("",myIcon.Action_Plus);
     unitLcdNum = new QLCDNumber;
     unitLcdNum->setDigitCount(2);
@@ -124,6 +129,7 @@ MyCurve::MyCurve(int width, int height, QWidget *parent) :
     unitLcdNum->display(struGsh.nUnit/2+1);
     unitMinusBtn = new myPushButton("",myIcon.Action_Minus);
     rowPauseBtn = new myPushButton("",myIcon.Media_Pause);
+    rowPauseBtn->setTechPausePlayStyle(false);   // 科技风暂停/播放贴图
 
     unitGridLayout = new QGridLayout(unitGroup);
     unitGridLayout->addWidget(m_modeBtn, 0, 0, Qt::AlignHCenter);
@@ -142,12 +148,15 @@ MyCurve::MyCurve(int width, int height, QWidget *parent) :
     unitViewBtn->setFixedSize(btnSize);
     unitViewBtn->setFixedWidth(SMALL_BTN_WIDTH+10);
     /* 图标按钮改为正方形，方图可撑满按钮内容区 */
-    unitPlusBtn->setFixedSize(btnSize.height(), btnSize.height());
-    unitMinusBtn->setFixedSize(btnSize.height(), btnSize.height());
+    unitPlusBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
+    unitMinusBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
     rowPauseBtn->setFixedSize(btnSize.height(), btnSize.height());
     unitPlusBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
     unitMinusBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
     rowPauseBtn->setIconSize(QSize(btnSize.height() - 4, btnSize.height() - 4));
+    /* 加/减按钮切换为科技风贴图外观 */
+    unitPlusBtn->setTechAdjustStyle(true);
+    unitMinusBtn->setTechAdjustStyle(false);
 
     axisPageHBLayout = new QHBoxLayout;
     axisPageHBLayout->addWidget(axisWidget);
@@ -253,10 +262,10 @@ void MyCurve::onRowPauseBtnClicked()
 
     if (bIsWorking) {
         curveThread->start();
-        rowPauseBtn->setIcon(myIcon.Media_Pause);
+        rowPauseBtn->setTechPausePlayStyle(false);
     } else{
         curveThread->stop();
-        rowPauseBtn->setIcon(myIcon.Media_Start);
+        rowPauseBtn->setTechPausePlayStyle(true);
     }
 }
 
@@ -331,9 +340,9 @@ void MyCurve::refreshCurveDisplay()
     }
 
     if (bIsWorking) {
-        rowPauseBtn->setIcon(myIcon.Media_Pause);
+        rowPauseBtn->setTechPausePlayStyle(false);
     } else {
-        rowPauseBtn->setIcon(myIcon.Media_Start);
+        rowPauseBtn->setTechPausePlayStyle(true);
     }
 
     unitGroup->show();

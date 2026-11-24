@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        ejecttimes.cpp
  * \brief       黑白机型吹气频率页面源文件。
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "ejecttimes.h"
 #include "unilog.h"
@@ -69,9 +69,11 @@ void ejectTimes::createMainPageGeneral()
     m_modeBtn = new myPushButton("", QIcon());
     m_modeBtn->setFixedSize(SMALL_BTN_WIDTH + 20, BTN_HEIGHT);
     m_plusBtn = new myPushButton(myIcon.Action_Plus, size);
+    m_plusBtn->setTechAdjustStyle(true);
     m_lcdNum = new QLCDNumber(2);
     m_lcdNum->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
     m_minusBtn = new myPushButton(myIcon.Action_Minus, size);
+    m_minusBtn->setTechAdjustStyle(false);
 
     upRightLay->addWidget(m_modeBtn, 0, Qt::AlignHCenter);
     upRightLay->addWidget(m_plusBtn, 0, Qt::AlignHCenter);
@@ -184,9 +186,11 @@ void ejectTimes::createMainPageGeneral()
     m_modeBtn = new myPushButton("", QIcon());
     m_modeBtn->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
     m_plusBtn = new myPushButton(myIcon.Action_Plus, size);
+    m_plusBtn->setTechAdjustStyle(true);
     m_lcdNum = new QLCDNumber(2);
     m_lcdNum->setFixedSize(SMALL_BTN_WIDTH, BTN_HEIGHT);
     m_minusBtn = new myPushButton(myIcon.Action_Minus, size);
+    m_minusBtn->setTechAdjustStyle(false);
 
     upRightLay->addWidget(m_modeBtn, 0, Qt::AlignHCenter);
     upRightLay->addWidget(m_plusBtn, 0, Qt::AlignHCenter);
@@ -310,9 +314,11 @@ void ejectTimes::createMainPage()
     m_modeBtn = new myPushButton("", QIcon());
     m_modeBtn->setFixedSize(SMALL_BTN_WIDTH + 20, BTN_HEIGHT);
     m_plusBtn = new myPushButton(myIcon.Action_Plus, size);
+    m_plusBtn->setTechAdjustStyle(true);
     m_lcdNum = new QLCDNumber(2);
     m_lcdNum->setFixedSize(SMALL_BTN_WIDTH + 20, BTN_HEIGHT);
     m_minusBtn = new myPushButton(myIcon.Action_Minus, size);
+    m_minusBtn->setTechAdjustStyle(false);
 
     upRightLay->addWidget(m_modeBtn, 0, Qt::AlignHCenter);
     upRightLay->addWidget(m_plusBtn, 0, Qt::AlignHCenter);

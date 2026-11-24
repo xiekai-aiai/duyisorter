@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        aimainwidget.h
  * \brief       彩色机型智能分析主界面头文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #ifndef AIMAINWIDGET_H
 #define AIMAINWIDGET_H
@@ -386,6 +386,10 @@ private:
     bool m_bIsCaptureAllView;                        /*!<< 参数: 当前拍照方式，0：普通拍照，1：单通道所有相机都拍照 */
     bool m_bIsCuteOffBg;
     int m_nImgNum;
+
+    int m_capturePickCount;                          /*!<< 本次抓拍已收到的帧数（多帧择优） */
+    int m_captureBestScore;                          /*!<< 已收帧中最大前景像素分 */
+    QImage m_captureBestImg;                         /*!<< 已收帧中物料最多的一帧 */
 
     int m_nPressTimeStart;                          /*!<< 参数: 删除图片按钮点击开始时间 */
 

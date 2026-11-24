@@ -2,6 +2,7 @@
 #include "merge_dialog.h"
 #include "mergeworker.h"
 #include "common/myinputmethod.h"
+#include "common/darktitlebar.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -20,18 +21,72 @@
 #include <QApplication>
 #include <functional>
 
-// 对话框专属输入框样式：白底黑字（仅本弹窗，覆盖全局深色 QLineEdit 九宫格贴图）
+// 对话框专属样式：深色配色（与整机界面一致），字体放大
 static const char* kMergeDialogLineEditQss =
+    "QDialog { background:#0c161c; color:#cfe3ea; font-size:18px; }"
+    "QLabel { color:#cfe3ea; font-size:18px; }"
+    "QGroupBox { color:#8fb0bf; font-size:18px; border:1px solid #16303b;"
+    "  border-radius:4px; margin-top:12px; padding-top:8px; }"
+    "QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left;"
+    "  left:10px; padding:0 4px; color:#8fb0bf; }"
     "QLineEdit {"
-    "  border-width: 1px; border-style: solid; border-color: #9FB4BF; border-image: none;"
-    "  background-color: #FFFFFF; color: #000000; border-radius: 3px;"
-    "  padding: 0px 6px;"
+    "  border-width: 1px; border-style: solid; border-color: #1e3a4a; border-image: none;"
+    "  background-color: #0a141a; color: #e6f6fa; border-radius: 3px;"
+    "  padding: 0px 8px; font-size: 18px; min-height: 32px;"
     "  selection-background-color: #22D3EE; selection-color: #000000;"
     "}"
     "QLineEdit:hover { border-color: #22D3EE; border-image: none; }"
     "QLineEdit:focus { border-color: #22D3EE; border-image: none; }"
-    "QLineEdit:disabled { background-color: #E8EEF1; color: #7A8A94;"
-    " border-color: #C7D3D9; border-image: none; }";
+    "QLineEdit:disabled { background-color: #0f2029; color: #6b8794;"
+    " border-color: #16303b; border-image: none; }"
+    "QRadioButton { color:#cfe3ea; font-size:18px; spacing:8px; }"
+    "QScrollArea { background:#0c161c; border:none; }"
+    "QScrollArea > QWidget > QWidget { background:transparent; }"
+    "QPushButton { background:#0d1a21; border:1px solid #1e3a4a; color:#cfe3ea;"
+    "  padding:8px 22px; border-radius:4px; font-size:18px; }"
+    "QPushButton:hover { border-color:#155e6b; color:#22d3ee; }"
+    "QPushButton:pressed { background:#0a141a; }"
+    "QPushButton:disabled { color:#3f5a66; border-color:#16303b; }";
+
+// 浏览目录对话框深色样式（QFileDialog 实例化后设置，静态调用无法设样式）
+static const char* kDarkFileDialogQss =
+    "QFileDialog { background:#0c161c; color:#cfe3ea; font-size:18px; }"
+    "QFileDialog QLabel { color:#cfe3ea; font-size:18px; }"
+    "QFileDialog QTreeView, QFileDialog QListView { background:#0a141a; color:#cfe3ea;"
+    "  border:1px solid #16303b; font-size:18px; outline:none;"
+    "  selection-background-color:#123a47; selection-color:#22d3ee; }"
+    "QFileDialog QTreeView::item, QFileDialog QListView::item { padding:6px; }"
+    "QFileDialog QHeaderView::section { background:#0d1a21; color:#8fb0bf; border:none;"
+    "  border-right:1px solid #16303b; border-bottom:1px solid #16303b;"
+    "  padding:6px; font-size:16px; }"
+    "QFileDialog QPushButton { background:#0d1a21; border:1px solid #1e3a4a; color:#cfe3ea;"
+    "  padding:6px 18px; border-radius:4px; font-size:18px; }"
+    "QFileDialog QPushButton:hover { border-color:#155e6b; color:#22d3ee; }"
+    "QFileDialog QToolButton { background:transparent; border:1px solid transparent;"
+    "  border-radius:4px; padding:4px; }"
+    "QFileDialog QToolButton:hover { background:#0d1a21; border-color:#1e3a4a; }"
+    "QFileDialog QToolBar { background:#0c161c; border:none; spacing:2px; }"
+    "QFileDialog QSplitter::handle { background:#16303b; }"
+    "QFileDialog QComboBox, QFileDialog QLineEdit { background:#0a141a; color:#e6f6fa;"
+    "  border:1px solid #1e3a4a; border-radius:4px; padding:2px 8px; font-size:16px; }"
+    "QFileDialog QScrollBar:vertical { background:#0a141a; width:12px; }"
+    "QFileDialog QScrollBar::handle:vertical { background:#1e3a4a; border-radius:6px; min-height:24px; }"
+    "QFileDialog QScrollBar:horizontal { background:#0a141a; height:12px; }"
+    "QFileDialog QScrollBar::handle:horizontal { background:#1e3a4a; border-radius:6px; min-width:24px; }";
+
+// 打开深色风格的目录选择对话框
+static QString pickDirectory(QWidget* parent, const QString& title, const QString& startDir)
+{
+    QFileDialog dlg(parent, title, startDir);
+    dlg.setFileMode(QFileDialog::Directory);
+    dlg.setOption(QFileDialog::ShowDirsOnly, true);
+    dlg.setOption(QFileDialog::DontResolveSymlinks, true);
+    dlg.setOption(QFileDialog::DontUseNativeDialog, true);
+    dlg.setDirectory(startDir);
+    dlg.setStyleSheet(kDarkFileDialogQss);
+    DarkTitleBar::apply(&dlg);
+    return dlg.exec() == QDialog::Accepted ? dlg.selectedFiles().value(0) : QString();
+}
 
 // 解析浏览起始目录：路径不存在时回退到其父目录，最终回退到 LOCAL_IMG_PATH
 static QString resolveStartDir(const QString& text)
@@ -53,6 +108,7 @@ MergeDialog::MergeDialog(QWidget* parent)
     initUi();
     setWindowModality(Qt::ApplicationModal);
     onAddSourceClicked();  // 默认加一行
+    DarkTitleBar::apply(this);
 }
 
 MergeDialog::~MergeDialog() {}
@@ -62,7 +118,7 @@ void MergeDialog::initUi()
     setWindowTitle(tr("合并标注目录"));
     setMinimumSize(700, 480);
     resize(800, 560);
-    setStyleSheet(kMergeDialogLineEditQss);   // 本弹窗内输入框：白底黑字
+    setStyleSheet(kMergeDialogLineEditQss);   // 本弹窗深色样式，字体放大
 
     auto* mainLayout = new QVBoxLayout(this);
 
@@ -142,8 +198,8 @@ void MergeDialog::initUi()
     // ── 进度提示（一个 QLabel 汇总所有源目录进度） ────────────────
     m_progressLabel = new QLabel("", this);
     m_progressLabel->setStyleSheet(
-        "color: #333; font-size: 12px; padding: 6px; "
-        "background: #f5f5f5; border-radius: 4px;");
+        "color: #8fb0bf; font-size: 16px; padding: 6px; "
+        "background: #0a141a; border-radius: 4px;");
     m_progressLabel->setWordWrap(true);
     m_progressLabel->hide();
     mainLayout->addWidget(m_progressLabel);
@@ -234,11 +290,7 @@ void MergeDialog::onBrowseSource(QLineEdit* pathEdit)
 {
     const QString startDir = resolveStartDir(pathEdit->text());
     // ⭐ 必须加 DontUseNativeDialog：板卡上 GTK3 原生对话框无 transient parent 会卡死
-    QString d = QFileDialog::getExistingDirectory(
-        this, tr("选择源目录"), startDir,
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
-            | QFileDialog::DontUseNativeDialog
-    );
+    QString d = pickDirectory(this, tr("选择源目录"), startDir);
     if (!d.isEmpty()) pathEdit->setText(d);
 }
 
@@ -269,11 +321,7 @@ void MergeDialog::onBrowseTarget()
 {
     const QString startDir = resolveStartDir(m_tgtPathEdit->text());
     // ⭐ 必须加 DontUseNativeDialog：板卡上 GTK3 原生对话框无 transient parent 会卡死
-    QString d = QFileDialog::getExistingDirectory(
-        this, tr("选择输出目录"), startDir,
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
-            | QFileDialog::DontUseNativeDialog
-    );
+    QString d = pickDirectory(this, tr("选择输出目录"), startDir);
     if (!d.isEmpty()) {
         QString autoName = QFileInfo(m_tgtPathEdit->text()).fileName();
         if (autoName.isEmpty()) autoName = "merged";

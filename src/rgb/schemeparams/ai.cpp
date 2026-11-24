@@ -4,6 +4,7 @@
 #include "aihelper.h"
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
+#include "common/darktitlebar.h"
 
 #include <QDialog>
 #include <QProgressBar>
@@ -78,7 +79,8 @@ public:
             "  padding:8px 22px; border-radius:4px; font-size:13px; }"
             "QPushButton:hover { border-color:#155e6b; color:#22d3ee; }"
             "QPushButton:disabled { color:#3f5a66; }"
-            "QScrollArea { background:transparent; border:none; }");
+            "QScrollArea { background:transparent; border:none; }"
+            "QScrollArea > QWidget > QWidget { background:transparent; }");
 
         // ── 标题 ──
         m_title = new QLabel("正在上传模型", this);
@@ -143,6 +145,7 @@ public:
 
         // ── 板卡列表 ──
         QWidget* rows = new QWidget;
+        rows->setStyleSheet("background:transparent;");
         m_rowsLayout = new QVBoxLayout(rows);
         m_rowsLayout->setContentsMargins(0, 0, 0, 0);
         m_rowsLayout->setSpacing(0);
@@ -150,6 +153,7 @@ public:
         for (const QString& ip : ips)
         {
             QWidget* row = new QWidget(rows);
+            row->setStyleSheet("background:transparent;");
             QHBoxLayout* hl = new QHBoxLayout(row);
             hl->setContentsMargins(16, 10, 16, 10);
             hl->setSpacing(12);
@@ -188,6 +192,7 @@ public:
         scroll->setWidgetResizable(true);
         scroll->setWidget(rows);
         scroll->setFrameShape(QFrame::NoFrame);
+        scroll->viewport()->setAutoFillBackground(false);
         scroll->setFixedHeight(qMin(320, 46 * ips.size() + 6));
 
         // ── 底部按钮 ──
@@ -240,6 +245,8 @@ public:
         main->addLayout(chips);
         main->addWidget(scroll);
         main->addLayout(footer);
+
+        DarkTitleBar::apply(this);
     }
 
     // ── 以下方法只允许在 UI 线程调用 ──

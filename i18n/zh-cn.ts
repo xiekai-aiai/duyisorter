@@ -2480,7 +2480,7 @@
     <message>
         <location filename="../src/params/paramslang.cpp" line="232"/>
         <source>material_shape</source>
-        <translation type="unfinished">形选算法</translation>
+        <translation>形选</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="233"/>
@@ -2661,7 +2661,7 @@
     <message>
         <location filename="../src/params/paramslang.cpp" line="269"/>
         <source>material_ai_alg</source>
-        <translation type="unfinished">AI智能算法</translation>
+        <translation>深度学习</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="270"/>
@@ -4106,7 +4106,7 @@
     <message>
         <location filename="../src/params/paramslang.cpp" line="1171"/>
         <source>target_value</source>
-        <translation type="unfinished"></translation>
+        <translation>目标值</translation>
     </message>
     <message>
         <location filename="../src/params/paramslang.cpp" line="1173"/>
@@ -7059,7 +7059,7 @@
     <message>
         <location filename="../src/mainwidget.cpp" line="1467"/>
         <source>AI设置</source>
-        <translation type="unfinished"></translation>
+        <translation>深度学习设置</translation>
     </message>
     <message>
         <location filename="../src/mainwidget.cpp" line="1471"/>

@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mainwidget.cpp
  * \brief       程序主界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "mainwidget.h"
 #include "unilog.h"
@@ -12,10 +12,13 @@
 #include "cmdworker.h"
 #include "cmdudpmanager.h"
 #include "topbarstatuswidget.h"
+#include "common/darkmessagebox.h"   // 头文件实现：改动后需重跑 qmake 并重编本文件（保留此行以刷新依赖）
 
 myApplication::myApplication(int& argc, char** argv) :
     QApplication(argc, argv)
 {
+    // 所有 QMessageBox 统一深色配色 + 深色标题栏
+    installEventFilter(new DarkMessageBoxFilter(this));
 }
 
 bool myApplication::qwsEventFilter(QObject* w, QEvent* event)
@@ -604,7 +607,7 @@ MainWidget::MainWidget(QWidget* parent)
     QTimer::singleShot(100, pageComm, SLOT(startComSlt()));
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back_deep_clear.png");
+    QPixmap pixmap(":/res/png/back_pure_clear.png");
     pixmap = pixmap.scaled(this->size());
 
     palette.setBrush(backgroundRole(), QBrush(pixmap));
@@ -1168,7 +1171,7 @@ void MainWidget::CreateHomeWidget()
         "  border-color: transparent;"
         "  border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
         "  color: #E8F6FF;"
-        "  font-size: 16px;"
+        "  font-size: 18px;"
         "  padding: 0px;"
         "}"
         "QPushButton:hover {"
@@ -1424,6 +1427,7 @@ void MainWidget::CreateHomeWidget()
     connect(homePageStackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onHomePageStackedWidgetIndexChangedSlt(int)));
 
     connect(pageFactory, SIGNAL(goToHomePage()), this, SLOT(GoToOprTypePageSlt()));
+    connect(pageFactory, SIGNAL(aiEnableChangedSig(bool)), this, SLOT(onAiEnableChangedSlt(bool)));
     connect(pageAiSet, SIGNAL(backToHomePageSig()), this, SLOT(GoToOprTypePageSlt()));
     connect(this, SIGNAL(factoryUpdateSig()), pageFactory, SLOT(factoryUpdateSlt()));
 
@@ -1442,11 +1446,31 @@ void MainWidget::GoToOprTypePageSlt()
 {
     if (struGsh.nAuthenticationLevel != AUTHENTICATION_LEVEL_OPERATOR)
     {
+        // 返回操作级别页面时同步AI入口按钮，无需再点一次“系统参数”
+        aiSetBtn->setVisible(struCnfp.enableAi);
+        aiModelSetBtn->setVisible(struCnfp.enableAi);
         this->homePageStackedWidget->setCurrentIndex(HOME_OPRLVL_PAGE_INDEX);
     }
     else
     {
         this->homePageStackedWidget->setCurrentIndex(HOME_SCHEME_PAGE_INDEX);
+    }
+}
+
+/*!
+ * \brief 使能AI状态变化时，及时刷新操作级别页面的AI入口按钮
+ */
+void MainWidget::onAiEnableChangedSlt(bool enable)
+{
+    if (struGsh.nAuthenticationLevel != 0)
+    {
+        aiSetBtn->setVisible(enable);
+        aiModelSetBtn->setVisible(enable);
+    }
+    else
+    {
+        aiSetBtn->hide();
+        aiModelSetBtn->hide();
     }
 }
 
@@ -1514,23 +1538,23 @@ void MainWidget::CreatePageOprTypeWidget()
 {
     customOprButton = new myPushButton(QString(myLan.customer_model), QIcon(), pageOprType);
     highSetOprButton = new myPushButton(QString(myLan.sys_set), QIcon(), pageOprType);
-    // AI设置
-    aiSetBtn = new myPushButton(tr("AI设置"), QIcon(""),
+    // 深度学习设置
+    aiSetBtn = new myPushButton(tr("深度学习设置"), QIcon(""),
         true, true, this);
-    aiSetBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    aiSetBtn->setFixedSize(BTN_WIDTH + 60, BTN_HEIGHT);
 
     throughputBtn = new myPushButton(tr("实时产量"), QIcon(), pageOprType);
     //    videoBtn = new myPushButton(myLan.sorter_manager, QIcon(),pageOprType);
-    aiModelSetBtn = new myPushButton(tr("AI模型"), QIcon(), pageOprType);
+    aiModelSetBtn = new myPushButton(tr("深度学习模型"), QIcon(), pageOprType);
 
     //    videoBtn->hide();
     throughputBtn->hide();
     
-    customOprButton->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
-    highSetOprButton->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
-    throughputBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    customOprButton->setFixedSize(BTN_WIDTH + 60, BTN_HEIGHT);
+    highSetOprButton->setFixedSize(BTN_WIDTH + 60, BTN_HEIGHT);
+    throughputBtn->setFixedSize(BTN_WIDTH + 60, BTN_HEIGHT);
     //    videoBtn->setFixedSize(BTN_WIDTH,BTN_HEIGHT);
-    aiModelSetBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
+    aiModelSetBtn->setFixedSize(BTN_WIDTH + 60, BTN_HEIGHT);
 
     customOprButton->hide();
     highSetOprButton->hide();
@@ -3230,10 +3254,14 @@ void MainWidget::CreateTestEjectWidget()
     /* 尺寸限制 */
     minusBtn->setMaximumSize(QSize(SMALL_BTN_WIDTH, BTN_HEIGHT));
     addBtn->setMaximumSize(QSize(SMALL_BTN_WIDTH, BTN_HEIGHT));
+    /* 喷阀检测页加减按钮切换为科技风贴图外观 */
+    minusBtn->setTechAdjustStyle(false);
+    addBtn->setTechAdjustStyle(true);
     lcdNumber->setFixedSize(100, BTN_HEIGHT);
     startBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
     stopBtn->setFixedSize(BTN_WIDTH, BTN_HEIGHT);
     layerBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
+    layerBtn->setModeToggleStyle();         // 模式切换按钮：单选高亮外观，逻辑不变
     cancelTestEjectBtn->setMaximumSize(QSize(BTN_WIDTH, BTN_HEIGHT));
 
     // 页面布局

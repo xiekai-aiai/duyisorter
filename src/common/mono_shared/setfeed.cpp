@@ -1,9 +1,9 @@
 ﻿/*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        setfeed.cpp
  * \brief       黑白机型设置供料量界面源文件。
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "setfeed.h"
 #include "unilog.h"

@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        aianalysis.cpp
  * \brief       彩色机型智能分析界面源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "aianalysis.h"
 
@@ -247,6 +247,7 @@ void AIAnalysis::createAICaptureImage()
     rightGroup = new myGroupBox("", AICapImageWidget);
 
     captureBtn = new myPushButton("", myIcon.Media_Start);
+    captureBtn->setTechPausePlayStyle(true);    // 科技风播放(开始)贴图
     layerBtn = new myPushButton("", QIcon());
     layerAddBtn = new myPushButton("", QIcon());
     commBtn = new myPushButton(myLan.ai_high_speed, QIcon());
@@ -254,6 +255,8 @@ void AIAnalysis::createAICaptureImage()
     boardNum->display(1);
     boardNumPlusBtn = new myPushButton("", myIcon.Action_Plus);
     boardNumMinusBtn = new myPushButton("", myIcon.Action_Minus);
+    boardNumPlusBtn->setTechAdjustStyle(true);
+    boardNumMinusBtn->setTechAdjustStyle(false);
     deletCapBtn = new myPushButton("", myIcon.Edit_Delete);
     deriveBtn = new myPushButton("", myIcon.Action_Backup);
     autoStudyBtn = new myPushButton(myLan.ai_auto_cal, QIcon(), false);

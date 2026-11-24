@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        lampctrl.cpp
  * \brief       黑白机型灯控界面源文件。
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "lampctrl.h"
 
@@ -35,6 +35,8 @@ void LampCtrl::createPage()
     /* 实例化页面控件 */
     for (int i = 0; i < MAX_LAMP; i++) {
         m_btn[i] = new myPushButton(QIcon(), QSize(SMALL_BTN_WIDTH, ICON_HEI));
+        /* 使能按钮改用科技风复选框外观 */
+        m_btn[i]->setTechCheckBoxStyle(false);
         m_label[i] = new myLabel;
         m_label[i]->setFixedHeight(ICON_HEI-10);
         m_lcdNum[i] = new myLCDNumber;
@@ -138,22 +140,14 @@ void LampCtrl::refreshLampSetDisplay()
 {
     for (int i = 0; i < struCnfg.nLampTotal/2; i++) {
         /* 刷新使能按钮的显示 */
-        if(m_nLamp[i]) {
-            m_btn[i]->setIcon(myIcon.Action_Select);
-        } else {
-            m_btn[i]->setIcon(QIcon());
-        }
+        m_btn[i]->setTechCheckBoxStyle(m_nLamp[i] != 0);
 
         /* 刷新灯光强度的显示 */
         m_lcdNum[i]->display(struCnfp.struGroupCtrl[0].nLampLight[i]);
     }
     for (int i = MAX_LAMP/2; i < MAX_LAMP/2 + struCnfg.nLampTotal/2; i++) {
         /* 刷新使能按钮的显示 */
-        if(m_nLamp[i]) {
-            m_btn[i]->setIcon(myIcon.Action_Select);
-        } else {
-            m_btn[i]->setIcon(QIcon());
-        }
+        m_btn[i]->setTechCheckBoxStyle(m_nLamp[i] != 0);
 
         /* 刷新灯光强度的显示 */
         m_lcdNum[i]->display(struCnfp.struGroupCtrl[0].nLampLight[i-MAX_LAMP/2+struCnfg.nLampTotal/2]);
@@ -216,11 +210,7 @@ void LampCtrl::onBtnsPressed(int index)
     } else {
         m_nLamp[index] = 1;
     }
-    if(m_nLamp[index]) {
-        m_btn[index]->setIcon(myIcon.Action_Select);
-    } else {
-        m_btn[index]->setIcon(QIcon());
-    }
+    m_btn[index]->setTechCheckBoxStyle(m_nLamp[index] != 0);
 }
 
 /* 响应应用按钮按下事件 */

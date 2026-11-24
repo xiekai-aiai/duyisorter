@@ -693,12 +693,10 @@ void PageBackground::createPage()
     /* function area */
     /* 方图按钮做成正方形，图标才能撑满 */
     colorMinus = new myPushButton(QIcon(), QSize(BTN_HEIGHT - 10, BTN_HEIGHT - 10));
-    colorMinus->setIcon(myIcon.Arrow_Left);
-    colorMinus->setIconSize(QSize(BTN_HEIGHT - 14, BTN_HEIGHT - 14));
+    colorMinus->setTechFineAdjustStyle(1);      // 左单箭头，科技风贴图
 
     colorPlus  = new myPushButton(QIcon(), QSize(BTN_HEIGHT - 10, BTN_HEIGHT - 10));
-    colorPlus->setIcon(myIcon.Arrow_Right);
-    colorPlus->setIconSize(QSize(BTN_HEIGHT - 14, BTN_HEIGHT - 14));
+    colorPlus->setTechFineAdjustStyle(2);       // 右单箭头，科技风贴图
 
     colorLabel     = new myLabel(myLan.red);
     colorLabel->setFixedSize(DEFAULT_BTN_WIDTH,BTN_HEIGHT-15);

@@ -1,9 +1,9 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        mycustomcheckbox.cpp
  * \brief       通用选择框控件源文件
- * \date        2015.01.14
+ * \date        2026.11.21
  */
 #include "mycustomcheckbox.h"
 
@@ -60,13 +60,6 @@ void myCustomCheckBox::setCheckBoxName(QString text)
 
 void myCustomCheckBox::setCheckBoxStyle()
 {
-    if (bFlagCheck) {
-        if (m_nStyle == CB_STYLE_APPLY) {
-            toolBtn->setIcon(myIcon.Action_Select);
-        } else if (m_nStyle == CB_STYLE_CIRCLE) {
-            toolBtn->setIcon(myIcon.Action_Circle);
-        }
-    } else {
-        toolBtn->setIcon(QIcon());
-    }
+    /* 统一使用科技风方形勾选贴图（常态/悬停/按下/选中/禁用） */
+    toolBtn->setTechCheckBoxStyle(bFlagCheck);
 }
