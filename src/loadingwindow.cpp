@@ -282,7 +282,7 @@ void LoadingWindow::drawDetailText(QPainter &p)
     p.setFont(font);
     p.setPen(QColor(0xFF, 0x7A, 0x8A));
 
-    QString line1 = m_errors.join(tr("；"));
+    QString line1 = m_errors.join(QString::fromUtf8("；"));
     if (fm.horizontalAdvance(line1) <= maxWidth)
     {
         const int x = (LCD_WIDTH - fm.horizontalAdvance(line1)) / 2;
@@ -297,7 +297,7 @@ void LoadingWindow::drawDetailText(QPainter &p)
     {
         const QString candidate = acc.isEmpty()
                 ? m_errors.at(i)
-                : acc + tr("；") + m_errors.at(i);
+                : acc + QString::fromUtf8("；") + m_errors.at(i);
         if (!acc.isEmpty() && fm.horizontalAdvance(candidate) > maxWidth)
         {
             break;
@@ -314,7 +314,7 @@ void LoadingWindow::drawDetailText(QPainter &p)
     QString line2;
     if (split < m_errors.size())
     {
-        line2 = m_errors.mid(split).join(tr("；"));
+        line2 = m_errors.mid(split).join(QString::fromUtf8("；"));
         if (fm.horizontalAdvance(line2) > maxWidth)
         {
             line2 = fm.elidedText(line2, Qt::ElideRight, maxWidth);

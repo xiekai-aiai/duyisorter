@@ -1278,6 +1278,11 @@ public:
   QString mdl_load_failed;                         // 模型加载失败
   QString mdl_apply_failed;                        // 模型应用失败
   QString disk_space_insufficent;                  // 磁盘空间不足
+
+  // 变频器
+  QString vfd_name;                                // 变频器
+  QString vfd_enable;                              // 变频器使能
+  QString vfd_frequency;                           // 振动频率
 };
 
 extern MyLanguage myLan;

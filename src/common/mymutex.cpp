@@ -201,10 +201,10 @@ void myMutex::setCheckIndicator(bool enable)
     }
 }
 
-/* 生成对号图标：与算法设置页 MyCheckBox 勾选框一致，使用 Action_Select 图标 */
+/* 生成对号图标：复用与智能参数勾选框一致的 Action_Apply 图标 */
 QIcon myMutex::makeCheckIcon(void) const
 {
-    return myIcon.Action_Select;
+    return myIcon.Action_Apply_Icon;
 }
 
 /* 按当前标记风格刷新某一项的选中图标 */

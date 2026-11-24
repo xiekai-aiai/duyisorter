@@ -1,10 +1,10 @@
 ﻿/*!
- * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        systeminitialization.h
  * \brief       系统初始化界面头文件
  *              子页面包括通信自检、自检列表、系统初始化及系统预热。
- * \date        2026.11.21
+ * \date        2015.01.14
  */
 #ifndef SYSTEMINITIALIZATION_H
 #define SYSTEMINITIALIZATION_H
@@ -52,10 +52,8 @@ private:
     QVBoxLayout* commVBLayout;
 };
 
-class StateMatrixWidget;
-
 /*!
- * \brief 通信自检界面类（参考 state_page 重构：汇总卡 + 相机矩阵 + 板卡卡片）
+ * \brief 通信自检界面类
  */
 class communicationList : public QWidget
 {
@@ -63,8 +61,12 @@ class communicationList : public QWidget
 public:
     explicit communicationList(QWidget* parent = 0);
 
+    void commuUpdateInterface();
     void commuUpdateCtrl();
     void commuUpdateCamera();
+    void commuUpdateLightSrc(void);     // 更新恒流源板版本信息
+    void hideColumn(int index);         // 隐藏某一列
+    void showColumn(int index);         // 显示某一列
 
 signals:
     void goToInitPageSig();
@@ -75,26 +77,46 @@ public slots:
     void onRecheckBtnClickedSlt();
     void onNextBtnClickedSlt();
 
-protected:
-    void paintEvent(QPaintEvent* event);
-
 private:
-    QWidget* createSummaryCard(int index, const QString& title, const QColor& color);
-
     g_Config* config;
     // 通信列表
+    myLabel* waitCommLabel;
     myPushButton* rechekBtn;
     myPushButton* nextBtn;
 
-    //! 顶部汇总卡片: 0通道 1相机 2AI 3告警
-    QLabel* m_sumValue[4];
-    QLabel* m_sumTotal[4];
+    myGroupBox* interfaceBoardListGroup;
+    QGridLayout* interfaceListLayout;
 
-    //! 相机 / AI 板矩阵（自绘）
-    StateMatrixWidget* m_matrix;
+    myGroupBox* newInterfaceBoardListGroup;
+    QGridLayout* newInterfaceListLayout;
+    QLabel* cameraStateLbl;
+    QLabel* testStateLbl;
 
-    //! 控制板矩阵（自绘，与相机板同一控件）
-    StateMatrixWidget* m_ctrlMatrix;
+    /** 接口板版本中加入USB固件版本 */
+    QLabel* interfaceListLabel[MAX_INT + 1][2];
+
+    myGroupBox* ctrlBoardListGroup;
+    QGridLayout* controlListLayout;
+    QLabel* controlListLabel[MAX_CTRL][2];
+
+    QLabel* aiLabelName;
+    QLabel* aiLabelStatus;
+
+    QGroupBox* cameraBoardListGroup;
+    QGridLayout* cameraListLayout;
+    // 记录相机和AI板卡的版本信息等
+    QLabel* cameraListLabel[SUM_SHOW_ROW_NUM][SUM_SHOW_COLUMN_NUM];
+    /* 横流源板版本部分控件 */
+    QGroupBox* m_lightSrcListGroup;
+    QLabel* m_lightSrcLabel[MAX_LIGHT_SOURCE][2];
+    QGridLayout* m_lightSrcLay;
+
+    QVBoxLayout* backHBLayout;
+    QHBoxLayout* communicationLayout;
+
+    QGridLayout* commListGridLayout;
+    QHBoxLayout* commListHBLayout;
+    QSpacerItem* horizontalSpacer;
 };
 
 /*!

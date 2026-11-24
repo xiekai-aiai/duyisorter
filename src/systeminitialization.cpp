@@ -1,22 +1,17 @@
 /*!
- * \Copyright   Copyright (C) 2013 Hefei Duyi Optoelectronic Technology Inc.\n
+ * \Copyright   Copyright (C) 2013 Hefei Meyer Optoelectronic Technology Inc.\n
  *              All rights reserved.
  * \file        systeminitialization.cpp
  * \brief       系统初始化界面源文件
  *              子页面包括通信自检、自检列表、系统初始化及系统预热。
- * \date        2026.11.21
+ * \date        2015.01.14
  */
 #include "systeminitialization.h"
 #include "bootstage.h"
-#include <QCoreApplication>
 #include "configmgr.h"
 #include "unilog.h"
 #include <QtMath>
 #include <QFontMetrics>
-#include <QFile>
-#include <QDateTime>
-#include <QHash>
-#include <QVector>
 #include "common/globalconfig.h"
 
 /*!
@@ -32,7 +27,7 @@ static QString collectHwErrorDetail()
         if (struGsh.nIntBaud[i] != MY_UARTBAUD_115200
             && struGsh.nIntBaud[i] != MY_UARTBAUD_921600)
         {
-            errors << QCoreApplication::translate("communication", "接口板%1").arg(i + 1);
+            errors << QString("接口板%1").arg(i + 1);
         }
     }
 
@@ -42,7 +37,7 @@ static QString collectHwErrorDetail()
         if (struGsh.nCtrlBaud[i] != MY_UARTBAUD_115200
             && struGsh.nCtrlBaud[i] != MY_UARTBAUD_921600)
         {
-            errors << QCoreApplication::translate("communication", "控制板%1").arg(i + 1);
+            errors << QString("控制板%1").arg(i + 1);
         }
     }
 
@@ -54,13 +49,13 @@ static QString collectHwErrorDetail()
             if (struGsh.struVer.sUnit[j][i][0] == 255
                 || struGsh.struVer.sUnit[j][i][1] == 255)
             {
-                errors << QCoreApplication::translate("communication", "相机板%1")
+                errors << QString("相机板%1")
                               .arg(struCnfg.struLevelInfo[j].nUnitId[i] + 1);
             }
         }
     }
 
-    return errors.join(QCoreApplication::translate("communication", "、"));
+    return errors.join("、");
 }
 
  /**
@@ -87,7 +82,7 @@ void communication::startComSlt()
     int ret1 = 0;
 
     // ---------------- 组 3：界面与数据表 / 加密授权 ----------------
-    myFlow.bootStage(BOOT_STAGE_UI, BOOT_STATUS_ACTIVE, tr("正在校验加密授权…"));
+    myFlow.bootStage(BOOT_STAGE_UI, BOOT_STATUS_ACTIVE, "正在校验加密授权…");
 
     bool encyOk = true;
     if (myMachineInfo.macEncyCheck())
@@ -102,11 +97,11 @@ void communication::startComSlt()
 
     if (encyOk)
     {
-        myFlow.bootStage(BOOT_STAGE_UI, BOOT_STATUS_OK, tr("UI加密正常"));
+        myFlow.bootStage(BOOT_STAGE_UI, BOOT_STATUS_OK, "UI加密正常");
     }
     else
     {
-        myFlow.bootStage(BOOT_STAGE_UI, BOOT_STATUS_ERROR, tr("加密授权未通过"));
+        myFlow.bootStage(BOOT_STAGE_UI, BOOT_STATUS_ERROR, "加密授权未通过");
     }
 
     // initInterfaceTransMode(0) = AI采集模式 (简化版 arg5=0)
@@ -116,7 +111,7 @@ void communication::startComSlt()
     myFlow.initInterfaceTransMode(0);  // ← 开机走 AI采集模式
 
     // ---------------- 组 4：设备自检 / AI 板自检 ----------------
-    myFlow.bootStage(BOOT_STAGE_HW, BOOT_STATUS_ACTIVE, tr("正在执行设备自检…"));
+    myFlow.bootStage(BOOT_STAGE_HW, BOOT_STATUS_ACTIVE, "正在执行设备自检…");
 
     ret = myFlow.initCommunication();
 
@@ -131,22 +126,22 @@ void communication::startComSlt()
     {
         if (!detail.isEmpty())
         {
-            detail += tr("、");
+            detail += "、";
         }
-        detail += aiFailed.join(tr("、"));
+        detail += aiFailed.join("、");
     }
 
     if (ret == 0 && ret1 == 0)
     {
-        myFlow.bootStage(BOOT_STAGE_HW, BOOT_STATUS_OK, tr("硬件工作正常"));
+        myFlow.bootStage(BOOT_STAGE_HW, BOOT_STATUS_OK, "硬件工作正常");
     }
     else
     {
         if (detail.isEmpty())
         {
-            detail = tr("设备通信异常（详见自检列表）");
+            detail = "设备通信异常（详见自检列表）";
         }
-        myFlow.bootStage(BOOT_STAGE_HW, BOOT_STATUS_ERROR, tr("硬件异常：") + detail);
+        myFlow.bootStage(BOOT_STAGE_HW, BOOT_STATUS_ERROR, "硬件异常：" + detail);
     }
 
     //#endif
@@ -164,559 +159,367 @@ void communication::startComSlt()
 /***
  *   通信列表控件
  */
-
-namespace {
-
-/*! 状态类型（与参考图一致） */
-enum StateCell
+void communicationList::commuUpdateInterface()
 {
-    ST_NORMAL = 0,
-    ST_WARNING,
-    ST_ABNORMAL,
-    ST_OFFLINE,
-    ST_UNUSED
-};
+    int i, j;
 
-/*! UI 素材统一放在 /res/png2/state_page 下，优先取 qrc，其次取磁盘目录 */
-QString stateResPath(const QString& name)
-{
-    const QString qrc = QString(":/res/png2/state_page/%1").arg(name);
-    if (QFile::exists(qrc))
-        return qrc;
-
-    const QString disk = QString(APP_PATH "/res/png2/state_page/%1").arg(name);
-    if (QFile::exists(disk))
-        return disk;
-
-    return QString();
-}
-
-/*! 图标 pixmap 缓存，避免每帧重复加载 */
-const QPixmap* stateResPixmap(const QString& name)
-{
-    static QHash<QString, QPixmap> cache;
-    if (!cache.contains(name))
+    for (i = 0; i < struCnfg.nInterfaceBoardTotal; i++)
     {
-        const QString path = stateResPath(name);
-        cache.insert(name, path.isEmpty() ? QPixmap() : QPixmap(path));
-    }
-    return &cache[name];
-}
+        //        interfaceListLabel[i][0]->setText(QString("%1").arg("接口板"));
+        interfaceListLabel[i][0]->setText(QString("%1").arg(myLan.interface_board));
 
-QColor stateColor(int state)
-{
-    switch (state)
-    {
-    case ST_NORMAL:   return QColor(0x22, 0xC5, 0x5E);
-    case ST_WARNING:  return QColor(0xF5, 0x9E, 0x0B);
-    case ST_ABNORMAL: return QColor(0xEF, 0x44, 0x44);
-    case ST_OFFLINE:  return QColor(0x64, 0x74, 0x8B);
-    default:          return QColor(0x2A, 0x5E, 0x70);
-    }
-}
-
-QString stateDotName(int state)
-{
-    switch (state)
-    {
-    case ST_NORMAL:   return "dot_normal.png";
-    case ST_WARNING:  return "dot_warning.png";
-    case ST_ABNORMAL: return "dot_abnormal.png";
-    default:          return "dot_offline.png";
-    }
-}
-
-/*! 面板样式：有切图用 9-slice，没有则用纯色描边兜底 */
-QString panelStyle(const QString& objName, const QString& image, const QString& borderColor)
-{
-    const QString path = stateResPath(image);
-    if (!path.isEmpty())
-    {
-        return QString("QFrame#%1 { border-image: url(%2) 12 12 12 12 stretch stretch; }")
-               .arg(objName, path);
-    }
-    return QString("QFrame#%1 { background-color: rgba(13, 34, 48, 216);"
-                   " border: 1px solid %2; border-radius: 10px; }")
-           .arg(objName, borderColor);
-}
-
-void drawSignalBars(QPainter& p, const QRectF& r, int state)
-{
-    if (state == ST_OFFLINE || state == ST_UNUSED)
-        return;
-
-    /* 统一 3 根信号柱 */
-    const int lit = (state == ST_NORMAL) ? 3 : ((state == ST_WARNING) ? 2 : 1);
-    const QColor col = stateColor(state);
-    const qreal gap = 3.0;
-    const qreal bw = (r.width() - gap * 2) / 3.0;
-    p.setPen(Qt::NoPen);
-    for (int i = 0; i < 3; i++)
-    {
-        const qreal bh = r.height() * (0.40 + 0.30 * i);
-        QRectF bar(r.left() + i * (bw + gap), r.bottom() - bh, bw, bh);
-        p.setBrush(i < lit ? col : QColor(0x2A, 0x3F, 0x4E));
-        p.drawRoundedRect(bar, 1.5, 1.5);
-    }
-}
-
-/*! 矩阵默认状态文案：与 communicationList 共用同一 i18n 上下文（供 lupdate 抽取） */
-QString matrixText(const char* text)
-{
-    return QCoreApplication::translate("communicationList", text);
-}
-
-} // namespace
-
-/*!
- * \brief 相机 / AI 板状态矩阵（自绘，避免上百个 QLabel 在 RK3566 上重绘卡顿）
- */
-class StateMatrixWidget : public QWidget
-{
-public:
-    explicit StateMatrixWidget(QWidget* parent = 0)
-        : QWidget(parent)
-    {
-        setMinimumHeight(110);
-        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        m_rowLabelTitle = "CH";
-        m_txtNormal = matrixText("Normal");
-        m_txtAbnormal = matrixText("Abnormal");
-        m_txtWarning = matrixText("Warning");
-        m_txtOffline = matrixText("Offline");
-    }
-
-    void setRowLabelTitle(const QString& title)
-    {
-        m_rowLabelTitle = title;
-        update();
-    }
-
-    void setColumns(const QStringList& names)
-    {
-        m_columns = names;
-        update();
-    }
-
-    void setStateText(const QString& normal, const QString& abnormal,
-                      const QString& warning, const QString& offline)
-    {
-        m_txtNormal = normal;
-        m_txtAbnormal = abnormal;
-        m_txtWarning = warning;
-        m_txtOffline = offline;
-        update();
-    }
-
-    void clearRows()
-    {
-        m_rowLabels.clear();
-        m_rowStates.clear();
-        update();
-    }
-
-    void appendRow(const QString& label, const QVector<int>& states)
-    {
-        m_rowLabels.append(label);
-        m_rowStates.append(states);
-        update();
-    }
-
-protected:
-    void paintEvent(QPaintEvent*)
-    {
-        QPainter p(this);
-        p.setRenderHint(QPainter::Antialiasing, true);
-        p.setRenderHint(QPainter::TextAntialiasing, true);
-
-        const QRectF panel = QRectF(rect()).adjusted(2, 2, -2, -2);
-        const int cols = qMax(1, m_columns.size());
-        const qreal headerH = 28.0;
-
-        int basePx = font().pixelSize();
-        if (basePx <= 0)
-            basePx = 14;
-
-        /* 列标题 */
-        QFont hf = font();
-        hf.setPixelSize(qMax(10, basePx - 2));
-
-        const int rows = m_rowLabels.size();
-        const qreal bodyTop = panel.top() + headerH + 5;
-        const qreal bodyH = panel.bottom() - bodyTop - 5;
-        const qreal rowH = (rows > 0) ? qMin<qreal>(58.0, bodyH / rows) : 0.0;
-
-        QFont numFont = font();
-        numFont.setPixelSize(qMax(11, int(qMax<qreal>(18.0, rowH) * 0.40)));
-        numFont.setBold(true);
-
-        QFont stFont = font();
-        stFont.setPixelSize(qMax(10, int(qMax<qreal>(18.0, rowH) * 0.24)));
-        stFont.setBold(true);
-        
-        /* 行标签列宽按最宽文本自适应，避免 STATUS 之类被截断 */
-        qreal labelW = QFontMetrics(hf).horizontalAdvance(m_rowLabelTitle);
-        if (rowH >= 18.0)
+        //        interfaceListLabel[i][0]->setText(QString("%1").arg(i+1));
+        if (struGsh.nIntBaud[i] == MY_UARTBAUD_115200)
         {
-            const QFontMetrics fm(numFont);
-            for (int r = 0; r < rows; r++)
-                labelW = qMax<qreal>(labelW, fm.horizontalAdvance(m_rowLabels.value(r)));
+            interfaceListLabel[i][1]->setText(myLan.normal);
+            interfaceListLabel[i][1]->setStyleSheet("color:white");
         }
-        const qreal chuteW = qMax<qreal>(64.0, labelW + 14.0);
-        const qreal cellW = (panel.width() - chuteW - 10.0) / cols;
-
-        p.setFont(hf);
-        p.setPen(QColor(0x8F, 0xB4, 0xC4));
-
-        p.drawText(QRectF(panel.left() + 4, panel.top() + 4, chuteW - 8, headerH - 4),
-                   Qt::AlignCenter, m_rowLabelTitle);
-        for (int c = 0; c < cols; c++)
+        else if (struGsh.nIntBaud[i] == MY_UARTBAUD_921600)
         {
-            p.drawText(QRectF(panel.left() + chuteW + c * cellW, panel.top() + 4,
-                              cellW, headerH - 4),
-                       Qt::AlignCenter, m_columns.value(c));
+            //            interfaceListLabel[i][1]->setText(myLan.normal+"1");
+            interfaceListLabel[i][1]->setText(myLan.normal);
+
+            interfaceListLabel[i][1]->setStyleSheet("color:white");
         }
-
-        p.setPen(QColor(0x1E, 0x3A, 0x4C));
-        p.drawLine(QPointF(panel.left() + 8, panel.top() + headerH),
-                   QPointF(panel.right() - 8, panel.top() + headerH));
-
-        if (rows <= 0)
-            return;
-
-        if (rowH < 18.0)
-            return;
-
-        for (int r = 0; r < rows; r++)
+        else
         {
-            QRectF rowRect(panel.left() + 6, bodyTop + r * rowH,
-                           panel.width() - 12, rowH - 4);
-            if (rowRect.bottom() > panel.bottom() - 2)
-                break;
-
-            p.setPen(Qt::NoPen);
-            p.setBrush((r % 2) ? QColor(0x0B, 0x20, 0x2E, 120)
-                              : QColor(0x08, 0x18, 0x24, 90));
-            p.drawRoundedRect(rowRect, 6, 6);
-
-            p.setFont(numFont);
-            p.setPen(QColor(0xE8, 0xF6, 0xFF));
-            p.drawText(QRectF(rowRect.left() + 2, rowRect.top(), chuteW - 6, rowRect.height()),
-                       Qt::AlignCenter, m_rowLabels.value(r));
-
-            for (int c = 0; c < cols; c++)
-            {
-                const int state = m_rowStates.value(r).value(c, ST_UNUSED);
-                QRectF chip(rowRect.left() + chuteW + c * cellW + 2,
-                            rowRect.top() + 4,
-                            cellW - 8, rowRect.height() - 8);
-
-                const QColor col = stateColor(state);
-                p.setPen(QPen(col, 1.2));
-                p.setBrush(QColor(col.red(), col.green(), col.blue(),
-                                  state == ST_UNUSED ? 10 : 32));
-                p.drawRoundedRect(chip, 5, 5);
-
-                if (state == ST_UNUSED)
-                    continue;
-
-                const qreal dotS = qMin<qreal>(12.0, chip.height() - 8);
-                QRectF dotRect(chip.left() + 8, chip.center().y() - dotS / 2.0, dotS, dotS);
-                const QPixmap* pm = stateResPixmap(stateDotName(state));
-                if (pm && !pm->isNull())
-                {
-                    p.drawPixmap(dotRect.toRect(), *pm);
-                }
-                else
-                {
-                    p.setPen(Qt::NoPen);
-                    p.setBrush(col);
-                    p.drawEllipse(dotRect);
-                }
-
-                p.setPen(col.lighter(118));
-                const qreal textLeft = dotRect.right() + 6;
-                const qreal barsW = qMin<qreal>(34.0, chip.width() * 0.24);
-                const qreal textW = qMax<qreal>(1.0, chip.right() - barsW - textLeft - 8);
-                const QString txt = stateText(state);
-
-                /* 字号按可用宽度收缩，保证 Abnormal 完整显示 */
-                QFont tf = stFont;
-                int px = tf.pixelSize();
-                while (px > 9 && QFontMetrics(tf).horizontalAdvance(txt) > textW)
-                    tf.setPixelSize(--px);
-                p.setFont(tf);
-
-                p.drawText(QRectF(textLeft, chip.top(), textW, chip.height()),
-                           Qt::AlignVCenter | Qt::AlignLeft, txt);
-
-                drawSignalBars(p, QRectF(chip.right() - barsW - 4,
-                                         chip.center().y() - 9, barsW, 18), state);
-            }
+            interfaceListLabel[i][1]->setText(myLan.abnormal);
+            interfaceListLabel[i][1]->setStyleSheet("color:red");
         }
     }
 
-private:
-    QString stateText(int state) const
+    for (i = struCnfg.nInterfaceBoardTotal; i < MAX_INT; i++)
     {
-        switch (state)
+        for (j = 0; j < 2; j++)
         {
-        case ST_NORMAL:   return m_txtNormal;
-        case ST_WARNING:  return m_txtWarning;
-        case ST_ABNORMAL: return m_txtAbnormal;
-        case ST_OFFLINE:  return m_txtOffline;
-        default:          return "--";
+            interfaceListLabel[i][j]->hide();
         }
     }
 
-    QString m_rowLabelTitle;
-    QStringList m_columns;
-    QString m_txtNormal;
-    QString m_txtAbnormal;
-    QString m_txtWarning;
-    QString m_txtOffline;
-    QStringList m_rowLabels;
-    QVector<QVector<int> > m_rowStates;
-};
+    /** 黑白机型下不显示固件版本 */
+        //todo
+    interfaceListLabel[MAX_INT][0]->setText("USB");
+    //        interfaceListLabel[MAX_INT][0]->setText("USB接口");
+    if (struGsh.struVer.nUsbFirmware == 255)
+    {
+        interfaceListLabel[MAX_INT][1]->setText(myLan.abnormal);
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:red");
+    }
+    else
+    {
+        interfaceListLabel[MAX_INT][1]->setText(myLan.normal);
+        interfaceListLabel[MAX_INT][1]->setStyleSheet("color:black");
+    }
+    interfaceListLabel[MAX_INT][0]->hide();
+    interfaceListLabel[MAX_INT][1]->hide();
+}
 
 void communicationList::commuUpdateCtrl()
 {
-    QStringList names;
-    QVector<int> states;
+    int i, j;
 
-    for (int i = 0; i < struCnfg.nCtrlBoardTotal && i < MAX_CTRL; i++)
+    for (i = 0; i < struCnfg.nCtrlBoardTotal; i++)
     {
-        names << QString("CTRL-%1").arg(i + 1, 2, 10, QChar('0'));
-        const bool ok = (struGsh.nCtrlBaud[i] == MY_UARTBAUD_115200
-                         || struGsh.nCtrlBaud[i] == MY_UARTBAUD_921600);
-        states << (ok ? ST_NORMAL : ST_ABNORMAL);
-    }
+        controlListLabel[i][0]->setText(QString("%1").arg(myLan.control_board));
+        //    controlListLabel[i][0]->setText(QString("%1").arg("主控板"));
 
-    m_ctrlMatrix->clearRows();
-    m_ctrlMatrix->setRowLabelTitle("CTRL");
-    m_ctrlMatrix->setColumns(names);
-    m_ctrlMatrix->setStateText(tr("Normal"), tr("Abnormal"), tr("Warning"), tr("Offline"));
-    m_ctrlMatrix->appendRow(tr("Status"), states);
-    m_ctrlMatrix->setVisible(!names.isEmpty());
+        //        controlListLabel[i][0]->setText(QString("%1").arg(i+1));
+        if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_115200)
+        {
+            controlListLabel[i][1]->setText(myLan.normal);
+            controlListLabel[i][1]->setStyleSheet("color:white");
+        }
+        else if (struGsh.nCtrlBaud[i] == MY_UARTBAUD_921600)
+        {
+            //            controlListLabel[i][1]->setText(myLan.normal+"1");
+            controlListLabel[i][1]->setText(myLan.normal);
+            controlListLabel[i][1]->setStyleSheet("color:white");
+        }
+        else
+        {
+            controlListLabel[i][1]->setText(myLan.abnormal);
+            controlListLabel[i][1]->setStyleSheet("color:red");
+        }
+    }
+    for (i = struCnfg.nCtrlBoardTotal; i < MAX_CTRL; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
+            controlListLabel[i][j]->hide();
+        }
+    }
 }
 
 void communicationList::commuUpdateCamera()
 {
-    /* AI 板通信状态以本次启动的 AI 自检结果为准；未启用 AI 检测时显示离线 */
-    const bool aiChecked = myFlow.isAiCheckEnabled();
+    /*
+    *******************************************************
+    0:   通道  前视       后视        AI前视  AI后视
+    1:   1     V1.00_1    V1.00_2
+    2:   2     V1.00_1    V1.00_2
+    *******************************************************
+    */
 
-    /* 固定显示 4 列：前视 / 后视 / AI前视 / AI后视，AI 未自检时显示离线 */
-    m_matrix->setRowLabelTitle(myLan.chute);
-    m_matrix->setColumns(QStringList() << myLan.front_view << myLan.rear_view
-                                       << QString("AI ") + myLan.front_view
-                                       << QString("AI ") + myLan.rear_view);
-    m_matrix->setStateText(tr("Normal"), tr("Abnormal"), tr("Warning"), tr("Offline"));
-    m_matrix->clearRows();
-
-    /* 通道号 01..，每行两路相机（前视 / 后视） */
-    const int unitTotal = struCnfg.struLevelInfo[0].nUnitLevelTotal;
-    if (unitTotal <= 0)
-        return;
-
-    const int rowTotal = (unitTotal + 1) / 2;
-    QVector<QVector<int> > rows(rowTotal, QVector<int>(4, ST_UNUSED));
-
-    for (int i = 0; i < unitTotal; i++)
+    for (int i = AIDEV_BEGIN_COL_NO; i < SUM_SHOW_COLUMN_NUM; i++)
     {
-        const int row = i / 2;
-        int frontFlag = -1;
-
-        for (int j = 0; j < struCnfg.nLevelTotal && j < MAX_LEVEL; j++)
-        {
-            const int camNo = struCnfg.struLevelInfo[j].nUnitId[i];
-            const bool front = ((camNo % 2) == 0);
-            if (frontFlag < 0)
-                frontFlag = front ? 1 : 0;
-
-            const bool ok = (struGsh.struVer.sUnit[j][i][0] != 255
-                             && struGsh.struVer.sUnit[j][i][1] != 255);
-            const int state = ok ? ST_NORMAL : ST_ABNORMAL;
-
-            int& cell = rows[row][front ? 0 : 1];
-            if (cell == ST_UNUSED || (cell == ST_NORMAL && state == ST_ABNORMAL))
-                cell = state;
-        }
-
-        /* AI 板按单元索引；AI 未自检时保留列并显示离线 */
-        int aiState = ST_OFFLINE;
-        if (aiChecked)
-            aiState = struGsh.aiResult[i].isEmpty() ? ST_ABNORMAL : ST_NORMAL;
-
-        rows[row][(frontFlag == 1) ? 2 : 3] = aiState;
+        hideColumn(i);
     }
 
-    for (int r = 0; r < rowTotal; r++)
+    cameraListLabel[0][0]->setText(myLan.chute);
+    cameraListLabel[0][1]->setText(myLan.front_view);
+    cameraListLabel[0][2]->setText(myLan.rear_view);
+    if (struCnfp.enableAi)
     {
-        m_matrix->appendRow(QString("%1").arg(r + 1, 2, 10, QChar('0')), rows[r]);
+        cameraListLabel[0][3]->setText("AI" + myLan.front_view);
+        cameraListLabel[0][4]->setText("AI" + myLan.rear_view);
+    }
+
+    // 行号
+    int row_no = 0;
+    for (int i = 0; i < struCnfg.struLevelInfo[0].nUnitLevelTotal; i++)
+    {
+        // 一行显示前后视相机 
+        row_no = i / 2 + 1;
+        // 通道列
+        cameraListLabel[row_no][0]->setText(QString("%1").arg(row_no));
+        for (int j = 0; j < struCnfg.nLevelTotal; j++)
+        {
+            int cam_no = struCnfg.struLevelInfo[j].nUnitId[i];
+            // 相机前视对应列号1， 后视对应列号2 
+            int col_no = ((cam_no % 2) == 0) ? 1 : 2;
+            if ((struGsh.struVer.sUnit[j][i][0] != 255) && (struGsh.struVer.sUnit[j][i][1] != 255))
+            {
+                cameraListLabel[row_no][col_no]->setText(myLan.normal);
+                cameraListLabel[row_no][col_no]->setStyleSheet("color:white");
+            }
+            else
+            {
+                cameraListLabel[row_no][col_no]->setText(myLan.abnormal);
+                cameraListLabel[row_no][col_no]->setStyleSheet("color:red");
+            }
+
+            if (struCnfp.enableAi)
+            {
+                // AI前视对应列号3， AI后视对应列号4
+                col_no = ((cam_no % 2) == 0) ? 3 : 4;
+                if (struGsh.aiResult[j] != QString(""))
+                {
+                    cameraListLabel[row_no][col_no]->setText(myLan.normal);
+                    cameraListLabel[row_no][col_no]->setStyleSheet("color:white");
+                }
+                else
+                {
+                    cameraListLabel[row_no][col_no]->setText(myLan.abnormal);
+                    cameraListLabel[row_no][col_no]->setStyleSheet("color:red");
+                }
+            }
+        }
+    }
+
+    row_no += 1;
+    for (int i = row_no; i < SUM_SHOW_ROW_NUM; i++)
+    {
+        for (int j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
+        {
+            cameraListLabel[i][j]->hide();
+        }
+    }
+}
+
+/* 更新恒流源板版本信息 */
+void communicationList::commuUpdateLightSrc()
+{
+    for (int i = 0; i < struCnfg.nLampAINum; i++)
+    {
+        m_lightSrcLabel[i][0]->setText(QString("%1").arg(i + 1));
+
+        /** 若恒流源板未使用则显示"--" */
+        if (struCnfg.nCurSrcBoradLampNum[i] == 0)
+        {
+            m_lightSrcLabel[i][1]->setText("--");
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
+        }
+        else if (struGsh.struVer.sLightSrc[i][0] != 255 && struGsh.struVer.sLightSrc[i][1] != 255)
+        {
+            m_lightSrcLabel[i][1]->setText(myLan.normal);
+            m_lightSrcLabel[i][1]->setStyleSheet("color:white");
+        }
+        else
+        {
+            m_lightSrcLabel[i][1]->setText(myLan.abnormal);
+            m_lightSrcLabel[i][1]->setStyleSheet("color:red");
+        }
+    }
+
+    for (int i = struCnfg.nLampAINum; i < MAX_LIGHT_SOURCE; i++)
+    {
+        m_lightSrcLabel[i][0]->hide();
+        m_lightSrcLabel[i][1]->hide();
+    }
+}
+
+/* 隐藏某一列 */
+void communicationList::hideColumn(int index)
+{
+    for (int i = 0; i < SUM_SHOW_ROW_NUM; i++)
+    {
+        cameraListLabel[i][index]->hide();
+    }
+}
+
+/* 显示某一列 */
+void communicationList::showColumn(int index)
+{
+    for (int i = 0; i < SUM_SHOW_ROW_NUM; i++)
+    {
+        cameraListLabel[i][index]->show();
     }
 }
 
 void communicationList::updateCommunicationResultSlt()
 {
+    commuUpdateInterface();
     commuUpdateCtrl();
     commuUpdateCamera();
-
-    /* 顶部汇总卡：通道 / 相机 / AI / 告警 */
-    const bool aiEnabled = myFlow.isAiCheckEnabled();
-    const int unitTotal = struCnfg.struLevelInfo[0].nUnitLevelTotal;
-    const int chuteTotal = (unitTotal + 1) / 2;
-    int chuteOn = 0, camTotal = 0, camOn = 0, aiTotal = 0, aiOn = 0, alarms = 0;
-
-    for (int i = 0; i < unitTotal; i++)
-    {
-        bool frontOk = false;
-        bool rearOk = false;
-        for (int j = 0; j < struCnfg.nLevelTotal && j < MAX_LEVEL; j++)
-        {
-            const bool ok = (struGsh.struVer.sUnit[j][i][0] != 255
-                             && struGsh.struVer.sUnit[j][i][1] != 255);
-            camTotal++;
-            if (ok)
-                camOn++;
-            else
-                alarms++;
-
-            const int camNo = struCnfg.struLevelInfo[j].nUnitId[i];
-            if ((camNo % 2) == 0)
-                frontOk = frontOk || ok;
-            else
-                rearOk = rearOk || ok;
-        }
-        if (frontOk && rearOk)
-            chuteOn++;
-
-        /* AI 板按单元索引统计 */
-        if (aiEnabled)
-        {
-            aiTotal++;
-            if (!struGsh.aiResult[i].isEmpty())
-                aiOn++;
-            else
-                alarms++;
-        }
-    }
-
-    for (int i = 0; i < struCnfg.nCtrlBoardTotal; i++)
-    {
-        if (struGsh.nCtrlBaud[i] != MY_UARTBAUD_115200
-            && struGsh.nCtrlBaud[i] != MY_UARTBAUD_921600)
-            alarms++;
-    }
-
-    const int values[4] = { chuteOn, camOn, aiOn, alarms };
-    const int totals[4] = { chuteTotal, camTotal, aiTotal, -1 };
-    for (int i = 0; i < 4; i++)
-    {
-        m_sumValue[i]->setText(QString("%1").arg(values[i], 2, 10, QChar('0')));
-        if (totals[i] >= 0)
-            m_sumTotal[i]->setText(QString("/ %1").arg(totals[i]));
-        else
-            m_sumTotal[i]->clear();
-    }
-    m_sumValue[3]->setStyleSheet(QString("color:%1; background:transparent;")
-                                 .arg(alarms > 0 ? "#EF4444" : "#22C55E"));
+    /*恒流源板状态检测*/
+    commuUpdateLightSrc();
 }
 
 communicationList::communicationList(QWidget* parent) :
     QWidget(parent)
 {
+    int i, j;
     config = g_Config::getInstance();
 
-    const QFont baseFont = config->getFont(DEFAULT_FONT_SIZE);
-    const QFont smallFont = config->getFont(FONT_SIZE_12);
+    /*布局管理*/
+    /* 接口板 */
+    commListGridLayout = new QGridLayout();
+    commListGridLayout->setSpacing(2);
+    commListGridLayout->setContentsMargins(50, 0, 50, 10);
 
-    QVBoxLayout* rootLayout = new QVBoxLayout(this);
-    rootLayout->setContentsMargins(14, 6, 14, 8);
-    rootLayout->setSpacing(8);
+    interfaceBoardListGroup = new myGroupBox("");
+    interfaceBoardListGroup->setObjectName("interfaceBoardListGroup");
+    //    interfaceBoardListGroup->setStyleSheet("QGroupBox#interfaceBoardListGroup { border: 2px solid black; }");
+    interfaceBoardListGroup->setStyleSheet("QGroupBox#interfaceBoardListGroup { border: none; }");
 
-    /* ================= 顶部汇总卡 ================= */
-    QHBoxLayout* summaryRow = new QHBoxLayout;
-    summaryRow->setSpacing(10);
+    //    interfaceListLayout = new QGridLayout(interfaceBoardListGroup);
+    interfaceListLayout = new QGridLayout;
+    interfaceListLayout->setVerticalSpacing(50);
 
-    const QString sumTitles[4] = { tr("CHUTES"), tr("CAMERAS"), tr("AI LINK"), tr("ALARMS") };
-    const QColor sumColors[4] = { QColor(0x35, 0xC8, 0xDE), QColor(0x22, 0xC5, 0x5E),
-                                  QColor(0x35, 0xC8, 0xDE), QColor(0xEF, 0x44, 0x44) };
-    for (int i = 0; i < 4; i++)
+
+    newInterfaceBoardListGroup = new myGroupBox("");
+    newInterfaceListLayout = new QGridLayout(newInterfaceBoardListGroup);
+    newInterfaceBoardListGroup->setObjectName("newInterfaceBoardListGroup");
+    //    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup title: { padding:0 1px;}");
+    //    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup::title { px 0 3 px }");
+    newInterfaceBoardListGroup->setStyleSheet("QGroupBox#newInterfaceBoardListGroup { border: 2px solid rgb(209, 243, 249); }");
+
+    //    newInterfaceBoardListGroup->setAlignment(Qt::AlignHCenter);
+    newInterfaceListLayout->setSpacing(5);
+    newInterfaceListLayout->setContentsMargins(5, 0, 15, 15);
+
+    /* 控制板 */
+    ctrlBoardListGroup = new myGroupBox(myLan.control_board);
+    controlListLayout = new QGridLayout(ctrlBoardListGroup);
+
+    /* 相机板  */
+//    cameraBoardListGroup = new myGroupBox("");
+//    cameraBoardListGroup->setAlignment(Qt::AlignHCenter);
+//    cameraBoardListGroup->setObjectName("cameraBoardListGroup");
+//    cameraBoardListGroup->setStyleSheet("QGroupBox#cameraBoardListGroup { border: none; }");
+//    cameraListLayout = new QGridLayout(cameraBoardListGroup);
+    cameraListLayout = new QGridLayout;
+
+    /* 横流源板 */
+    m_lightSrcListGroup = new myGroupBox(myLan.light_src_board);
+    m_lightSrcLay = new QGridLayout(m_lightSrcListGroup);
+
+    for (i = 0; i < MAX_LIGHT_SOURCE; i++)
     {
-        summaryRow->addWidget(createSummaryCard(i, sumTitles[i], sumColors[i]), 1);
+        for (j = 0; j < 2; j++)
+        {
+            m_lightSrcLabel[i][j] = new QLabel;
+            m_lightSrcLabel[i][j]->setStyleSheet("color:white");
+            m_lightSrcLabel[i][j]->setFont(config->getFont());
+            m_lightSrcLabel[i][j]->setAlignment(Qt::AlignCenter);
+            m_lightSrcLay->addWidget(m_lightSrcLabel[i][j], i, j);
+        }
     }
-    rootLayout->addLayout(summaryRow);
 
-    /* ================= 主区域 ================= */
-    QHBoxLayout* mainRow = new QHBoxLayout;
-    mainRow->setSpacing(12);
+    for (i = 0; i < MAX_CTRL; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
+            controlListLabel[i][j] = new QLabel;
+            controlListLabel[i][j]->setStyleSheet("color:white");
+            controlListLabel[i][j]->setAlignment(Qt::AlignCenter);
+            controlListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
+            interfaceListLayout->addWidget(controlListLabel[i][j], j, i);
+        }
+    }
 
-    /* ---- 左：相机 / AI 矩阵 ---- */
-    QFrame* matrixPanel = new QFrame;
-    matrixPanel->setObjectName("matrixPanel");
-    matrixPanel->setStyleSheet(panelStyle("matrixPanel", "card_normal.png", "#2A5E70"));
+    for (i = 0; i < MAX_INT + 1; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
+            interfaceListLabel[i][j] = new QLabel;
+            interfaceListLabel[i][j]->setStyleSheet("color:white");
+            interfaceListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
+            interfaceListLabel[i][j]->setAlignment(Qt::AlignCenter);
+            interfaceListLayout->addWidget(interfaceListLabel[i][j], j, i + MAX_CTRL);
+        }
+    }
 
-    QVBoxLayout* matrixLay = new QVBoxLayout(matrixPanel);
-    matrixLay->setContentsMargins(12, 8, 12, 10);
-    matrixLay->setSpacing(4);
+    for (i = 0; i < SUM_SHOW_ROW_NUM; i++)
+    {
+        for (j = 0; j < SUM_SHOW_COLUMN_NUM; j++)
+        {
+            cameraListLabel[i][j] = new QLabel;
+            cameraListLabel[i][j]->setStyleSheet("color:white");
+            cameraListLabel[i][j]->setFont(config->getFont(DEFAULT_FONT_SIZE));
+            cameraListLabel[i][j]->setAlignment(Qt::AlignHCenter);
+            cameraListLayout->addWidget(cameraListLabel[i][j], i, j);
+        }
+    }
 
-    QHBoxLayout* matrixHdr = new QHBoxLayout;
-    QLabel* matrixTitle = new QLabel(tr("CAMERA / AI MATRIX"));
-    QFont secFont = baseFont;
-    secFont.setBold(true);
-    matrixTitle->setFont(secFont);
-    matrixTitle->setStyleSheet("color:#8FB4C4; background:transparent; letter-spacing:1px;");
-    QLabel* matrixHint = new QLabel(tr("Chute matrix · live"));
-    matrixHint->setFont(smallFont);
-    matrixHint->setStyleSheet("color:#4B6B7C; background:transparent;");
-    matrixHdr->addWidget(matrixTitle);
-    matrixHdr->addStretch();
-    matrixHdr->addWidget(matrixHint);
-    matrixLay->addLayout(matrixHdr);
+    cameraStateLbl = new QLabel;
+    cameraStateLbl->setText(myLan.cameraList);
+    cameraStateLbl->setStyleSheet("color:white");
+    //    cameraStateLbl->setText("相机状态");
 
-    m_matrix = new StateMatrixWidget;
-    m_matrix->setFont(baseFont);
-    matrixLay->addWidget(m_matrix, 1);
+    cameraStateLbl->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    cameraStateLbl->setAlignment(Qt::AlignHCenter);
 
-    /* ---- 右：控制板（与相机板相同的矩阵控件，并排显示） ---- */
-    QFrame* ctrlPanel = new QFrame;
-    ctrlPanel->setObjectName("ctrlPanel");
-    ctrlPanel->setStyleSheet(panelStyle("ctrlPanel", "card_normal.png", "#2A5E70"));
+    testStateLbl = new QLabel;
+    testStateLbl->setText(myLan.state);
+    testStateLbl->setStyleSheet("color:white");
+    testStateLbl->setFont(config->getFont(DEFAULT_FONT_SIZE));
+    testStateLbl->setAlignment(Qt::AlignHCenter);
 
-    QVBoxLayout* ctrlLay = new QVBoxLayout(ctrlPanel);
-    ctrlLay->setContentsMargins(12, 8, 12, 10);
-    ctrlLay->setSpacing(4);
+    /* 所有机型下增加恒流源板版本查询 */
+//    if(struCnfg.nEnableLampAI == 1){
+//        commListGridLayout->addWidget(interfaceBoardListGroup, 0, 0, 3, 1);
+//        commListGridLayout->addWidget(ctrlBoardListGroup, 3, 0, 2, 1);
+//        commListGridLayout->addWidget(m_lightSrcListGroup, 5, 0, 3, 1);
+//        commListGridLayout->addWidget(cameraBoardListGroup, 0, 1, 8, 2);
+//    }else{
+//        commListGridLayout->addWidget(interfaceBoardListGroup, 0, 0, 4, 1);
+//        commListGridLayout->addWidget(ctrlBoardListGroup, 4, 0, 4, 1);
+//        commListGridLayout->addWidget(cameraBoardListGroup, 0, 1, 8, 2);
+    newInterfaceListLayout->addWidget(cameraStateLbl, 0, 3, 1, 2, Qt::AlignCenter);
+    //        newInterfaceListLayout->addWidget(cameraBoardListGroup, 1, 0, 7, 6);
+    //        newInterfaceListLayout->addWidget(interfaceBoardListGroup, 1, 6, 7, 3);
+    newInterfaceListLayout->addLayout(cameraListLayout, 1, 0, 7, 6);
+    newInterfaceListLayout->addLayout(interfaceListLayout, 1, 6, 1, 3);
 
-    QHBoxLayout* ctrlHdr = new QHBoxLayout;
-    QLabel* ctrlTitle = new QLabel(tr("CONTROL BOARD"));
-    ctrlTitle->setFont(secFont);
-    ctrlTitle->setStyleSheet("color:#8FB4C4; background:transparent; letter-spacing:1px;");
-    QLabel* ctrlHint = new QLabel(tr("Communication status"));
-    ctrlHint->setFont(smallFont);
-    ctrlHint->setStyleSheet("color:#4B6B7C; background:transparent;");
-    ctrlHdr->addWidget(ctrlTitle);
-    ctrlHdr->addStretch();
-    ctrlHdr->addWidget(ctrlHint);
-    ctrlLay->addLayout(ctrlHdr);
+    //        newInterfaceListLayout->addWidget(ctrlBoardListGroup, 4, 4, 4, 1);
+    commListGridLayout->addWidget(testStateLbl, 0, 0, 1, 1);
+    commListGridLayout->addWidget(newInterfaceBoardListGroup, 1, 0, 15, 1);
 
-    m_ctrlMatrix = new StateMatrixWidget;
-    m_ctrlMatrix->setFont(baseFont);
-    ctrlLay->addWidget(m_ctrlMatrix, 1);
-
-    mainRow->addWidget(matrixPanel, 2);
-    mainRow->addWidget(ctrlPanel, 1);
-    rootLayout->addLayout(mainRow, 1);
-
-    /* ================= 底部：按钮 ================= */
-    QHBoxLayout* footerRow = new QHBoxLayout;
-    footerRow->setSpacing(14);
-    footerRow->addStretch(1);
-
-    /* 按钮 */
-    rechekBtn = new myPushButton(myLan.recheck,
-                                 QIcon(stateResPath("ico_refresh.png")), true, true, this);
-    nextBtn = new myPushButton(myLan.enter_system,
-                               QIcon(stateResPath("ico_arrow_right.png")), true, true, this);
+    //    }
+        /* 按钮 */
+    rechekBtn = new myPushButton(myLan.recheck, QIcon(), true, true, this);
+    nextBtn = new myPushButton(myLan.enter_system, QIcon(), true, true, this);
 
     if (struCnfg.nLang == LANG_TURKEY)
     {
@@ -724,128 +527,57 @@ communicationList::communicationList(QWidget* parent) :
         nextBtn->setButtonFont(config->getFont(FONT_SIZE_16));
     }
 
-    rechekBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
-    nextBtn->setFixedSize(QSize(BTN_WIDTH, BTN_HEIGHT));
-    rechekBtn->setIconSize(QSize(16, 16));
-    nextBtn->setIconSize(QSize(16, 16));
+    backHBLayout = new QVBoxLayout();
+    backHBLayout->addStretch();
+    backHBLayout->addWidget(rechekBtn);
+    QSpacerItem* horizontalSpacer = new QSpacerItem(10, 0, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    backHBLayout->addItem(horizontalSpacer);
+    backHBLayout->addStretch();
+    backHBLayout->addWidget(nextBtn);
 
-    /* 优先使用 state_page 素材，缺失时沿用方案管理页按钮样式 */
-    const QString refreshImg = stateResPath("btn_refresh_normal.png");
-    const QString refreshImgP = stateResPath("btn_refresh_pressed.png");
-    const QString entryImg = stateResPath("btn_entry_normal.png");
-    const QString entryImgP = stateResPath("btn_entry_pressed.png");
+    /*尺寸限制*/
+    rechekBtn->setFixedSize(QSize(BTN_WIDTH - 40, BTN_HEIGHT));
+    nextBtn->setFixedSize(QSize(BTN_WIDTH - 40, BTN_HEIGHT));
 
-    if (!refreshImg.isEmpty() && !refreshImgP.isEmpty())
-    {
-        rechekBtn->setStyleSheet(QString(
-            "QPushButton { border-width:12px 24px 12px 24px; border-style:solid;"
-            " border-color:transparent; border-image:url(%1) 12 24 12 24 stretch stretch;"
-            " color:#DCF3FA; font-size:14px; }"
-            "QPushButton:pressed { border-image:url(%2) 12 24 12 24 stretch stretch;"
-            " color:#FFFFFF; }").arg(refreshImg, refreshImgP));
-    }
-    else
-    {
-        rechekBtn->setStyleSheet(
-            "QPushButton { border-width:8px 16px 8px 16px; border-style:solid;"
-            " border-color:transparent;"
-            " border-image:url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
-            " color:#E8F6FF; font-size:14px; }"
-            "QPushButton:pressed {"
-            " border-image:url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch; }");
-    }
+    /* 与方案管理页按钮统一的点击动效样式（9-slice 三态） */
+    QString strBtnStyle = QString(
+        "QPushButton {"
+        "  text-align: center;"
+        "  outline: none;"
+        "  border-width: 8px 16px 8px 16px;"
+        "  border-style: solid;"
+        "  border-color: transparent;"
+        "  border-image: url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
+        "  color: #E8F6FF;"
+        "  font-size: 14px;"
+        "  padding: 0px;"
+        "}"
+        "QPushButton:hover {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:pressed {"
+        "  border-image: url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch;"
+        "  color: #FFFFFF;"
+        "}"
+        "QPushButton:disabled {"
+        "  border-image: url(:/res/png2/button/btn_disabled.png) 8 16 8 16 stretch stretch;"
+        "  color: #5A7686;"
+        "}"
+    );
+    rechekBtn->setStyleSheet(strBtnStyle);
+    nextBtn->setStyleSheet(strBtnStyle);
 
-    if (!entryImg.isEmpty() && !entryImgP.isEmpty())
-    {
-        nextBtn->setStyleSheet(QString(
-            "QPushButton { border-width:12px 24px 12px 24px; border-style:solid;"
-            " border-color:transparent; border-image:url(%1) 12 24 12 24 stretch stretch;"
-            " color:#DCF3FA; font-size:14px; }"
-            "QPushButton:pressed { border-image:url(%2) 12 24 12 24 stretch stretch;"
-            " color:#FFFFFF; }").arg(entryImg, entryImgP));
-    }
-    else
-    {
-        nextBtn->setStyleSheet(
-            "QPushButton { border-width:8px 16px 8px 16px; border-style:solid;"
-            " border-color:transparent;"
-            " border-image:url(:/res/png2/button/btn_normal.png) 8 16 8 16 stretch stretch;"
-            " color:#E8F6FF; font-size:14px; }"
-            "QPushButton:pressed {"
-            " border-image:url(:/res/png2/button/btn_pressed.png) 8 16 8 16 stretch stretch; }");
-    }
-
-    footerRow->addWidget(rechekBtn);
-    footerRow->addWidget(nextBtn);
-    rootLayout->addLayout(footerRow);
+    communicationLayout = new QHBoxLayout(this);
+    //    communicationLayout->addStretch();
+    communicationLayout->addLayout(commListGridLayout, 9);
+    //    communicationLayout->addStretch();
+    communicationLayout->addLayout(backHBLayout, 1);
 
     /*槽函数*/
     connect(rechekBtn, SIGNAL(clicked()), this, SLOT(onRecheckBtnClickedSlt()));
     connect(nextBtn, SIGNAL(clicked()), this, SLOT(onNextBtnClickedSlt()));
 }
-
-/*!
- * \brief 页面背景（state_page 素材，缺失时沿用系统默认背景）
- */
-void communicationList::paintEvent(QPaintEvent*)
-{
-    const QPixmap* bg = stateResPixmap("bg_state.png");
-    if (!bg || bg->isNull())
-        return;
-
-    QPainter p(this);
-    /* 素材为无缝平铺纹理，按原尺寸平铺避免拉伸发虚 */
-    for (int y = 0; y < height(); y += bg->height())
-    {
-        for (int x = 0; x < width(); x += bg->width())
-        {
-            p.drawPixmap(x, y, *bg);
-        }
-    }
-}
-
-/*!
- * \brief 创建顶部汇总卡片
- */
-QWidget* communicationList::createSummaryCard(int index, const QString& title, const QColor& color)
-{
-    QFrame* card = new QFrame;
-    card->setObjectName(QString("sumCard%1").arg(index));
-    card->setStyleSheet(panelStyle(card->objectName(), "card_normal.png", "#2A5E70"));
-    card->setMinimumHeight(62);
-    card->setMaximumHeight(72);
-
-    QVBoxLayout* lay = new QVBoxLayout(card);
-    lay->setContentsMargins(12, 4, 12, 4);
-    lay->setSpacing(0);
-
-    QLabel* titleLbl = new QLabel(title);
-    titleLbl->setFont(config->getFont(FONT_SIZE_12));
-    titleLbl->setStyleSheet("color:#8FB4C4; background:transparent; letter-spacing:1px;");
-
-    QHBoxLayout* valueRow = new QHBoxLayout;
-    valueRow->setSpacing(6);
-
-    m_sumValue[index] = new QLabel("00");
-    QFont valueFont = config->getFont(DEFAULT_FONT_SIZE);
-    valueFont.setBold(true);
-    valueFont.setPixelSize(qMax(22, valueFont.pixelSize() + 12));
-    m_sumValue[index]->setFont(valueFont);
-    m_sumValue[index]->setStyleSheet(QString("color:%1; background:transparent;").arg(color.name()));
-
-    m_sumTotal[index] = new QLabel("/ 00");
-    m_sumTotal[index]->setFont(config->getFont(FONT_SIZE_12));
-    m_sumTotal[index]->setStyleSheet("color:#64748B; background:transparent;");
-
-    valueRow->addWidget(m_sumValue[index]);
-    valueRow->addWidget(m_sumTotal[index], 0, Qt::AlignBottom);
-    valueRow->addStretch();
-
-    lay->addWidget(titleLbl);
-    lay->addLayout(valueRow);
-    return card;
-}
-
 /**
  * 重新检测
  */

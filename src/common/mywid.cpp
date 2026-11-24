@@ -176,6 +176,8 @@ MyCheckBox::MyCheckBox(const QString text, bool isChecked, QBoxLayout::Direction
     /* buttons init */
     checkLabel = new myLabel(text);
     checkBtn = new myPushButton(QIcon(), QSize(BTN_HEIGHT, BTN_HEIGHT));
+    /* 勾选图标撑满按钮：去掉边框与内边距，图标与按钮同尺寸 */
+    checkBtn->setStyleSheet(checkBtn->styleSheet() + "QPushButton { padding: 0px; border-width: 0px; }");
     checkBtn->setIconSize(QSize(BTN_HEIGHT, BTN_HEIGHT));
 
     /* buttons update */

@@ -3,8 +3,8 @@
   * @version:
   * @Author: xiekai
   * @Date: 2026-09-15 14:45:14
-  * @LastEditors: xiekai
-  * @LastEditTime: 2026-09-15 14:47:19
+ * @LastEditors: xiekai
+ * @LastEditTime: 2026-11-17 16:09:30
   */
 #ifndef CONFIGMGR_H
 #define CONFIGMGR_H
@@ -75,6 +75,19 @@ public:
      */
     void SetEnableAcquisition(bool enable);
 
+    /**
+     * @brief: 获取变频器信息
+     * @return {*}
+     */
+    VfdCfgInfo GetVfdInfo();
+
+    /**
+     * @brief: 设置变频器信息
+     * @param {VfdCfgInfo&} info
+     * @return {*}
+     */
+    bool SetVfdInfo(const VfdCfgInfo& info);
+
 private:
     ConfigMgr();
     ~ConfigMgr();
@@ -104,8 +117,16 @@ private:
      */
     void InitTimeCfgInfo(const QMap<QString, ConfigItem>& cfg_map);
 
+    /**
+     * @brief: 初始化变频器信息
+     * @param {QMap<QString, ConfigItem>&} 配置表记录
+     * @return {*}
+     */
+    void InitVfdInfo(const QMap<QString, ConfigItem>& cfg_map);
+
 private:
     AiCfgInfo ai_cfg_info_;                 // AI 信息
+    VfdCfgInfo vfd_cfg_info_;               // 变频器信息
     quint16 coll_pic_num_;                  // 图片采集张数
     bool enable_acquisition_{ false };      // 图片采集使能
     TimeCfgInfo time_cfg_info_;       //

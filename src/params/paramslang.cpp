@@ -847,35 +847,35 @@ void GlobalFlow::initLan()
     myLan.msg_system_init = tr("msg_system_init");
     myLan.msg_preheating = tr("msg_preheating");
     myLan.init_link = langFallback(tr("init_link"),
-                                   "init_link", QString::fromUtf8("执行链路"));
+        "init_link", QString::fromUtf8("执行链路"));
     myLan.init_step_trans = langFallback(tr("init_step_trans"),
-                                         "init_step_trans", QString::fromUtf8("下发图像传输模式"));
+        "init_step_trans", QString::fromUtf8("下发图像传输模式"));
     myLan.init_step_camera = langFallback(tr("init_step_camera"),
-                                          "init_step_camera", QString::fromUtf8("同步相机参数"));
+        "init_step_camera", QString::fromUtf8("同步相机参数"));
     myLan.init_step_sort = langFallback(tr("init_step_sort"),
-                                        "init_step_sort", QString::fromUtf8("同步色选参数"));
+        "init_step_sort", QString::fromUtf8("同步色选参数"));
     myLan.init_step_control = langFallback(tr("init_step_control"),
-                                           "init_step_control", QString::fromUtf8("同步控制板参数"));
+        "init_step_control", QString::fromUtf8("同步控制板参数"));
     myLan.init_step_ai = langFallback(tr("init_step_ai"),
-                                      "init_step_ai", QString::fromUtf8("同步 AI 模型参数"));
+        "init_step_ai", QString::fromUtf8("同步 AI 模型参数"));
     myLan.init_running = langFallback(tr("init_running"),
-                                      "init_running", QString::fromUtf8("正在执行"));
+        "init_running", QString::fromUtf8("正在执行"));
     myLan.init_doing = langFallback(tr("init_doing"),
-                                    "init_doing", QString::fromUtf8("初始化中"));
+        "init_doing", QString::fromUtf8("初始化中"));
     myLan.toast_scheme = langFallback(tr("toast_scheme"),
-                                      "toast_scheme", QString::fromUtf8("已进入方案选择"));
+        "toast_scheme", QString::fromUtf8("已进入方案选择"));
     myLan.toast_sens = langFallback(tr("toast_sens"),
-                                    "toast_sens", QString::fromUtf8("已进入感度调节"));
+        "toast_sens", QString::fromUtf8("已进入感度调节"));
     myLan.toast_feeder = langFallback(tr("toast_feeder"),
-                                      "toast_feeder", QString::fromUtf8("已进入供料速度设置"));
+        "toast_feeder", QString::fromUtf8("已进入供料速度设置"));
     myLan.toast_ejector = langFallback(tr("toast_ejector"),
-                                       "toast_ejector", QString::fromUtf8("喷阀检测指令已下发"));
+        "toast_ejector", QString::fromUtf8("喷阀检测指令已下发"));
     myLan.toast_wiper = langFallback(tr("toast_wiper"),
-                                     "toast_wiper", QString::fromUtf8("清扫指令已下发"));
+        "toast_wiper", QString::fromUtf8("清扫指令已下发"));
     myLan.toast_func = langFallback(tr("toast_func"),
-                                    "toast_func", QString::fromUtf8("已进入算法设置"));
+        "toast_func", QString::fromUtf8("已进入算法设置"));
     myLan.toast_oper = langFallback(tr("toast_oper"),
-                                    "toast_oper", QString::fromUtf8("已进入系统参数"));
+        "toast_oper", QString::fromUtf8("已进入系统参数"));
     myLan.msg_input_name = tr("msg_input_name");
     myLan.msg_mode_changing = tr("msg_mode_changing");
     myLan.msg_testing = tr("msg_testing");
@@ -1276,6 +1276,11 @@ void GlobalFlow::initLan()
     myLan.spray_valve_number = tr("spray_valve_number");
     myLan.nozzle_number = tr("nozzle_number");
     myLan.spray_time_interval = tr("spray_time_interval");
+
+    // 变频器
+    myLan.vfd_name = tr("vfd_name");
+    myLan.vfd_enable = tr("vfd_enable");
+    myLan.vfd_frequency = tr("vfd_frequency");
 
 }
 

@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:26:28
  * @LastEditors: xiekai
- * @LastEditTime: 2026-10-20 19:30:20
+ * @LastEditTime: 2026-11-17 18:45:41
  */
 #ifndef SORTERTYPES_H
 #define SORTERTYPES_H
@@ -58,6 +58,20 @@
 // 最小空间200MB
 #define MIN_DOWN_SPACITY 200
 
+// 变频器地址
+#define VFD_ADDR 0x01
+// 变频器写命令地址
+#define VFD_WRITE_ADDR 0x06
+// 变频器读命令地址
+#define VFD_READ_ADDR 0x03
+// 变频器启停寄存器地址
+#define VFD_START_STOP_ADDR 0x2000
+// 变频器频率寄存器地址
+#define VFD_FREQUENCY_ADDR 0x2001
+// 继电器启动命令
+#define VFD_START_CMD 0x05
+// 继电器停止命令
+#define VFD_STOP_CMD 0x06
 
  // A类包包头和包尾
 #define PKGA_HEAD0 0xA5
@@ -133,6 +147,7 @@
 #define CMD_CODE_SUCCESS 1                    // 成功编码
 
 #define GROUP_NAME_AI "AI"                    // AI分组名称
+#define GROUP_NAME_VFD "VFD"                  // 变频器分组名称
 
 // 命令包信息
 typedef struct __cmd_package_
@@ -352,7 +367,13 @@ typedef struct __model_cls_param_
 
 typedef struct __clean_dust_param_
 {
-    quint8 flag_;                             // 1: 启动清灰 2: 停止清灰
+    quint8 flag_;                           // 1: 启动清灰 2: 停止清灰
 } CleanDustParam;
+
+typedef struct __vfd_cfg_info_
+{
+    bool enable_;                           // 是否使能变频器       
+    float frequency_;                       // 振动频率
+} VfdCfgInfo;
 
 #endif // SORTERTYPES_H

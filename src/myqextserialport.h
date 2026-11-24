@@ -350,7 +350,7 @@ public:
      */
     int com1WriteRaw(int nCmd, char sModuleType, char sIntAddr, char sUnitAddr, char arg1, char arg2,
         char arg3, char arg4, char arg5, int nCount);
-    
+
     int com1Read(char* sBuf, int nLen, int timeoutMsec = 0);
     int com1Write_update(int nCmd, char sModule, char sModule2, char* sBuf, int nCount);
 
@@ -379,6 +379,14 @@ public:
     int com3Write(int nCmd, char sModuleType, char sIntAddr, char sUnitAddr, char arg1, char arg2,
         char arg3, char arg4, char arg5, int nCount);
     int com3Read(char* sbuf, int nLen, int timeoutMsec = 0);
+
+    /**
+     * @brief: 直接写入数据到串口, 目前用于变频器
+     * @param {QByteArray&} data
+     * @param {bool} bIsRead
+     * @return {*}
+     */
+    int com2Write(QByteArray& data, bool bIsRead = false);
 
     int remoteUpdateRead(char* sbuf, int nLen);
     unsigned int crcFpga(char* sData, int nLen);    // CRC check

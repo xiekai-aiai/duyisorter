@@ -3238,6 +3238,7 @@ AisMainWidget::~AisMainWidget()
 {
 
 }
+
 // ============ FtpUploader (SFTP via SftpClient) ============
 // 原有 QFtp(FTP) 替换为 libssh2 SFTP，对外接口不变
 

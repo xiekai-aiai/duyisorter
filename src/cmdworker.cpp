@@ -36,6 +36,31 @@ namespace cmdworker
         return crc;
     }
 
+    // 变频器CRC校验方法
+    unsigned int VFD_CRC(unsigned char* pval, unsigned char len)
+    {
+        unsigned int crc_value = 0xFFFF;
+        unsigned int i;
+
+        while (len--)
+        {
+            crc_value ^= *pval++;
+            for (i = 0; i < 8; i++)
+            {
+                if (crc_value & 0x0001)
+                {
+                    crc_value >>= 1;
+                    crc_value ^= 0xA001;
+                }
+                else
+                {
+                    crc_value >>= 1;
+                }
+            }
+        }
+        return (crc_value);
+    }
+
     bool ParseCmdPkg(const QByteArray& cmd, CmdPackage& cmd_pkg)
     {
         LOG_INFO_STM("cmd response:" << cmd.toHex(' ').toUpper().toStdString());
@@ -877,6 +902,47 @@ namespace cmdworker
         // 2个字节的包尾
         request.append(PKGA_TAIL0);
         request.append(PKGA_TAIL1);
+        return request;
+    }
+
+    QByteArray VFDFrequencyRequest(int freq)
+    {
+        QByteArray request;
+        // 1个字节的变频器地址
+        request.append(VFD_ADDR);
+        // 1个字节的写命令码
+        request.append(VFD_WRITE_ADDR);
+        // 2个字节的寄存器地址
+        quint16 addr = VFD_FREQUENCY_ADDR;
+        quint16 netAddr = qToBigEndian(addr);
+        request.append(reinterpret_cast<const char*>(&netAddr), sizeof(netAddr));
+        // 2个字节的寄存器值
+        quint16 netFreq = qToBigEndian(static_cast<quint16>(freq));
+        request.append(reinterpret_cast<const char*>(&netFreq), sizeof(netFreq));
+        // 2个字节的crc
+        quint16 crc = VFD_CRC(reinterpret_cast<unsigned char*>(request.data()), static_cast<unsigned char>(request.size()));
+        request.append(reinterpret_cast<const char*>(&crc), sizeof(crc));
+        return request;
+    }
+
+    QByteArray VFDOperatorRequest(bool bIsStart)
+    {
+        QByteArray request;
+        // 1个字节的变频器地址
+        request.append(VFD_ADDR);
+        // 1个字节的写命令码
+        request.append(VFD_WRITE_ADDR);
+        // 2个字节的寄存器地址
+        quint16 addr = VFD_START_STOP_ADDR;
+        quint16 netAddr = qToBigEndian(addr);
+        request.append(reinterpret_cast<const char*>(&netAddr), sizeof(netAddr));
+        // 2个字节的寄存器值
+        quint16 cmd = bIsStart ? VFD_START_CMD : VFD_STOP_CMD;
+        cmd = qToBigEndian(cmd);
+        request.append(reinterpret_cast<const char*>(&cmd), sizeof(cmd));
+        // 2个字节的crc
+        quint16 crc = VFD_CRC(reinterpret_cast<unsigned char*>(request.data()), static_cast<unsigned char>(request.size()));
+        request.append(reinterpret_cast<const char*>(&crc), sizeof(crc));
         return request;
     }
 

@@ -60,6 +60,7 @@ public:
     void createDegaussTimePage(void);       //! 创建消磁时间设置页面
     void setFPGAModeParams();               //! FPGA模式的初始化
     void setAiParams();                     //! ai参数的初始化
+    void createVFDPage();                   //! 变频器的设置页面
     //    void onMachineDecrpt(QString);
 private slots:
     void backToFactorySet();
@@ -158,6 +159,40 @@ private slots:
     void onSetAiSureBtnClicked();
     void onSetAiBackBtnClicked();
 
+    /**
+     * @brief: 变频器按钮点击响应槽函数
+     * @return {*}
+     */
+    void onVfdSetBtnClickedSlt();
+    /**
+     * @brief: 变频器界面返回按钮响应槽函数
+     * @return {*}
+     */
+    void onVfdSetBackBtnClickedSlt();
+
+    /**
+     * @brief: 变频器界面应用按钮响应槽函数
+     * @return {*}
+     */
+    void onVfdOkBtnClickedSlt();
+
+    /**
+     * @brief: 是否使能变频器按钮响应槽函数
+     * @return {*}
+     */
+    void onVfdEnableChxBtnClicked();
+    /**
+     * @brief: 振动频率按钮响应槽函数
+     * @return {*}
+     */
+    void onVfdFrequencyEdtPressSlt();
+
+    /**
+     * @brief: 变频器操作按钮响应槽函数
+     * @return {*}
+     */
+    void onVfdOprBtnClickedSlt();
+
 public slots:
     void factoryUpdateSlt();
     void gotoFirstPageSlt();
@@ -192,6 +227,7 @@ private:
         THROUGH_PUT_PAGE,           /*!< R+通过量测试页面 */
         TICK_MODE_PAGE,             /*!< R+精准剔除参数页面*/
         AI_SET_PAGE,                /*!< ai参数页面*/
+        VFD_SET_PAGE                /*!< 变频器设置页面*/
     };
 
     QStackedWidget* stackedWidget;
@@ -330,6 +366,16 @@ private:
     myLineEdit* imgVideoHeightEdit;
     myLabel* imgSliderHeightLbl;
     myLineEdit* imgSliderHeightEdit;
+
+    myPushButton* m_pVFDBtn;                  // 变频器按钮
+    QWidget* m_pVFDPageWidget;                // 变频器页面
+    myCustomCheckBox* m_pVFDEnableCbx;        // 变频器使能选择框
+    myLabel* m_pVFDSetFreqLbl;                // 变频器设置频率标签
+    myLineEdit* m_pVFDSetFreqLdt;             // 变频器设置频率输入框
+    myPushButton* m_pVFDOkBtn;                // 变频器参数确认按钮
+    myPushButton* m_pVFDBackBtn;              // 变频器页面返回按钮
+    myPushButton* m_pVFDOprBtn;               // 变频器操作按钮
+    bool m_bVFDStart{ false };                // 是否运行中
 };
 
 #endif // FACTORYSET_H

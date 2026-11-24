@@ -133,7 +133,7 @@ int createModeParaInfoTable(){
     QSqlQuery sql_query;
     if(!qDataBaseInfo.isTableExist(sql_query,"modelParaInfo")){
         QString  create_sql = "CREATE TABLE modelParaInfo ("
-                    "modelId   VARCHAR(200),"
+                    "modelId   VARCHAR (200),"
                     "id VARCHAR(100),"
                     "zhName   CHAR(100),"
                     "enName   CHAR(100),"

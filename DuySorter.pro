@@ -23,6 +23,8 @@ else {
         DEFINES += DEBUG_OUTPUT=1
 }
 
+message("build FACTORY: $$FACTORY")
+
 # ============ 目标架构自适应（VM 调试 x86_64 / 生产交叉编译 aarch64）============
 # qmake 依据编译器目标架构自动选择 OpenCV / OpenSSL 的库路径
 unix {
@@ -39,37 +41,37 @@ unix {
     equals(X86_BUILD, 1) {
         message("qmake: target arch = x86_64 (host/VM debug)")
         # OpenCV + OpenSSL + 其他3rdparty：x86_64 版本（随项目分发）
-        INCLUDEPATH += $$PWD/src/3rdparty/opencv/x86/include/opencv4 \
-                       $$PWD/src/3rdparty/openssl/x86/include      \
-                       $$PWD/src/3rdparty/unilog/x86/include       \
-                       $$PWD/src/3rdparty/libssh2/x86/include      \
-                       $$PWD/src/3rdparty/spdlog/x86/include
+        INCLUDEPATH += $$PWD/src/3rdparty/$$FACTORY/opencv/x86/include/opencv4 \
+                       $$PWD/src/3rdparty/$$FACTORY/openssl/x86/include      \
+                       $$PWD/src/3rdparty/$$FACTORY/unilog/x86/include       \
+                       $$PWD/src/3rdparty/$$FACTORY/libssh2/x86/include      \
+                       $$PWD/src/3rdparty/$$FACTORY/spdlog/x86/include
 
-        LIBS += -L$$PWD/src/3rdparty/opencv/x86/lib  \
-                -L$$PWD/src/3rdparty/openssl/x86/lib \
-                -L$$PWD/src/3rdparty/unilog/x86/lib  \
-                -L$$PWD/src/3rdparty/libssh2/x86/lib \
+        LIBS += -L$$PWD/src/3rdparty/$$FACTORY/opencv/x86/lib  \
+                -L$$PWD/src/3rdparty/$$FACTORY/openssl/x86/lib \
+                -L$$PWD/src/3rdparty/$$FACTORY/unilog/x86/lib  \
+                -L$$PWD/src/3rdparty/$$FACTORY/libssh2/x86/lib \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
 
         # 把 3rdparty 绝对路径烘焙进 RUNPATH，VM 调试时直接可运行
-        QMAKE_LFLAGS += -Wl,-rpath,$$PWD/src/3rdparty/opencv/x86/lib \
-                        -Wl,-rpath,$$PWD/src/3rdparty/openssl/x86/lib \
-                        -Wl,-rpath,$$PWD/src/3rdparty/unilog/x86/lib  \
-                        -Wl,-rpath,$$PWD/src/3rdparty/libssh2/x86/lib
+        QMAKE_LFLAGS += -Wl,-rpath,$$PWD/src/3rdparty/$$FACTORY/opencv/x86/lib \
+                        -Wl,-rpath,$$PWD/src/3rdparty/$$FACTORY/openssl/x86/lib \
+                        -Wl,-rpath,$$PWD/src/3rdparty/$$FACTORY/unilog/x86/lib  \
+                        -Wl,-rpath,$$PWD/src/3rdparty/$$FACTORY/libssh2/x86/lib
     } else {
         message("qmake: target arch = aarch64 (rk3566 production)")
         # OpenCV 4.5.5（随项目分发）：rk3566 aarch64 生产
-        INCLUDEPATH += $$PWD/src/3rdparty/opencv/arm/include/opencv4 \
-                       $$PWD/src/3rdparty/openssl/arm/include        \
-                       $$PWD/src/3rdparty/unilog/arm/include         \
-                       $$PWD/src/3rdparty/libssh2/arm/include        \
-                       $$PWD/src/3rdparty/spdlog/arm/include
+        INCLUDEPATH += $$PWD/src/3rdparty/$$FACTORY/opencv/arm/include/opencv4 \
+                       $$PWD/src/3rdparty/$$FACTORY/openssl/arm/include        \
+                       $$PWD/src/3rdparty/$$FACTORY/unilog/arm/include         \
+                       $$PWD/src/3rdparty/$$FACTORY/libssh2/arm/include        \
+                       $$PWD/src/3rdparty/$$FACTORY/spdlog/arm/include
 
-        LIBS += -L$$PWD/src/3rdparty/opencv/arm/lib  \
-                -L$$PWD/src/3rdparty/openssl/arm/lib \
-                -L$$PWD/src/3rdparty/unilog/arm/lib  \
-                -L$$PWD/src/3rdparty/libssh2/arm/lib \
+        LIBS += -L$$PWD/src/3rdparty/$$FACTORY/opencv/arm/lib  \
+                -L$$PWD/src/3rdparty/$$FACTORY/openssl/arm/lib \
+                -L$$PWD/src/3rdparty/$$FACTORY/unilog/arm/lib  \
+                -L$$PWD/src/3rdparty/$$FACTORY/libssh2/arm/lib \
                 -lopencv_core -lopencv_imgproc -lopencv_imgcodecs \
                 -lcrypto -lssl -lunilog -lssh2
     }
@@ -146,7 +148,7 @@ win32{
 
             SOURCES += $$PWD/src/3rdparty/qextserialport/qextserialport_win.cpp
 
-            LIBS += -L$$PWD/src/3rdparty/openssl/lib_win32 -llibcrypto
+            LIBS += -L$$PWD/src/3rdparty/$$FACTORY/openssl/lib_win32 -llibcrypto
 
             DEFINES += LCD_WIDTH=1024 \
                        LCD_HEIGHT=768 \

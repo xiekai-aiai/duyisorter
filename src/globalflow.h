@@ -96,7 +96,7 @@ public:
 
     void onCleanDustCmd(quint8 cmd);                //清灰命令
 
-    int  initAiCommunication(QStringList *failedDevices = nullptr);   //AI板自检，可选出参返回失败板号
+    int  initAiCommunication(QStringList* failedDevices = nullptr);   //AI板自检，可选出参返回失败板号
 
     /*!
      * \brief 开机检测状态上报（启动画面 5 组）
@@ -104,7 +104,7 @@ public:
      * \param status BOOT_STATUS_*
      * \param detail 正常/异常文案
      */
-    void bootStage(int stage, int status, const QString &detail = QString());
+    void bootStage(int stage, int status, const QString& detail = QString());
     bool isAiCheckEnabled();                        //! 读取 init_check.cnf 的 check_ai
 
     /**
@@ -133,6 +133,19 @@ public:
      * @return {*}
      */
     void stopAiInfer();
+
+    /**
+     * @brief: 调整变频器频率
+     * @param {float} freq
+     * @return {*}
+     */
+    void chgVFDFreq();
+
+    /**
+     * @brief: 操作变频器启停
+     * @return {*}
+     */
+    void operatorVFG(bool bIsStart);
 
 
     void getDefaultPara();
@@ -289,7 +302,7 @@ public:
 
 signals:
     void backlightOnSig();   // 关背光后，点亮背光需要输入密码
-    void initStageChanged(int stage, int status, const QString &detail);   // 开机检测状态上报
+    void initStageChanged(int stage, int status, const QString& detail);   // 开机检测状态上报
 
 private:
     qint64 turnOnTime;      // 开机时刻

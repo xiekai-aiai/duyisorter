@@ -179,6 +179,8 @@ MainWidget::MainWidget(QWidget* parent)
 
     videoBtn = new QToolButton(this);
     videoBtn->setText(myLan.sorter_manager);
+    /* 顶栏按钮高度 50px（BTN_HEIGHT+10），图标取 48px 才能完整显示；
+       上游 60/80px 图标在本地等间距顶栏中会被裁切 */
     videoBtn->setIconSize(QSize(48, 48));
     videoBtn->setIcon(QIcon(":/res/png2/topbar/videoCap.png"));
     videoBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);

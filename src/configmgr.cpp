@@ -28,8 +28,31 @@ bool ConfigMgr::Init()
     InitAiCfgInfo(cfg_map);
     InitCollPicNum(cfg_map);
     InitTimeCfgInfo(cfg_map);
+    InitVfdInfo(cfg_map);
 
     return true;
+}
+
+void ConfigMgr::InitVfdInfo(const QMap<QString, ConfigItem>& cfg_map)
+{
+    VfdCfgInfo info;
+
+    // 使能变频器
+    QString key = QString(GROUP_NAME_VFD) + ".enable_vfd";
+    if (cfg_map.contains(key))
+    {
+        info.enable_ = (cfg_map[key].param_value_ == "true") ? true : false;;
+    }
+
+    // 变频器振动频率
+    key = QString(GROUP_NAME_VFD) + ".vfd_frequency";
+    if (cfg_map.contains(key))
+    {
+        info.frequency_ = cfg_map[key].param_value_.toFloat();
+    }
+
+    vfd_cfg_info_ = info;
+
 }
 
 void ConfigMgr::InitAiCfgInfo(const QMap<QString, ConfigItem>& cfg_map)
@@ -310,4 +333,35 @@ void ConfigMgr::SetEnableAcquisition(bool enable)
 
     // note: 图像采集使能配置不持久化到数据库
     enable_acquisition_ = enable;
+}
+
+
+VfdCfgInfo ConfigMgr::GetVfdInfo()
+{
+    return vfd_cfg_info_;
+}
+
+bool ConfigMgr::SetVfdInfo(const VfdCfgInfo& info)
+{
+    LOG_INFO_STM("enable:" << info.enable_ << ", frequency:" << info.frequency_);
+
+    QVector<ConfigItem> cfg_items;
+    // 采集高度
+    ConfigItem ci;
+    ci.group_name_ = GROUP_NAME_VFD;
+    ci.param_name_ = "enable_vfd";
+    ci.param_value_ = info.enable_ ? "true" : "false";
+    cfg_items.append(ci);
+    // 推理高度
+    ci.param_name_ = "vfd_frequency";
+    ci.param_value_ = QString::number(info.frequency_);
+    cfg_items.append(ci);
+
+    // 更新到数据库中
+    if (!SQLiteMgr::Instance().UpdateConfig(cfg_items))
+    {
+        return false;
+    }
+    vfd_cfg_info_ = info;
+    return true;
 }

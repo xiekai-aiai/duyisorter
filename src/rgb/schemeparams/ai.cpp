@@ -691,7 +691,8 @@ void PageAi::onUploadModel()
     info.model_name_ = model_name;
     if (!modelUpload(info))
     {
-        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_upload_failed);
+        myMessageBox msgBox(MSG_WARN, myLan.mdl_upload_failed);
+        msgBox.exec();
         return;
     }
 
@@ -722,7 +723,8 @@ void PageAi::onDeleteModel()
             if (model_id == QString::fromUtf8(struCnfp.struGroupIdentify[idx][idy].struAi.modelId))
             {
                 LOG_INFO_STM("level id:" << idx << ", identify group id:" << idy << " use model id:" << model_id.toStdString() << ", model name:" << model_name.toStdString() << " cannot delete!");
-                QMessageBox::warning(this, myLan.app_warn, myLan.mdl_applying + myLan.mdl_del_failed);
+                myMessageBox msgBox(MSG_WARN, myLan.mdl_applying + myLan.mdl_del_failed);
+                msgBox.exec();
                 return;
             }
         }
@@ -736,7 +738,8 @@ void PageAi::onDeleteModel()
 
     if (!modelDelete(info))
     {
-        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_del_failed);
+        myMessageBox msgBox(MSG_WARN, myLan.mdl_del_failed);
+        msgBox.exec();
         return;
     }
 
@@ -771,19 +774,22 @@ bool PageAi::setIntelParams()
     ModelInfo info;
     if (!SQLiteMgr::Instance().LoadModelInfoById(model_id, info))
     {
-        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_load_failed);
+        myMessageBox msgBox(MSG_WARN, myLan.mdl_load_failed);
+        msgBox.exec();
         return false;
     }
 
     if (!modelUpload(info))
     {
-        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_upload_failed);
+        myMessageBox msgBox(MSG_WARN, myLan.mdl_upload_failed);
+        msgBox.exec();
         return false;
     }
 
     if (!modelApply(info))
     {
-        QMessageBox::warning(this, myLan.app_warn, myLan.mdl_apply_failed);
+        myMessageBox msgBox(MSG_WARN, myLan.mdl_apply_failed);
+        msgBox.exec();
         return false;
     }
 

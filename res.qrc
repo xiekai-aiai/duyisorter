@@ -156,7 +156,7 @@
         <file alias="res/png/pic5.png">res/png2/pic5.png</file>
         <file alias="res/png/pic6.png">res/png2/pic6.png</file>
         <file alias="res/png/back.png">res/png2/back.png</file>
-        <file alias="res/png/back_pure_clear.png">res/png2/back_pure_clear.png</file>
+        <file alias="res/png/back_deep_clear.png">res/png2/back_deep_clear.png</file>
         <file alias="res/png/schemeBack.png">res/png2/schemeBack.png</file>
         <file alias="res/png2/button/btn_normal.png">res/png2/button/btn_normal.png</file>
         <file alias="res/png2/button/btn_pressed.png">res/png2/button/btn_pressed.png</file>
@@ -199,34 +199,6 @@
         <file alias="res/png2/sidelist/bar_bg.png">res/png2/sidelist/bar_bg.png</file>
         <file alias="res/png2/sidelist/btn_line_normal.png">res/png2/sidelist/btn_line_normal.png</file>
         <file alias="res/png2/sidelist/btn_line_active.png">res/png2/sidelist/btn_line_active.png</file>
-        <file alias="res/png2/checkbox/cb_normal.png">res/png2/checkbox/cb_normal.png</file>
-        <file alias="res/png2/checkbox/cb_hover.png">res/png2/checkbox/cb_hover.png</file>
-        <file alias="res/png2/checkbox/cb_pressed.png">res/png2/checkbox/cb_pressed.png</file>
-        <file alias="res/png2/checkbox/cb_checked.png">res/png2/checkbox/cb_checked.png</file>
-        <file alias="res/png2/checkbox/cb_disabled.png">res/png2/checkbox/cb_disabled.png</file>
-        <file alias="res/png2/adjust_btn_tech/btnPlus_normal.png">res/png2/adjust_btn_tech/btnPlus_normal.png</file>
-        <file alias="res/png2/adjust_btn_tech/btnPlus_pressed.png">res/png2/adjust_btn_tech/btnPlus_pressed.png</file>
-        <file alias="res/png2/adjust_btn_tech/btnPlus_disabled.png">res/png2/adjust_btn_tech/btnPlus_disabled.png</file>
-        <file alias="res/png2/adjust_btn_tech/btnMinus_normal.png">res/png2/adjust_btn_tech/btnMinus_normal.png</file>
-        <file alias="res/png2/adjust_btn_tech/btnMinus_pressed.png">res/png2/adjust_btn_tech/btnMinus_pressed.png</file>
-        <file alias="res/png2/adjust_btn_tech/btnMinus_disabled.png">res/png2/adjust_btn_tech/btnMinus_disabled.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineLeftDouble_normal.png">res/png2/adjust_btn_tech/fineLeftDouble_normal.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineLeftDouble_pressed.png">res/png2/adjust_btn_tech/fineLeftDouble_pressed.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineLeftSingle_normal.png">res/png2/adjust_btn_tech/fineLeftSingle_normal.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineLeftSingle_pressed.png">res/png2/adjust_btn_tech/fineLeftSingle_pressed.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineRightSingle_normal.png">res/png2/adjust_btn_tech/fineRightSingle_normal.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineRightSingle_pressed.png">res/png2/adjust_btn_tech/fineRightSingle_pressed.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineRightDouble_normal.png">res/png2/adjust_btn_tech/fineRightDouble_normal.png</file>
-        <file alias="res/png2/adjust_btn_tech/fineRightDouble_pressed.png">res/png2/adjust_btn_tech/fineRightDouble_pressed.png</file>
-        <file alias="res/png2/pause_play_btn_tech/btnPause_normal.png">res/png2/pause_play_btn_tech/btnPause_normal.png</file>
-        <file alias="res/png2/pause_play_btn_tech/btnPause_pressed.png">res/png2/pause_play_btn_tech/btnPause_pressed.png</file>
-        <file alias="res/png2/pause_play_btn_tech/btnPlay_normal.png">res/png2/pause_play_btn_tech/btnPlay_normal.png</file>
-        <file alias="res/png2/pause_play_btn_tech/btnPlay_pressed.png">res/png2/pause_play_btn_tech/btnPlay_pressed.png</file>
-        <file alias="res/png2/dialog/dlgBg.png">res/png2/dialog/dlgBg.png</file>
-        <file alias="res/png2/dialog/ico_info.png">res/png2/dialog/ico_info.png</file>
-        <file alias="res/png2/dialog/ico_warn.png">res/png2/dialog/ico_warn.png</file>
-        <file alias="res/png2/dialog/ico_success.png">res/png2/dialog/ico_success.png</file>
-        <file alias="res/png2/dialog/ico_error.png">res/png2/dialog/ico_error.png</file>
         <file alias="res/png2/lineedit/lineedit_normal.png">res/png2/lineedit/lineedit_normal.png</file>
         <file alias="res/png2/lineedit/lineedit_hover.png">res/png2/lineedit/lineedit_hover.png</file>
         <file alias="res/png2/lineedit/lineedit_focus.png">res/png2/lineedit/lineedit_focus.png</file>
@@ -238,22 +210,6 @@
         <file alias="res/png2/topbar/workStop.png">res/png2/topbar/workStop.png</file>
         <file alias="res/png2/topbar/savePara.png">res/png2/topbar/savePara.png</file>
         <file alias="res/png2/topbar/shutDown.png">res/png2/topbar/shutDown.png</file>
-        <file alias="res/png2/topbar_anim/cardMetricNormal.png">res/png2/topbar_anim/cardMetricNormal.png</file>
-        <file alias="res/png2/topbar_anim/cardMetricAlarm.png">res/png2/topbar_anim/cardMetricAlarm.png</file>
-        <file alias="res/png2/topbar_anim/dotNormal.png">res/png2/topbar_anim/dotNormal.png</file>
-        <file alias="res/png2/topbar_anim/dotAlarm.png">res/png2/topbar_anim/dotAlarm.png</file>
-        <file alias="res/png2/topbar_anim/segOn.png">res/png2/topbar_anim/segOn.png</file>
-        <file alias="res/png2/topbar_anim/segOff.png">res/png2/topbar_anim/segOff.png</file>
-        <file alias="res/png2/topbar_anim/segOnAlarm.png">res/png2/topbar_anim/segOnAlarm.png</file>
-        <file alias="res/png2/topbar_anim/btnStop.png">res/png2/topbar_anim/btnStop.png</file>
-        <file alias="res/png2/topbar_anim/btnStopPressed.png">res/png2/topbar_anim/btnStopPressed.png</file>
-        <file alias="res/png2/topbar_anim/iconStop.png">res/png2/topbar_anim/iconStop.png</file>
-        <file alias="res/png2/topbar_anim/topbarBg.png">res/png2/topbar_anim/topbarBg.png</file>
-        <file alias="res/png2/topbar_anim/iconClock.png">res/png2/topbar_anim/iconClock.png</file>
-        <file alias="res/png2/topbar_anim2/iconWorking.png">res/png2/topbar_anim2/iconWorking.png</file>
-        <file alias="res/png2/topbar_anim2/stateNormal.png">res/png2/topbar_anim2/stateNormal.png</file>
-        <file alias="res/png2/topbar_anim2/stateAlarm.png">res/png2/topbar_anim2/stateAlarm.png</file>
-        <file alias="res/png2/topbar_anim2/statusPanelBg.png">res/png2/topbar_anim2/statusPanelBg.png</file>
         <file alias="res/png/material.png">res/png2/material.png</file>
         <file alias="res/png/materialButton.png">res/png2/materialButton.png</file>
         <file alias="res/png/materialSelect.png">res/png2/materialSelect.png</file>
@@ -349,26 +305,71 @@
         <file>res/start/loading_qt_kit/loading_ring_seq/ring_37.png</file>
         <file>res/start/loading_qt_kit/loading_ring_seq/ring_38.png</file>
         <file>res/start/loading_qt_kit/loading_ring_seq/ring_39.png</file>
+        <file alias="res/png/back_pure_clear.png">res/png2/back_pure_clear.png</file>
+        <file alias="res/png2/adjust_btn_tech/btnMinus_disabled.png">res/png2/adjust_btn_tech/btnMinus_disabled.png</file>
+        <file alias="res/png2/adjust_btn_tech/btnMinus_normal.png">res/png2/adjust_btn_tech/btnMinus_normal.png</file>
+        <file alias="res/png2/adjust_btn_tech/btnMinus_pressed.png">res/png2/adjust_btn_tech/btnMinus_pressed.png</file>
+        <file alias="res/png2/adjust_btn_tech/btnPlus_disabled.png">res/png2/adjust_btn_tech/btnPlus_disabled.png</file>
+        <file alias="res/png2/adjust_btn_tech/btnPlus_normal.png">res/png2/adjust_btn_tech/btnPlus_normal.png</file>
+        <file alias="res/png2/adjust_btn_tech/btnPlus_pressed.png">res/png2/adjust_btn_tech/btnPlus_pressed.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineLeftDouble_normal.png">res/png2/adjust_btn_tech/fineLeftDouble_normal.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineLeftDouble_pressed.png">res/png2/adjust_btn_tech/fineLeftDouble_pressed.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineLeftSingle_normal.png">res/png2/adjust_btn_tech/fineLeftSingle_normal.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineLeftSingle_pressed.png">res/png2/adjust_btn_tech/fineLeftSingle_pressed.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineRightDouble_normal.png">res/png2/adjust_btn_tech/fineRightDouble_normal.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineRightDouble_pressed.png">res/png2/adjust_btn_tech/fineRightDouble_pressed.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineRightSingle_normal.png">res/png2/adjust_btn_tech/fineRightSingle_normal.png</file>
+        <file alias="res/png2/adjust_btn_tech/fineRightSingle_pressed.png">res/png2/adjust_btn_tech/fineRightSingle_pressed.png</file>
+        <file alias="res/png2/checkbox/cb_checked.png">res/png2/checkbox/cb_checked.png</file>
+        <file alias="res/png2/checkbox/cb_disabled.png">res/png2/checkbox/cb_disabled.png</file>
+        <file alias="res/png2/checkbox/cb_hover.png">res/png2/checkbox/cb_hover.png</file>
+        <file alias="res/png2/checkbox/cb_normal.png">res/png2/checkbox/cb_normal.png</file>
+        <file alias="res/png2/checkbox/cb_pressed.png">res/png2/checkbox/cb_pressed.png</file>
+        <file alias="res/png2/dialog/dlgBg.png">res/png2/dialog/dlgBg.png</file>
+        <file alias="res/png2/dialog/ico_error.png">res/png2/dialog/ico_error.png</file>
+        <file alias="res/png2/dialog/ico_info.png">res/png2/dialog/ico_info.png</file>
+        <file alias="res/png2/dialog/ico_success.png">res/png2/dialog/ico_success.png</file>
+        <file alias="res/png2/dialog/ico_warn.png">res/png2/dialog/ico_warn.png</file>
+        <file alias="res/png2/pause_play_btn_tech/btnPause_normal.png">res/png2/pause_play_btn_tech/btnPause_normal.png</file>
+        <file alias="res/png2/pause_play_btn_tech/btnPause_pressed.png">res/png2/pause_play_btn_tech/btnPause_pressed.png</file>
+        <file alias="res/png2/pause_play_btn_tech/btnPlay_normal.png">res/png2/pause_play_btn_tech/btnPlay_normal.png</file>
+        <file alias="res/png2/pause_play_btn_tech/btnPlay_pressed.png">res/png2/pause_play_btn_tech/btnPlay_pressed.png</file>
+        <file alias="res/png2/topbar_anim/btnStop.png">res/png2/topbar_anim/btnStop.png</file>
+        <file alias="res/png2/topbar_anim/btnStopPressed.png">res/png2/topbar_anim/btnStopPressed.png</file>
+        <file alias="res/png2/topbar_anim/cardMetricAlarm.png">res/png2/topbar_anim/cardMetricAlarm.png</file>
+        <file alias="res/png2/topbar_anim/cardMetricNormal.png">res/png2/topbar_anim/cardMetricNormal.png</file>
+        <file alias="res/png2/topbar_anim/dotAlarm.png">res/png2/topbar_anim/dotAlarm.png</file>
+        <file alias="res/png2/topbar_anim/dotNormal.png">res/png2/topbar_anim/dotNormal.png</file>
+        <file alias="res/png2/topbar_anim/iconClock.png">res/png2/topbar_anim/iconClock.png</file>
+        <file alias="res/png2/topbar_anim/iconStop.png">res/png2/topbar_anim/iconStop.png</file>
+        <file alias="res/png2/topbar_anim/segOff.png">res/png2/topbar_anim/segOff.png</file>
+        <file alias="res/png2/topbar_anim/segOn.png">res/png2/topbar_anim/segOn.png</file>
+        <file alias="res/png2/topbar_anim/segOnAlarm.png">res/png2/topbar_anim/segOnAlarm.png</file>
+        <file alias="res/png2/topbar_anim/topbarBg.png">res/png2/topbar_anim/topbarBg.png</file>
+        <file alias="res/png2/topbar_anim2/iconWorking.png">res/png2/topbar_anim2/iconWorking.png</file>
+        <file alias="res/png2/topbar_anim2/stateAlarm.png">res/png2/topbar_anim2/stateAlarm.png</file>
+        <file alias="res/png2/topbar_anim2/stateNormal.png">res/png2/topbar_anim2/stateNormal.png</file>
+        <file alias="res/png2/topbar_anim2/statusPanelBg.png">res/png2/topbar_anim2/statusPanelBg.png</file>
         <file>res/png2/state_page/bg_state.png</file>
-        <file>res/png2/state_page/card_normal.png</file>
-        <file>res/png2/state_page/card_warning.png</file>
-        <file>res/png2/state_page/card_abnormal.png</file>
-        <file>res/png2/state_page/card_offline.png</file>
-        <file>res/png2/state_page/btn_refresh_normal.png</file>
-        <file>res/png2/state_page/btn_refresh_pressed.png</file>
         <file>res/png2/state_page/btn_entry_normal.png</file>
         <file>res/png2/state_page/btn_entry_pressed.png</file>
-        <file>res/png2/state_page/dot_normal.png</file>
-        <file>res/png2/state_page/dot_warning.png</file>
+        <file>res/png2/state_page/btn_refresh_normal.png</file>
+        <file>res/png2/state_page/btn_refresh_pressed.png</file>
+        <file>res/png2/state_page/card_abnormal.png</file>
+        <file>res/png2/state_page/card_normal.png</file>
+        <file>res/png2/state_page/card_offline.png</file>
+        <file>res/png2/state_page/card_warning.png</file>
         <file>res/png2/state_page/dot_abnormal.png</file>
+        <file>res/png2/state_page/dot_normal.png</file>
         <file>res/png2/state_page/dot_offline.png</file>
+        <file>res/png2/state_page/dot_warning.png</file>
+        <file>res/png2/state_page/ico_ai.png</file>
+        <file>res/png2/state_page/ico_arrow_right.png</file>
+        <file>res/png2/state_page/ico_camera.png</file>
+        <file>res/png2/state_page/ico_refresh.png</file>
+        <file>res/png2/state_page/ico_temp.png</file>
+        <file>res/png2/state_page/signal_abnormal.png</file>
         <file>res/png2/state_page/signal_normal.png</file>
         <file>res/png2/state_page/signal_warning.png</file>
-        <file>res/png2/state_page/signal_abnormal.png</file>
-        <file>res/png2/state_page/ico_refresh.png</file>
-        <file>res/png2/state_page/ico_arrow_right.png</file>
-        <file>res/png2/state_page/ico_temp.png</file>
-        <file>res/png2/state_page/ico_camera.png</file>
-        <file>res/png2/state_page/ico_ai.png</file>
     </qresource>
 </RCC>

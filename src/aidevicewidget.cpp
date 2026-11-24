@@ -263,7 +263,7 @@ AiDeviceWidget::AiDeviceWidget(QWidget* parent) : QWidget(parent)
     this->setAutoFillBackground(true);
 
     QPalette palette;
-    QPixmap pixmap(":/res/png/back_pure_clear.png");
+    QPixmap pixmap(":/res/png/back_deep_clear.png");
     pixmap = pixmap.scaled(this->size());
     palette.setBrush(backgroundRole(), QBrush(pixmap));
     this->setPalette(palette);

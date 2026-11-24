@@ -1515,7 +1515,7 @@ void AiModelSet::setupClassCheckBoxes(int count, const QStringList& names)
     const int AREA_X = 5, AREA_Y = 63 + PAGE_CONTENT_OFFSET, AREA_W = CLS_AREA_W, AREA_H = 40;
     const int BTN_H = 40;
     const int SPACING = CLS_SPACING;  // 按钮间水平间距
-    
+
     // ── 统一字号：按全部按钮总宽不越界选最大字号（12→10）──
     // 文字预留两位数量（"：00"），避免计数增长到两位后再次截断
     int fontSize = 12;

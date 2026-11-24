@@ -2666,6 +2666,7 @@ void GlobalFlow::resetFeeder(int flag)
         */
         MySerial.com2Write(CMD_CTRL_FEEDER, CTRL_GENERAL, 0, 0, 0, 0, 0, feedOnoff, 3);
         MySerial.com2Write(CMD_CTRL_FEEDER, CTRL_GENERAL, 1, 0, 0, 0, 0, feedOnoff, 3);
+        operatorVFG((struGsh.bStatFeed == 1) ? true : false);
         return;
     }
 
@@ -4755,7 +4756,7 @@ void GlobalFlow::getSlaveList()
 }
 
 /* 开机检测状态上报（启动画面 5 组） */
-void GlobalFlow::bootStage(int stage, int status, const QString &detail)
+void GlobalFlow::bootStage(int stage, int status, const QString& detail)
 {
     emit initStageChanged(stage, status, detail);
 
@@ -4804,6 +4805,8 @@ static QString paramsFileErrorText(int value)
 void GlobalFlow::initAll()
 {
     // ---------------- 组 0：系统配置 / 参数文件 / 方案 / 相机参数 ----------------
+    bootStage(BOOT_STAGE_CONFIG, BOOT_STATUS_ACTIVE, tr("正在读取系统配置…"));
+
     getSetting();               // 获取配置文件参数内容
 
     //! 启动页文案必须在 setLang() 之后生成，否则语言固定为中文（nLang 在 getGlobal 中读取）
@@ -4827,8 +4830,6 @@ void GlobalFlow::initAll()
     getGlobal();                // 获取全局需要保存的参数
 
     setLang();                  // 设置语言（先于启动页文案，保证中英文生效）
-
-    bootStage(BOOT_STAGE_CONFIG, BOOT_STATUS_ACTIVE, tr("正在读取系统配置…"));
 
     QStringList configErrors;
     if (cnfMyMissing)
@@ -4903,12 +4904,18 @@ void GlobalFlow::initAll()
     {
         bootStage(BOOT_STAGE_AI, BOOT_STATUS_SKIPPED, tr("AI检测未启用"));
     }
+    else if (!struCnfp.enableAi)
+    {
+        bootStage(BOOT_STAGE_AI, BOOT_STATUS_SKIPPED, tr("AI未启用"));
+    }
     else
     {
         bootStage(BOOT_STAGE_AI, BOOT_STATUS_ACTIVE, tr("正在下发AI参数…"));
 
         QStringList aiFailed = initUdpImagPara();
         aiFailed += initPixelImagPara();
+        // 下发变频器频率
+        chgVFDFreq();
         aiFailed.removeDuplicates();
 
         if (aiFailed.isEmpty())
@@ -4918,7 +4925,7 @@ void GlobalFlow::initAll()
         else
         {
             bootStage(BOOT_STAGE_AI, BOOT_STATUS_ERROR,
-                      tr("AI设备异常：") + aiFailed.join(tr("、")));
+                tr("AI设备异常：") + aiFailed.join(tr("、")));
         }
     }
 
@@ -5308,6 +5315,50 @@ void GlobalFlow::startAiInfer()
     MySerial.com1WriteRaw(CMD_UNIT_AI_CAPTURE_ENABLE, UNIT, struGsh.nLevel, 0x20, 0, 0, 0, 0, 1, 3);
 }
 
+void GlobalFlow::chgVFDFreq()
+{
+    VfdCfgInfo info = ConfigMgr::Instance().GetVfdInfo();
+    if (!info.enable_)
+    {
+        LOG_INFO_STM("vfd enable is false, so ignore it!");
+        return;
+    }
+
+    // 振动频率下发时需要*100
+    QByteArray value = cmdworker::VFDFrequencyRequest(info.frequency_ * 100);
+    MySerial.com2Write(value, true);
+    msleep(50);
+    char buf[32];
+    memset(buf, 0, sizeof(buf));
+    int len = MySerial.com2Read(buf, value.size());
+    LOG_INFO_STM("vfd frequencey:" << info.frequency_ << ", body:" << value.toHex(' ').toUpper().toStdString() << ", read len:" << len);
+    if (len > 0)
+    {
+        LOG_INFO_STM("vfd frequency response body:" << QByteArray(buf, len).toHex(' ').toUpper().toStdString());
+    }
+}
+
+
+void GlobalFlow::operatorVFG(bool bIsStart)
+{
+    if (!ConfigMgr::Instance().GetVfdInfo().enable_)
+    {
+        LOG_INFO_STM("vfd enable is false, so ignore it!");
+        return;
+    }
+    QByteArray value = cmdworker::VFDOperatorRequest(bIsStart);
+
+    MySerial.com2Write(value, true);
+    msleep(50);
+    char buf[32];
+    memset(buf, 0, sizeof(buf));
+    int len = MySerial.com2Read(buf, value.size());
+    LOG_INFO_STM("IsStart:" << bIsStart << ", body:" << value.toHex(' ').toUpper().toStdString() << ", read len:" << len);
+    if (len > 0)
+    {
+        LOG_INFO_STM("vfd operator response body:" << QByteArray(buf, len).toHex(' ').toUpper().toStdString());
+    }
+}
 
 void GlobalFlow::stopAiInfer()
 {
@@ -5392,7 +5443,7 @@ void GlobalFlow::startAiWorker(bool onOff)
     }
 }
 
-int  GlobalFlow::initAiCommunication(QStringList *failedDevices)
+int  GlobalFlow::initAiCommunication(QStringList* failedDevices)
 {
     if (!struCnfp.enableAi)
     {

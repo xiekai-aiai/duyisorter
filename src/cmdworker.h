@@ -4,7 +4,7 @@
  * @Author: xiekai
  * @Date: 2026-09-11 15:23:37
  * @LastEditors: xiekai
- * @LastEditTime: 2026-09-28 09:26:07
+ * @LastEditTime: 2026-11-17 18:42:18
  */
 #ifndef CMDWORKER_H
 #define CMDWORKER_H
@@ -91,6 +91,12 @@ namespace cmdworker
 
     // 清灰
     QByteArray CleanDustParamRequest(const CleanDustParam& info);
+
+    // 变频器频率请求
+    QByteArray VFDFrequencyRequest(int freq);
+
+    // 变频器操作请求
+    QByteArray VFDOperatorRequest(bool bIsStart);
 
 }
 
